@@ -21,49 +21,30 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            border: 2px solid var(--neon-cyan);
-            box-sizing: border-box;
-        }
-        .header {
-            text-align: center;
-            text-shadow: 0 0 10px var(--neon-cyan);
-            margin-bottom: 30px;
-        }
-        h1 { font-size: 2.5rem; letter-spacing: 5px; color: var(--neon-cyan); }
-        .status-box {
-            border: 1px solid var(--neon-magenta);
-            padding: 20px;
-            background: rgba(255, 0, 255, 0.05);
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
-            text-align: center;
-        }
-        .btn {
-            margin-top: 20px;
-            padding: 10px 25px;
-            background: transparent;
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.3s;
-        }
-        .btn:hover {
-            background: var(--neon-cyan);
-            color: black;
-            box-shadow: 0 0 20px var(--neon-cyan);
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>MESAN Ω</h1>
-        <p>SISTEMA DE SOBERANÍA TECNOLÓGICA v33.0</p>
+            <div class="cuadro de estado">
+            <p id="Terminal">ESTADO: EN LÍNEA _</p>
+            <p>CONEXIÓN: ESTABLE</p>
+            <button class="botón" onclick="activarNodo()">INICIAR ESCANEO</button>
+        </div>
     </div>
-    <div class="status-box">
-        <p id="terminal">ESTADO: EN LÍNEA _</p>
-        <p>CONEXIÓN: ESTABLE</p>
-        <button class="btn" onclick="alert('Iniciando Diagnóstico...')">INICIAR ESCANEO</button>
-    </div>
+
+    <script>
+    async function activarNodo() {
+        const terminal = document.getElementById('Terminal');
+        terminal.innerText = "CONECTANDO CON EL NODO...";
+        
+        try {
+            // Esta es la llamada real a tu motor de Python en Render
+            const respuesta = await fetch('https://mesan-api.onrender.com/');
+            const datos = await respuesta.json();
+            
+            terminal.innerText = "NODO ACTIVO: " + datos.status;
+            alert("CONEXIÓN EXITOSA CON MESAN Ω");
+        } catch (error) {
+            terminal.innerText = "ESTADO: ERROR DE VINCULACIÓN";
+            alert("El motor de Python en Render está despertando. Reintenta en 20 segundos.");
+        }
+    }
+    </script>
 </body>
 </html>
-
