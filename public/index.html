@@ -53,7 +53,7 @@
         const term = document.getElementById('Terminal');
         term.innerText = "CONECTANDO AL NODO...";
         try {
-            const res = await fetch('https://mesan-api.onrender.com/');
+            const res = await fetch('https://mesan-api.onrender.com/status');
             const data = await res.json();
             term.innerText = "NODO ACTIVO: " + data.status;
             alert("CONEXIÓN EXITOSA");
