@@ -3,48 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω - Sistema de Diagnóstico</title>
+    <title>MESAN Ω</title>
     <style>
-        :root {
-            --neon-cyan: #00f3ff;
-            --neon-magenta: #ff00ff;
-            --dark-bg: #0a0a0b;
+        body { 
+            background-color: #0a0a0b; 
+            color: #00f3ff; 
+            font-family: 'Courier New', monospace; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            border: 4px solid #00f3ff; 
+            box-sizing: border-box; 
         }
-        body {
-            background-color: var(--dark-bg);
-            color: white;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            <div class="cuadro de estado">
-            <p id="Terminal">ESTADO: EN LÍNEA _</p>
-            <p>CONEXIÓN: ESTABLE</p>
-            <button class="botón" onclick="activarNodo()">INICIAR ESCANEO</button>
-        </div>
+        .cuadro { 
+            border: 1px solid #ff00ff; 
+            padding: 30px; 
+            text-align: center; 
+            background: rgba(255, 0, 255, 0.05); 
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+        h1 { font-size: 2.5rem; text-shadow: 0 0 10px #00f3ff; margin-bottom: 5px; }
+        .btn { 
+            margin-top: 25px; 
+            padding: 15px 40px; 
+            background: #00f3ff; 
+            color: black; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            letter-spacing: 2px;
+        }
+        #Terminal { font-size: 1.2rem; color: #ff00ff; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>MESAN Ω</h1>
+    <p style="letter-spacing: 3px;">SOBERANÍA TECNOLÓGICA</p>
+    
+    <div class="cuadro">
+        <p id="Terminal">SISTEMA LISTO _</p>
+        <button class="btn" onclick="activarNodo()">INICIAR ESCANEO</button>
     </div>
 
     <script>
     async function activarNodo() {
-        const terminal = document.getElementById('Terminal');
-        terminal.innerText = "CONECTANDO CON EL NODO...";
-        
+        const term = document.getElementById('Terminal');
+        term.innerText = "CONECTANDO AL NODO...";
         try {
-            // Esta es la llamada real a tu motor de Python en Render
-            const respuesta = await fetch('https://mesan-api.onrender.com/');
-            const datos = await respuesta.json();
-            
-            terminal.innerText = "NODO ACTIVO: " + datos.status;
-            alert("CONEXIÓN EXITOSA CON MESAN Ω");
-        } catch (error) {
-            terminal.innerText = "ESTADO: ERROR DE VINCULACIÓN";
-            alert("El motor de Python en Render está despertando. Reintenta en 20 segundos.");
+            const res = await fetch('https://mesan-api.onrender.com/');
+            const data = await res.json();
+            term.innerText = "NODO ACTIVO: " + data.status;
+            alert("CONEXIÓN EXITOSA");
+        } catch (e) {
+            term.innerText = "DESPERTANDO MOTOR...";
+            alert("Render está iniciando. Reintenta en 20 segundos.");
         }
     }
     </script>
 </body>
 </html>
+
