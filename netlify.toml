@@ -1,0 +1,9 @@
+[[redirects]]
+  from = "/docs"
+  to = "/.netlify/functions/main/docs"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
