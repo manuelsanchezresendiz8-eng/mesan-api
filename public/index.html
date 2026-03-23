@@ -53,8 +53,11 @@
         const term = document.getElementById('Terminal');
         term.innerText = "CONECTANDO AL NODO...";
         try {
-            const res = await fetch('https://mesan-api.onrender.com/status');
-            const data = await res.json();
+             const res = await fetch('https://worldtimeapi.org/api/timezone/America/Tijuana');
+        const data = await res.json();
+        term.innerText = "NODO ACTIVO: " + data.timezone;
+        alert("CONEXIÓN EXITOSA");
+
             term.innerText = "NODO ACTIVO: " + data.status;
             alert("CONEXIÓN EXITOSA");
         } catch (e) {
