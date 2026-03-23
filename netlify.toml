@@ -1,3 +1,6 @@
+[build]
+  publish = "public"
+
 [[redirects]]
   from = "/docs"
   to = "/.netlify/functions/main/docs"
