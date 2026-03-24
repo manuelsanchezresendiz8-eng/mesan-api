@@ -51,21 +51,18 @@
     <script>
     async function activarNodo() {
         const term = document.getElementById('Terminal');
-        term.innerText = "CONECTANDO AL NODO...";
-        try {
-             const res = await fetch('https://worldtimeapi.org/api/timezone/America/Tijuana');
+        <script>
+async function activarNodo() {
+    const term = document.getElementById('Terminal');
+    term.innerText = "CONECTANDO AL NODO...";
+    try {
+        const res = await fetch('https://worldtimeapi.org/api/timezone/America/Tijuana');
         const data = await res.json();
         term.innerText = "NODO ACTIVO: " + data.timezone;
         alert("CONEXIÓN EXITOSA");
-
-            term.innerText = "NODO ACTIVO: " + data.status;
-            alert("CONEXIÓN EXITOSA");
-        } catch (e) {
-            term.innerText = "DESPERTANDO MOTOR...";
-            alert("Render está iniciando. Reintenta en 20 segundos.");
-        }
+    } catch (e) {
+        term.innerText = "DESPERTANDO MOTOR...";
+        alert("Render está iniciando. Reintenta en 20 segundos.");
     }
-    </script>
-</body>
-</html>
-
+}
+</script>
