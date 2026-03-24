@@ -32,19 +32,37 @@
     </div>
 
     <script>
-    function entrarAlSistema() {
-        const btn = document.getElementById('BtnScan');
-        const term = document.getElementById('Terminal');
-        const dash = document.getElementById('Dashboard');
-        
-        term.innerText = "ACCEDIENDO AL NODO...";
-        btn.style.display = 'none';
+async function entrarAlSistema() {
+  const term = document.getElementById('Terminal');
 
-        setTimeout(() => {
-            term.innerText = "DATOS DE INTELIGENCIA:";
-            dash.style.display = 'block';
-            alert("ACCESO AUTORIZADO - BIENVENIDO MANUEL");
-        }, 1500);
+  term.innerText = "CONECTANDO CON MESAN-Ω...";
+
+  try {
+    const res = await fetch("https://mesan-api.onrender.com/evaluar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ingresos: 50000,
+        gastos: 30000,
+        empleados: 5,
+        crecimiento: 10
+      })
+    });
+
+    const data = await res.json();
+
+    term.innerText =
+      "RESULTADO:\n" +
+      "Score: " + data.score + "\n" +
+      "Estado: " + data.estado;
+
+  } catch (error) {
+    term.innerText = "ERROR CONECTANDO CON EL SISTEMA";
+  }
+}
+</script>
     }
     </script>
 </body>
