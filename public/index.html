@@ -47,13 +47,9 @@
         <p id="Terminal">SISTEMA LISTO _</p>
         <button class="btn" onclick="activarNodo()">INICIAR ESCANEO</button>
     </div>
-
-    <script>
-    async function activarNodo() {
-        const term = document.getElementById('Terminal');
-        <script>
+<script>
 async function activarNodo() {
-    const res = await fetch('https://worldtimeapi.org/api/timezone/America/Tijuana');
+    const term = document.getElementById('Terminal');
     term.innerText = "CONECTANDO AL NODO...";
     try {
         const res = await fetch('https://worldtimeapi.org/api/timezone/America/Tijuana');
@@ -61,8 +57,10 @@ async function activarNodo() {
         term.innerText = "NODO ACTIVO: " + data.timezone;
         alert("CONEXIÓN EXITOSA");
     } catch (e) {
-        term.innerText = "DESPERTANDO MOTOR...";
-        alert("Render está iniciando. Reintenta en 20 segundos.");
+        term.innerText = "REINTENTANDO ENLACE...";
+        alert("El motor está despertando. Espera 15 segundos.");
     }
 }
 </script>
+</body>
+</html>
