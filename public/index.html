@@ -52,15 +52,8 @@ async function activarNodo() {
     const term = document.getElementById('Terminal');
     term.innerText = "CONECTANDO AL NODO...";
     try {
-        const res = await fetch('https://api.github.com');
-        const data = await res.json();
-        term.innerText = "NODO ACTIVO: " + data.timezone;
+         try {
+        term.innerText = "NODO ACTIVO: LOCAL-MESAN-Ω";
         alert("CONEXIÓN EXITOSA");
     } catch (e) {
-        term.innerText = "REINTENTANDO ENLACE...";
-        alert("El motor está despertando. Espera 15 segundos.");
-    }
-}
-</script>
-</body>
-</html>
+        term.innerText = "ERROR DE SISTEMA";
