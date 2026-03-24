@@ -6,68 +6,44 @@
     <title>MESAN Ω | DASHBOARD</title>
     <style>
         body { background-color: #0a0a0b; color: #00f3ff; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; border: 4px solid #00f3ff; box-sizing: border-box; overflow: hidden; }
-        .cuadro { border: 1px solid #ff00ff; padding: 20px; background: rgba(0,0,0,0.8); box-shadow: 0 0 15px #ff00ff; text-align: center; width: 80%; max-width: 500px; }
-        .btn { background: #00f3ff; color: black; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; letter-spacing: 2px; margin-top: 20px; width: 100%; }
+        .cuadro { border: 1px solid #ff00ff; padding: 20px; background: rgba(0,0,0,0.8); box-shadow: 0 0 15px #ff00ff; text-align: center; width: 85%; max-width: 450px; }
+        .btn { background: #00f3ff; color: black; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; letter-spacing: 2px; margin-top: 20px; width: 100%; display: block; }
         .stats { display: none; text-align: left; margin-top: 20px; border-top: 1px solid #00f3ff; padding-top: 10px; }
-        .stat-line { margin: 10px 0; font-size: 0.9rem; }
+        .stat-line { margin: 12px 0; font-size: 0.9rem; }
         .valor { color: #ff00ff; font-weight: bold; float: right; }
         #Terminal { font-size: 1.1rem; color: #ff00ff; margin-bottom: 10px; }
     </style>
 </head>
 <body>
     <h1>MESAN Ω</h1>
-    <p style="letter-spacing: 3px;">SOBERANÍA TECNOLÓGICA</p>
+    <p style="letter-spacing: 3px; font-size: 0.8rem;">SOBERANÍA TECNOLÓGICA</p>
 
-    <div class="cuadro" id="MainContainer">
+    <div class="cuadro">
         <p id="Terminal">SISTEMA LISTO _</p>
-        <button class="btn" id="BtnScan" onclick="entrarAlSistema()">INICIAR ESCANEO</button>
+        <button class="btn" id="BtnScan" onclick="entrar()">INICIAR ESCANEO</button>
 
         <div id="Dashboard" class="stats">
             <div class="stat-line">NODO OPERATIVO: <span class="valor">ACTIVO</span></div>
             <div class="stat-line">NIVEL DE RIESGO: <span class="valor" style="color: #00ff00;">BAJO (2.4%)</span></div>
             <div class="stat-line">EFICIENCIA GLOBAL: <span class="valor">98.6%</span></div>
-            <div class="stat-line">CONEXIÓN SQL: <span class="valor">ESTABLE</span></div>
-            <p style="font-size: 0.7rem; color: #666; margin-top: 15px;">PROYECTO MAESTRO 2026 - M.I.S.R.</p>
+            <div class="stat-line">ESTADO: <span class="valor">DASHBOARD OK</span></div>
+            <p style="font-size: 0.6rem; color: #666; margin-top: 20px; text-align: center;">PROYECTO MAESTRO 2026</p>
         </div>
     </div>
 
     <script>
-async function entrarAlSistema() {
-  const term = document.getElementById('Terminal');
-
-  term.innerText = "CONECTANDO CON MESAN-Ω...";
-
-  try {
-    const res = await fetch("https://mesan-api.onrender.com/evaluar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ingresos: 50000,
-        gastos: 30000,
-        empleados: 5,
-        crecimiento: 10
-      })
-    });
-
-    const data = await res.json();
-
-    term.innerText =
-      "RESULTADO:\n" +
-      "Score: " + data.score + "\n" +
-      "Estado: " + data.estado;
-
-  } catch (error) {
-    term.innerText = "ERROR CONECTANDO CON EL SISTEMA";
-  }
-}
-</script>
+    function entrar() {
+        document.getElementById('BtnScan').style.display = 'none';
+        document.getElementById('Terminal').innerText = "ACCEDIENDO...";
+        
+        setTimeout(() => {
+            document.getElementById('Terminal').innerText = "DASHBOARD ACTIVO";
+            document.getElementById('Dashboard').style.display = 'block';
+            alert("ACCESO AUTORIZADO");
+        }, 1000);
     }
     </script>
 </body>
 </html>
 
-
-           
    
