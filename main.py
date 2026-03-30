@@ -65,11 +65,16 @@ async def health():
     return {"status": "ok", "version": "2.0.0"}  
     @app.post("/diagnostico")
 def diagnostico(data: dict):
-    return ejecutar_diagnostico(data)
-
-@app.post("/enterprise")
-def enterprise(data: dict):
-    return sistema_enterprise(data)
-@app.get("/health")
+ @app.get("/health")
 async def health():
     return {"status": "ok", "version": "2.0.0"}
+
+
+@app.post("/diagnostico")
+async def diagnostico(data: dict):
+    return ejecutar_diagnostico(data)
+
+
+@app.post("/enterprise")
+async def enterprise(data: dict):
+    return sistema_enterprise(data)
