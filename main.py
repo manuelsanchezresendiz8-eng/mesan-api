@@ -12,10 +12,10 @@ from routers.evaluar import router as evaluar_router
 from routes.verificar import router as verificar_router
 from core.mesan_core import ejecutar_diagnostico
 from enterprise.enterprise_engine import sistema_enterprise
-from routes.evaluar import router as evaluar_router
-from routes.verificar import router as verificar_router
-from core.mesan_core import ejecutar_diagnostico
-from enterprise.enterprise_engine import sistema_enterprise
+app = FastAPI(
+    title="MESAN API",
+    version="2.0.0"
+)
 init_db()
 ES_PRODUCCION = os.environ.get("MESAN_ENV") == "production"
 
