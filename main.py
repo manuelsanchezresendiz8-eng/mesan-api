@@ -14,7 +14,9 @@ from core.mesan_core import ejecutar_diagnostico
 from enterprise.enterprise_engine import sistema_enterprise
 app = FastAPI(
     title="MESAN API",
-    version="2.0.0"
+    version="2.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 init_db()
 ES_PRODUCCION = os.environ.get("MESAN_ENV") == "production"
