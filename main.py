@@ -8,17 +8,14 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from database import init_db
 from limiter import limiter
-from routes.evaluar import router as evaluar_router
-from routes.verificar import router as verificar_routerfrom core.mesan_core import ejecutar_diagnostico
+from routers.evaluar import router as evaluar_router
+from routes.verificar import router as verificar_router
+from core.mesan_core import ejecutar_diagnostico
 from enterprise.enterprise_engine import sistema_enterprise
-
-
-_VARS_REQUERIDAS = ["MESAN_API_KEY"]
-_faltantes = [v for v in _VARS_REQUERIDAS if not os.environ.get(v)]
-if _faltantes:
-    print(f"ERROR: Variables faltantes: {', '.join(_faltantes)}")
-    sys.exit(1)
-
+from routes.evaluar import router as evaluar_router
+from routes.verificar import router as verificar_router
+from core.mesan_core import ejecutar_diagnostico
+from enterprise.enterprise_engine import sistema_enterprise
 init_db()
 ES_PRODUCCION = os.environ.get("MESAN_ENV") == "production"
 
@@ -73,8 +70,6 @@ def diagnostico(data: dict):
 @app.post("/enterprise")
 def enterprise(data: dict):
     return sistema_enterprise(data)
-
 @app.get("/health")
-def health():
-    return {"status": "ok"}
-
+async def health():
+    return {"status": "ok", "version": "2.0.0"}
