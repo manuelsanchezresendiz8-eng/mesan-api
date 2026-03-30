@@ -64,3 +64,15 @@ app.include_router(verificar_router, prefix="/api")
 @app.get("/health")
 async def health():
     return {"status": "ok", "version": "2.0.0"}  
+    @app.post("/diagnostico")
+def diagnostico(data: dict):
+    return ejecutar_diagnostico(data)
+
+@app.post("/enterprise")
+def enterprise(data: dict):
+    return sistema_enterprise(data)
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
