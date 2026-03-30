@@ -9,7 +9,9 @@ from slowapi.middleware import SlowAPIMiddleware
 from database import init_db
 from limiter import limiter
 from routes.evaluar import router as evaluar_router
-from routes.verificar import router as verificar_router
+from routes.verificar import router as verificar_routerfrom core.mesan_core import ejecutar_diagnostico
+from enterprise.enterprise_engine import sistema_enterprise
+
 
 _VARS_REQUERIDAS = ["MESAN_API_KEY"]
 _faltantes = [v for v in _VARS_REQUERIDAS if not os.environ.get(v)]
