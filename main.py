@@ -8,7 +8,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from database import init_db
 from limiter import limiter
-from routers.evaluar import router as evaluar_router
+from routes.evaluar import route
 from routes.verificar import router as verificar_router
 from core.mesan_core import ejecutar_diagnostico
 from enterprise.enterprise_engine import sistema_enterprise
