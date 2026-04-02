@@ -75,6 +75,6 @@ async def health():
 @app.post("/diagnostico")
 async def diagnostico(data: dict):
     return ejecutar_diagnostico(data)
- @app.post("/enterprise_risk")
+@app.post("/enterprise_risk")
 async def enterprise(data:dict):
     return sistema_enterprise(data)
