@@ -3,66 +3,87 @@ def calcular_irp(respuestas):
     codigos = []
 
     if respuestas["factura"] == "no":
-        score += 30; codigos.append("F3_RISK")
+        score += 30
+        codigos.append("F3_RISK")
     elif respuestas["factura"] == "no_seguro":
-        score += 20; codigos.append("F2_WARN")
+        score += 20
+        codigos.append("F2_WARN")
     else:
         codigos.append("F1_OK")
 
     if respuestas["contabilidad"] == "no_tiene":
-        score += 15; codigos.append("F6_RISK")
+        score += 15
+        codigos.append("F6_RISK")
     elif respuestas["contabilidad"] == "interno":
-        score += 10; codigos.append("F5_WARN")
+        score += 10
+        codigos.append("F5_WARN")
     else:
         codigos.append("F4_OK")
 
     if respuestas["imss"] == "no":
-        score += 40; codigos.append("L3_RISK")
+        score += 40
+        codigos.append("L3_RISK")
     elif respuestas["imss"] == "parcial":
-        score += 25; codigos.append("L2_WARN")
+        score += 25
+        codigos.append("L2_WARN")
     else:
         codigos.append("L1_OK")
 
     if respuestas["contratos"] == "no":
-        score += 15; codigos.append("L6_RISK")
+        score += 15
+        codigos.append("L6_RISK")
     elif respuestas["contratos"] == "algunos":
-        score += 10; codigos.append("L5_WARN")
+        score += 10
+        codigos.append("L5_WARN")
     else:
         codigos.append("L4_OK")
 
     if respuestas["rpbi"] == "si":
         if respuestas["contrato_rpbi"] == "no":
-            score += 30; codigos.append("H5_RISK")
+            score += 30
+            codigos.append("H5_RISK")
         else:
             codigos.append("H4_OK")
     else:
         codigos.append("H0_NA")
 
     if respuestas["procesos"] == "no":
-        score += 30; codigos.append("O3_RISK")
+        score += 30
+        codigos.append("O3_RISK")
     else:
         codigos.append("O1_OK")
 
     if respuestas["inspeccion"] == "preocupado":
-        score += 30; codigos.append("P3_RISK")
+        score += 30
+        codigos.append("P3_RISK")
     elif respuestas["inspeccion"] == "dudoso":
-        score += 15; codigos.append("P2_WARN")
+        score += 15
+        codigos.append("P2_WARN")
     else:
         codigos.append("P1_OK")
 
     if respuestas["historial"] == "si":
-        score += 20; codigos.append("S2_ALERT")
+        score += 20
+        codigos.append("S2_ALERT")
     else:
         codigos.append("S1_OK")
 
     if score >= 70:
-        nivel = "ALTO"; irp = "IRP_HIGH"
+        nivel = "ALTO"
+        irp = "IRP_HIGH"
     elif score >= 40:
-        nivel = "MEDIO"; irp = "IRP_MED"
+        nivel = "MEDIO"
+        irp = "IRP_MED"
     else:
-        nivel = "BAJO"; irp = "IRP_LOW"
+        nivel = "BAJO"
+        irp = "IRP_LOW"
 
-    return {"score": score, "nivel": nivel, "codigo_irp": irp, "codigos_detectados": codigos}
+    return {
+        "score": score,
+        "nivel": nivel,
+        "codigo_irp": irp,
+        "codigos_detectados": codigos
+    }
 
 
 def mapear_soluciones(codigos):
@@ -104,4 +125,4 @@ def ejecutar_diagnostico(data):
     s = mapear_soluciones(r["codigos_detectados"])
     i = calcular_impacto_economico(s)
     return {"resultado": r, "soluciones": s, "impacto": i}
-Cuando lo tengas pegado → click "Commit changes" 🎯
+
