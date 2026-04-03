@@ -10,8 +10,20 @@ from database import init_db
 from limiter import limiter
 from routes.evaluar import router as evaluar_router
 from routes.verificar import router as verificar_router
-from core.mesan_core import ejecutar_diagnostico
-from enterprise.enterprise_engine import sistema_enterprise
+
+try:
+    from core.mesan_core import ejecutar_diagnostico
+    print("DEBUG: core.mesan_core cargado OK")
+except Exception as e:
+    print(f"ERROR core.mesan_core: {e}")
+    ejecutar_diagnostico = None
+
+try:
+    from enterprise.enterprise_engine import sistema_enterprise
+    print("DEBUG: enterprise_engine cargado OK")
+except Exception as e:
+    print(f"ERROR enterprise_engine: {e}")
+    sistema_enterprise = None
 
 _VARS_REQUERIDAS = ["MESAN_API_KEY"]
 _faltantes = [v for v in _VARS_REQUERIDAS if not os.environ.get(v)]
@@ -46,11 +58,14 @@ app.include_router(verificar_router, prefix="/api")
 async def health():
     return {"status": "ok", "version": "2.0.0"}
 
-@app.post("/diagnostico")
-async def diagnostico(data: dict):
-    return ejecutar_diagnostico(data)
+if ejecutar_diagnostico:
+    @app.post("/diagnostico")
+    async def diagnostico(data: dict):
+        return ejecutar_diagnostico(data)
 
-@app.post("/enterprise")
-async def enterprise(data: dict):
-    return sistema_enterprise(data)
+if sistema_enterprise:
+    @app.post("/enterprise")
+    async def enterprise(data: dict):
+        return sistema_enterprise(data)
+
 
