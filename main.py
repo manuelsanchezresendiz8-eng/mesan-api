@@ -63,9 +63,20 @@ if ejecutar_diagnostico:
     async def diagnostico(data: dict):
         return ejecutar_diagnostico(data)
 
+@app.options("/enterprise")
+def preflight_enterprise():
+    from fastapi.responses import Response
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+        },
+    )
+
 if sistema_enterprise:
     @app.post("/enterprise")
     async def enterprise(data: dict):
-        return sistema_enterprise(data)
-
+        return sistema_enterpris
 
