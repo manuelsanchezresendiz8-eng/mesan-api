@@ -46,7 +46,7 @@ class CustomSlowAPIMiddleware(SlowAPIMiddleware):
 
 app.add_middleware(CustomSlowAPIMiddleware)
 
-app.add_middleware(
+app.add_middlaware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
