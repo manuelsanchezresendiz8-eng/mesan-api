@@ -38,12 +38,14 @@ app = FastAPI(title="MESAN API", version="2.0.0")
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-app.add_middleware(SlowAPIMiddleware)
+class CustomSlowAPIMiddleware(SlowAPIMiddleware):
+    async def dispatch(self, request, call_next):
+        if request.method == "OPTIONS":
+            return await call_next(request)
+        return await super().dispatch(request, call_next)
 
-_origins_raw = os.environ.get("MESAN_ALLOWED_ORIGINS", "http://localhost:3000")
-ALLOWED_ORIGINS = [o.strip() for o in _origins_raw.split(",")]
+app.add_middleware(CustomSlowAPIMiddleware
 
-app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
