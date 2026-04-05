@@ -4,20 +4,10 @@ from fastapi.responses import Response
 
 from slowapi.middleware import SlowAPIMiddleware
 
-# (si los usas, si no existen puedes comentarlos)
-# from database import init_db
-# from limiter import limiter
-# from routes.evaluar import router as evaluar_router
-# from routes.verificar import router as verificar_router
-
-# =========================
-# APP
-# =========================
-
 app = FastAPI(title="MESAN Ω API")
 
 # =========================
-# FIX SLOWAPI (NO BLOQUEAR OPTIONS)
+# FIX SLOWAPI
 # =========================
 
 class CustomSlowAPIMiddleware(SlowAPIMiddleware):
@@ -41,7 +31,7 @@ app.add_middleware(
 )
 
 # =========================
-# ENDPOINTS BASE
+# ENDPOINTS
 # =========================
 
 @app.get("/")
@@ -50,14 +40,10 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "version": "2.0.0"}
-
-# =========================
-# FIX CORS (PRE-FLIGHT)
-# =========================
+    return {"status": "ok"}
 
 @app.options("/enterprise")
-def preflight_enterprise():
+def options_enterprise():
     return Response(
         status_code=200,
         headers={
@@ -67,13 +53,6 @@ def preflight_enterprise():
         },
     )
 
-# =========================
-# ENDPOINT ENTERPRISE
-# =========================
-
 @app.post("/enterprise")
 def enterprise(data: dict):
-    return {
-        "mensaje": "MESAN Ω funcionando",
-        "data_recibida": data
-    }
+    return {"ok": True, "data": data}
