@@ -4,10 +4,6 @@ from fastapi.responses import Response
 
 app = FastAPI(title="MESAN Ω API")
 
-# =========================
-# CORS
-# =========================
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,17 +12,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# =========================
-# ENDPOINTS
-# =========================
-
 @app.get("/")
 def root():
     return {"status": "MESAN Ω activo"}
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "version": "2.0.0"}
+    return {"status": "ok"}
 
 @app.options("/enterprise")
 def options_enterprise():
