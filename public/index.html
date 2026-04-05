@@ -2,44 +2,255 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>MESAN-Ω Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN-Omega | Diagnostico Empresarial</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  body { background: #000; color: #00fff7; font-family: monospace; padding: 20px; }
-  button { background: #00fff7; color: #000; border: none; padding: 10px 20px; font-size: 1rem; cursor: pointer; margin-top: 10px; }
-  pre { background: #111; padding: 15px; margin-top: 15px; color: #00ff88; white-space: pre-wrap; }
+:root{--cyan:#00fff7;--magenta:#ff00aa;--dark:#020810;--text:#c0e8f0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--dark);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,247,.03)1px,transparent 1px),linear-gradient(90deg,rgba(0,255,247,.03)1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+nav{padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(0,255,247,.1);}
+.logo{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--cyan);letter-spacing:4px;}
+.logo span{color:var(--magenta);}
+.hero{text-align:center;padding:4rem 2rem 3rem;}
+.hero-tag{font-size:.8rem;letter-spacing:6px;color:var(--magenta);text-transform:uppercase;margin-bottom:1rem;}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(2rem,8vw,5rem);font-weight:900;color:#fff;line-height:1;}
+.hero h1 span{color:var(--cyan);display:block;}
+.hero p{font-size:1.2rem;color:rgba(192,232,240,.7);margin:1.5rem auto;max-width:600px;}
+.form-section{max-width:700px;margin:0 auto;padding:2rem;}
+.form-card{border:1px solid rgba(0,255,247,.2);background:rgba(0,255,247,.03);padding:2.5rem;position:relative;}
+.form-card::before{content:'// DIAGNOSTICO GRATUITO';position:absolute;top:-.7rem;left:1.5rem;background:var(--dark);padding:0 .5rem;font-size:.7rem;letter-spacing:3px;color:var(--magenta);}
+.form-group{margin-bottom:1.5rem;}
+.form-group label{display:block;font-size:.85rem;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;margin-bottom:.5rem;}
+.form-group select{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(0,255,247,.3);color:var(--text);padding:.8rem 1rem;font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;}
+.form-group select:focus{border-color:var(--cyan);}
+.form-group select option{background:#020810;}
+.btn-diagnostico{width:100%;background:var(--cyan);color:var(--dark);border:none;padding:1.2rem;font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;letter-spacing:3px;cursor:pointer;text-transform:uppercase;margin-top:1rem;transition:all .3s;}
+.btn-diagnostico:hover{background:var(--magenta);box-shadow:0 0 30px var(--magenta);}
+.btn-diagnostico:disabled{opacity:.5;cursor:not-allowed;}
+.resultado{display:none;margin-top:2rem;padding:2rem;border:1px solid rgba(0,255,247,.3);background:rgba(0,0,0,.5);}
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(255,68,68,0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(255,68,68,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,68,68,0); }
+}
+.resultado.critico-anim {
+  animation: pulse-red 2s infinite;
+  border: 2px solid #ff4444;
+}
+.score-display{text-align:center;margin-bottom:2rem;}
+.score-num{font-family:'Orbitron',monospace;font-size:4rem;font-weight:900;}
+.score-label{font-size:.8rem;letter-spacing:4px;color:rgba(192,232,240,.5);text-transform:uppercase;}
+.clasificacion{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:700;margin-top:.5rem;}
+.impacto-box{background:rgba(255,0,0,.1);border:1px solid rgba(255,68,68,.3);padding:1.5rem;margin:1.5rem 0;text-align:center;}
+.impacto-num{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;color:#ff4444;}
+.impacto-label{font-size:.8rem;letter-spacing:3px;color:rgba(192,232,240,.5);text-transform:uppercase;}
+.soluciones-list{list-style:none;margin:1.5rem 0;}
+.soluciones-list li{padding:.8rem 1rem;border-left:3px solid var(--cyan);background:rgba(0,255,247,.05);margin-bottom:.5rem;font-size:.95rem;}
+.soluciones-list li span{color:var(--magenta);font-weight:700;}
+.btn-whatsapp{display:block;width:100%;background:#25D366;color:#fff;border:none;padding:1.2rem;font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;margin-top:1.5rem;text-decoration:none;text-align:center;transition:all .3s;}
+.btn-whatsapp:hover{background:#128C7E;box-shadow:0 0 20px rgba(37,211,102,.5);}
+.wa-float{position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:15px 20px;border-radius:50px;font-family:'Orbitron',monospace;font-size:.75rem;font-weight:700;letter-spacing:2px;text-decoration:none;box-shadow:0 0 20px rgba(37,211,102,.5);z-index:1000;transition:all .3s;}
+.wa-float:hover{transform:scale(1.05);}
+footer{text-align:center;padding:3rem 2rem;border-top:1px solid rgba(0,255,247,.1);font-size:.75rem;letter-spacing:2px;color:rgba(192,232,240,.3);}
 </style>
 </head>
 <body>
-<h2>MESAN-Ω Enterprise Test</h2>
-<button onclick="testEnterprise()">Probar /enterprise</button>
-<pre id="resultado">Esperando...</pre>
+
+<nav>
+  <div class="logo">MESAN<span>-&#937;</span></div>
+  <span style="font-size:.8rem;letter-spacing:2px;color:rgba(192,232,240,.4);">ENTERPRISE</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">// Sistema de Inteligencia Empresarial</div>
+  <h1>Protege tu empresa<span>antes de la multa</span></h1>
+  <p>Detecta en 30 segundos si tu empresa tiene riesgos que pueden costarte multas o perdidas de dinero.</p>
+</div>
+
+<div class="form-section">
+  <div class="form-card">
+    <div class="form-group">
+      <label>Facturacion</label>
+      <select id="factura">
+        <option value="si">Si facturo correctamente</option>
+        <option value="no_seguro">No estoy seguro</option>
+        <option value="no">No facturo o tengo problemas</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Contabilidad</label>
+      <select id="contabilidad">
+        <option value="externo">Contador externo</option>
+        <option value="interno">Personal interno</option>
+        <option value="no_tiene">No tengo contabilidad</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>IMSS</label>
+      <select id="imss">
+        <option value="si">Todos mis empleados registrados</option>
+        <option value="parcial">Algunos registrados</option>
+        <option value="no">No tengo empleados en IMSS</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Contratos laborales</label>
+      <select id="contratos">
+        <option value="si">Todos con contrato</option>
+        <option value="algunos">Algunos con contrato</option>
+        <option value="no">Sin contratos</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Manejo de residuos RPBI</label>
+      <select id="rpbi">
+        <option value="no">No aplica a mi empresa</option>
+        <option value="si">Si manejo residuos</option>
+      </select>
+    </div>
+    <div id="rpbi-extra" style="display:none;" class="form-group">
+      <label>Contrato RPBI</label>
+      <select id="contrato_rpbi">
+        <option value="si">Si tengo contrato</option>
+        <option value="no">No tengo contrato</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Procesos documentados</label>
+      <select id="procesos">
+        <option value="si">Si tengo procesos</option>
+        <option value="no">No tengo procesos</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Ante una inspeccion te sientes</label>
+      <select id="inspeccion">
+        <option value="tranquilo">Tranquilo, estoy al dia</option>
+        <option value="dudoso">Un poco inseguro</option>
+        <option value="preocupado">Muy preocupado</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Historial de multas o inspecciones</label>
+      <select id="historial">
+        <option value="no">Sin historial</option>
+        <option value="si">Si tengo historial</option>
+      </select>
+    </div>
+    <button class="btn-diagnostico" onclick="ejecutarDiagnostico()" id="btn-diag">
+      Generar Diagnostico Gratuito
+    </button>
+  </div>
+
+  <div class="resultado" id="resultado">
+    <h3 style="color:#ff4444;text-align:center;margin-bottom:1.5rem;font-family:'Orbitron',monospace;letter-spacing:2px;">
+      &#128680; Riesgo detectado en tu empresa
+    </h3>
+    <div class="score-display">
+      <div class="score-num" id="score-num">--</div>
+      <div class="score-label">Score de Riesgo</div>
+      <div class="clasificacion" id="clasificacion">--</div>
+    </div>
+    <div class="impacto-box">
+      <div class="impacto-num" id="impacto-min">$--</div>
+      <div class="impacto-label">Exposicion minima estimada</div>
+      <div class="impacto-num" id="impacto-max" style="margin-top:.5rem;">$--</div>
+      <div class="impacto-label">Exposicion maxima estimada</div>
+    </div>
+    <ul class="soluciones-list" id="soluciones"></ul>
+    <a href="" class="btn-whatsapp" id="btn-wa" target="_blank">
+      &#128172; Activar correccion de riesgos
+    </a>
+  </div>
+</div>
+
+<a href="https://wa.me/526861629643?text=Hola%20quiero%20un%20diagnostico%20de%20riesgo%20para%20mi%20empresa"
+   target="_blank" class="wa-float">&#128172; WhatsApp</a>
+
+<footer>
+  <p>&copy; 2026 MESAN-&#937; &middot; Mexico &middot; Red Nacional Activa</p>
+</footer>
 
 <script>
-async function testEnterprise() {
-  document.getElementById("resultado").textContent = "Conectando...";
+const API = "https://mesan-api.onrender.com";
+
+document.getElementById("rpbi").addEventListener("change", function() {
+  document.getElementById("rpbi-extra").style.display = this.value === "si" ? "block" : "none";
+});
+
+async function ejecutarDiagnostico() {
+  const btn = document.getElementById("btn-diag");
+  btn.disabled = true;
+  btn.textContent = "Analizando...";
+
+  const data = {
+    factura: document.getElementById("factura").value,
+    contabilidad: document.getElementById("contabilidad").value,
+    imss: document.getElementById("imss").value,
+    contratos: document.getElementById("contratos").value,
+    rpbi: document.getElementById("rpbi").value,
+    contrato_rpbi: document.getElementById("contrato_rpbi")?.value || "no",
+    procesos: document.getElementById("procesos").value,
+    inspeccion: document.getElementById("inspeccion").value,
+    historial: document.getElementById("historial").value
+  };
+
   try {
-    const res = await fetch("https://mesan-api.onrender.com/enterprise", {
+    const res = await fetch(API + "/enterprise", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        factura: "no",
-        contabilidad: "no_tiene",
-        imss: "no",
-        contratos: "no",
-        rpbi: "si",
-        contrato_rpbi: "no",
-        procesos: "no",
-        inspeccion: "preocupado",
-        historial: "si"
-      })
+      body: JSON.stringify(data)
     });
-    const data = await res.json();
-    document.getElementById("resultado").textContent = JSON.stringify(data, null, 2);
+    const result = await res.json();
+    mostrarResultado(result);
   } catch(e) {
-    document.getElementById("resultado").textContent = "Error: " + e.message;
+    btn.textContent = "Error - Intenta de nuevo";
+    btn.disabled = false;
   }
+}
+
+function mostrarResultado(result) {
+  const score = result.diagnostico.score;
+  const clasificacion = result.clasificacion;
+  const divResultado = document.getElementById("resultado");
+
+  document.getElementById("score-num").textContent = score;
+  document.getElementById("clasificacion").textContent = clasificacion;
+  document.getElementById("clasificacion").style.color =
+    clasificacion === "CRITICO" ? "#ff4444" :
+    clasificacion === "VULNERABLE" ? "#ffaa00" : "#00ff88";
+
+  if (clasificacion === "CRITICO") {
+    divResultado.classList.add("critico-anim");
+  } else {
+    divResultado.classList.remove("critico-anim");
+  }
+
+  const min = result.impacto.impacto_min.toLocaleString("es-MX");
+  const max = result.impacto.impacto_max.toLocaleString("es-MX");
+  document.getElementById("impacto-min").textContent = "$" + min + " MXN";
+  document.getElementById("impacto-max").textContent = "$" + max + " MXN";
+
+  const lista = document.getElementById("soluciones");
+  lista.innerHTML = "";
+  result.soluciones.forEach(s => {
+    const li = document.createElement("li");
+    li.innerHTML = "<span>" + s.area + "</span> — " + s.accion;
+    lista.appendChild(li);
+  });
+
+  const msg = encodeURIComponent(
+    "Hola, hice el diagnostico MESAN Omega y salio " + clasificacion + " con score " + score + ". Quiero saber como evitar perdidas y corregirlo lo antes posible."
+  );
+  document.getElementById("btn-wa").href = "https://wa.me/526861629643?text=" + msg;
+
+  divResultado.style.display = "block";
+  divResultado.scrollIntoView({ behavior: "smooth" });
+  document.getElementById("btn-diag").textContent = "Generar Diagnostico Gratuito";
+  document.getElementById("btn-diag").disabled = false;
 }
 </script>
 </body>
 </html>
-
