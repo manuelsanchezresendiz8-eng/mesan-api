@@ -46,13 +46,13 @@ class CustomSlowAPIMiddleware(SlowAPIMiddleware):
 
 app.add_middleware(CustomSlowAPIMiddleware)
 
+app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"]
 )
-
 app.include_router(evaluar_router, prefix="/api")
 app.include_router(verificar_router, prefix="/api")
 
