@@ -44,7 +44,7 @@ class CustomSlowAPIMiddleware(SlowAPIMiddleware):
             return await call_next(request)
         return await super().dispatch(request, call_next)
 
-app.add_middleware(CustomSlowAPIMiddleware
+app.add_middleware(CustomSlowAPIMiddleware)
 
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
