@@ -30,15 +30,8 @@ nav{padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:c
 .btn-diagnostico:hover{background:var(--magenta);box-shadow:0 0 30px var(--magenta);}
 .btn-diagnostico:disabled{opacity:.5;cursor:not-allowed;}
 .resultado{display:none;margin-top:2rem;padding:2rem;border:1px solid rgba(0,255,247,.3);background:rgba(0,0,0,.5);}
-@keyframes pulse-red {
-  0% { box-shadow: 0 0 0 0 rgba(255,68,68,0.4); }
-  70% { box-shadow: 0 0 0 15px rgba(255,68,68,0); }
-  100% { box-shadow: 0 0 0 0 rgba(255,68,68,0); }
-}
-.resultado.critico-anim {
-  animation: pulse-red 2s infinite;
-  border: 2px solid #ff4444;
-}
+@keyframes pulse-red{0%{box-shadow:0 0 0 0 rgba(255,68,68,0.4);}70%{box-shadow:0 0 0 15px rgba(255,68,68,0);}100%{box-shadow:0 0 0 0 rgba(255,68,68,0);}}
+.resultado.critico-anim{animation:pulse-red 2s infinite;border:2px solid #ff4444;}
 .score-display{text-align:center;margin-bottom:2rem;}
 .score-num{font-family:'Orbitron',monospace;font-size:4rem;font-weight:900;}
 .score-label{font-size:.8rem;letter-spacing:4px;color:rgba(192,232,240,.5);text-transform:uppercase;}
@@ -46,6 +39,7 @@ nav{padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:c
 .impacto-box{background:rgba(255,0,0,.1);border:1px solid rgba(255,68,68,.3);padding:1.5rem;margin:1.5rem 0;text-align:center;}
 .impacto-num{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;color:#ff4444;}
 .impacto-label{font-size:.8rem;letter-spacing:3px;color:rgba(192,232,240,.5);text-transform:uppercase;}
+.impacto-anual{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;color:#ff4444;text-align:center;padding:1rem;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2);margin-bottom:1rem;}
 .soluciones-list{list-style:none;margin:1.5rem 0;}
 .soluciones-list li{padding:.8rem 1rem;border-left:3px solid var(--cyan);background:rgba(0,255,247,.05);margin-bottom:.5rem;font-size:.95rem;}
 .soluciones-list li span{color:var(--magenta);font-weight:700;}
@@ -160,6 +154,7 @@ footer{text-align:center;padding:3rem 2rem;border-top:1px solid rgba(0,255,247,.
       <div class="impacto-label">Exposicion maxima estimada</div>
     </div>
     <ul class="soluciones-list" id="soluciones"></ul>
+    <div class="impacto-anual" id="impacto-anual-msg"></div>
     <a href="" class="btn-whatsapp" id="btn-wa" target="_blank">
       &#128172; Activar correccion de riesgos
     </a>
@@ -230,8 +225,12 @@ function mostrarResultado(result) {
 
   const min = result.impacto.impacto_min.toLocaleString("es-MX");
   const max = result.impacto.impacto_max.toLocaleString("es-MX");
+  const anualMax = result.impacto.impacto_anual_max.toLocaleString("es-MX");
+
   document.getElementById("impacto-min").textContent = "$" + min + " MXN";
   document.getElementById("impacto-max").textContent = "$" + max + " MXN";
+  document.getElementById("impacto-anual-msg").textContent =
+    "Tu empresa esta en riesgo de perder hasta $" + anualMax + " MXN al ano";
 
   const lista = document.getElementById("soluciones");
   lista.innerHTML = "";
@@ -242,7 +241,7 @@ function mostrarResultado(result) {
   });
 
   const msg = encodeURIComponent(
-    "Hola, hice el diagnostico MESAN Omega y salio " + clasificacion + " con score " + score + ". Quiero saber como evitar perdidas y corregirlo lo antes posible."
+    "Hola, hice el diagnostico MESAN Omega.\nResultado: " + clasificacion + " (score " + score + ").\nQuiero ayuda para corregir esto antes de tener problemas."
   );
   document.getElementById("btn-wa").href = "https://wa.me/526861629643?text=" + msg;
 
