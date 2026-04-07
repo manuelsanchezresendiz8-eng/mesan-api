@@ -14,18 +14,18 @@ nav{padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:c
 .logo{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--cyan);letter-spacing:4px;}
 .logo span{color:var(--magenta);}
 .hero{text-align:center;padding:4rem 2rem 3rem;}
-.hero-tag{font-size:.8rem;letter-spacing:6px;color:var(--magenta);text-transform:uppercase;margin-bottom:1rem;}
-.hero h1{font-family:'Orbitron',monospace;font-size:clamp(2rem,8vw,5rem);font-weight:900;color:#fff;line-height:1;}
-.hero h1 span{color:var(--cyan);display:block;}
-.hero p{font-size:1.2rem;color:rgba(192,232,240,.7);margin:1.5rem auto;max-width:600px;}
+.system-tag{font-size:.8rem;letter-spacing:6px;color:var(--magenta);text-transform:uppercase;margin-bottom:1.5rem;}
+.main-title{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,6vw,4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:1.5rem;}
+.main-title .highlight{color:var(--cyan);display:block;}
+.main-description{font-size:1.2rem;color:rgba(192,232,240,.7);margin:0 auto;max-width:600px;}
 .form-section{max-width:700px;margin:0 auto;padding:2rem;}
 .form-card{border:1px solid rgba(0,255,247,.2);background:rgba(0,255,247,.03);padding:2.5rem;position:relative;}
 .form-card::before{content:'// DIAGNOSTICO GRATUITO';position:absolute;top:-.7rem;left:1.5rem;background:var(--dark);padding:0 .5rem;font-size:.7rem;letter-spacing:3px;color:var(--magenta);}
 .form-group{margin-bottom:1.5rem;}
 .form-group label{display:block;font-size:.85rem;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;margin-bottom:.5rem;}
-.form-group select, .form-group input{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(0,255,247,.3);color:var(--text);padding:.8rem 1rem;font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;}
+.form-group select,.form-group input{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(0,255,247,.3);color:var(--text);padding:.8rem 1rem;font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;}
 .form-group input::placeholder{color:rgba(192,232,240,.3);}
-.form-group select:focus, .form-group input:focus{border-color:var(--cyan);}
+.form-group select:focus,.form-group input:focus{border-color:var(--cyan);}
 .form-group select option{background:#020810;}
 .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,247,.3),transparent);margin:1.5rem 0;}
 .btn-diagnostico{width:100%;background:var(--cyan);color:var(--dark);border:none;padding:1.2rem;font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;letter-spacing:3px;cursor:pointer;text-transform:uppercase;margin-top:1rem;transition:all .3s;}
@@ -60,9 +60,17 @@ footer{text-align:center;padding:3rem 2rem;border-top:1px solid rgba(0,255,247,.
 </nav>
 
 <div class="hero">
-  <div class="hero-tag">// Sistema de Inteligencia Empresarial</div>
-  <h1>Protege tu empresa<span>antes de la multa</span></h1>
-  <p>Detecta en 30 segundos si tu empresa tiene riesgos que pueden costarte multas o perdidas de dinero.</p>
+  <div class="hero-content">
+    <p class="system-tag">// SISTEMA DE INTELIGENCIA EMPRESARIAL</p>
+    <h1 class="main-title">
+      Toma el Control Total de tu<br>
+      <span class="highlight">Arquitectura Empresarial</span>
+    </h1>
+    <p class="main-description">
+      Analiza la salud operativa de tu negocio y detecta
+      vulnerabilidades criticas en menos de 30 segundos.
+    </p>
+  </div>
 </div>
 
 <div class="form-section">
@@ -158,11 +166,11 @@ footer{text-align:center;padding:3rem 2rem;border-top:1px solid rgba(0,255,247,.
 
   <div class="resultado" id="resultado">
     <h3 style="color:#ff4444;text-align:center;margin-bottom:1.5rem;font-family:'Orbitron',monospace;letter-spacing:2px;">
-      &#128680; Riesgo detectado en tu empresa
+      &#128680; Vulnerabilidades detectadas en tu empresa
     </h3>
     <div class="score-display">
       <div class="score-num" id="score-num">--</div>
-      <div class="score-label">Score de Riesgo</div>
+      <div class="score-label">Indice de Riesgo Operativo</div>
       <div class="clasificacion" id="clasificacion">--</div>
     </div>
     <div class="impacto-box">
@@ -219,7 +227,6 @@ async function ejecutarDiagnostico() {
     const result = await res.json();
     mostrarResultado(result);
 
-    // Guardar lead
     const nombre = document.getElementById("nombre").value;
     const email = document.getElementById("email").value;
     const telefono = document.getElementById("telefono").value;
@@ -229,9 +236,7 @@ async function ejecutarDiagnostico() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nombre,
-          email,
-          telefono,
+          nombre, email, telefono,
           score: result.diagnostico.score,
           clasificacion: result.clasificacion
         })
