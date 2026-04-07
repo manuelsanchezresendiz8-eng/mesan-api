@@ -23,9 +23,11 @@ nav{padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:c
 .form-card::before{content:'// DIAGNOSTICO GRATUITO';position:absolute;top:-.7rem;left:1.5rem;background:var(--dark);padding:0 .5rem;font-size:.7rem;letter-spacing:3px;color:var(--magenta);}
 .form-group{margin-bottom:1.5rem;}
 .form-group label{display:block;font-size:.85rem;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;margin-bottom:.5rem;}
-.form-group select{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(0,255,247,.3);color:var(--text);padding:.8rem 1rem;font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;}
-.form-group select:focus{border-color:var(--cyan);}
+.form-group select, .form-group input{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(0,255,247,.3);color:var(--text);padding:.8rem 1rem;font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;}
+.form-group input::placeholder{color:rgba(192,232,240,.3);}
+.form-group select:focus, .form-group input:focus{border-color:var(--cyan);}
 .form-group select option{background:#020810;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,247,.3),transparent);margin:1.5rem 0;}
 .btn-diagnostico{width:100%;background:var(--cyan);color:var(--dark);border:none;padding:1.2rem;font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;letter-spacing:3px;cursor:pointer;text-transform:uppercase;margin-top:1rem;transition:all .3s;}
 .btn-diagnostico:hover{background:var(--magenta);box-shadow:0 0 30px var(--magenta);}
 .btn-diagnostico:disabled{opacity:.5;cursor:not-allowed;}
@@ -65,6 +67,22 @@ footer{text-align:center;padding:3rem 2rem;border-top:1px solid rgba(0,255,247,.
 
 <div class="form-section">
   <div class="form-card">
+
+    <div class="form-group">
+      <label>Nombre de tu empresa</label>
+      <input type="text" id="nombre" placeholder="Ej. Constructora ABC">
+    </div>
+    <div class="form-group">
+      <label>Correo electronico</label>
+      <input type="email" id="email" placeholder="tu@empresa.com">
+    </div>
+    <div class="form-group">
+      <label>Telefono WhatsApp</label>
+      <input type="tel" id="telefono" placeholder="6861234567">
+    </div>
+
+    <div class="divider"></div>
+
     <div class="form-group">
       <label>Facturacion</label>
       <select id="factura">
@@ -200,6 +218,26 @@ async function ejecutarDiagnostico() {
     });
     const result = await res.json();
     mostrarResultado(result);
+
+    // Guardar lead
+    const nombre = document.getElementById("nombre").value;
+    const email = document.getElementById("email").value;
+    const telefono = document.getElementById("telefono").value;
+
+    if (nombre || email || telefono) {
+      fetch(API + "/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre,
+          email,
+          telefono,
+          score: result.diagnostico.score,
+          clasificacion: result.clasificacion
+        })
+      });
+    }
+
   } catch(e) {
     btn.textContent = "Error - Intenta de nuevo";
     btn.disabled = false;
