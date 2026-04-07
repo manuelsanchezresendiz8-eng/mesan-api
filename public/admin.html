@@ -1,1 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM MESAN-Omega</title>
+<style>
+body{background:#020810;color:#c0e8f0;font-family:monospace;padding:20px;}
+h1{color:#00fff7;letter-spacing:4px;margin-bottom:20px;}
+.lead{border:1px solid #00fff7;margin:10px 0;padding:15px;background:rgba(0,255,247,.03);}
+.lead b{color:#00fff7;}
+.score-critico{color:#ff4444;}
+.score-vulnerable{color:#ffaa00;}
+.score-estable{color:#00ff88;}
+select{background:#000;color:#c0e8f0;border:1px solid #00fff7;padding:5px;margin-top:5px;}
+a{color:#25D366;text-decoration:none;}
+.stats{display:flex;gap:2rem;margin-bottom:2rem;flex-wrap:wrap;}
+.stat{border:1px solid rgba(0,255,247,.3);padding:1rem 1.5rem;text-align:center;}
+.stat-num{font-size:2rem;font-weight:700;color:#00fff7;}
+.stat-label{font-size:.7rem;letter-spacing:2px;color:rgba(192,232,240,.5);}
+button{background:#00fff7;color:#000;border:none;padding:8px 15px;cursor:pointer;font-weight:700;margin-top:5px;}
+</style>
+</head>
+<body>
+
+<h1>CRM MESAN-&#937;</h1>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num" id="total">0</div><div class="stat-label">Total Leads</div></div>
+  <div class="stat"><div class="stat-num" id="criticos">0</div><div class="stat-label">Criticos</div></div>
+  <div class="stat"><div class="stat-num" id="nuevos">0</div><div class="stat-label">Nuevos</div></div>
+</div>
+
+<div id="leads"></div>
+
+<script>
+const API = "https://mesan-api.onrender.com";
+
+async function cargar() {
+  const res = await fetch(API + "/leads");
+  const data = await res.json();
+  const leads = data.leads;
+
+  document.getElementById("total").textContent = leads.length;
+  document.getElementById("criticos").textContent = leads.filter(l => l.clasificacion === "CRITICO").length;
+  document.getElementById("nuevos").textContent = leads.filter(l => l.estatus === "nuevo").length;
+
+  const div = document.getElementById("leads");
+  div.innerHTML = "";
+
+  if (leads.length === 0) {
+    div.innerHTML = "<p style='color:rgba(192,232,240,.4);'>No hay leads aun.</p>";
+    return;
+  }
+
+  leads.forEach(l => {
+    const color = l.clasificacion === "CRITICO" ? "score-critico" :
+                  l.clasificacion === "VULNERABLE" ? "score-vulnerable" : "score-estable";
+    div.innerHTML += `
+      <div class="lead">
+        <b>${l.nombre || "Sin nombre"}</b> &mdash;
+        <span class="${color}">${l.clasificacion} (${l.score})</span><br>
+        Tel: ${l.telefono || "-"} &nbsp;
+        Email: ${l.email || "-"}<br>
+        Fecha: ${l.fecha ? l.fecha.substring(0,10) : "-"}<br>
+        Estatus: <select onchange="actualizar(${l.id}, this.value)">
+          <option ${l.estatus==="nuevo"?"selected":""}>nuevo</option>
+          <option ${l.estatus==="contactado"?"selected":""}>contactado</option>
+          <option ${l.estatus==="cerrado"?"selected":""}>cerrado</option>
+          <option ${l.estatus==="perdido"?"selected":""}>perdido</option>
+        </select><br>
+        <a href="https://wa.me/52${l.telefono}" target="_blank">&#128172; WhatsApp</a>
+      </div>
+    `;
+  });
+}
+
+async function actualizar(id, estatus) {
+  await fetch(API + "/lead/" + id, {
+    method: "PUT",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({estatus})
+  });
+}
+
+cargar();
+setInterval(cargar, 30000);
+</script>
+
+</body>
+</html>
 
