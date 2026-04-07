@@ -10,6 +10,7 @@ from database import init_db
 from limiter import limiter
 from routes.evaluar import router as evaluar_router
 from routes.verificar import router as verificar_router
+from datetime import datetime
 
 try:
     from core.mesan_core import ejecutar_diagnostico
@@ -51,6 +52,9 @@ app.add_middleware(SlowAPIMiddleware)
 app.include_router(evaluar_router, prefix="/api")
 app.include_router(verificar_router, prefix="/api")
 
+leads_db = []
+lead_id_counter = 1
+
 @app.options("/enterprise")
 def preflight_enterprise():
     return Response(
@@ -75,3 +79,33 @@ if sistema_enterprise:
     @app.post("/enterprise")
     async def enterprise(data: dict):
         return sistema_enterprise(data)
+
+@app.post("/lead")
+async def guardar_lead(data: dict):
+    global lead_id_counter
+    lead = {
+        "id": lead_id_counter,
+        "nombre": data.get("nombre"),
+        "email": data.get("email"),
+        "telefono": data.get("telefono"),
+        "score": data.get("score"),
+        "clasificacion": data.get("clasificacion"),
+        "estatus": "nuevo",
+        "fecha": datetime.now().isoformat()
+    }
+    leads_db.append(lead)
+    lead_id_counter += 1
+    print("NUEVO LEAD:", lead)
+    return {"ok": True}
+
+@app.get("/leads")
+async def obtener_leads():
+    return {"leads": leads_db}
+
+@app.put("/lead/{lead_id}")
+async def actualizar_lead(lead_id: int, data: dict):
+    for lead in leads_db:
+        if lead["id"] == lead_id:
+            lead["estatus"] = data.get("estatus", lead["estatus"])
+            return {"ok": True, "lead": lead}
+    return {"ok": False}
