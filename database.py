@@ -1,40 +1,21 @@
-  
-import sqlite3
-import os
+mport os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-DB_PATH = os.environ.get("MESAN_DB_PATH", "mesan.db")
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./mesan.db")
 
-def conectar():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
-    return conn
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+)
+
+SessionLocal = sessionmaker(bind=engine)
+Base = declarative_base()
 
 def init_db():
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS sellos (
-            hash TEXT PRIMARY KEY,
-            data TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS leads (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL,
-            telefono TEXT,
-            data TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS nodos_licencia (
-            id_nodo TEXT PRIMARY KEY,
-            activo INTEGER NOT NULL DEFAULT 1,
-            nombre TEXT
-        )
-    """)
-    conn.commit()
+    from models import Lead
+    Base.metadata.create_all(bind=engine)
+
+def conectar():
+    return SessionLocal()
     conn.close()
