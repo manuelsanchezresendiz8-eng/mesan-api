@@ -127,6 +127,7 @@ def preflight_enterprise():
 # RAIZ — evita 404 y shutdown de Render
 # =========================
 @app.get("/")
+@app.head("/")
 async def root():
     return {"status": "MESAN-Ω API activa", "version": "2.1.0"}
 
@@ -134,6 +135,7 @@ async def root():
 # HEALTH
 # =========================
 @app.get("/health")
+@app.head("/health")
 async def health():
     return {"status": "ok", "version": "2.1.0"}
 
