@@ -124,6 +124,13 @@ def preflight_enterprise():
     )
 
 # =========================
+# RAIZ — evita 404 y shutdown de Render
+# =========================
+@app.get("/")
+async def root():
+    return {"status": "MESAN-Ω API activa", "version": "2.1.0"}
+
+# =========================
 # HEALTH
 # =========================
 @app.get("/health")
@@ -160,7 +167,6 @@ async def enterprise(request: Request, data: dict):
         email = data.get("email", "")
         telefono = data.get("telefono", "")
 
-        # Guardar lead en memoria
         if nombre or email or telefono:
             lead = {
                 "id": str(uuid.uuid4()),
@@ -177,7 +183,6 @@ async def enterprise(request: Request, data: dict):
             }
             leads_db.append(lead)
 
-            # Enviar email
             if enviar_notificacion_lead and email:
                 try:
                     enviar_notificacion_lead(
