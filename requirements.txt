@@ -8,3 +8,4 @@ pandas
 cryptography
 fpdf2
 stripe
+sqlalchemy
