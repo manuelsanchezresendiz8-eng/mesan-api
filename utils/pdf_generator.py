@@ -58,4 +58,4 @@ def generar_diagnostico_pdf(
     pdf.set_font("Arial", 'I', 9)
     pdf.cell(0, 10, txt="Documento generado automaticamente por MESAN-Omega | mesanomega.com", align='C')
 
-    return pdf.output(dest='S').encode('latin-1')
+    return bytes(pdf.output())
