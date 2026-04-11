@@ -27,17 +27,17 @@ def generar_diagnostico_pdf(
     pdf.set_font("Arial", 'B', 12)
     pdf.cell(0, 10, txt="Datos del Cliente", ln=True)
     pdf.set_font("Arial", size=11)
-    pdf.cell(0, 8, txt=f"Nombre: {nombre or 'N/D'}", ln=True)
-    pdf.cell(0, 8, txt=f"Email: {email or 'N/D'}", ln=True)
-    pdf.cell(0, 8, txt=f"Telefono: {telefono or 'N/D'}", ln=True)
+    pdf.cell(0, 8, txt="Nombre: " + (nombre or "N/D"), ln=True)
+    pdf.cell(0, 8, txt="Email: " + (email or "N/D"), ln=True)
+    pdf.cell(0, 8, txt="Telefono: " + (telefono or "N/D"), ln=True)
     pdf.ln(8)
 
     pdf.set_font("Arial", 'B', 12)
     pdf.cell(0, 10, txt="Resultado del Diagnostico", ln=True)
     pdf.set_font("Arial", size=11)
-    pdf.cell(0, 8, txt=f"Score de Riesgo: {score}", ln=True)
-    pdf.cell(0, 8, txt=f"Clasificacion: {clasificacion}", ln=True)
-    pdf.cell(0, 8, txt=f"Exposicion estimada: ${impacto_min:,.0f} - ${impacto_max:,.0f} MXN", ln=True)
+    pdf.cell(0, 8, txt="Score de Riesgo: " + str(score), ln=True)
+    pdf.cell(0, 8, txt="Clasificacion: " + str(clasificacion), ln=True)
+    pdf.cell(0, 8, txt="Exposicion estimada: $" + "{:,.0f}".format(impacto_min) + " - $" + "{:,.0f}".format(impacto_max) + " MXN", ln=True)
     pdf.ln(8)
 
     pdf.set_font("Arial", 'B', 12)
@@ -51,12 +51,11 @@ def generar_diagnostico_pdf(
             if isinstance(s, str):
                 texto = s
             else:
-                texto = f"{s.get('area','')} - {s.get('accion','')}"
-            pdf.multi_cell(0, 8, txt=f"* {texto}")
+                texto = s.get("area", "") + " - " + s.get("accion", "")
+            pdf.multi_cell(0, 8, txt="* " + texto)
 
     pdf.ln(10)
     pdf.set_font("Arial", 'I', 9)
     pdf.cell(0, 10, txt="Documento generado automaticamente por MESAN-Omega | mesanomega.com", align='C')
 
-    return pdf.output(dest='S').
-
+    return pdf.output(dest='S').encode('latin-1')
