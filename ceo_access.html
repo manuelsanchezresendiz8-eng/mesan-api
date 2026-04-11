@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω | Diagnóstico Empresarial</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+:root {
+    --mesan-blue: #0047FF;
+    --mesan-glow: rgba(0, 71, 255, 0.45);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background:#000;
+    font-family:'Inter', sans-serif;
+    color:#fff;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+#particles {
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    z-index:0;
+}
+
+header, nav, main, footer {
+    position:relative;
+    z-index:1;
+}
+
+.system-header {
+    display:flex;
+    justify-content:space-between;
+    padding:14px 20px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.text-mesan { color: var(--mesan-blue); }
+
+.btn-mesan {
+    border:1px solid var(--mesan-blue);
+    transition:all .35s ease;
+}
+
+.btn-mesan:hover { box-shadow:0 0 25px var(--mesan-glow); }
+.btn-mesan:active { transform:scale(.96); background:rgba(0,71,255,0.15); }
+
+.btn-agenda {
+    border:1px solid rgba(255,255,255,0.1);
+    transition:.3s;
+}
+
+.text-huge { font-size:2.5rem; line-height:1.1; }
+
+@media(min-width:768px){ .text-huge { font-size:4rem; } }
+</style>
+</head>
+
+<body>
+
+<canvas id="particles"></canvas>
+
+<header class="system-header">
+    <span class="text-white/70 text-sm">ceo_access.html</span>
+    <span class="text-white/30">● ● ●</span>
+</header>
+
+<nav class="flex justify-between items-center px-8 pt-8">
+    <div class="text-lg font-extrabold">
+        MESAN <span class="text-mesan">Ω</span>
+    </div>
+    <div class="text-[10px] tracking-[3px] uppercase text-mesan">
+        Predictive Analytics
+    </div>
+</nav>
+
+<main class="flex-grow flex flex-col items-center justify-center px-8 text-center">
+
+    <h1 class="text-huge font-extrabold mb-6">
+        ¿Tu empresa está<br>
+        <span class="text-mesan">perdiendo dinero</span><br>
+        sin que lo sepas?
+    </h1>
+
+    <p class="text-gray-400 max-w-[360px] mb-10">
+        Detecta riesgos fiscales, laborales y operativos en segundos.
+    </p>
+
+    <button id="cta" class="btn-mesan w-full max-w-[300px] py-5 mb-3">
+        <span id="cta-text" class="text-mesan text-xs tracking-[0.4em] font-bold">
+            INICIAR DIAGNÓSTICO
+        </span>
+    </button>
+
+    <a href="https://wa.me/526861629643?text=Quiero%20agendar%20una%20llamada"
+       target="_blank"
+       class="btn-agenda w-full max-w-[300px] py-4 text-center">
+        <span class="text-white/40 text-[10px] tracking-[0.35em] uppercase">
+            Agenda llamada gratuita
+        </span>
+    </a>
+
+</main>
+
+<footer class="pb-6 text-center text-[10px] text-white/20 tracking-widest">
+    MESAN Ω © 2026
+</footer>
+
+<script>
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+let particles = [];
+
+function resize(){
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+}
+
+function createParticles(){
+    particles = [];
+    const count = Math.floor((canvas.width * canvas.height) / 9000);
+    for(let i=0;i<count;i++){
+        particles.push({
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height,
+            r: Math.random()*1.5 + 0.2,
+            vx:(Math.random()-0.5)*0.25,
+            vy:(Math.random()-0.5)*0.25,
+            alpha:Math.random()*0.6 + 0.1
+        });
+    }
+}
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    const grad = ctx.createRadialGradient(
+        canvas.width/2, canvas.height/2, 0,
+        canvas.width/2, canvas.height/2, canvas.width * 0.6
+    );
+    grad.addColorStop(0, "rgba(0,50,180,0.2)");
+    grad.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p=>{
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(0,71,255,${p.alpha})`;
+        ctx.fill();
+        p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0)p.x=canvas.width;
+        if(p.x>canvas.width)p.x=0;
+        if(p.y<0)p.y=canvas.height;
+        if(p.y>canvas.height)p.y=0;
+    });
+
+    requestAnimationFrame(draw);
+}
+
+window.addEventListener("resize",()=>{ resize(); createParticles(); });
+resize(); createParticles(); draw();
+
+function playSound(){
+    try{
+        const actx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = actx.currentTime;
+        const hit = (f,t,g)=>{
+            const o=actx.createOscillator();
+            const a=actx.createGain();
+            o.frequency.setValueAtTime(f,now+t);
+            a.gain.setValueAtTime(0,now+t);
+            a.gain.linearRampToValueAtTime(g,now+t+0.02);
+            a.gain.exponentialRampToValueAtTime(0.001,now+t+0.8);
+            o.connect(a); a.connect(actx.destination);
+            o.start(now+t); o.stop(now+t+0.8);
+        };
+        hit(55,0,0.8); hit(38,0.12,0.5);
+    }catch(e){}
+}
+
+const btn = document.getElementById("cta");
+const text = document.getElementById("cta-text");
+
+btn.addEventListener("click",()=>{
+    playSound();
+    text.innerText = "CARGANDO...";
+    btn.style.borderColor = "#fff";
+    setTimeout(()=>{ window.location.href = "index.html"; },1200);
+});
+</script>
+
+</body>
+</html>
+
