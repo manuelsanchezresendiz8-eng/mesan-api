@@ -23,7 +23,7 @@ from routes.verificar import router as verificar_router
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.2.0"
+VERSION = "2.2.1"
 
 logging.basicConfig(level=logging.INFO)
 
@@ -71,7 +71,7 @@ app = FastAPI(title="MESAN API", version=VERSION)
 # =========================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # evitar errores en GitHub Pages / dominio
+    allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -142,11 +142,9 @@ if sistema_enterprise:
     @limiter.limit("10/minute")
     async def enterprise(data: dict, request: Request):
 
-        # VALIDACIÓN BÁSICA
         if not isinstance(data, dict):
             return response({"error": "Formato inválido"}, 400)
 
-        # EJECUCIÓN MOTOR
         try:
             resultado = sistema_enterprise(data)
         except Exception:
@@ -160,19 +158,16 @@ if sistema_enterprise:
         email = data.get("email", "")
         telefono = data.get("telefono", "")
 
-        # =========================================
         # MODO ANÓNIMO
-        # =========================================
         if not email:
+            logging.info("DEBUG: modo anonimo — sin email")
             return response({
                 "ok": True,
                 "modo": "anonimo",
                 "resultado": resultado
             })
 
-        # =========================================
         # CREAR LEAD
-        # =========================================
         lead = {
             "id": str(uuid.uuid4()),
             "nombre": nombre,
@@ -187,16 +182,18 @@ if sistema_enterprise:
             "fecha": datetime.now().isoformat(),
             "pdf": False
         }
-
         leads_db.append(lead)
+        logging.info(f"DEBUG: lead creado para {email}")
 
         # =========================================
         # EMAIL + PDF ASYNC
         # =========================================
         def procesos_async():
+            logging.info("DEBUG: iniciando procesos_async")
             try:
-                # Notificación
+                # NOTIFICACIÓN
                 if enviar_notificacion_lead:
+                    logging.info("DEBUG: enviando notificacion...")
                     enviar_notificacion_lead(
                         nombre=nombre,
                         email_cliente=email,
@@ -205,9 +202,13 @@ if sistema_enterprise:
                         clasificacion=lead["clasificacion"],
                         soluciones=resultado.get("soluciones", [])
                     )
+                    logging.info("DEBUG: notificacion enviada OK")
+                else:
+                    logging.warning("DEBUG: enviar_notificacion_lead no disponible")
 
                 # PDF
                 if generar_diagnostico_pdf and enviar_reporte_pdf:
+                    logging.info("DEBUG: generando PDF...")
                     pdf_bytes = generar_diagnostico_pdf(
                         nombre=nombre,
                         email=email,
@@ -218,17 +219,18 @@ if sistema_enterprise:
                         impacto_min=lead.get("impacto_min") or 0,
                         impacto_max=lead.get("impacto_max") or 0
                     )
+                    logging.info("DEBUG: PDF generado, enviando...")
                     lead["pdf"] = True
                     enviar_reporte_pdf(email, nombre, pdf_bytes)
+                    logging.info("DEBUG: PDF enviado OK")
+                else:
+                    logging.warning("DEBUG: pdf o email_sender no disponible")
 
             except Exception:
-                logging.error(traceback.format_exc())
+                logging.error(f"ERROR procesos_async: {traceback.format_exc()}")
 
-        threading.Thread(target=procesos_async).start()
+        threading.Thread(target=procesos_async, daemon=True).start()
 
-        # =========================================
-        # RESPUESTA
-        # =========================================
         return response({
             "ok": True,
             "modo": "lead_guardado",
@@ -242,7 +244,7 @@ if sistema_enterprise:
 # =========================================
 @app.get("/leads")
 async def obtener_leads(api_key: str = Header(None, alias="api-key")):
-    if api_key != os.environ.get("MESAN_API_KEY"):
+    if not api_key or api_key != os.environ.get("MESAN_API_KEY"):
         return response({"error": "No autorizado"}, 403)
     return response({"leads": leads_db})
 
