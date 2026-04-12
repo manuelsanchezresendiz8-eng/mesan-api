@@ -14,7 +14,8 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from database import init_db
+from database import init_db, SessionLocal
+from models import Lead
 from limiter import limiter
 
 from routes.evaluar import router as evaluar_router
@@ -23,8 +24,7 @@ from routes.verificar import router as verificar_router
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.2.1"
-
+VERSION = "2.3.0"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -59,6 +59,10 @@ if not os.environ.get("MESAN_API_KEY"):
     logging.critical("Falta MESAN_API_KEY")
     sys.exit(1)
 
+if not os.environ.get("DATABASE_URL"):
+    logging.critical("Falta DATABASE_URL")
+    sys.exit(1)
+
 # =========================================
 # INIT
 # =========================================
@@ -91,12 +95,6 @@ app.include_router(evaluar_router, prefix="/api")
 app.include_router(verificar_router, prefix="/api")
 
 # =========================================
-# STORAGE TEMP
-# =========================================
-leads_db = []
-logging.warning("Leads en memoria (no persistente)")
-
-# =========================================
 # HELPERS
 # =========================================
 def response(data, status=200):
@@ -105,6 +103,20 @@ def response(data, status=200):
         content=data,
         headers={"X-MESAN-VERSION": VERSION}
     )
+
+def serialize_lead(l):
+    return {
+        "id": l.id,
+        "nombre": l.nombre,
+        "email": l.email,
+        "telefono": l.telefono,
+        "score": l.score,
+        "clasificacion": l.clasificacion,
+        "impacto_min": l.impacto_min,
+        "impacto_max": l.impacto_max,
+        "estatus": l.estatus,
+        "fecha": l.fecha
+    }
 
 # =========================================
 # ROOT / HEALTH
@@ -160,7 +172,6 @@ if sistema_enterprise:
 
         # MODO ANÓNIMO
         if not email:
-            logging.info("DEBUG: modo anonimo — sin email")
             return response({
                 "ok": True,
                 "modo": "anonimo",
@@ -168,63 +179,62 @@ if sistema_enterprise:
             })
 
         # CREAR LEAD
-        lead = {
-            "id": str(uuid.uuid4()),
+        lead_id = str(uuid.uuid4())
+        lead_data = {
+            "id": lead_id,
             "nombre": nombre,
             "email": email,
             "telefono": telefono,
-            "score": resultado.get("diagnostico", {}).get("score"),
-            "clasificacion": resultado.get("clasificacion"),
-            "impacto_min": resultado.get("impacto", {}).get("impacto_min"),
-            "impacto_max": resultado.get("impacto", {}).get("impacto_max"),
-            "simulador": resultado.get("simulador"),
+            "score": resultado.get("diagnostico", {}).get("score") or 0,
+            "clasificacion": resultado.get("clasificacion", ""),
+            "impacto_min": resultado.get("impacto", {}).get("impacto_min") or 0,
+            "impacto_max": resultado.get("impacto", {}).get("impacto_max") or 0,
             "estatus": "nuevo",
-            "fecha": datetime.now().isoformat(),
-            "pdf": False
+            "fecha": datetime.now().isoformat()
         }
-        leads_db.append(lead)
-        logging.info(f"DEBUG: lead creado para {email}")
 
-        # =========================================
+        # GUARDAR EN POSTGRESQL
+        try:
+            db = SessionLocal()
+            nuevo_lead = Lead(**lead_data)
+            db.add(nuevo_lead)
+            db.commit()
+            db.close()
+            logging.info(f"Lead guardado en DB: {email}")
+        except Exception:
+            logging.error(f"Error guardando lead: {traceback.format_exc()}")
+
         # EMAIL + PDF ASYNC
-        # =========================================
         def procesos_async():
             logging.info("DEBUG: iniciando procesos_async")
             try:
-                # NOTIFICACIÓN
                 if enviar_notificacion_lead:
                     logging.info("DEBUG: enviando notificacion...")
                     enviar_notificacion_lead(
                         nombre=nombre,
                         email_cliente=email,
                         telefono=telefono,
-                        score=lead["score"],
-                        clasificacion=lead["clasificacion"],
+                        score=lead_data["score"],
+                        clasificacion=lead_data["clasificacion"],
                         soluciones=resultado.get("soluciones", [])
                     )
                     logging.info("DEBUG: notificacion enviada OK")
-                else:
-                    logging.warning("DEBUG: enviar_notificacion_lead no disponible")
 
-                # PDF
                 if generar_diagnostico_pdf and enviar_reporte_pdf:
                     logging.info("DEBUG: generando PDF...")
                     pdf_bytes = generar_diagnostico_pdf(
                         nombre=nombre,
                         email=email,
                         telefono=telefono,
-                        score=lead["score"],
-                        clasificacion=lead["clasificacion"],
+                        score=lead_data["score"],
+                        clasificacion=lead_data["clasificacion"],
                         soluciones=resultado.get("soluciones", []),
-                        impacto_min=lead.get("impacto_min") or 0,
-                        impacto_max=lead.get("impacto_max") or 0
+                        impacto_min=lead_data["impacto_min"],
+                        impacto_max=lead_data["impacto_max"]
                     )
                     logging.info("DEBUG: PDF generado, enviando...")
-                    lead["pdf"] = True
                     enviar_reporte_pdf(email, nombre, pdf_bytes)
                     logging.info("DEBUG: PDF enviado OK")
-                else:
-                    logging.warning("DEBUG: pdf o email_sender no disponible")
 
             except Exception:
                 logging.error(f"ERROR procesos_async: {traceback.format_exc()}")
@@ -235,8 +245,7 @@ if sistema_enterprise:
             "ok": True,
             "modo": "lead_guardado",
             "resultado": resultado,
-            "lead_id": lead["id"],
-            "pdf_enviado": lead["pdf"]
+            "lead_id": lead_id
         })
 
 # =========================================
@@ -246,18 +255,33 @@ if sistema_enterprise:
 async def obtener_leads(api_key: str = Header(None, alias="api-key")):
     if not api_key or api_key != os.environ.get("MESAN_API_KEY"):
         return response({"error": "No autorizado"}, 403)
-    return response({"leads": leads_db})
+    try:
+        db = SessionLocal()
+        leads = db.query(Lead).all()
+        db.close()
+        return response({"leads": [serialize_lead(l) for l in leads]})
+    except Exception:
+        logging.error(traceback.format_exc())
+        return response({"error": "Error obteniendo leads"}, 500)
 
 # =========================================
 # ACTUALIZAR LEAD
 # =========================================
 @app.put("/lead/{lead_id}")
 async def actualizar_lead(lead_id: str, data: dict):
-    for lead in leads_db:
-        if lead["id"] == lead_id:
-            lead["estatus"] = data.get("estatus", lead["estatus"])
-            return response({"ok": True, "lead": lead})
-    return response({"ok": False})
+    try:
+        db = SessionLocal()
+        lead = db.query(Lead).filter(Lead.id == lead_id).first()
+        if not lead:
+            db.close()
+            return response({"ok": False})
+        lead.estatus = data.get("estatus", lead.estatus)
+        db.commit()
+        db.close()
+        return response({"ok": True})
+    except Exception:
+        logging.error(traceback.format_exc())
+        return response({"error": "Error actualizando lead"}, 500)
 
 # =========================================
 # ERROR GLOBAL
@@ -265,4 +289,4 @@ async def actualizar_lead(lead_id: str, data: dict):
 @app.exception_handler(Exception)
 async def global_exception(request: Request, exc: Exception):
     logging.error(traceback.format_exc())
-    return response({"error": "Error interno"}, 500)
+    return response({"error": "E
