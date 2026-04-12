@@ -12,3 +12,6 @@ Base = declarative_base()
 def init_db():
     from models import Lead
     Base.metadata.create_all(bind=engine)
+
+def conectar():
+    return engine.connect()
