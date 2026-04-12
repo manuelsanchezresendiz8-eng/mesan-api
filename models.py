@@ -10,5 +10,7 @@ class Lead(Base):
     telefono = Column(String)
     score = Column(Integer)
     clasificacion = Column(String)
+    impacto_min = Column(Integer)
+    impacto_max = Column(Integer)
     estatus = Column(String)
     fecha = Column(String)
