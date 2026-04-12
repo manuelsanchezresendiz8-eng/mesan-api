@@ -289,4 +289,4 @@ async def actualizar_lead(lead_id: str, data: dict):
 @app.exception_handler(Exception)
 async def global_exception(request: Request, exc: Exception):
     logging.error(traceback.format_exc())
-    return response({"error": "E
+    return response({"error": "Error interno"}, 500)
