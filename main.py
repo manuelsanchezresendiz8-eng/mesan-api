@@ -24,7 +24,7 @@ from routes.verificar import router as verificar_router
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.3.0"
+VERSION = "2.3.1"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -73,12 +73,19 @@ app = FastAPI(title="MESAN API", version=VERSION)
 # =========================================
 # CORS
 # =========================================
+origins = [
+    "https://mesanomega.com",
+    "https://www.mesanomega.com",
+    "https://manuelsanchezresendiz8-eng.github.io",
+    "http://localhost:3000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=False,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 # =========================================
