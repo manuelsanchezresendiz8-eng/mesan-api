@@ -24,7 +24,7 @@ from routes.verificar import router as verificar_router
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.3.2"
+VERSION = "2.3.3"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -85,7 +85,8 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=False,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*", "api-key", "Authorization", "Content-Type"],
+    expose_headers=["*"],
 )
 
 # =========================================
@@ -148,7 +149,7 @@ def preflight_enterprise():
         headers={
             "Access-Control-Allow-Origin": "https://mesanomega.com",
             "Access-Control-Allow-Methods": "POST, OPTIONS",
-            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Allow-Headers": "api-key, Content-Type, Authorization",
         },
     )
 
@@ -159,7 +160,7 @@ def preflight_leads():
         headers={
             "Access-Control-Allow-Origin": "https://mesanomega.com",
             "Access-Control-Allow-Methods": "GET, OPTIONS",
-            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Allow-Headers": "api-key, Content-Type, Authorization",
         },
     )
 
@@ -188,7 +189,6 @@ if sistema_enterprise:
         email = data.get("email", "")
         telefono = data.get("telefono", "")
 
-        # MODO ANÓNIMO
         if not email:
             return response({
                 "ok": True,
@@ -196,7 +196,6 @@ if sistema_enterprise:
                 "resultado": resultado
             })
 
-        # CREAR LEAD
         lead_id = str(uuid.uuid4())
         lead_data = {
             "id": lead_id,
@@ -211,7 +210,6 @@ if sistema_enterprise:
             "fecha": datetime.now().isoformat()
         }
 
-        # GUARDAR EN POSTGRESQL
         try:
             db = SessionLocal()
             nuevo_lead = Lead(**lead_data)
@@ -222,12 +220,10 @@ if sistema_enterprise:
         except Exception:
             logging.error(f"Error guardando lead: {traceback.format_exc()}")
 
-        # EMAIL + PDF ASYNC
         def procesos_async():
             logging.info("DEBUG: iniciando procesos_async")
             try:
                 if enviar_notificacion_lead:
-                    logging.info("DEBUG: enviando notificacion...")
                     enviar_notificacion_lead(
                         nombre=nombre,
                         email_cliente=email,
@@ -239,7 +235,6 @@ if sistema_enterprise:
                     logging.info("DEBUG: notificacion enviada OK")
 
                 if generar_diagnostico_pdf and enviar_reporte_pdf:
-                    logging.info("DEBUG: generando PDF...")
                     pdf_bytes = generar_diagnostico_pdf(
                         nombre=nombre,
                         email=email,
@@ -250,7 +245,6 @@ if sistema_enterprise:
                         impacto_min=lead_data["impacto_min"],
                         impacto_max=lead_data["impacto_max"]
                     )
-                    logging.info("DEBUG: PDF generado, enviando...")
                     enviar_reporte_pdf(email, nombre, pdf_bytes)
                     logging.info("DEBUG: PDF enviado OK")
 
