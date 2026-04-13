@@ -24,7 +24,7 @@ from routes.verificar import router as verificar_router
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.3.1"
+VERSION = "2.3.2"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -139,15 +139,26 @@ async def health():
     return response({"status": "ok", "version": VERSION})
 
 # =========================================
-# PREFLIGHT
+# PREFLIGHT CORS
 # =========================================
 @app.options("/enterprise")
-def preflight():
+def preflight_enterprise():
     return Response(
         status_code=200,
         headers={
-            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Origin": "https://mesanomega.com",
             "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+        },
+    )
+
+@app.options("/leads")
+def preflight_leads():
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "https://mesanomega.com",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
             "Access-Control-Allow-Headers": "*",
         },
     )
