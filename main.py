@@ -14,7 +14,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from database import init_db, SessionLocal
+from database import init_db, SessionLocal, engine, Base
 from models import Lead
 from limiter import limiter
 
@@ -24,7 +24,7 @@ from routes.verificar import router as verificar_router
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.3.3"
+VERSION = "2.3.4"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -62,6 +62,18 @@ if not os.environ.get("MESAN_API_KEY"):
 if not os.environ.get("DATABASE_URL"):
     logging.critical("Falta DATABASE_URL")
     sys.exit(1)
+
+# =========================================
+# LIMPIEZA TABLA VIEJA
+# =========================================
+try:
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        conn.execute(text("DROP TABLE IF EXISTS leads CASCADE;"))
+        conn.commit()
+    logging.info("✅ TABLA LEADS BORRADA — se recreará limpia")
+except Exception as e:
+    logging.error(f"❌ ERROR AL BORRAR TABLA: {e}")
 
 # =========================================
 # INIT
@@ -221,7 +233,6 @@ if sistema_enterprise:
             logging.error(f"Error guardando lead: {traceback.format_exc()}")
 
         def procesos_async():
-            logging.info("DEBUG: iniciando procesos_async")
             try:
                 if enviar_notificacion_lead:
                     enviar_notificacion_lead(
