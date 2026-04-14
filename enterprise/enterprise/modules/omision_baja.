@@ -1,0 +1,19 @@
+def evaluar_omision_baja(data):
+    empleados = int(data.get("empleados", 0))
+    registrado = (data.get("registro_patronal") or "SI").upper()
+
+    if registrado == "SI" and empleados == 0:
+        return {
+            "tipo": "OMISION_BAJA",
+            "riesgo": "ALTO",
+            "score": 85,
+            "impacto_min": 15000,
+            "impacto_max": 30000,
+            "mensaje": "Registro patronal activo sin trabajadores reportados.",
+            "accion": "Regularización espontánea inmediata",
+            "fundamento": "Art. 73 CFF",
+            "prioridad": 10
+        }
+
+    return None
+
