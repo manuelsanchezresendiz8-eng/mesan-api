@@ -14,7 +14,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from database import init_db, SessionLocal, engine, Base
+from database import init_db, SessionLocal
 from models import Lead
 from limiter import limiter
 
@@ -24,7 +24,7 @@ from routes.verificar import router as verificar_router
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.3.4"
+VERSION = "2.4.0"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -52,6 +52,14 @@ except Exception as e:
     logging.error(f"ERROR pdf_generator: {e}")
     generar_diagnostico_pdf = None
 
+try:
+    from utils.helpers import normalizar_clasificacion
+    logging.info("helpers OK")
+except Exception as e:
+    logging.error(f"ERROR helpers: {e}")
+    def normalizar_clasificacion(v):
+        return "MEDIO"
+
 # =========================================
 # VALIDACIÓN ENV
 # =========================================
@@ -62,18 +70,6 @@ if not os.environ.get("MESAN_API_KEY"):
 if not os.environ.get("DATABASE_URL"):
     logging.critical("Falta DATABASE_URL")
     sys.exit(1)
-
-# =========================================
-# LIMPIEZA TABLA VIEJA
-# =========================================
-try:
-    from sqlalchemy import text
-    with engine.connect() as conn:
-        conn.execute(text("DROP TABLE IF EXISTS leads CASCADE;"))
-        conn.commit()
-    logging.info("✅ TABLA LEADS BORRADA — se recreará limpia")
-except Exception as e:
-    logging.error(f"❌ ERROR AL BORRAR TABLA: {e}")
 
 # =========================================
 # INIT
@@ -185,8 +181,12 @@ if sistema_enterprise:
     @limiter.limit("10/minute")
     async def enterprise(data: dict, request: Request):
 
+        # LOG ENTRADA
+        logging.info(f"DATA RECIBIDA: {data}")
+
+        # VALIDACIÓN
         if not isinstance(data, dict):
-            return response({"error": "Formato inválido"}, 400)
+            return JSONResponse(status_code=400, content={"error": "Payload inválido"})
 
         try:
             resultado = sistema_enterprise(data)
@@ -197,10 +197,13 @@ if sistema_enterprise:
         if not isinstance(resultado, dict):
             return response({"error": "Resultado inválido"}, 500)
 
-        nombre = data.get("nombre", "")
-        email = data.get("email", "")
-        telefono = data.get("telefono", "")
+        nombre = (data.get("nombre") or "").strip() or "Sin nombre"
+        email = (data.get("email") or "").strip()
+        telefono = (data.get("telefono") or "").strip() or "Sin teléfono"
 
+        logging.warning(f"LEAD FINAL → {nombre} | {email} | {telefono}")
+
+        # MODO ANÓNIMO
         if not email:
             return response({
                 "ok": True,
@@ -208,6 +211,7 @@ if sistema_enterprise:
                 "resultado": resultado
             })
 
+        # CREAR LEAD
         lead_id = str(uuid.uuid4())
         lead_data = {
             "id": lead_id,
@@ -215,13 +219,14 @@ if sistema_enterprise:
             "email": email,
             "telefono": telefono,
             "score": resultado.get("diagnostico", {}).get("score") or 0,
-            "clasificacion": resultado.get("clasificacion", ""),
+            "clasificacion": normalizar_clasificacion(resultado.get("clasificacion")),
             "impacto_min": resultado.get("impacto", {}).get("impacto_min") or 0,
             "impacto_max": resultado.get("impacto", {}).get("impacto_max") or 0,
             "estatus": "nuevo",
             "fecha": datetime.now().isoformat()
         }
 
+        # GUARDAR EN POSTGRESQL
         try:
             db = SessionLocal()
             nuevo_lead = Lead(**lead_data)
@@ -232,6 +237,7 @@ if sistema_enterprise:
         except Exception:
             logging.error(f"Error guardando lead: {traceback.format_exc()}")
 
+        # EMAIL + PDF ASYNC
         def procesos_async():
             try:
                 if enviar_notificacion_lead:
@@ -243,7 +249,7 @@ if sistema_enterprise:
                         clasificacion=lead_data["clasificacion"],
                         soluciones=resultado.get("soluciones", [])
                     )
-                    logging.info("DEBUG: notificacion enviada OK")
+                    logging.info("notificacion enviada OK")
 
                 if generar_diagnostico_pdf and enviar_reporte_pdf:
                     pdf_bytes = generar_diagnostico_pdf(
@@ -257,7 +263,7 @@ if sistema_enterprise:
                         impacto_max=lead_data["impacto_max"]
                     )
                     enviar_reporte_pdf(email, nombre, pdf_bytes)
-                    logging.info("DEBUG: PDF enviado OK")
+                    logging.info("PDF enviado OK")
 
             except Exception:
                 logging.error(f"ERROR procesos_async: {traceback.format_exc()}")
@@ -313,3 +319,4 @@ async def actualizar_lead(lead_id: str, data: dict):
 async def global_exception(request: Request, exc: Exception):
     logging.error(traceback.format_exc())
     return response({"error": "Error interno"}, 500)
+
