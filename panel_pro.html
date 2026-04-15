@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω | Panel Pro</title>
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:20px;}
+h1{color:#00f3ff;}
+input,select{width:100%;padding:10px;margin:8px 0;background:#111;color:#fff;border:1px solid #333;}
+button{width:100%;padding:12px;background:#00f3ff;color:#000;font-weight:bold;border:none;cursor:pointer;margin-top:10px;}
+#resultado{margin-top:20px;padding:15px;border:1px solid #333;}
+.CRITICO{color:#ff0000;}
+.ALTO{color:#ff4d4d;}
+.MEDIO{color:#ffaa00;}
+.BAJO{color:#00ff88;}
+</style>
+</head>
+<body>
+
+<h1>MESAN Ω — Panel Pro</h1>
+
+<input id="precio" placeholder="Precio del servicio" type="number">
+<input id="empleados" placeholder="Número de empleados" type="number" value="1">
+<select id="zona">
+  <option value="general">General</option>
+  <option value="frontera">Frontera (BC, Son, Chih)</option>
+</select>
+
+<button onclick="diagnostico()">EJECUTAR DIAGNÓSTICO</button>
+
+<div id="resultado" style="display:none"></div>
+
+<script>
+const API = "https://mesan-api.onrender.com";
+
+async function diagnostico(){
+    const precio = document.getElementById("precio").value;
+    const empleados = document.getElementById("empleados").value;
+    const zona = document.getElementById("zona").value;
+
+    if(!precio || !empleados){
+        alert("Completa todos los campos");
+        return;
+    }
+
+    document.getElementById("resultado").style.display = "block";
+    document.getElementById("resultado").innerHTML = "Analizando...";
+
+    try{
+        const res = await fetch(API + "/pro/diagnostico", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                precio_cliente: parseFloat(precio),
+                empleados: parseInt(empleados),
+                zona: zona
+            })
+        });
+
+        const r = await res.json();
+        const c = r.clasificacion || "BAJO";
+        const f = r.financiero || {};
+        const p = r.precios || {};
+
+        document.getElementById("resultado").innerHTML = `
+            <h2 class="${c}">● ${c}</h2>
+            <p>${r.mensaje || ""}</p>
+            <p><b>Decisión:</b> ${r.decision?.decision || ""} — ${r.decision?.mensaje || ""}</p>
+            <hr style="border-color:#333;margin:10px 0">
+            <p>Ingreso: $${f.ingreso?.toLocaleString() || 0}</p>
+            <p>Costo total: $${f.costo_total?.toLocaleString() || 0}</p>
+            <p>Utilidad: $${f.utilidad?.toLocaleString() || 0}</p>
+            <p>Margen: ${f.margen || 0}%</p>
+            <p>Reserva: $${f.reserva?.toLocaleString() || 0}</p>
+            <hr style="border-color:#333;margin:10px 0">
+            <p>Precio mínimo: $${p.precio_minimo?.toLocaleString() || 0}</p>
+            <p>Precio cierre: $${p.precio_cierre?.toLocaleString() || 0}</p>
+            <p>Precio ideal: $${p.precio_objetivo?.toLocaleString() || 0}</p>
+        `;
+
+    }catch(e){
+        document.getElementById("resultado").innerHTML = "Error de conexión";
+    }
+}
+</script>
+</body>
+</html>
