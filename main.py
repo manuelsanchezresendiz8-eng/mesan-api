@@ -20,11 +20,12 @@ from limiter import limiter
 
 from routes.evaluar import router as evaluar_router
 from routes.verificar import router as verificar_router
+from routes.consultar import router as consultar_router
 
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.4.0"
+VERSION = "2.4.1"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -59,6 +60,13 @@ except Exception as e:
     logging.error(f"ERROR helpers: {e}")
     def normalizar_clasificacion(v):
         return "MEDIO"
+
+try:
+    from core.motor_financiero import evaluar_servicio
+    logging.info("motor_financiero OK")
+except Exception as e:
+    logging.error(f"ERROR motor_financiero: {e}")
+    evaluar_servicio = None
 
 # =========================================
 # VALIDACIÓN ENV
@@ -109,6 +117,7 @@ app.add_middleware(SlowAPIMiddleware)
 # =========================================
 app.include_router(evaluar_router, prefix="/api")
 app.include_router(verificar_router, prefix="/api")
+app.include_router(consultar_router, prefix="/api")
 
 # =========================================
 # HELPERS
@@ -181,10 +190,8 @@ if sistema_enterprise:
     @limiter.limit("10/minute")
     async def enterprise(data: dict, request: Request):
 
-        # LOG ENTRADA
         logging.info(f"DATA RECIBIDA: {data}")
 
-        # VALIDACIÓN
         if not isinstance(data, dict):
             return JSONResponse(status_code=400, content={"error": "Payload inválido"})
 
@@ -203,7 +210,6 @@ if sistema_enterprise:
 
         logging.warning(f"LEAD FINAL → {nombre} | {email} | {telefono}")
 
-        # MODO ANÓNIMO
         if not email:
             return response({
                 "ok": True,
@@ -211,7 +217,6 @@ if sistema_enterprise:
                 "resultado": resultado
             })
 
-        # CREAR LEAD
         lead_id = str(uuid.uuid4())
         lead_data = {
             "id": lead_id,
@@ -226,7 +231,6 @@ if sistema_enterprise:
             "fecha": datetime.now().isoformat()
         }
 
-        # GUARDAR EN POSTGRESQL
         try:
             db = SessionLocal()
             nuevo_lead = Lead(**lead_data)
@@ -237,7 +241,6 @@ if sistema_enterprise:
         except Exception:
             logging.error(f"Error guardando lead: {traceback.format_exc()}")
 
-        # EMAIL + PDF ASYNC
         def procesos_async():
             try:
                 if enviar_notificacion_lead:
@@ -276,6 +279,22 @@ if sistema_enterprise:
             "resultado": resultado,
             "lead_id": lead_id
         })
+
+# =========================================
+# PRO DIAGNÓSTICO
+# =========================================
+@app.post("/pro/diagnostico")
+async def pro_diagnostico(data: dict):
+    if not evaluar_servicio:
+        return response({"error": "Motor financiero no disponible"}, 500)
+    try:
+        precio = float(data.get("precio_cliente", 0))
+        empleados = int(data.get("empleados", 1))
+        zona = data.get("zona", "general")
+        return response(evaluar_servicio(precio, empleados, zona=zona))
+    except Exception:
+        logging.error(traceback.format_exc())
+        return response({"error": "Error en motor financiero"}, 500)
 
 # =========================================
 # LEADS PROTEGIDO
