@@ -1,9 +1,10 @@
 fastapi
 uvicorn
-pydantic
-slowapi
-python-multipart
 psycopg2-binary
-httpx
-fpdf2
 sqlalchemy
+slowapi
+python-jose[cryptography]
+passlib[bcrypt]
+fpdf
+resend
+stripe
