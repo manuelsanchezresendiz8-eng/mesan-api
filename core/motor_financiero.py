@@ -1,6 +1,6 @@
 # MESAN Ω — Motor Financiero Nacional v4
 
-from core.control_decisiones import evaluar_decision
+from core.control_decision import evaluar_decision
 from core.precio_inteligente import calcular_precio_cierre
 
 SALARIO_MIN_FRONTERA = 13409.80
