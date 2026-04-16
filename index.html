@@ -58,7 +58,7 @@ async function ejecutar() {
     const btn = document.getElementById("btn-diagnostico");
     const div = document.getElementById("resultado");
     const nombre = document.getElementById("nombre").value.trim();
-    const email = document.getElementById("email").value.trim();
+    const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
     const telefono = document.getElementById("tel").value.trim();
 
     if (!nombre || !telefono) {
@@ -106,15 +106,19 @@ async function ejecutar() {
         });
 
         const msg = encodeURIComponent(
-            "Hola, hice el diagnóstico MESAN-Ω.\n" +
-            "Cliente: " + nombre + "\n" +
-            "Teléfono: " + telefono + "\n" +
-            "Resultado: " + cl + " (score " + score + ")"
+            "🚨 *NUEVO LEAD MESAN-Ω*\n\n" +
+            "*Nombre:* " + nombre + "\n" +
+            "*Teléfono:* " + telefono + "\n" +
+            "*Email:* " + email + "\n\n" +
+            "*Resultado:* " + cl + "\n" +
+            "*Score:* " + score + "\n" +
+            "*Exposición:* $" + impMin.toLocaleString() + " - $" + impMax.toLocaleString() + " MXN\n\n" +
+            "Quiero agendar una llamada gratuita."
         );
 
         const waUrl = "https://wa.me/526861629643?text=" + msg;
-        document.getElementById("btn-wa").href = waUrl;
-        document.getElementById("btn-agenda").href = waUrl;
+        if(document.getElementById("btn-wa")) document.getElementById("btn-wa").href = waUrl;
+        if(document.getElementById("btn-agenda")) document.getElementById("btn-agenda").href = waUrl;
 
         div.classList.add("show");
         div.scrollIntoView({ behavior: "smooth" });
