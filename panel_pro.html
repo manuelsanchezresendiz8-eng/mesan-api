@@ -1,3 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω | Panel Pro</title>
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:20px;}
+h1{color:#00f3ff;font-family:monospace;letter-spacing:3px;}
+label{display:block;margin-top:15px;color:#94a3b8;font-size:12px;}
+input,select{width:100%;padding:10px;margin-top:5px;background:#111;color:#fff;border:1px solid #333;border-radius:4px;}
+button{width:100%;padding:14px;margin-top:20px;background:#00f3ff;color:#000;font-weight:bold;border:none;cursor:pointer;border-radius:4px;font-size:14px;}
+button:hover{opacity:0.85;}
+#resultado{margin-top:25px;padding:20px;border:1px solid #333;border-radius:8px;display:none;}
+.CRITICO{color:#ff0000;}
+.ALTO{color:#ff4d4d;}
+.MEDIO{color:#ffaa00;}
+.BAJO{color:#00ff88;}
+hr{border-color:#222;margin:12px 0;}
+p{margin:6px 0;font-size:14px;}
+</style>
+</head>
+<body>
+
+<h1>MESAN Ω</h1>
+<p style="color:#64748b;font-size:12px;">Panel Pro — Motor Financiero</p>
+
+<label>Precio del servicio ($)</label>
+<input id="precio" type="number" placeholder="Ej: 27000">
+
+<label>Número de empleados</label>
+<input id="empleados" type="number" value="1" min="1">
+
+<label>Zona</label>
+<select id="zona">
+  <option value="general">General</option>
+  <option value="frontera">Frontera (BC, Son, Chih)</option>
+</select>
+
+<button onclick="diagnostico()">EJECUTAR DIAGNÓSTICO</button>
+
+<div id="resultado">
+  <h2 id="clasificacion-text" style="margin-bottom:10px;"></h2>
+  <p id="mensaje-text"></p>
+  <p id="decision-text"></p>
+  <hr>
+  <p>Ingreso: <b id="ingreso-text"></b></p>
+  <p>Costo total: <b id="costo-text"></b></p>
+  <p>Utilidad: <b id="utilidad-text"></b></p>
+  <p>Margen: <b id="margen-text"></b></p>
+  <p>Reserva: <b id="reserva-text"></b></p>
+  <hr>
+  <p>Precio mínimo: <b id="pmin-text"></b></p>
+  <p>Precio cierre: <b id="pcierre-text"></b></p>
+  <p>Precio ideal: <b id="pideal-text"></b></p>
+</div>
+
 <script>
 async function diagnostico(){
     const precio = parseFloat(document.getElementById("precio").value);
@@ -11,10 +68,10 @@ async function diagnostico(){
     }
 
     box.style.display = "block";
-    box.innerHTML = "Analizando...";
+    box.innerHTML = "<p style='color:#94a3b8'>Analizando...</p>";
 
     try{
-        const res = await fetch("https://mesan-api.onrender.com/pro/diagnostico", {
+        const res = await fetch("https://mesan-api.onrender.com/pro/diagnostico-financiero", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
@@ -25,35 +82,34 @@ async function diagnostico(){
         });
 
         const r = await res.json();
+        const c = r.clasificacion || "BAJO";
         const f = r.financiero || {};
         const p = r.precios || {};
         const d = r.decision || {};
-        const c = r.clasificacion || "BAJO";
 
-        const color =
-            c === "CRITICO" ? "#ff0000" :
-            c === "ALTO" ? "#ff4d4d" :
-            c === "MEDIO" ? "#ffaa00" : "#00ff88";
+        const color = c==="CRITICO"?"#ff0000":c==="ALTO"?"#ff4d4d":c==="MEDIO"?"#ffaa00":"#00ff88";
 
         box.innerHTML = `
-            <h2 style="color:${color}">● ${c}</h2>
+            <h2 style="color:${color};margin-bottom:10px;">● ${c}</h2>
             <p>${r.mensaje || ""}</p>
             <p><b>Decisión:</b> ${d.decision || ""} — ${d.mensaje || ""}</p>
-            <hr style="border-color:#333;margin:10px 0">
-            <p>Ingreso: $${(f.ingreso||0).toLocaleString()}</p>
-            <p>Costo total: $${(f.costo_total||0).toLocaleString()}</p>
-            <p>Utilidad: $${(f.utilidad||0).toLocaleString()}</p>
-            <p>Margen: ${f.margen||0}%</p>
-            <p>Reserva: $${(f.reserva||0).toLocaleString()}</p>
-            <hr style="border-color:#333;margin:10px 0">
-            <p>Precio mínimo: $${(p.precio_minimo||0).toLocaleString()}</p>
-            <p>Precio cierre: $${(p.precio_cierre||0).toLocaleString()}</p>
-            <p>Precio ideal: $${(p.precio_objetivo||0).toLocaleString()}</p>
+            <hr style="border-color:#222;margin:12px 0">
+            <p>Ingreso: <b>$${(f.ingreso||0).toLocaleString()}</b></p>
+            <p>Costo total: <b>$${(f.costo_total||0).toLocaleString()}</b></p>
+            <p>Utilidad: <b>$${(f.utilidad||0).toLocaleString()}</b></p>
+            <p>Margen: <b>${f.margen||0}%</b></p>
+            <p>Reserva: <b>$${(f.reserva||0).toLocaleString()}</b></p>
+            <hr style="border-color:#222;margin:12px 0">
+            <p>Precio mínimo: <b>$${(p.precio_minimo||0).toLocaleString()}</b></p>
+            <p>Precio cierre: <b>$${(p.precio_cierre||0).toLocaleString()}</b></p>
+            <p>Precio ideal: <b>$${(p.precio_objetivo||0).toLocaleString()}</b></p>
         `;
 
     }catch(e){
-        box.innerHTML = "<span style='color:#ef4444'>Error de conexión</span>";
+        box.innerHTML = "<p style='color:#ef4444'>Error de conexión</p>";
+        console.error(e);
     }
 }
 </script>
-
+</body>
+</html>
