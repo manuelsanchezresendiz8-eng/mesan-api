@@ -21,11 +21,13 @@ from limiter import limiter
 from routes.evaluar import router as evaluar_router
 from routes.verificar import router as verificar_router
 from routes.consultar import router as consultar_router
+from pro.auth import auth_router
+from pro.diagnostico import diagnostico_router
 
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.4.1"
+VERSION = "2.4.2"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -118,6 +120,8 @@ app.add_middleware(SlowAPIMiddleware)
 app.include_router(evaluar_router, prefix="/api")
 app.include_router(verificar_router, prefix="/api")
 app.include_router(consultar_router, prefix="/api")
+app.include_router(auth_router, prefix="/pro")
+app.include_router(diagnostico_router, prefix="/pro")
 
 # =========================================
 # HELPERS
@@ -283,7 +287,7 @@ if sistema_enterprise:
 # =========================================
 # PRO DIAGNÓSTICO
 # =========================================
-@app.post("/pro/diagnostico")
+@app.post("/pro/diagnostico-financiero")
 async def pro_diagnostico(data: dict):
     if not evaluar_servicio:
         return response({"error": "Motor financiero no disponible"}, 500)
