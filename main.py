@@ -27,7 +27,7 @@ from pro.diagnostico import diagnostico_router
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.4.2"
+VERSION = "2.4.3"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -84,7 +84,11 @@ if not os.environ.get("DATABASE_URL"):
 # =========================================
 # INIT
 # =========================================
-init_db()
+try:
+    init_db()
+    logging.info("DB init OK")
+except Exception as e:
+    logging.error(f"ERROR init_db: {e}")
 
 app = FastAPI(title="MESAN API", version=VERSION)
 
@@ -188,25 +192,15 @@ def preflight_leads():
 # =========================================
 # ENDPOINT PRINCIPAL
 # =========================================
-if sistema_enterprise:
+@app.post("/enterprise")
+@limiter.limit("10/minute")
+async def enterprise(data: dict, request: Request):
 
-    @app.post("/enterprise")
-    @limiter.limit("10/minute")
-    async def enterprise(data: dict, request: Request):
+    logging.info(f"DATA RECIBIDA: {data}")
 
-        logging.info(f"DATA RECIBIDA: {data}")
-
+    try:
         if not isinstance(data, dict):
             return JSONResponse(status_code=400, content={"error": "Payload inválido"})
-
-        try:
-            resultado = sistema_enterprise(data)
-        except Exception:
-            logging.error(traceback.format_exc())
-            return response({"error": "Error en motor"}, 500)
-
-        if not isinstance(resultado, dict):
-            return response({"error": "Resultado inválido"}, 500)
 
         nombre = (data.get("nombre") or "").strip() or "Sin nombre"
         email = (data.get("email") or "").strip()
@@ -214,6 +208,21 @@ if sistema_enterprise:
 
         logging.warning(f"LEAD FINAL → {nombre} | {email} | {telefono}")
 
+        # MOTOR
+        resultado = {}
+        if sistema_enterprise:
+            try:
+                resultado = sistema_enterprise(data) or {}
+            except Exception as e:
+                logging.error(f"ERROR motor: {traceback.format_exc()}")
+                resultado = {
+                    "clasificacion": "MEDIO",
+                    "diagnostico": {"score": 0},
+                    "impacto": {"impacto_min": 0, "impacto_max": 0},
+                    "soluciones": []
+                }
+
+        # MODO ANÓNIMO
         if not email:
             return response({
                 "ok": True,
@@ -221,6 +230,7 @@ if sistema_enterprise:
                 "resultado": resultado
             })
 
+        # CREAR LEAD
         lead_id = str(uuid.uuid4())
         lead_data = {
             "id": lead_id,
@@ -235,6 +245,7 @@ if sistema_enterprise:
             "fecha": datetime.now().isoformat()
         }
 
+        # GUARDAR EN POSTGRESQL
         try:
             db = SessionLocal()
             nuevo_lead = Lead(**lead_data)
@@ -245,6 +256,7 @@ if sistema_enterprise:
         except Exception:
             logging.error(f"Error guardando lead: {traceback.format_exc()}")
 
+        # EMAIL + PDF ASYNC
         def procesos_async():
             try:
                 if enviar_notificacion_lead:
@@ -283,6 +295,10 @@ if sistema_enterprise:
             "resultado": resultado,
             "lead_id": lead_id
         })
+
+    except Exception:
+        logging.error(f"ERROR CRITICO /enterprise: {traceback.format_exc()}")
+        return response({"error": "Error interno"}, 500)
 
 # =========================================
 # PRO DIAGNÓSTICO
@@ -339,7 +355,7 @@ async def actualizar_lead(lead_id: str, data: dict):
 # ERROR GLOBAL
 # =========================================
 @app.exception_handler(Exception)
-async def global_exception(request: Request, exc: Exception):
-    logging.error(traceback.format_exc())
+async def global_exception_handler(request: Request, exc: Exception):
+    logging.error(f"ERROR GLOBAL: {traceback.format_exc()}")
     return response({"error": "Error interno"}, 500)
 
