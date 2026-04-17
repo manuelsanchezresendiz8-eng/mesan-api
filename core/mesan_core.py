@@ -2,44 +2,50 @@ def calcular_irp(respuestas):
     score = 0
     codigos = []
 
-    if respuestas["factura"] == "no":
+    factura = respuestas.get("factura", respuestas.get("situacion_fiscal", "si"))
+    if factura == "no":
         score += 30
         codigos.append("F3_RISK")
-    elif respuestas["factura"] == "no_seguro":
+    elif factura == "no_seguro":
         score += 20
         codigos.append("F2_WARN")
     else:
         codigos.append("F1_OK")
 
-    if respuestas["contabilidad"] == "no_tiene":
+    contabilidad = respuestas.get("contabilidad", respuestas.get("gestion_contable", "externo"))
+    if contabilidad == "no_tiene":
         score += 15
         codigos.append("F6_RISK")
-    elif respuestas["contabilidad"] == "interno":
+    elif contabilidad == "interno":
         score += 10
         codigos.append("F5_WARN")
     else:
         codigos.append("F4_OK")
 
-    if respuestas["imss"] == "no":
+    imss = respuestas.get("imss", respuestas.get("registro_imss", "si"))
+    if imss == "no":
         score += 40
         codigos.append("L3_RISK")
-    elif respuestas["imss"] == "parcial":
+    elif imss == "parcial":
         score += 25
         codigos.append("L2_WARN")
     else:
         codigos.append("L1_OK")
 
-    if respuestas["contratos"] == "no":
+    contratos = respuestas.get("contratos", respuestas.get("contratos_laborales", "si"))
+    if contratos == "no":
         score += 15
         codigos.append("L6_RISK")
-    elif respuestas["contratos"] == "algunos":
+    elif contratos == "algunos":
         score += 10
         codigos.append("L5_WARN")
     else:
         codigos.append("L4_OK")
 
-    if respuestas["rpbi"] == "si":
-        if respuestas["contrato_rpbi"] == "no":
+    rpbi = respuestas.get("rpbi", "no")
+    if rpbi == "si":
+        contrato_rpbi = respuestas.get("contrato_rpbi", "no")
+        if contrato_rpbi == "no":
             score += 30
             codigos.append("H5_RISK")
         else:
@@ -47,22 +53,25 @@ def calcular_irp(respuestas):
     else:
         codigos.append("H0_NA")
 
-    if respuestas["procesos"] == "no":
+    procesos = respuestas.get("procesos", respuestas.get("procesos_documentados", "si"))
+    if procesos == "no":
         score += 30
         codigos.append("O3_RISK")
     else:
         codigos.append("O1_OK")
 
-    if respuestas["inspeccion"] == "preocupado":
+    inspeccion = respuestas.get("inspeccion", respuestas.get("ante_inspeccion", "preparado"))
+    if inspeccion == "preocupado":
         score += 30
         codigos.append("P3_RISK")
-    elif respuestas["inspeccion"] == "dudoso":
+    elif inspeccion == "dudoso":
         score += 15
         codigos.append("P2_WARN")
     else:
         codigos.append("P1_OK")
 
-    if respuestas["historial"] == "si":
+    historial = respuestas.get("historial", respuestas.get("historial_multas", "no"))
+    if historial == "si":
         score += 20
         codigos.append("S2_ALERT")
     else:
@@ -125,4 +134,3 @@ def ejecutar_diagnostico(data):
     s = mapear_soluciones(r["codigos_detectados"])
     i = calcular_impacto_economico(s)
     return {"resultado": r, "soluciones": s, "impacto": i}
-
