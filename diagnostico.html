@@ -1,40 +1,135 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω | Inteligencia Empresarial</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #02060a; --panel: #0a1118; --accent: #00f3ff;
-            --magenta: #ff0055; --text: #e2e8f0; --dim: #64748b;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; }
-        .hero h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 15px; line-height: 1.1; }
-        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
-        .btn-primary { 
-            background: transparent; border: 1px solid var(--accent); color: var(--accent);
-            padding: 15px 30px; cursor: pointer; font-family: 'Orbitron'; transition: 0.3s; width: 100%;
-        }
-        .btn-primary:hover { background: var(--accent); color: var(--bg); }
-        #resultado { margin-top: 30px; display: none; padding: 20px; border: 1px solid var(--accent); border-radius: 8px; }
-        #resultado.show { display: block; }
-        .wa-float { position: fixed; bottom: 20px; right: 20px; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 10px; border-radius: 50px; background: rgba(0,0,0,0.8); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Omega | Inteligencia Empresarial</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #02060a; --panel: #0a1118; --accent: #00f3ff;
+    --magenta: #ff0055; --text: #e2e8f0; --dim: #64748b;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; }
+.container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+.hero-tag { color: var(--dim); font-size: 11px; letter-spacing: 3px; margin-bottom: 10px; }
+h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 15px; line-height: 1.1; color: var(--accent); }
+.hero p { color: var(--dim); margin-bottom: 30px; max-width: 500px; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 11px; letter-spacing: 2px; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; }
+input, select { width: 100%; padding: 12px; background: var(--panel); border: 1px solid rgba(0,243,255,0.15); color: var(--text); font-size: 14px; border-radius: 2px; }
+input:focus, select:focus { outline: none; border-color: var(--accent); }
+select option { background: var(--panel); }
+.btn-primary { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 15px 30px; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 3px; transition: 0.3s; width: 100%; margin-top: 10px; }
+.btn-primary:hover { background: var(--accent); color: var(--bg); }
+#resultado { margin-top: 30px; display: none; padding: 25px; border: 1px solid rgba(0,243,255,0.2); background: var(--panel); border-radius: 4px; }
+#resultado.show { display: block; }
+.score-big { font-family: 'Orbitron'; font-size: 4rem; color: var(--accent); text-align: center; }
+.clasificacion { text-align: center; font-size: 1.2rem; font-weight: bold; margin: 10px 0 20px; letter-spacing: 3px; }
+.impacto-box { background: rgba(255,0,85,0.1); border: 1px solid rgba(255,0,85,0.3); padding: 15px; margin: 15px 0; text-align: center; }
+.impacto-val { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--magenta); }
+.impacto-lbl { font-size: 10px; color: var(--dim); letter-spacing: 2px; }
+.anual-line { color: var(--dim); font-size: 12px; text-align: center; margin: 5px 0 15px; }
+.soluciones { list-style: none; margin: 15px 0; }
+.soluciones li { padding: 8px 0; border-bottom: 1px solid rgba(0,243,255,0.08); font-size: 13px; color: var(--dim); }
+.soluciones li::before { content: "▸ "; color: var(--accent); }
+.btn-agenda { display: block; text-align: center; padding: 15px; margin-top: 20px; background: var(--magenta); color: #fff; border: none; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; text-decoration: none; }
+.btn-wa { display: block; text-align: center; padding: 12px; margin-top: 10px; border: 1px solid #25D366; color: #25D366; cursor: pointer; font-size: 12px; text-decoration: none; }
+.legal { margin-top: 40px; font-size: 10px; color: var(--dim); text-align: center; line-height: 1.6; }
+.wa-float { position: fixed; bottom: 20px; right: 20px; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 10px 15px; border-radius: 50px; background: rgba(0,0,0,0.8); font-size: 12px; }
+</style>
 </head>
 <body>
 
 <section class="hero container">
     <div class="hero-tag">// Sistema de Inteligencia Empresarial</div>
-    <h1>MESAN Ω</h1>
+    <h1>MESAN Omega</h1>
+    <p>Te digo dónde estás perdiendo dinero y cómo arreglarlo en segundos.</p>
+
     <form id="diagnostico-form">
-        <input type="text" id="nombre" placeholder="Nombre completo" required style="width:100%; padding:12px; margin-bottom:10px; background:#111; border:1px solid #333; color:white;">
-        <input type="email" id="email" placeholder="Email" style="width:100%; padding:12px; margin-bottom:10px; background:#111; border:1px solid #333; color:white;">
-        <input type="tel" id="tel" placeholder="WhatsApp (10 dígitos)" required style="width:100%; padding:12px; margin-bottom:20px; background:#111; border:1px solid #333; color:white;">
-        
-        <div id="preguntas_placeholder"></div>
+        <div class="form-group">
+            <label>Nombre de tu empresa</label>
+            <input type="text" id="nombre" placeholder="Constructora ABC" required>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="tu@empresa.com">
+        </div>
+        <div class="form-group">
+            <label>Teléfono WhatsApp</label>
+            <input type="tel" id="tel" placeholder="686 123 4567">
+        </div>
+        <div class="form-group">
+            <label>Giro de tu empresa</label>
+            <select id="giro">
+                <option value="">Selecciona tu giro</option>
+                <option value="limpieza">Limpieza</option>
+                <option value="seguridad">Seguridad privada</option>
+                <option value="mantenimiento">Mantenimiento industrial</option>
+                <option value="jardineria">Jardinería</option>
+                <option value="comedores">Comedores industriales</option>
+                <option value="transporte">Transporte de personal</option>
+                <option value="call_center">Call center</option>
+                <option value="vigilancia">Vigilancia patrimonial</option>
+                <option value="construccion">Construcción</option>
+                <option value="otro">Otro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Situación Fiscal — SAT</label>
+            <select id="situacion_fiscal">
+                <option value="al_corriente">Facturación en regla</option>
+                <option value="irregular">Facturas irregulares</option>
+                <option value="sin_facturar">No facturo</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Gestión Contable</label>
+            <select id="gestion_contable">
+                <option value="externo">Contador externo</option>
+                <option value="interno">Contador interno</option>
+                <option value="ninguno">Sin contador</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Registro IMSS</label>
+            <select id="registro_imss">
+                <option value="completo">Plantilla 100% registrada</option>
+                <option value="parcial">Algunos sin registro</option>
+                <option value="ninguno">Sin registro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Contratos Laborales</label>
+            <select id="contratos">
+                <option value="todos">Todos formalizados</option>
+                <option value="algunos">Algunos sin contrato</option>
+                <option value="ninguno">Sin contratos</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Procesos Documentados</label>
+            <select id="procesos">
+                <option value="si">Si tengo procesos</option>
+                <option value="no">No tengo procesos</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Ante una Inspección te Sientes</label>
+            <select id="inspeccion">
+                <option value="preparado">Preparado</option>
+                <option value="dudoso">Con dudas</option>
+                <option value="preocupado">Preocupado</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Historial de Multas o Requerimientos</label>
+            <select id="historial">
+                <option value="no">Sin historial</option>
+                <option value="si">Si tengo historial</option>
+            </select>
+        </div>
 
         <button type="button" id="btn-diagnostico" class="btn-primary" onclick="ejecutar()">
             <span>EJECUTAR DIAGNÓSTICO</span>
@@ -42,23 +137,36 @@
     </form>
 
     <div id="resultado">
-        <h2 id="clasificacion"></h2>
-        <p id="impacto-min"></p>
-        <p id="impacto-max"></p>
-        <p id="anual-line"></p>
-        <ul id="soluciones"></ul>
-        <a id="btn-agenda" href="#" target="_blank" class="btn-primary" style="display:block; margin-top:20px; text-align:center;">🚨 AGENDA TU LLAMADA GRATUITA DE 15 MIN</a>
+        <div class="score-big" id="score">--</div>
+        <div class="clasificacion" id="clasificacion">--</div>
+        <div class="impacto-box">
+            <div class="impacto-val" id="impacto-min">$--</div>
+            <div class="impacto-lbl">Exposición mínima</div>
+            <div class="impacto-val" id="impacto-max" style="margin-top:8px;">$--</div>
+            <div class="impacto-lbl">Exposición máxima</div>
+        </div>
+        <div class="anual-line" id="anual-line"></div>
+        <ul class="soluciones" id="soluciones"></ul>
+        <a href="#" class="btn-agenda" id="btn-agenda" target="_blank">
+            🚨 AGENDA TU LLAMADA GRATUITA DE 15 MIN
+        </a>
+        <a href="#" class="btn-wa" id="btn-wa" target="_blank">Contactar por WhatsApp</a>
+    </div>
+
+    <div class="legal">
+        MESAN Omega es un sistema de análisis predictivo basado en modelos matemáticos y estadísticos.<br>
+        Los resultados son indicadores orientativos.
     </div>
 </section>
 
-<a href="https://wa.me/526861629643" id="btn-wa" target="_blank" class="wa-float">WhatsApp</a>
+<a href="https://wa.me/526861629643" id="btn-wa-float" target="_blank" class="wa-float">WhatsApp</a>
 
 <script>
 async function ejecutar() {
     const btn = document.getElementById("btn-diagnostico");
     const div = document.getElementById("resultado");
     const nombre = document.getElementById("nombre").value.trim();
-    const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
+    const email = document.getElementById("email").value.trim();
     const telefono = document.getElementById("tel").value.trim();
 
     if (!nombre || !telefono) {
@@ -76,12 +184,19 @@ async function ejecutar() {
             body: JSON.stringify({
                 nombre: nombre,
                 email: email,
-                telefono: telefono
+                telefono: telefono,
+                giro: document.getElementById("giro").value,
+                situacion_fiscal: document.getElementById("situacion_fiscal").value,
+                gestion_contable: document.getElementById("gestion_contable").value,
+                registro_imss: document.getElementById("registro_imss").value,
+                contratos: document.getElementById("contratos").value,
+                procesos: document.getElementById("procesos").value,
+                inspeccion: document.getElementById("inspeccion").value,
+                historial: document.getElementById("historial").value
             })
         });
 
         const data = await response.json();
-
         const resultado = data.resultado || data;
         const cl = data.clasificacion || resultado?.clasificacion || "N/A";
         const score = resultado?.diagnostico?.score || data.score || 0;
@@ -90,11 +205,11 @@ async function ejecutar() {
         const impMax = impacto.impacto_max || 0;
         const soluciones = data.soluciones || resultado?.soluciones || [];
 
-        document.getElementById("clasificacion").textContent = "RESULTADO: " + cl;
+        document.getElementById("score").textContent = score;
+        document.getElementById("clasificacion").textContent = cl;
         document.getElementById("clasificacion").style.color = cl === "ALTO" ? "#ff3b5c" : cl === "MEDIO" ? "#ffaa00" : "#00e5a0";
-
-        document.getElementById("impacto-min").textContent = "Exposición mínima: $" + impMin.toLocaleString() + " MXN";
-        document.getElementById("impacto-max").textContent = "Exposición máxima: $" + impMax.toLocaleString() + " MXN";
+        document.getElementById("impacto-min").textContent = "$" + impMin.toLocaleString() + " MXN";
+        document.getElementById("impacto-max").textContent = "$" + impMax.toLocaleString() + " MXN";
         document.getElementById("anual-line").textContent = "Riesgo estimado: hasta $" + impMax.toLocaleString() + " MXN";
 
         const lista = document.getElementById("soluciones");
@@ -106,13 +221,11 @@ async function ejecutar() {
         });
 
         const msg = encodeURIComponent(
-            "🚨 *NUEVO LEAD MESAN-Ω*\n\n" +
-            "*Nombre:* " + nombre + "\n" +
-            "*Teléfono:* " + telefono + "\n" +
-            "*Email:* " + email + "\n\n" +
-            "*Resultado:* " + cl + "\n" +
-            "*Score:* " + score + "\n" +
-            "*Exposición:* $" + impMin.toLocaleString() + " - $" + impMax.toLocaleString() + " MXN\n\n" +
+            "Hola, hice el diagnóstico MESAN Omega.\n\n" +
+            "Nombre: " + nombre + "\n" +
+            "Teléfono: " + telefono + "\n" +
+            "Giro: " + document.getElementById("giro").value + "\n\n" +
+            "Resultado: " + cl + " (Score: " + score + ")\n" +
             "Quiero agendar una llamada gratuita."
         );
 
