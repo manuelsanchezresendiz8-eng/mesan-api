@@ -18,29 +18,37 @@ h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bott
 .subtitulo { color: var(--dim); margin-bottom: 30px; max-width: 500px; }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; font-size: 11px; letter-spacing: 2px; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; }
-input, select { width: 100%; padding: 12px; background: var(--panel); border: 1px solid rgba(0,243,255,0.15); color: var(--text); font-size: 14px; border-radius: 2px; }
-input:focus, select:focus { outline: none; border-color: var(--accent); }
+input, select {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--panel);
+    border: 1px solid rgba(0,243,255,0.4);
+    color: var(--text);
+    font-size: 14px;
+    border-radius: 6px;
+}
+input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 8px rgba(0,243,255,0.2); }
 select option { background: var(--panel); }
-.btn-primary { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 15px 30px; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 3px; transition: 0.3s; width: 100%; margin-top: 10px; }
+.btn-primary { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 15px 30px; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 3px; transition: 0.3s; width: 100%; margin-top: 10px; border-radius: 6px; }
 .btn-primary:hover { background: var(--accent); color: var(--bg); }
-.tipo-btn { background: var(--panel); border: 1px solid rgba(0,243,255,0.2); color: var(--text); padding: 20px; cursor: pointer; width: 100%; margin-bottom: 10px; text-align: left; transition: 0.3s; border-radius: 4px; display: block; }
-.tipo-btn:hover { border-color: var(--accent); }
-.tipo-btn.selected { border-color: var(--accent); background: rgba(0,243,255,0.05); }
+.tipo-btn { background: var(--panel); border: 1px solid rgba(0,243,255,0.3); color: var(--text); padding: 20px; cursor: pointer; width: 100%; margin-bottom: 10px; text-align: left; transition: 0.3s; border-radius: 6px; display: block; }
+.tipo-btn:hover { border-color: var(--accent); box-shadow: 0 0 12px rgba(0,243,255,0.15); }
+.tipo-btn.selected { border-color: var(--accent); background: rgba(0,243,255,0.05); box-shadow: 0 0 15px rgba(0,243,255,0.2); }
 .tipo-title { font-family: 'Orbitron'; font-size: 12px; letter-spacing: 2px; color: var(--accent); margin-bottom: 5px; }
 .tipo-desc { font-size: 12px; color: var(--dim); }
-#resultado { margin-top: 30px; display: none; padding: 25px; border: 1px solid rgba(0,243,255,0.2); background: var(--panel); border-radius: 4px; }
+#resultado { margin-top: 30px; display: none; padding: 25px; border: 1px solid rgba(0,243,255,0.3); background: var(--panel); border-radius: 6px; }
 #resultado.show { display: block; }
 .score-big { font-family: 'Orbitron'; font-size: 4rem; color: var(--accent); text-align: center; }
 .clasificacion { text-align: center; font-size: 1.2rem; font-weight: bold; margin: 10px 0 20px; letter-spacing: 3px; }
-.impacto-box { background: rgba(255,0,85,0.1); border: 1px solid rgba(255,0,85,0.3); padding: 15px; margin: 15px 0; text-align: center; }
+.impacto-box { background: rgba(255,0,85,0.1); border: 1px solid rgba(255,0,85,0.3); padding: 15px; margin: 15px 0; text-align: center; border-radius: 6px; }
 .impacto-val { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--magenta); }
 .impacto-lbl { font-size: 10px; color: var(--dim); letter-spacing: 2px; }
 .anual-line { color: var(--dim); font-size: 12px; text-align: center; margin: 5px 0 15px; }
 .soluciones { list-style: none; margin: 15px 0; }
 .soluciones li { padding: 8px 0; border-bottom: 1px solid rgba(0,243,255,0.08); font-size: 13px; color: var(--dim); }
 .soluciones li::before { content: "▸ "; color: var(--accent); }
-.btn-agenda { display: block; text-align: center; padding: 15px; margin-top: 20px; background: var(--magenta); color: #fff; border: none; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; text-decoration: none; }
-.btn-wa { display: block; text-align: center; padding: 12px; margin-top: 10px; border: 1px solid #25D366; color: #25D366; cursor: pointer; font-size: 12px; text-decoration: none; }
+.btn-agenda { display: block; text-align: center; padding: 15px; margin-top: 20px; background: var(--magenta); color: #fff; border: none; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; text-decoration: none; border-radius: 6px; }
+.btn-wa { display: block; text-align: center; padding: 12px; margin-top: 10px; border: 1px solid #25D366; color: #25D366; cursor: pointer; font-size: 12px; text-decoration: none; border-radius: 6px; }
 .legal { margin-top: 40px; font-size: 10px; color: var(--dim); text-align: center; line-height: 1.6; }
 .wa-float { position: fixed; bottom: 20px; right: 20px; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 10px 15px; border-radius: 50px; background: rgba(0,0,0,0.8); font-size: 12px; }
 .hidden { display: none; }
@@ -71,21 +79,20 @@ select option { background: var(--panel); }
 
     <!-- TIPO DE EMPRESA -->
     <div class="seccion-titulo">02 — TIPO DE EMPRESA</div>
-    <div class="form-group">
-        <label>¿Tu empresa subcontrata servicios o los presta?</label>
-        <button class="tipo-btn" id="btn-repse" onclick="seleccionarTipo('repse', this)">
-            <div class="tipo-title">PRESTO SERVICIOS</div>
-            <div class="tipo-desc">Limpieza, seguridad, mantenimiento, outsourcing, REPSE</div>
-        </button>
-        <button class="tipo-btn" id="btn-subcontrata" onclick="seleccionarTipo('subcontrata', this)">
-            <div class="tipo-title">SUBCONTRATO SERVICIOS</div>
-            <div class="tipo-desc">Soy empresa que contrata proveedores externos</div>
-        </button>
-        <button class="tipo-btn" id="btn-nuevo" onclick="seleccionarTipo('nuevo', this)">
-            <div class="tipo-title">QUIERO CREAR UNA EMPRESA</div>
-            <div class="tipo-desc">Tengo un proyecto y quiero saber si es viable</div>
-        </button>
-    </div>
+    <p style="color:var(--dim);font-size:12px;margin-bottom:12px;">¿Tu empresa subcontrata servicios o los presta?</p>
+
+    <button class="tipo-btn" id="btn-repse" onclick="seleccionarTipo('repse')">
+        <div class="tipo-title">PRESTO SERVICIOS</div>
+        <div class="tipo-desc">Limpieza, seguridad, mantenimiento, outsourcing, REPSE</div>
+    </button>
+    <button class="tipo-btn" id="btn-subcontrata" onclick="seleccionarTipo('subcontrata')">
+        <div class="tipo-title">SUBCONTRATO SERVICIOS</div>
+        <div class="tipo-desc">Soy empresa que contrata proveedores externos</div>
+    </button>
+    <button class="tipo-btn" id="btn-nuevo" onclick="seleccionarTipo('nuevo')">
+        <div class="tipo-title">QUIERO CREAR UNA EMPRESA</div>
+        <div class="tipo-desc">Tengo un proyecto y quiero saber si es viable</div>
+    </button>
 
     <!-- CUESTIONARIO REPSE -->
     <div id="paso-repse" class="hidden">
@@ -268,11 +275,11 @@ select option { background: var(--panel); }
 <script>
 let tipoEmpresa = "";
 
-function seleccionarTipo(tipo, btn) {
+function seleccionarTipo(tipo) {
     tipoEmpresa = tipo;
 
     document.querySelectorAll(".tipo-btn").forEach(b => b.classList.remove("selected"));
-    btn.classList.add("selected");
+    document.getElementById("btn-" + tipo).classList.add("selected");
 
     document.getElementById("paso-repse").classList.add("hidden");
     document.getElementById("paso-subcontrata").classList.add("hidden");
@@ -338,7 +345,7 @@ async function ejecutar(tipo) {
     }
 
     const pasoId = tipo === "repse" ? "paso-repse" : tipo === "subcontrata" ? "paso-subcontrata" : "paso-nuevo";
-    const btn = document.querySelector(`#${pasoId} .btn-primary`);
+    const btn = document.querySelector("#" + pasoId + " .btn-primary");
     btn.disabled = true;
     btn.querySelector("span").textContent = "PROCESANDO... ⏳";
 
