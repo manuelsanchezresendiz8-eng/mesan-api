@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Omega | Inteligencia Empresarial</title>
+<title>MESAN Omega | Diagnóstico Empresarial</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -23,6 +23,11 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 select option { background: var(--panel); }
 .btn-primary { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 15px 30px; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 3px; transition: 0.3s; width: 100%; margin-top: 10px; }
 .btn-primary:hover { background: var(--accent); color: var(--bg); }
+.tipo-btn { background: var(--panel); border: 1px solid rgba(0,243,255,0.2); color: var(--text); padding: 20px; cursor: pointer; width: 100%; margin-bottom: 10px; text-align: left; transition: 0.3s; border-radius: 4px; }
+.tipo-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tipo-btn.selected { border-color: var(--accent); background: rgba(0,243,255,0.05); }
+.tipo-title { font-family: 'Orbitron'; font-size: 12px; letter-spacing: 2px; color: var(--accent); margin-bottom: 5px; }
+.tipo-desc { font-size: 12px; color: var(--dim); }
 #resultado { margin-top: 30px; display: none; padding: 25px; border: 1px solid rgba(0,243,255,0.2); background: var(--panel); border-radius: 4px; }
 #resultado.show { display: block; }
 .score-big { font-family: 'Orbitron'; font-size: 4rem; color: var(--accent); text-align: center; }
@@ -38,16 +43,18 @@ select option { background: var(--panel); }
 .btn-wa { display: block; text-align: center; padding: 12px; margin-top: 10px; border: 1px solid #25D366; color: #25D366; cursor: pointer; font-size: 12px; text-decoration: none; }
 .legal { margin-top: 40px; font-size: 10px; color: var(--dim); text-align: center; line-height: 1.6; }
 .wa-float { position: fixed; bottom: 20px; right: 20px; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 10px 15px; border-radius: 50px; background: rgba(0,0,0,0.8); font-size: 12px; }
+.hidden { display: none; }
 </style>
 </head>
 <body>
 
-<section class="hero container">
+<section class="container">
     <div class="hero-tag">// Sistema de Inteligencia Empresarial</div>
     <h1>MESAN Omega</h1>
-    <p>Te digo dónde estás perdiendo dinero y cómo arreglarlo en segundos.</p>
+    <p class="hero p">Te digo dónde estás perdiendo dinero y cómo arreglarlo en segundos.</p>
 
-    <form id="diagnostico-form">
+    <!-- PASO 1: DATOS BÁSICOS -->
+    <div id="paso1">
         <div class="form-group">
             <label>Nombre de tu empresa</label>
             <input type="text" id="nombre" placeholder="Constructora ABC" required>
@@ -61,6 +68,25 @@ select option { background: var(--panel); }
             <input type="tel" id="tel" placeholder="686 123 4567">
         </div>
         <div class="form-group">
+            <label>¿Tu empresa subcontrata servicios o los presta?</label>
+            <button class="tipo-btn" onclick="seleccionarTipo('presta')">
+                <div class="tipo-title">PRESTO SERVICIOS</div>
+                <div class="tipo-desc">Limpieza, seguridad, mantenimiento, outsourcing, REPSE</div>
+            </button>
+            <button class="tipo-btn" onclick="seleccionarTipo('subcontrata')">
+                <div class="tipo-title">SUBCONTRATO SERVICIOS</div>
+                <div class="tipo-desc">Soy empresa que contrata proveedores externos</div>
+            </button>
+            <button class="tipo-btn" onclick="seleccionarTipo('nuevo')">
+                <div class="tipo-title">QUIERO CREAR UNA EMPRESA</div>
+                <div class="tipo-desc">Tengo un proyecto y quiero saber si es viable</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- PASO 2A: PRESTA SERVICIOS (REPSE) -->
+    <div id="paso2a" class="hidden">
+        <div class="form-group">
             <label>Giro de tu empresa</label>
             <select id="giro">
                 <option value="">Selecciona tu giro</option>
@@ -70,31 +96,37 @@ select option { background: var(--panel); }
                 <option value="jardineria">Jardinería</option>
                 <option value="comedores">Comedores industriales</option>
                 <option value="transporte">Transporte de personal</option>
-                <option value="call_center">Call center</option>
                 <option value="vigilancia">Vigilancia patrimonial</option>
                 <option value="construccion">Construcción</option>
                 <option value="otro">Otro</option>
             </select>
         </div>
         <div class="form-group">
+            <label>Precio mensual de tu servicio ($)</label>
+            <input type="number" id="precio_servicio" placeholder="Ej: 27000" min="0">
+        </div>
+        <div class="form-group">
+            <label>Número de empleados asignados</label>
+            <input type="number" id="num_empleados" placeholder="Ej: 5" min="1" value="1">
+        </div>
+        <div class="form-group">
+            <label>Zona de operación</label>
+            <select id="zona">
+                <option value="general">Interior de la República</option>
+                <option value="frontera">Zona Frontera (BC, Son, Chih)</option>
+            </select>
+        </div>
+        <div class="form-group">
             <label>Situación Fiscal — SAT</label>
-            <select id="situacion_fiscal">
+            <select id="factura">
                 <option value="al_corriente">Facturación en regla</option>
                 <option value="irregular">Facturas irregulares</option>
                 <option value="sin_facturar">No facturo</option>
             </select>
         </div>
         <div class="form-group">
-            <label>Gestión Contable</label>
-            <select id="gestion_contable">
-                <option value="externo">Contador externo</option>
-                <option value="interno">Contador interno</option>
-                <option value="ninguno">Sin contador</option>
-            </select>
-        </div>
-        <div class="form-group">
             <label>Registro IMSS</label>
-            <select id="registro_imss">
+            <select id="imss">
                 <option value="completo">Plantilla 100% registrada</option>
                 <option value="parcial">Algunos sin registro</option>
                 <option value="ninguno">Sin registro</option>
@@ -124,18 +156,83 @@ select option { background: var(--panel); }
             </select>
         </div>
         <div class="form-group">
-            <label>Historial de Multas o Requerimientos</label>
+            <label>Historial de Multas</label>
             <select id="historial">
                 <option value="no">Sin historial</option>
                 <option value="si">Si tengo historial</option>
             </select>
         </div>
+        <button type="button" class="btn-primary" onclick="ejecutar('repse')">
+            <span>EJECUTAR DIAGNÓSTICO REPSE</span>
+        </button>
+    </div>
 
-        <button type="button" id="btn-diagnostico" class="btn-primary" onclick="ejecutar()">
+    <!-- PASO 2B: SUBCONTRATA -->
+    <div id="paso2b" class="hidden">
+        <div class="form-group">
+            <label>¿Cuántos proveedores de servicios tienes?</label>
+            <input type="number" id="num_proveedores" placeholder="Ej: 3" min="1" value="1">
+        </div>
+        <div class="form-group">
+            <label>¿Tus proveedores tienen REPSE vigente?</label>
+            <select id="repse_proveedor">
+                <option value="si">Sí, todos tienen REPSE</option>
+                <option value="algunos">Algunos tienen REPSE</option>
+                <option value="no">No sé / No tienen</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>¿Tienes contratos firmados con tus proveedores?</label>
+            <select id="contratos_proveedor">
+                <option value="todos">Sí, todos firmados</option>
+                <option value="algunos">Algunos sin contrato</option>
+                <option value="ninguno">Sin contratos</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>¿Verificas que paguen IMSS a sus trabajadores?</label>
+            <select id="verifica_imss">
+                <option value="si">Sí verifico</option>
+                <option value="no">No verifico</option>
+            </select>
+        </div>
+        <button type="button" class="btn-primary" onclick="ejecutar('subcontrata')">
             <span>EJECUTAR DIAGNÓSTICO</span>
         </button>
-    </form>
+    </div>
 
+    <!-- PASO 2C: NUEVO NEGOCIO -->
+    <div id="paso2c" class="hidden">
+        <div class="form-group">
+            <label>¿Qué tipo de empresa quieres crear?</label>
+            <select id="giro_nuevo">
+                <option value="limpieza">Limpieza</option>
+                <option value="seguridad">Seguridad privada</option>
+                <option value="mantenimiento">Mantenimiento</option>
+                <option value="otro">Otro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>¿Cuántos empleados planeas tener?</label>
+            <input type="number" id="empleados_nuevo" placeholder="Ej: 10" min="1" value="5">
+        </div>
+        <div class="form-group">
+            <label>¿Cuánto planeas cobrar por mes? ($)</label>
+            <input type="number" id="precio_nuevo" placeholder="Ej: 30000" min="0">
+        </div>
+        <div class="form-group">
+            <label>Zona de operación</label>
+            <select id="zona_nuevo">
+                <option value="general">Interior de la República</option>
+                <option value="frontera">Zona Frontera</option>
+            </select>
+        </div>
+        <button type="button" class="btn-primary" onclick="ejecutar('nuevo')">
+            <span>ANALIZAR VIABILIDAD</span>
+        </button>
+    </div>
+
+    <!-- RESULTADO -->
     <div id="resultado">
         <div class="score-big" id="score">--</div>
         <div class="clasificacion" id="clasificacion">--</div>
@@ -154,47 +251,102 @@ select option { background: var(--panel); }
     </div>
 
     <div class="legal">
-        MESAN Omega es un sistema de análisis predictivo basado en modelos matemáticos y estadísticos.<br>
+        MESAN Omega es un sistema de análisis predictivo.<br>
         Los resultados son indicadores orientativos.
     </div>
 </section>
 
-<a href="https://wa.me/526861629643" id="btn-wa-float" target="_blank" class="wa-float">WhatsApp</a>
+<a href="https://wa.me/526861629643" target="_blank" class="wa-float">WhatsApp</a>
 
 <script>
-async function ejecutar() {
-    const btn = document.getElementById("btn-diagnostico");
-    const div = document.getElementById("resultado");
-    const nombre = document.getElementById("nombre").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const telefono = document.getElementById("tel").value.trim();
+let tipoEmpresa = "";
+
+function seleccionarTipo(tipo) {
+    tipoEmpresa = tipo;
+    document.querySelectorAll(".tipo-btn").forEach(b => b.classList.remove("selected"));
+    event.target.closest(".tipo-btn").classList.add("selected");
+
+    document.getElementById("paso2a").classList.add("hidden");
+    document.getElementById("paso2b").classList.add("hidden");
+    document.getElementById("paso2c").classList.add("hidden");
+
+    if (tipo === "repse") document.getElementById("paso2a").classList.remove("hidden");
+    if (tipo === "subcontrata") document.getElementById("paso2b").classList.remove("hidden");
+    if (tipo === "nuevo") document.getElementById("paso2c").classList.remove("hidden");
+
+    setTimeout(() => {
+        document.getElementById("paso2a").scrollIntoView ? 
+        document.getElementById(`paso2${tipo === "repse" ? "a" : tipo === "subcontrata" ? "b" : "c"}`).scrollIntoView({behavior:"smooth"}) : null;
+    }, 100);
+}
+
+function getVal(id) {
+    const el = document.getElementById(id);
+    return el ? el.value : "";
+}
+
+async function ejecutar(tipo) {
+    const nombre = getVal("nombre").trim();
+    const email = getVal("email").trim();
+    const telefono = getVal("tel").trim();
 
     if (!nombre || !telefono) {
         alert("Por favor completa nombre y teléfono.");
         return;
     }
 
+    let payload = {
+        nombre: nombre.replace("Ω", "Omega"),
+        email: email,
+        telefono: telefono,
+        tipo_empresa: tipo
+    };
+
+    if (tipo === "repse") {
+        payload = {
+            ...payload,
+            giro: getVal("giro"),
+            precio_servicio: parseFloat(getVal("precio_servicio")) || 0,
+            num_empleados: parseInt(getVal("num_empleados")) || 1,
+            zona: getVal("zona"),
+            factura: getVal("factura"),
+            imss: getVal("imss"),
+            contratos: getVal("contratos"),
+            procesos: getVal("procesos"),
+            inspeccion: getVal("inspeccion"),
+            historial: getVal("historial")
+        };
+    } else if (tipo === "subcontrata") {
+        payload = {
+            ...payload,
+            num_proveedores: parseInt(getVal("num_proveedores")) || 1,
+            repse_proveedor: getVal("repse_proveedor"),
+            contratos_proveedor: getVal("contratos_proveedor"),
+            verifica_imss: getVal("verifica_imss")
+        };
+    } else if (tipo === "nuevo") {
+        payload = {
+            ...payload,
+            giro: getVal("giro_nuevo"),
+            num_empleados: parseInt(getVal("empleados_nuevo")) || 5,
+            precio_servicio: parseFloat(getVal("precio_nuevo")) || 0,
+            zona: getVal("zona_nuevo")
+        };
+    }
+
+    const btnId = tipo === "repse" ? "paso2a" : tipo === "subcontrata" ? "paso2b" : "paso2c";
+    const btn = document.querySelector(`#${btnId} .btn-primary`);
     btn.disabled = true;
-    btn.querySelector("span").textContent = "GENERANDO... ⏳";
+    btn.querySelector("span").textContent = "PROCESANDO... ⏳";
 
     try {
         const response = await fetch('https://mesan-api.onrender.com/enterprise', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                nombre: nombre,
-                email: email,
-                telefono: telefono,
-                giro: document.getElementById("giro").value,
-                situacion_fiscal: document.getElementById("situacion_fiscal").value,
-                gestion_contable: document.getElementById("gestion_contable").value,
-                registro_imss: document.getElementById("registro_imss").value,
-                contratos: document.getElementById("contratos").value,
-                procesos: document.getElementById("procesos").value,
-                inspeccion: document.getElementById("inspeccion").value,
-                historial: document.getElementById("historial").value
-            })
+            body: JSON.stringify(payload)
         });
+
+        if (!response.ok) throw new Error("Error en servidor");
 
         const data = await response.json();
         const resultado = data.resultado || data;
@@ -207,7 +359,7 @@ async function ejecutar() {
 
         document.getElementById("score").textContent = score;
         document.getElementById("clasificacion").textContent = cl;
-        document.getElementById("clasificacion").style.color = cl === "ALTO" ? "#ff3b5c" : cl === "MEDIO" ? "#ffaa00" : "#00e5a0";
+        document.getElementById("clasificacion").style.color = cl === "ALTO" || cl === "CRISIS FINANCIERA" || cl === "RIESGO LEGAL" ? "#ff3b5c" : cl === "MEDIO" || cl === "INEFICIENCIA" ? "#ffaa00" : "#00e5a0";
         document.getElementById("impacto-min").textContent = "$" + impMin.toLocaleString() + " MXN";
         document.getElementById("impacto-max").textContent = "$" + impMax.toLocaleString() + " MXN";
         document.getElementById("anual-line").textContent = "Riesgo estimado: hasta $" + impMax.toLocaleString() + " MXN";
@@ -222,19 +374,19 @@ async function ejecutar() {
 
         const msg = encodeURIComponent(
             "Hola, hice el diagnóstico MESAN Omega.\n\n" +
-            "Nombre: " + nombre + "\n" +
+            "Empresa: " + nombre + "\n" +
             "Teléfono: " + telefono + "\n" +
-            "Giro: " + document.getElementById("giro").value + "\n\n" +
+            "Tipo: " + tipo + "\n\n" +
             "Resultado: " + cl + " (Score: " + score + ")\n" +
             "Quiero agendar una llamada gratuita."
         );
 
         const waUrl = "https://wa.me/526861629643?text=" + msg;
-        if(document.getElementById("btn-wa")) document.getElementById("btn-wa").href = waUrl;
-        if(document.getElementById("btn-agenda")) document.getElementById("btn-agenda").href = waUrl;
+        document.getElementById("btn-wa").href = waUrl;
+        document.getElementById("btn-agenda").href = waUrl;
 
-        div.classList.add("show");
-        div.scrollIntoView({ behavior: "smooth" });
+        document.getElementById("resultado").classList.add("show");
+        document.getElementById("resultado").scrollIntoView({ behavior: "smooth" });
 
         btn.disabled = false;
         btn.querySelector("span").textContent = "DIAGNÓSTICO COMPLETADO ✅";
