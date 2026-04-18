@@ -81,4 +81,4 @@ def enviar_reporte_pdf(email_cliente, nombre, pdf_bytes):
         to=email_cliente,
         subject="Tu Reporte de Diagnostico MESAN Omega",
         html=html
-    ))
+    )
