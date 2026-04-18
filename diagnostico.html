@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MESAN Omega | Diagnóstico Empresarial</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
     --bg: #02060a; --panel: #0a1118; --accent: #00f3ff;
     --magenta: #ff0055; --text: #e2e8f0; --dim: #64748b;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; }
 .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
 .hero-tag { color: var(--dim); font-size: 11px; letter-spacing: 3px; margin-bottom: 10px; }
 h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 15px; line-height: 1.1; color: var(--accent); }
-.subtitulo { color: var(--dim); margin-bottom: 30px; max-width: 500px; }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; font-size: 11px; letter-spacing: 2px; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; }
+.subtitulo { color: var(--dim); margin-bottom: 30px; max-width: 500px; font-size: 14px; line-height: 1.6; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: 11px; letter-spacing: 2px; color: var(--dim); margin-bottom: 8px; text-transform: uppercase; }
 input, select {
     width: 100%;
     padding: 8px 12px;
@@ -26,33 +26,97 @@ input, select {
     color: var(--text);
     font-size: 14px;
     border-radius: 6px;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
-input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 8px rgba(0,243,255,0.2); }
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(0,243,255,0.15);
+}
 select option { background: var(--panel); }
-.btn-primary { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 15px 30px; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 3px; transition: 0.3s; width: 100%; margin-top: 10px; border-radius: 6px; }
-.btn-primary:hover { background: var(--accent); color: var(--bg); }
-.tipo-btn { background: var(--panel); border: 1px solid rgba(0,243,255,0.3); color: var(--text); padding: 20px; cursor: pointer; width: 100%; margin-bottom: 10px; text-align: left; transition: 0.3s; border-radius: 6px; display: block; }
-.tipo-btn:hover { border-color: var(--accent); box-shadow: 0 0 12px rgba(0,243,255,0.15); }
-.tipo-btn.selected { border-color: var(--accent); background: rgba(0,243,255,0.05); box-shadow: 0 0 15px rgba(0,243,255,0.2); }
-.tipo-title { font-family: 'Orbitron'; font-size: 12px; letter-spacing: 2px; color: var(--accent); margin-bottom: 5px; }
-.tipo-desc { font-size: 12px; color: var(--dim); }
-#resultado { margin-top: 30px; display: none; padding: 25px; border: 1px solid rgba(0,243,255,0.3); background: var(--panel); border-radius: 6px; }
+.btn-primary {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 15px 30px;
+    cursor: pointer;
+    font-family: 'Orbitron';
+    font-size: 12px;
+    letter-spacing: 3px;
+    transition: all 0.3s;
+    width: 100%;
+    margin-top: 15px;
+    border-radius: 6px;
+}
+.btn-primary:hover { background: var(--accent); color: var(--bg); box-shadow: 0 0 20px rgba(0,243,255,0.3); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.tipo-btn {
+    background: var(--panel);
+    border: 1px solid rgba(0,243,255,0.25);
+    color: var(--text);
+    padding: 18px 20px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+    text-align: left;
+    transition: all 0.35s ease;
+    border-radius: 8px;
+    display: block;
+}
+.tipo-btn:hover {
+    border-color: rgba(0,243,255,0.6);
+    box-shadow: 0 0 16px rgba(0,243,255,0.12);
+    transform: translateY(-1px);
+}
+.tipo-btn.selected {
+    border-color: var(--accent);
+    background: rgba(0,243,255,0.06);
+    box-shadow: 0 0 20px rgba(0,243,255,0.2);
+}
+.tipo-title { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; color: var(--accent); margin-bottom: 4px; }
+.tipo-desc { font-size: 12px; color: var(--dim); line-height: 1.4; }
+
+.cuestionario {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.6s ease, opacity 0.4s ease;
+}
+.cuestionario.visible {
+    max-height: 3000px;
+    opacity: 1;
+}
+
+#resultado {
+    margin-top: 30px;
+    display: none;
+    padding: 25px;
+    border: 1px solid rgba(0,243,255,0.3);
+    background: var(--panel);
+    border-radius: 8px;
+    animation: fadeIn 0.5s ease;
+}
 #resultado.show { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
 .score-big { font-family: 'Orbitron'; font-size: 4rem; color: var(--accent); text-align: center; }
 .clasificacion { text-align: center; font-size: 1.2rem; font-weight: bold; margin: 10px 0 20px; letter-spacing: 3px; }
-.impacto-box { background: rgba(255,0,85,0.1); border: 1px solid rgba(255,0,85,0.3); padding: 15px; margin: 15px 0; text-align: center; border-radius: 6px; }
+.impacto-box { background: rgba(255,0,85,0.08); border: 1px solid rgba(255,0,85,0.3); padding: 20px; margin: 15px 0; text-align: center; border-radius: 8px; }
 .impacto-val { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--magenta); }
-.impacto-lbl { font-size: 10px; color: var(--dim); letter-spacing: 2px; }
-.anual-line { color: var(--dim); font-size: 12px; text-align: center; margin: 5px 0 15px; }
+.impacto-lbl { font-size: 10px; color: var(--dim); letter-spacing: 2px; margin-top: 4px; }
+.anual-line { color: var(--dim); font-size: 12px; text-align: center; margin: 8px 0 15px; }
 .soluciones { list-style: none; margin: 15px 0; }
-.soluciones li { padding: 8px 0; border-bottom: 1px solid rgba(0,243,255,0.08); font-size: 13px; color: var(--dim); }
+.soluciones li { padding: 10px 0; border-bottom: 1px solid rgba(0,243,255,0.08); font-size: 13px; color: var(--dim); }
 .soluciones li::before { content: "▸ "; color: var(--accent); }
-.btn-agenda { display: block; text-align: center; padding: 15px; margin-top: 20px; background: var(--magenta); color: #fff; border: none; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; text-decoration: none; border-radius: 6px; }
-.btn-wa { display: block; text-align: center; padding: 12px; margin-top: 10px; border: 1px solid #25D366; color: #25D366; cursor: pointer; font-size: 12px; text-decoration: none; border-radius: 6px; }
+.btn-agenda { display: block; text-align: center; padding: 16px; margin-top: 20px; background: var(--magenta); color: #fff; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; text-decoration: none; border-radius: 6px; transition: 0.3s; }
+.btn-agenda:hover { opacity: 0.85; }
+.btn-wa { display: block; text-align: center; padding: 13px; margin-top: 10px; border: 1px solid #25D366; color: #25D366; cursor: pointer; font-size: 12px; text-decoration: none; border-radius: 6px; transition: 0.3s; }
+.btn-wa:hover { background: rgba(37,211,102,0.08); }
 .legal { margin-top: 40px; font-size: 10px; color: var(--dim); text-align: center; line-height: 1.6; }
-.wa-float { position: fixed; bottom: 20px; right: 20px; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 10px 15px; border-radius: 50px; background: rgba(0,0,0,0.8); font-size: 12px; }
-.hidden { display: none; }
-.seccion-titulo { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 3px; color: var(--accent); margin: 25px 0 15px; border-bottom: 1px solid rgba(0,243,255,0.1); padding-bottom: 8px; }
+.wa-float { position: fixed; bottom: 20px; right: 20px; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 10px 15px; border-radius: 50px; background: rgba(0,0,0,0.85); font-size: 12px; transition: 0.3s; }
+.wa-float:hover { box-shadow: 0 0 15px rgba(0,243,255,0.3); }
+.seccion-titulo { font-family: 'Orbitron'; font-size: 10px; letter-spacing: 3px; color: var(--accent); margin: 28px 0 14px; border-bottom: 1px solid rgba(0,243,255,0.1); padding-bottom: 8px; opacity: 0.8; }
 </style>
 </head>
 <body>
@@ -60,9 +124,9 @@ select option { background: var(--panel); }
 <section class="container">
     <div class="hero-tag">// Sistema de Inteligencia Empresarial</div>
     <h1>MESAN Omega</h1>
-    <p class="subtitulo">Responde 8 preguntas y te digo si tu empresa está perdiendo dinero.</p>
+    <p class="subtitulo">Responde 8 preguntas y te digo exactamente dónde está perdiendo dinero tu empresa.</p>
 
-    <!-- DATOS BÁSICOS -->
+    <!-- 01 CONTACTO -->
     <div class="seccion-titulo">01 — DATOS DE CONTACTO</div>
     <div class="form-group">
         <label>Nombre de tu empresa</label>
@@ -77,9 +141,9 @@ select option { background: var(--panel); }
         <input type="tel" id="tel" placeholder="686 123 4567">
     </div>
 
-    <!-- TIPO DE EMPRESA -->
+    <!-- 02 TIPO -->
     <div class="seccion-titulo">02 — TIPO DE EMPRESA</div>
-    <p style="color:var(--dim);font-size:12px;margin-bottom:12px;">¿Tu empresa subcontrata servicios o los presta?</p>
+    <p style="color:var(--dim);font-size:12px;margin-bottom:14px;">¿Tu empresa subcontrata servicios o los presta?</p>
 
     <button class="tipo-btn" id="btn-repse" onclick="seleccionarTipo('repse')">
         <div class="tipo-title">PRESTO SERVICIOS</div>
@@ -94,8 +158,8 @@ select option { background: var(--panel); }
         <div class="tipo-desc">Tengo un proyecto y quiero saber si es viable</div>
     </button>
 
-    <!-- CUESTIONARIO REPSE -->
-    <div id="paso-repse" class="hidden">
+    <!-- 03A REPSE -->
+    <div id="paso-repse" class="cuestionario">
         <div class="seccion-titulo">03 — DIAGNÓSTICO REPSE</div>
         <div class="form-group">
             <label>Giro de tu empresa</label>
@@ -178,8 +242,8 @@ select option { background: var(--panel); }
         </button>
     </div>
 
-    <!-- CUESTIONARIO SUBCONTRATA -->
-    <div id="paso-subcontrata" class="hidden">
+    <!-- 03B SUBCONTRATA -->
+    <div id="paso-subcontrata" class="cuestionario">
         <div class="seccion-titulo">03 — DIAGNÓSTICO PROVEEDOR</div>
         <div class="form-group">
             <label>¿Cuántos proveedores de servicios tienes?</label>
@@ -213,8 +277,8 @@ select option { background: var(--panel); }
         </button>
     </div>
 
-    <!-- CUESTIONARIO NUEVO NEGOCIO -->
-    <div id="paso-nuevo" class="hidden">
+    <!-- 03C NUEVO -->
+    <div id="paso-nuevo" class="cuestionario">
         <div class="seccion-titulo">03 — ANÁLISIS DE VIABILIDAD</div>
         <div class="form-group">
             <label>¿Qué tipo de empresa quieres crear?</label>
@@ -281,16 +345,18 @@ function seleccionarTipo(tipo) {
     document.querySelectorAll(".tipo-btn").forEach(b => b.classList.remove("selected"));
     document.getElementById("btn-" + tipo).classList.add("selected");
 
-    document.getElementById("paso-repse").classList.add("hidden");
-    document.getElementById("paso-subcontrata").classList.add("hidden");
-    document.getElementById("paso-nuevo").classList.add("hidden");
-
-    const pasoId = tipo === "repse" ? "paso-repse" : tipo === "subcontrata" ? "paso-subcontrata" : "paso-nuevo";
-    document.getElementById(pasoId).classList.remove("hidden");
+    ["paso-repse", "paso-subcontrata", "paso-nuevo"].forEach(id => {
+        document.getElementById(id).classList.remove("visible");
+    });
 
     setTimeout(() => {
-        document.getElementById(pasoId).scrollIntoView({ behavior: "smooth" });
-    }, 100);
+        const pasoId = tipo === "repse" ? "paso-repse" : tipo === "subcontrata" ? "paso-subcontrata" : "paso-nuevo";
+        document.getElementById(pasoId).classList.add("visible");
+
+        setTimeout(() => {
+            document.getElementById(pasoId).scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 300);
+    }, 50);
 }
 
 function getVal(id) {
@@ -389,7 +455,7 @@ async function ejecutar(tipo) {
         lista.innerHTML = "";
         soluciones.forEach(s => {
             const li = document.createElement("li");
-            li.textContent = typeof s === "string" ? s : `${s.area || ""} — ${s.accion || ""}`;
+            li.textContent = typeof s === "string" ? s : ${s.area || ""} — ${s.accion || ""};
             lista.appendChild(li);
         });
 
@@ -406,7 +472,7 @@ async function ejecutar(tipo) {
         document.getElementById("btn-agenda").href = waUrl;
 
         document.getElementById("resultado").classList.add("show");
-        document.getElementById("resultado").scrollIntoView({ behavior: "smooth" });
+        document.getElementById("resultado").scrollIntoView({ behavior: "smooth", block: "nearest" });
 
         btn.disabled = false;
         btn.querySelector("span").textContent = "DIAGNÓSTICO COMPLETADO ✅";
