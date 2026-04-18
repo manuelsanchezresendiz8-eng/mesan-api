@@ -15,7 +15,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-
 .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
 .hero-tag { color: var(--dim); font-size: 11px; letter-spacing: 3px; margin-bottom: 10px; }
 h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 15px; line-height: 1.1; color: var(--accent); }
-.hero p { color: var(--dim); margin-bottom: 30px; max-width: 500px; }
+.subtitulo { color: var(--dim); margin-bottom: 30px; max-width: 500px; }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; font-size: 11px; letter-spacing: 2px; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; }
 input, select { width: 100%; padding: 12px; background: var(--panel); border: 1px solid rgba(0,243,255,0.15); color: var(--text); font-size: 14px; border-radius: 2px; }
@@ -23,8 +23,8 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 select option { background: var(--panel); }
 .btn-primary { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 15px 30px; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 3px; transition: 0.3s; width: 100%; margin-top: 10px; }
 .btn-primary:hover { background: var(--accent); color: var(--bg); }
-.tipo-btn { background: var(--panel); border: 1px solid rgba(0,243,255,0.2); color: var(--text); padding: 20px; cursor: pointer; width: 100%; margin-bottom: 10px; text-align: left; transition: 0.3s; border-radius: 4px; }
-.tipo-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tipo-btn { background: var(--panel); border: 1px solid rgba(0,243,255,0.2); color: var(--text); padding: 20px; cursor: pointer; width: 100%; margin-bottom: 10px; text-align: left; transition: 0.3s; border-radius: 4px; display: block; }
+.tipo-btn:hover { border-color: var(--accent); }
 .tipo-btn.selected { border-color: var(--accent); background: rgba(0,243,255,0.05); }
 .tipo-title { font-family: 'Orbitron'; font-size: 12px; letter-spacing: 2px; color: var(--accent); margin-bottom: 5px; }
 .tipo-desc { font-size: 12px; color: var(--dim); }
@@ -44,6 +44,7 @@ select option { background: var(--panel); }
 .legal { margin-top: 40px; font-size: 10px; color: var(--dim); text-align: center; line-height: 1.6; }
 .wa-float { position: fixed; bottom: 20px; right: 20px; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 10px 15px; border-radius: 50px; background: rgba(0,0,0,0.8); font-size: 12px; }
 .hidden { display: none; }
+.seccion-titulo { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 3px; color: var(--accent); margin: 25px 0 15px; border-bottom: 1px solid rgba(0,243,255,0.1); padding-bottom: 8px; }
 </style>
 </head>
 <body>
@@ -51,41 +52,44 @@ select option { background: var(--panel); }
 <section class="container">
     <div class="hero-tag">// Sistema de Inteligencia Empresarial</div>
     <h1>MESAN Omega</h1>
-    <p class="hero p">Te digo dónde estás perdiendo dinero y cómo arreglarlo en segundos.</p>
+    <p class="subtitulo">Responde 8 preguntas y te digo si tu empresa está perdiendo dinero.</p>
 
-    <!-- PASO 1: DATOS BÁSICOS -->
-    <div id="paso1">
-        <div class="form-group">
-            <label>Nombre de tu empresa</label>
-            <input type="text" id="nombre" placeholder="Constructora ABC" required>
-        </div>
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="email" placeholder="tu@empresa.com">
-        </div>
-        <div class="form-group">
-            <label>Teléfono WhatsApp</label>
-            <input type="tel" id="tel" placeholder="686 123 4567">
-        </div>
-        <div class="form-group">
-            <label>¿Tu empresa subcontrata servicios o los presta?</label>
-            <button class="tipo-btn" onclick="seleccionarTipo('presta')">
-                <div class="tipo-title">PRESTO SERVICIOS</div>
-                <div class="tipo-desc">Limpieza, seguridad, mantenimiento, outsourcing, REPSE</div>
-            </button>
-            <button class="tipo-btn" onclick="seleccionarTipo('subcontrata')">
-                <div class="tipo-title">SUBCONTRATO SERVICIOS</div>
-                <div class="tipo-desc">Soy empresa que contrata proveedores externos</div>
-            </button>
-            <button class="tipo-btn" onclick="seleccionarTipo('nuevo')">
-                <div class="tipo-title">QUIERO CREAR UNA EMPRESA</div>
-                <div class="tipo-desc">Tengo un proyecto y quiero saber si es viable</div>
-            </button>
-        </div>
+    <!-- DATOS BÁSICOS -->
+    <div class="seccion-titulo">01 — DATOS DE CONTACTO</div>
+    <div class="form-group">
+        <label>Nombre de tu empresa</label>
+        <input type="text" id="nombre" placeholder="Constructora ABC">
+    </div>
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="tu@empresa.com">
+    </div>
+    <div class="form-group">
+        <label>Teléfono WhatsApp</label>
+        <input type="tel" id="tel" placeholder="686 123 4567">
     </div>
 
-    <!-- PASO 2A: PRESTA SERVICIOS (REPSE) -->
-    <div id="paso2a" class="hidden">
+    <!-- TIPO DE EMPRESA -->
+    <div class="seccion-titulo">02 — TIPO DE EMPRESA</div>
+    <div class="form-group">
+        <label>¿Tu empresa subcontrata servicios o los presta?</label>
+        <button class="tipo-btn" id="btn-repse" onclick="seleccionarTipo('repse', this)">
+            <div class="tipo-title">PRESTO SERVICIOS</div>
+            <div class="tipo-desc">Limpieza, seguridad, mantenimiento, outsourcing, REPSE</div>
+        </button>
+        <button class="tipo-btn" id="btn-subcontrata" onclick="seleccionarTipo('subcontrata', this)">
+            <div class="tipo-title">SUBCONTRATO SERVICIOS</div>
+            <div class="tipo-desc">Soy empresa que contrata proveedores externos</div>
+        </button>
+        <button class="tipo-btn" id="btn-nuevo" onclick="seleccionarTipo('nuevo', this)">
+            <div class="tipo-title">QUIERO CREAR UNA EMPRESA</div>
+            <div class="tipo-desc">Tengo un proyecto y quiero saber si es viable</div>
+        </button>
+    </div>
+
+    <!-- CUESTIONARIO REPSE -->
+    <div id="paso-repse" class="hidden">
+        <div class="seccion-titulo">03 — DIAGNÓSTICO REPSE</div>
         <div class="form-group">
             <label>Giro de tu empresa</label>
             <select id="giro">
@@ -117,7 +121,7 @@ select option { background: var(--panel); }
             </select>
         </div>
         <div class="form-group">
-            <label>Situación Fiscal — SAT</label>
+            <label>Situación Fiscal</label>
             <select id="factura">
                 <option value="al_corriente">Facturación en regla</option>
                 <option value="irregular">Facturas irregulares</option>
@@ -167,8 +171,9 @@ select option { background: var(--panel); }
         </button>
     </div>
 
-    <!-- PASO 2B: SUBCONTRATA -->
-    <div id="paso2b" class="hidden">
+    <!-- CUESTIONARIO SUBCONTRATA -->
+    <div id="paso-subcontrata" class="hidden">
+        <div class="seccion-titulo">03 — DIAGNÓSTICO PROVEEDOR</div>
         <div class="form-group">
             <label>¿Cuántos proveedores de servicios tienes?</label>
             <input type="number" id="num_proveedores" placeholder="Ej: 3" min="1" value="1">
@@ -201,14 +206,16 @@ select option { background: var(--panel); }
         </button>
     </div>
 
-    <!-- PASO 2C: NUEVO NEGOCIO -->
-    <div id="paso2c" class="hidden">
+    <!-- CUESTIONARIO NUEVO NEGOCIO -->
+    <div id="paso-nuevo" class="hidden">
+        <div class="seccion-titulo">03 — ANÁLISIS DE VIABILIDAD</div>
         <div class="form-group">
             <label>¿Qué tipo de empresa quieres crear?</label>
             <select id="giro_nuevo">
                 <option value="limpieza">Limpieza</option>
                 <option value="seguridad">Seguridad privada</option>
                 <option value="mantenimiento">Mantenimiento</option>
+                <option value="jardineria">Jardinería</option>
                 <option value="otro">Otro</option>
             </select>
         </div>
@@ -261,22 +268,21 @@ select option { background: var(--panel); }
 <script>
 let tipoEmpresa = "";
 
-function seleccionarTipo(tipo) {
+function seleccionarTipo(tipo, btn) {
     tipoEmpresa = tipo;
+
     document.querySelectorAll(".tipo-btn").forEach(b => b.classList.remove("selected"));
-    event.target.closest(".tipo-btn").classList.add("selected");
+    btn.classList.add("selected");
 
-    document.getElementById("paso2a").classList.add("hidden");
-    document.getElementById("paso2b").classList.add("hidden");
-    document.getElementById("paso2c").classList.add("hidden");
+    document.getElementById("paso-repse").classList.add("hidden");
+    document.getElementById("paso-subcontrata").classList.add("hidden");
+    document.getElementById("paso-nuevo").classList.add("hidden");
 
-    if (tipo === "repse") document.getElementById("paso2a").classList.remove("hidden");
-    if (tipo === "subcontrata") document.getElementById("paso2b").classList.remove("hidden");
-    if (tipo === "nuevo") document.getElementById("paso2c").classList.remove("hidden");
+    const pasoId = tipo === "repse" ? "paso-repse" : tipo === "subcontrata" ? "paso-subcontrata" : "paso-nuevo";
+    document.getElementById(pasoId).classList.remove("hidden");
 
     setTimeout(() => {
-        document.getElementById("paso2a").scrollIntoView ? 
-        document.getElementById(`paso2${tipo === "repse" ? "a" : tipo === "subcontrata" ? "b" : "c"}`).scrollIntoView({behavior:"smooth"}) : null;
+        document.getElementById(pasoId).scrollIntoView({ behavior: "smooth" });
     }, 100);
 }
 
@@ -303,8 +309,7 @@ async function ejecutar(tipo) {
     };
 
     if (tipo === "repse") {
-        payload = {
-            ...payload,
+        Object.assign(payload, {
             giro: getVal("giro"),
             precio_servicio: parseFloat(getVal("precio_servicio")) || 0,
             num_empleados: parseInt(getVal("num_empleados")) || 1,
@@ -315,27 +320,25 @@ async function ejecutar(tipo) {
             procesos: getVal("procesos"),
             inspeccion: getVal("inspeccion"),
             historial: getVal("historial")
-        };
+        });
     } else if (tipo === "subcontrata") {
-        payload = {
-            ...payload,
+        Object.assign(payload, {
             num_proveedores: parseInt(getVal("num_proveedores")) || 1,
             repse_proveedor: getVal("repse_proveedor"),
             contratos_proveedor: getVal("contratos_proveedor"),
             verifica_imss: getVal("verifica_imss")
-        };
+        });
     } else if (tipo === "nuevo") {
-        payload = {
-            ...payload,
+        Object.assign(payload, {
             giro: getVal("giro_nuevo"),
             num_empleados: parseInt(getVal("empleados_nuevo")) || 5,
             precio_servicio: parseFloat(getVal("precio_nuevo")) || 0,
             zona: getVal("zona_nuevo")
-        };
+        });
     }
 
-    const btnId = tipo === "repse" ? "paso2a" : tipo === "subcontrata" ? "paso2b" : "paso2c";
-    const btn = document.querySelector(`#${btnId} .btn-primary`);
+    const pasoId = tipo === "repse" ? "paso-repse" : tipo === "subcontrata" ? "paso-subcontrata" : "paso-nuevo";
+    const btn = document.querySelector(`#${pasoId} .btn-primary`);
     btn.disabled = true;
     btn.querySelector("span").textContent = "PROCESANDO... ⏳";
 
@@ -359,7 +362,18 @@ async function ejecutar(tipo) {
 
         document.getElementById("score").textContent = score;
         document.getElementById("clasificacion").textContent = cl;
-        document.getElementById("clasificacion").style.color = cl === "ALTO" || cl === "CRISIS FINANCIERA" || cl === "RIESGO LEGAL" ? "#ff3b5c" : cl === "MEDIO" || cl === "INEFICIENCIA" ? "#ffaa00" : "#00e5a0";
+
+        const colores = {
+            "CRISIS FINANCIERA": "#ff3b5c",
+            "RIESGO LEGAL": "#ff3b5c",
+            "RIESGO OPERATIVO": "#ff3b5c",
+            "RIESGO REPSE": "#ffaa00",
+            "INEFICIENCIA": "#ffaa00",
+            "OPTIMIZACION": "#00f3ff",
+            "ESTABLE": "#00e5a0"
+        };
+        document.getElementById("clasificacion").style.color = colores[cl] || "#00e5a0";
+
         document.getElementById("impacto-min").textContent = "$" + impMin.toLocaleString() + " MXN";
         document.getElementById("impacto-max").textContent = "$" + impMax.toLocaleString() + " MXN";
         document.getElementById("anual-line").textContent = "Riesgo estimado: hasta $" + impMax.toLocaleString() + " MXN";
@@ -375,8 +389,7 @@ async function ejecutar(tipo) {
         const msg = encodeURIComponent(
             "Hola, hice el diagnóstico MESAN Omega.\n\n" +
             "Empresa: " + nombre + "\n" +
-            "Teléfono: " + telefono + "\n" +
-            "Tipo: " + tipo + "\n\n" +
+            "Teléfono: " + telefono + "\n\n" +
             "Resultado: " + cl + " (Score: " + score + ")\n" +
             "Quiero agendar una llamada gratuita."
         );
