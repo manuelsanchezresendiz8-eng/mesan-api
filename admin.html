@@ -27,6 +27,7 @@ h1{font-family:'Orbitron';color:var(--cyan);letter-spacing:6px;}
 select{background:#000;color:#fff;border:1px solid var(--border);padding:5px;}
 .empty{text-align:center;color:var(--dim);padding:40px;}
 .timer{font-size:10px;color:var(--dim);}
+.giro-tag{display:inline-block;font-size:9px;padding:2px 8px;border:1px solid rgba(0,243,255,0.3);color:var(--cyan);margin-bottom:6px;border-radius:3px;}
 </style>
 </head>
 <body>
@@ -58,6 +59,23 @@ if (!API_KEY) {
 function logout(){
   localStorage.removeItem("mesan_key");
   location.reload();
+}
+
+function formatFecha(fecha) {
+  if (!fecha) return "-";
+  try {
+    return new Date(fecha).toLocaleString("es-MX", {
+      timeZone: "America/Hermosillo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+    });
+  } catch(e) {
+    return fecha.substring(0, 16).replace("T", " ");
+  }
 }
 
 async function cargar(){
@@ -106,15 +124,23 @@ function render(leads){
       l.clasificacion === "MEDIO" ? "vulnerable" : "estable";
 
     const tel = (l.telefono || "").replace(/\D/g,"");
-    const waLink = tel ? `https://wa.me/52${tel}?text=Hola ${l.nombre||""}, revisé tu diagnóstico MESAN Ω` : "#";
+    const waMsg = encodeURIComponent(
+      "Hola " + (l.nombre || "") + ", revisé tu diagnóstico MESAN Omega.\n" +
+      "Score: " + (l.score || 0) + " — " + (l.clasificacion || "") + "\n" +
+      "¿Tienes 15 minutos para una llamada?"
+    );
+    const waLink = tel ? `https://wa.me/52${tel}?text=${waMsg}` : "#";
+
+    const giro = l.giro ? `<span class="giro-tag">${l.giro.toUpperCase()}</span><br>` : "";
 
     html += `
       <div class="card ${tipo}">
+        ${giro}
         <b>${l.nombre || "Sin nombre"}</b><br>
         Score: ${l.score || 0} (${l.clasificacion || "N/A"})<br>
         Email: ${l.email || "-"}<br>
         Tel: ${l.telefono || "-"}<br>
-        Fecha: ${l.fecha ? l.fecha.substring(0,16).replace("T"," ") : "-"}<br><br>
+        Fecha: ${formatFecha(l.fecha)}<br><br>
 
         <a href="${waLink}" target="_blank" class="btn btn-wa">WhatsApp</a>
         <a href="tel:${l.telefono || ""}" class="btn btn-call">Llamar</a>
@@ -163,4 +189,3 @@ cargar();
 </script>
 </body>
 </html>
-
