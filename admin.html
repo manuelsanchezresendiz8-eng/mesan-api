@@ -28,6 +28,8 @@ select{background:#000;color:#fff;border:1px solid var(--border);padding:5px;}
 .empty{text-align:center;color:var(--dim);padding:40px;}
 .timer{font-size:10px;color:var(--dim);}
 .giro-tag{display:inline-block;font-size:9px;padding:2px 8px;border:1px solid rgba(0,243,255,0.3);color:var(--cyan);margin-bottom:6px;border-radius:3px;}
+.orden-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:4px 10px;font-size:10px;cursor:pointer;margin-left:10px;}
+.orden-btn.active{border-color:var(--cyan);color:var(--cyan);}
 </style>
 </head>
 <body>
@@ -38,10 +40,13 @@ select{background:#000;color:#fff;border:1px solid var(--border);padding:5px;}
 <div class="stats">
   <div class="stat"><div class="stat-num" id="total">0</div><div class="stat-lbl">Total</div></div>
   <div class="stat"><div class="stat-num red" id="criticos">0</div><div class="stat-lbl">Críticos</div></div>
+  <div class="stat"><div class="stat-num" id="pagados">0</div><div class="stat-lbl">Pagados</div></div>
 </div>
 
 <button onclick="cargar()">Actualizar</button>
 <button onclick="logout()">Cerrar sesión</button>
+<button class="orden-btn active" id="btn-fecha" onclick="ordenar('fecha')">📅 Recientes</button>
+<button class="orden-btn" id="btn-score" onclick="ordenar('score')">🔥 Score</button>
 <span class="timer" id="timer">Auto-refresh: 30s</span>
 
 <div id="leads"></div>
@@ -50,6 +55,8 @@ select{background:#000;color:#fff;border:1px solid var(--border);padding:5px;}
 const API = "https://mesan-api.onrender.com";
 let API_KEY = localStorage.getItem("mesan_key");
 let countdown = 30;
+let ordenActual = "fecha";
+let leadsCache = [];
 
 if (!API_KEY) {
   API_KEY = prompt("Ingrese API Key MESAN Ω");
@@ -78,6 +85,13 @@ function formatFecha(fecha) {
   }
 }
 
+function ordenar(tipo) {
+  ordenActual = tipo;
+  document.getElementById("btn-fecha").classList.toggle("active", tipo === "fecha");
+  document.getElementById("btn-score").classList.toggle("active", tipo === "score");
+  render(leadsCache);
+}
+
 async function cargar(){
   if (!API_KEY) return;
   try{
@@ -94,7 +108,8 @@ async function cargar(){
     if (!res.ok) throw new Error();
 
     const data = await res.json();
-    render(data.leads || []);
+    leadsCache = data.leads || [];
+    render(leadsCache);
     countdown = 30;
 
   }catch(e){
@@ -107,7 +122,9 @@ async function cargar(){
 function render(leads){
   document.getElementById("total").innerText = leads.length;
   document.getElementById("criticos").innerText =
-    leads.filter(l=>l.clasificacion==="ALTO").length;
+    leads.filter(l=>l.clasificacion==="ALTO" || l.clasificacion==="CRISIS FINANCIERA").length;
+  document.getElementById("pagados").innerText =
+    leads.filter(l=>l.estatus==="pagado").length;
 
   if (!leads.length){
     document.getElementById("leads").innerHTML =
@@ -115,13 +132,20 @@ function render(leads){
     return;
   }
 
-  leads.sort((a,b)=>(b.score||0)-(a.score||0));
+  // ORDENAR
+  const sorted = [...leads];
+  if (ordenActual === "fecha") {
+    sorted.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+  } else {
+    sorted.sort((a,b) => (b.score||0) - (a.score||0));
+  }
+
   let html = "";
 
-  leads.forEach(l => {
+  sorted.forEach(l => {
     const tipo =
-      l.clasificacion === "ALTO" ? "critico" :
-      l.clasificacion === "MEDIO" ? "vulnerable" : "estable";
+      l.clasificacion === "ALTO" || l.clasificacion === "CRISIS FINANCIERA" ? "critico" :
+      l.clasificacion === "MEDIO" || l.clasificacion === "INEFICIENCIA" ? "vulnerable" : "estable";
 
     const tel = (l.telefono || "").replace(/\D/g,"");
     const waMsg = encodeURIComponent(
@@ -129,9 +153,9 @@ function render(leads){
       "Score: " + (l.score || 0) + " — " + (l.clasificacion || "") + "\n" +
       "¿Tienes 15 minutos para una llamada?"
     );
-    const waLink = tel ? `https://wa.me/52${tel}?text=${waMsg}` : "#";
+    const waLink = tel ? https://wa.me/52${tel}?text=${waMsg} : "#";
 
-    const giro = l.giro ? `<span class="giro-tag">${l.giro.toUpperCase()}</span><br>` : "";
+    const giro = l.giro ? <span class="giro-tag">${l.giro.toUpperCase()}</span><br> : "";
 
     html += `
       <div class="card ${tipo}">
@@ -140,6 +164,7 @@ function render(leads){
         Score: ${l.score || 0} (${l.clasificacion || "N/A"})<br>
         Email: ${l.email || "-"}<br>
         Tel: ${l.telefono || "-"}<br>
+        Exposición: $${(l.impacto_min||0).toLocaleString()} - $${(l.impacto_max||0).toLocaleString()} MXN<br>
         Fecha: ${formatFecha(l.fecha)}<br><br>
 
         <a href="${waLink}" target="_blank" class="btn btn-wa">WhatsApp</a>
