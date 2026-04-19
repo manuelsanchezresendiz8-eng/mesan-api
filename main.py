@@ -27,7 +27,7 @@ from pro.diagnostico import diagnostico_router
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.4.3"
+VERSION = "2.4.5"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -148,8 +148,38 @@ def serialize_lead(l):
         "impacto_min": l.impacto_min,
         "impacto_max": l.impacto_max,
         "estatus": l.estatus,
-        "fecha": l.fecha
+        "fecha": str(l.fecha) if l.fecha else None,
+        "giro": getattr(l, "giro", None)
     }
+
+# =========================================
+# NORMALIZE INPUT — FIX CRÍTICO
+# =========================================
+def normalize_input(data: dict) -> dict:
+
+    normalized = dict(data)
+
+    # Mapeo campos frontend → motor
+    field_map = {
+        "situacion_fiscal": "factura",
+        "gestion_contable": "contabilidad",
+        "registro_imss": "imss",
+        "contratos_laborales": "contratos",
+        "procesos_documentados": "procesos",
+        "ante_inspeccion": "inspeccion",
+        "historial_multas": "historial",
+    }
+
+    for k, v in field_map.items():
+        if k in data and v not in data:
+            normalized[v] = data[k]
+
+    # Blindar nombre — no se pierde
+    raw_nombre = data.get("nombre")
+    if raw_nombre:
+        normalized["nombre"] = raw_nombre.strip()
+
+    return normalized
 
 # =========================================
 # ROOT / HEALTH
@@ -157,7 +187,7 @@ def serialize_lead(l):
 @app.get("/")
 @app.head("/")
 async def root():
-    return response({"status": "MESAN-Ω API activa", "version": VERSION})
+    return response({"status": "MESAN-Omega API activa", "version": VERSION})
 
 @app.get("/health")
 @app.head("/health")
@@ -202,18 +232,22 @@ async def enterprise(data: dict, request: Request):
         if not isinstance(data, dict):
             return JSONResponse(status_code=400, content={"error": "Payload inválido"})
 
+        # NORMALIZAR INPUT — FIX CRÍTICO
+        data = normalize_input(data)
+
         nombre = (data.get("nombre") or "").strip() or "Sin nombre"
         email = (data.get("email") or "").strip()
         telefono = (data.get("telefono") or "").strip() or "Sin teléfono"
+        giro = (data.get("giro") or "").strip()
 
-        logging.warning(f"LEAD FINAL → {nombre} | {email} | {telefono}")
+        logging.warning(f"LEAD FINAL → {nombre} | {email} | {telefono} | {giro}")
 
         # MOTOR
         resultado = {}
         if sistema_enterprise:
             try:
                 resultado = sistema_enterprise(data) or {}
-            except Exception as e:
+            except Exception:
                 logging.error(f"ERROR motor: {traceback.format_exc()}")
                 resultado = {
                     "clasificacion": "MEDIO",
@@ -331,6 +365,24 @@ async def obtener_leads(api_key: str = Header(None, alias="api-key")):
     except Exception:
         logging.error(traceback.format_exc())
         return response({"error": "Error obteniendo leads"}, 500)
+
+# =========================================
+# LEAD INDIVIDUAL
+# =========================================
+@app.get("/lead/{lead_id}")
+async def obtener_lead(lead_id: str, api_key: str = Header(None, alias="api-key")):
+    if not api_key or api_key != os.environ.get("MESAN_API_KEY"):
+        return response({"error": "No autorizado"}, 403)
+    try:
+        db = SessionLocal()
+        lead = db.query(Lead).filter(Lead.id == lead_id).first()
+        db.close()
+        if not lead:
+            return response({"error": "No encontrado"}, 404)
+        return response(serialize_lead(lead))
+    except Exception:
+        logging.error(traceback.format_exc())
+        return response({"error": "Error obteniendo lead"}, 500)
 
 # =========================================
 # ACTUALIZAR LEAD
