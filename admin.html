@@ -122,7 +122,7 @@ async function cargar(){
 function render(leads){
   document.getElementById("total").innerText = leads.length;
   document.getElementById("criticos").innerText =
-    leads.filter(l=>l.clasificacion==="ALTO" || l.clasificacion==="CRISIS FINANCIERA").length;
+    leads.filter(l=>l.clasificacion==="ALTO" || l.clasificacion==="CRISIS FINANCIERA" || l.clasificacion==="RIESGO OPERATIVO" || l.clasificacion==="RIESGO LEGAL").length;
   document.getElementById("pagados").innerText =
     leads.filter(l=>l.estatus==="pagado").length;
 
@@ -132,7 +132,6 @@ function render(leads){
     return;
   }
 
-  // ORDENAR
   const sorted = [...leads];
   if (ordenActual === "fecha") {
     sorted.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
@@ -143,9 +142,9 @@ function render(leads){
   let html = "";
 
   sorted.forEach(l => {
-    const tipo =
-      l.clasificacion === "ALTO" || l.clasificacion === "CRISIS FINANCIERA" ? "critico" :
-      l.clasificacion === "MEDIO" || l.clasificacion === "INEFICIENCIA" ? "vulnerable" : "estable";
+    const criticos = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
+    const medios = ["MEDIO","INEFICIENCIA","RIESGO REPSE"];
+    const tipo = criticos.includes(l.clasificacion) ? "critico" : medios.includes(l.clasificacion) ? "vulnerable" : "estable";
 
     const tel = (l.telefono || "").replace(/\D/g,"");
     const waMsg = encodeURIComponent(
@@ -153,9 +152,8 @@ function render(leads){
       "Score: " + (l.score || 0) + " — " + (l.clasificacion || "") + "\n" +
       "¿Tienes 15 minutos para una llamada?"
     );
-    const waLink = tel ? https://wa.me/52${tel}?text=${waMsg} : "#";
-
-    const giro = l.giro ? <span class="giro-tag">${l.giro.toUpperCase()}</span><br> : "";
+    const waLink = tel ? `https://wa.me/52${tel}?text=${waMsg}` : "#";
+    const giro = l.giro ? `<span class="giro-tag">${l.giro.toUpperCase()}</span><br>` : "";
 
     html += `
       <div class="card ${tipo}">
@@ -166,11 +164,9 @@ function render(leads){
         Tel: ${l.telefono || "-"}<br>
         Exposición: $${(l.impacto_min||0).toLocaleString()} - $${(l.impacto_max||0).toLocaleString()} MXN<br>
         Fecha: ${formatFecha(l.fecha)}<br><br>
-
         <a href="${waLink}" target="_blank" class="btn btn-wa">WhatsApp</a>
         <a href="tel:${l.telefono || ""}" class="btn btn-call">Llamar</a>
         <button class="btn btn-id" onclick="copiar('${l.id}')">ID</button>
-
         <select onchange="update('${l.id}',this.value)">
           <option value="nuevo" ${l.estatus==="nuevo"?"selected":""}>nuevo</option>
           <option value="contactado" ${l.estatus==="contactado"?"selected":""}>contactado</option>
@@ -214,3 +210,5 @@ cargar();
 </script>
 </body>
 </html>
+  
+     
