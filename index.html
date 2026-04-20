@@ -3,138 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω - Intelligence Engine</title>
+    <title>MESAN Ω - Soberanía Empresarial</title>
     <style>
         :root {
-            --accent-cyan: #00d4ff;
-            --bg-deep: #020617;
-            --glass-bg: rgba(15, 23, 42, 0.8);
-            --border-tech: rgba(0, 212, 255, 0.2);
+            --cyan-glow: #00d4ff;
+            --deep-space: #010409;
+            --card-bg: rgba(13, 17, 23, 0.8);
+            --border-tech: rgba(0, 212, 255, 0.3);
         }
 
         body {
             margin: 0;
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: radial-gradient(circle at top, #0c1e35 0%, #020617 100%);
-            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            /* Fondo con profundidad y partículas simuladas */
+            background: radial-gradient(circle at 50% 30%, #0c213d 0%, #010409 100%);
+            background-attachment: fixed;
+            color: #ffffff;
             display: flex;
             justify-content: center;
             min-height: 100vh;
         }
 
-        .phone-view {
+        .phone-container {
             width: 100%;
-            max-width: 400px;
-            padding: 30px 20px;
-        }
-
-        /* HEADER EJECUTIVO */
-        .brand {
-            font-size: 14px;
-            letter-spacing: 6px;
-            color: #94a3b8;
-            margin-bottom: 40px;
+            max-width: 414px;
+            padding: 40px 25px;
+            box-sizing: border-box;
             text-align: center;
         }
-        .brand span { color: var(--accent-cyan); text-shadow: 0 0 10px var(--accent-cyan); }
 
-        .headline {
-            font-size: 28px;
+        /* LOGO */
+        .header-logo {
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 5px;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+        }
+        .header-logo span { color: var(--cyan-glow); text-shadow: 0 0 10px var(--cyan-glow); }
+
+        /* TÍTULOS */
+        .main-title {
+            font-size: 32px;
             font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 15px;
-            text-align: left;
+            line-height: 1.1;
+            margin-bottom: 20px;
         }
-        .headline em { 
-            font-style: normal; 
-            color: var(--accent-cyan);
-            background: linear-gradient(90deg, #00d4ff, #0082ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .main-title span {
+            color: var(--cyan-glow);
+            text-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
         }
 
-        .sub-headline {
+        .sub-text {
+            color: #8b949e;
             font-size: 14px;
-            color: #64748b;
+            line-height: 1.5;
             margin-bottom: 35px;
-            text-align: left;
+            padding: 0 10px;
         }
 
-        /* BOTÓN DE ALTO IMPACTO */
-        .btn-action {
+        /* BOTÓN PRINCIPAL CON RESPLANDOR */
+        .btn-glow {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             background: transparent;
-            border: 1px solid var(--accent-cyan);
-            color: var(--accent-cyan);
+            border: 1.5px solid var(--cyan-glow);
+            color: var(--cyan-glow);
+            font-size: 14px;
             font-weight: 700;
             letter-spacing: 2px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.4s ease;
+            border-radius: 6px;
             text-transform: uppercase;
-            box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.1);
-        }
-        .btn-action:hover {
-            background: var(--accent-cyan);
-            color: #000;
-            box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), inset 0 0 10px rgba(0, 212, 255, 0.1);
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        /* TARJETAS DE MÓDULOS */
-        .card {
-            background: var(--glass-bg);
+        /* MÓDULOS ESTILO CRISTAL */
+        .module-list { margin-top: 40px; }
+
+        .module-card {
+            background: var(--card-bg);
             border: 1px solid var(--border-tech);
             border-radius: 8px;
-            padding: 20px;
-            margin-top: 25px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
+            text-align: left;
         }
 
-        .card-info b { display: block; font-size: 13px; letter-spacing: 1px; color: #f1f5f9; }
-        .card-info span { font-size: 11px; color: #64748b; text-transform: uppercase; }
-        
-        .status-icon { color: var(--accent-cyan); font-size: 18px; }
+        .module-card h3 { margin: 0; font-size: 13px; letter-spacing: 1px; color: #f0f6fc; }
+        .module-card p { margin: 4px 0 0; font-size: 11px; color: #8b949e; }
 
-        /* SECCIÓN DE ALERTA */
-        .alert-box {
-            margin-top: 30px;
+        .icon-cyan { color: var(--cyan-glow); }
+        .icon-purple { color: #bf7af0; }
+
+        /* ALERTA DE RIESGO */
+        .alert-panel {
+            margin-top: 25px;
             padding: 20px;
-            background: rgba(220, 38, 38, 0.05);
-            border-left: 3px solid #ef4444;
-            border-radius: 4px;
+            background: rgba(248, 81, 73, 0.05);
+            border: 1px solid rgba(248, 81, 73, 0.2);
+            border-left: 4px solid #f85149;
+            border-radius: 6px;
+            text-align: left;
         }
-        .alert-title { color: #ef4444; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 10px; }
-        .alert-val { font-size: 24px; font-weight: 700; color: #fff; margin: 10px 0; }
+
+        .alert-panel h4 { margin: 0 0 10px; color: #f85149; font-size: 12px; font-weight: 900; }
+        .alert-panel .amount { font-size: 26px; font-weight: 800; color: #fff; margin: 8px 0; }
+        .alert-panel small { color: #484f58; font-size: 11px; }
+
+        /* FOOTER */
+        .footer-tag {
+            margin-top: 50px;
+            font-size: 10px;
+            color: #30363d;
+            letter-spacing: 3px;
+        }
     </style>
 </head>
 <body>
 
-<div class="phone-view">
-    <div class="brand">MESAN <span>Ω</span></div>
+<div class="phone-container">
+    <div class="header-logo">MESAN <span>Ω</span></div>
 
-    <h1 class="headline">Arquitectura y<br><em>Soberanía</em></h1>
-    <p class="sub-headline">Análisis predictivo de vulnerabilidades fiscales y laborales para toma de decisiones nivel C-Suite.</p>
+    <h1 class="main-title">Arquitectura y<br><span>Soberanía</span><br>Empresarial</h1>
+    
+    <p class="sub-text">
+        Modelos matemáticos avanzados diseñados para detectar vulnerabilidades antes de que se conviertan en pasivos críticos.
+    </p>
 
-    <button class="btn-action">Iniciar Diagnóstico</button>
+    <button class="btn-glow">Iniciar Diagnóstico</button>
 
-    <div class="card">
-        <div class="card-info">
-            <span>Core Intelligence</span>
-            <b>MESAN ENTERPRISE</b>
+    <div class="module-list">
+        <div class="module-card">
+            <div>
+                <h3>MESAN ENTERPRISE</h3>
+                <p>Auditoría completa de cumplimiento</p>
+            </div>
+            <span class="icon-cyan">◆</span>
         </div>
-        <div class="status-icon">⌬</div>
+
+        <div class="module-card">
+            <div>
+                <h3>MESAN Ω</h3>
+                <p>Predicción avanzada de riesgo</p>
+            </div>
+            <span class="icon-purple">❖</span>
+        </div>
     </div>
 
-    <div class="alert-box">
-        <div class="alert-title">⚠️ EXPOSICIÓN DETECTADA</div>
-        <div style="color: #94a3b8; font-size: 13px;">Riesgo estimado en estructura operativa:</div>
-        <div class="alert-val">$450,000 MXN</div>
-        <small style="color: #475569;">Basado en validación STPS/SAT directa.</small>
+    <div class="alert-panel">
+        <h4>🚨 ALERTA DETECTADA</h4>
+        <div style="color: #8b949e; font-size: 13px;">Impacto estimado en estructura:</div>
+        <div class="amount">$450,000 MXN</div>
+        <small>Validación directa STPS/SAT ejecutada.</small>
     </div>
+
+    <div class="footer-tag">MESAN Ω © 2026</div>
 </div>
 
 </body>
