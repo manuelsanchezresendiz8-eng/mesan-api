@@ -1,0 +1,129 @@
+body {
+    background: #0a0a0c;
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+}
+
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.logo {
+    font-size: 3rem;
+    letter-spacing: 10px;
+}
+
+.logo span {
+    color: #8e44ad;
+}
+
+.headline {
+    font-size: 28px;
+    margin-top: 20px;
+    line-height: 1.4;
+}
+
+.highlight {
+    color: #00aaff;
+    text-shadow: 0 0 10px #00aaff;
+}
+
+.sub {
+    color: #aaa;
+    margin-top: 15px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#money-loss {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #e74c3c;
+}
+
+#counter {
+    font-weight: bold;
+    color: #e74c3c;
+    text-shadow: 0 0 10px #e74c3c;
+}
+
+input {
+    margin-top: 20px;
+    padding: 15px;
+    width: 300px;
+    background: #111;
+    border: 1px solid #333;
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+button {
+    display: block;
+    margin: 15px auto;
+    padding: 15px 25px;
+    cursor: pointer;
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: white;
+}
+
+.btn-primary {
+    border: 2px solid #8e44ad;
+    box-shadow: 0 0 10px #8e44ad;
+    background: transparent;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #8e44ad;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    animation: pulse 2s infinite;
+}
+
+.btn-pay {
+    background: #2ecc71;
+    box-shadow: 0 0 15px #2ecc71;
+    color: #000;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 20px 30px;
+}
+
+.btn-pay:hover {
+    transform: scale(1.05);
+}
+
+#chat-output {
+    margin-top: 20px;
+    background: rgba(0,170,255,0.05);
+    border: 1px solid rgba(0,170,255,0.2);
+    padding: 15px;
+    text-align: left;
+    display: none;
+}
+
+.alert-box {
+    background: rgba(231,76,60,0.2);
+    border: 1px solid #e74c3c;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.urgency {
+    color: #f1c40f;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 10px #e74c3c; }
+    50% { box-shadow: 0 0 25px #e74c3c; }
+    100% { box-shadow: 0 0 10px #e74c3c; }
+}
