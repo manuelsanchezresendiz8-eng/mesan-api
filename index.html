@@ -1,131 +1,207 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω - SISTEMA PREMIER</title>
-    <style>
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            background: radial-gradient(ellipse at center, #0d1b2a 0%, #000 80%);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: white;
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω</title>
 
-        .container {
-            width: 100%; max-width: 400px;
-            text-align: center; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
-        }
+<style>
+body{
+margin:0;
+font-family:Segoe UI;
+background:#000;
+color:white;
+text-align:center;
+}
 
-        .logo {
-            font-size: 1.2rem; font-weight: bold; letter-spacing: 3px;
-            margin-bottom: 60px;
-        }
-        .logo span { color: #00c3ff; }
+.container{
+padding:40px 20px;
+max-width:400px;
+margin:auto;
+}
 
-        .titulo {
-            font-size: 2.3rem; font-weight: bold; line-height: 1.1;
-            margin-bottom: 20px;
-        }
-        .highlight { color: #00c3ff; }
+.logo{
+font-size:28px;
+font-weight:bold;
+letter-spacing:2px;
+}
+.logo span{color:#7b42ff;}
 
-        .subtitulo {
-            font-size: 0.9rem; color: #b0b0b0;
-            line-height: 1.6; margin-bottom: 50px;
-            padding: 0 30px;
-        }
+.hero{
+margin-top:30px;
+font-size:22px;
+}
+.hero span{
+color:#00c3ff;
+text-shadow:0 0 10px #00c3ff;
+}
 
-        .btn-main {
-            width: 85%;
-            padding: 18px 0;
-            background: transparent;
-            border: 2px solid #00c3ff;
-            color: #00c3ff;
-            font-size: 1rem; font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(0, 195, 255, 0.2);
-        }
+.btn{
+margin-top:20px;
+padding:15px;
+width:100%;
+border:none;
+border-radius:8px;
+background:linear-gradient(90deg,#007bff,#00c3ff);
+color:white;
+font-size:16px;
+cursor:pointer;
+}
 
-        .btn-main:hover {
-            background: rgba(0, 195, 255, 0.1);
-            box-shadow: 0 0 30px rgba(0, 195, 255, 0.5);
-        }
+.modules{
+margin-top:30px;
+}
 
-        .btn-main:active {
-            transform: scale(0.98);
-        }
+.module{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px;
+background:#0d1930;
+border-radius:10px;
+margin-bottom:10px;
+border:1px solid #233554;
+cursor:pointer;
+transition:0.3s;
+}
+.module:hover{
+border-color:#00c3ff;
+background:#0a1f3a;
+}
 
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000;
-        }
+.blue span{color:#00c3ff;}
+.purple span{color:#7b42ff;}
+.red span{color:#ff4d4d;}
 
-        .alert-box {
-            background: #2b2e33;
-            width: 80%; max-width: 320px;
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-        }
+.chat{
+margin-top:20px;
+background:#020c1b;
+border:1px solid #233554;
+padding:15px;
+border-radius:10px;
+display:none;
+text-align:left;
+font-size:14px;
+line-height:1.6;
+}
 
-        .alert-box h3 { margin: 0 0 10px 0; font-size: 1.2rem; font-weight: 500; }
-        .alert-box p { color: #d0d0d0; margin-bottom: 30px; font-size: 0.95rem; }
-
-        .alert-btn {
-            float: right; color: #00c3ff;
-            font-weight: bold; cursor: pointer;
-            text-transform: uppercase; font-size: 0.9rem;
-        }
-
-        .footer {
-            position: absolute; bottom: 30px;
-            font-size: 0.6rem; color: #555; letter-spacing: 1px;
-        }
-    </style>
+.pay{
+margin-top:15px;
+padding:12px 20px;
+background:linear-gradient(90deg,#00c3ff,#007bff);
+border:none;
+border-radius:6px;
+cursor:pointer;
+color:white;
+font-weight:bold;
+font-size:14px;
+width:100%;
+}
+.pay:hover{
+box-shadow:0 0 20px rgba(0,195,255,0.5);
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <div class="logo">MESAN <span>Ω</span></div>
 
-    <div class="titulo">
-        Arquitectura y<br><span class="highlight">Soberanía</span><br>Empresarial
-    </div>
+<div class="logo">MESAN <span>Ω</span></div>
 
-    <div class="subtitulo">
-        Modelos matemáticos avanzados diseñados para detectar vulnerabilidades fiscales y laborales antes de que se conviertan en pasivos críticos.
-    </div>
-
-    <button class="btn-main" onclick="activarSentinel()">INICIAR DIAGNÓSTICO</button>
-
-    <div class="footer">MESAN Ω © 2026</div>
+<div class="hero">
+¿Tu empresa está <span>perdiendo dinero</span> sin que lo sepas?
 </div>
 
-<div class="overlay" id="sentinelOverlay">
-    <div class="alert-box">
-        <h3>mesanomega.com dice</h3>
-        <p>Sincronizando con Sentinel Core...</p>
-        <div class="alert-btn" onclick="cerrarSentinel()">Aceptar</div>
-    </div>
+<button class="btn" onclick="iniciarDiagnostico()">
+INICIAR DIAGNÓSTICO
+</button>
+
+<div class="modules">
+
+<div class="module blue" onclick="iniciarDiagnostico()">
+<div><b>MESAN ENTERPRISE</b><br><small>Auditoría completa</small></div>
+<span>◆</span>
+</div>
+
+<div class="module purple" onclick="iniciarDiagnostico()">
+<div><b>MESAN Ω</b><br><small>Predicción avanzada</small></div>
+<span>❖</span>
+</div>
+
+<div class="module red" onclick="activarRepse()">
+<div><b>BOTÓN REPSE</b><br><small>Validación STPS</small></div>
+<span>🛡️</span>
+</div>
+
+</div>
+
+<div class="chat" id="chat"></div>
+
 </div>
 
 <script>
-    function activarSentinel() {
-        document.getElementById('sentinelOverlay').style.display = 'flex';
-    }
+const API = "https://mesan-api.onrender.com";
+let cliente_id = "cliente_" + Date.now();
 
-    function cerrarSentinel() {
-        document.getElementById('sentinelOverlay').style.display = 'none';
-        window.location.href = '/diagnostico.html';
+function iniciarDiagnostico(){
+    const chat = document.getElementById("chat");
+    chat.style.display = "block";
+    chat.innerHTML = "⏳ Analizando...";
+
+    setTimeout(()=>{
+        chat.innerHTML = `
+        🚨 <b>ALERTA DETECTADA</b><br><br>
+        Riesgos fiscales y laborales identificados.<br><br>
+        Impacto estimado:<br>
+        <b style="color:#ff4d4d">$120,000 - $450,000 MXN</b><br><br>
+        <button class="pay" onclick="irPago()">
+            🔒 Desbloquear diagnóstico completo — $299 MXN
+        </button>
+        `;
+    }, 1500);
+}
+
+async function activarRepse(){
+    const chat = document.getElementById("chat");
+    chat.style.display = "block";
+    chat.innerHTML = "⏳ Consultando STPS...";
+
+    try{
+        const res = await fetch(API + "/api/verificar", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({rfc: "ABC123456XYZ"})
+        });
+
+        const data = await res.json();
+        chat.innerHTML = data.analisis_ia || "✅ Consulta completada";
+    } catch {
+        chat.innerHTML = "❌ Error de conexión";
     }
+}
+
+async function irPago(){
+    try {
+        const res = await fetch(API + "/crear-sesion-omega", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                cliente_id: cliente_id,
+                sector: "PRIVADO",
+                monto: 299,
+                indice: 75
+            })
+        });
+
+        const data = await res.json();
+        if(data.url) window.location.href = data.url;
+        else alert("Error generando pago");
+
+    } catch(e) {
+        alert("Error de conexión");
+    }
+}
 </script>
 
 </body>
