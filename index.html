@@ -3,88 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω - Final Core</title>
+    <title>MESAN Ω - CRM Principal</title>
     <style>
-        body {
-            margin: 0; background: #000; color: white;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh;
-            background-image: radial-gradient(circle at 50% 30%, #0d1b2a 0%, #000 90%);
+        body, html {
+            margin: 0; padding: 0; height: 100%; overflow: hidden;
+            background-color: #000; font-family: 'Segoe UI', sans-serif;
         }
-        .phone-frame {
-            width: 350px; padding: 25px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 35px; backdrop-filter: blur(20px);
-            box-shadow: 0 0 50px rgba(0, 212, 255, 0.1);
+
+        /* Contenedor Principal con la imagen de fondo del CRM */
+        .dashboard-container {
+            position: relative;
+            width: 100vw; height: 100vh;
+            background: url('https://i.ibb.co/vzrK8G0/CRM-BACKGROUND.png') no-repeat center center;
+            background-size: contain;
         }
-        .logo { font-size: 18px; font-weight: bold; margin-bottom: 20px; letter-spacing: 1px; }
-        .logo span { color: #8a2be2; text-shadow: 0 0 10px #8a2be2; }
-        h1 { text-align: center; font-size: 20px; font-weight: 300; margin-bottom: 20px; }
-        h1 b { color: #00d4ff; text-shadow: 0 0 15px rgba(0, 212, 255, 0.6); }
-        .module {
-            background: rgba(10, 25, 47, 0.7); border: 1px solid rgba(0, 212, 255, 0.2);
-            border-radius: 12px; padding: 14px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center; font-size: 13px;
-        }
-        .btn {
-            width: 100%; padding: 18px; border-radius: 10px; border: none;
-            font-weight: bold; text-transform: uppercase; cursor: pointer; margin-top: 10px;
+
+        /* Botones Invisibles pero Funcionales sobre la imagen */
+        .overlay-button {
+            position: absolute;
+            cursor: pointer;
+            border: none;
+            background: rgba(0, 212, 255, 0.1); /* Sutil brillo para saber dónde tocar */
+            border-radius: 5px;
             transition: 0.3s;
         }
-        .btn-blue {
-            background: linear-gradient(180deg, #00a2ff 0%, #005bb5 100%);
-            color: white; box-shadow: 0 5px 20px rgba(0, 162, 255, 0.4);
+
+        .overlay-button:active { background: rgba(0, 212, 255, 0.4); }
+
+        /* Posicionamiento exacto según tu captura del CRM */
+        #btn-diagnostico {
+            width: 40%; height: 5%;
+            top: 61%; left: 30%;
         }
-        #status-area {
-            margin-top: 20px; padding: 15px; border-radius: 8px;
-            background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3);
-            display: none; font-size: 13px; text-align: left;
+
+        #btn-repse {
+            width: 40%; height: 6%;
+            top: 67%; left: 30%;
+        }
+
+        /* Panel de Alerta interno para que no use ventanas del sistema */
+        #status-panel {
+            position: absolute;
+            bottom: 15%; left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00d4ff;
+            color: #00ff88;
+            font-size: 14px;
+            display: none;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
         }
     </style>
 </head>
 <body>
 
-    <audio id="netflix" preload="auto">
+    <audio id="coreSound">
         <source src="https://www.myinstants.com/media/sounds/netflix-ta-dum-sound-effect.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="phone-frame">
-        <div class="logo">MESAN <span>Ω</span></div>
-        
-        <h1>¿Tu empresa está <b>perdiendo dinero</b> sin que lo sepas?</h1>
+    <div class="dashboard-container">
+        <button class="overlay-button" id="btn-diagnostico" onclick="runCore()"></button>
+        <button class="overlay-button" id="btn-repse" onclick="runCore()"></button>
 
-        <div class="module"><span>MESAN ENTERPRISE</span><span style="color:#00d4ff">◆</span></div>
-        <div class="module"><span>MESAN OMEGA</span><span style="color:#a155ff">❖</span></div>
-
-        <button class="btn btn-blue" id="mainBtn">INICIAR DIAGNÓSTICO</button>
-
-        <div id="status-area">
-            <div id="status-text"></div>
+        <div id="status-panel">
+            <span id="msg">Sincronizando con Sentinel Core...</span>
         </div>
     </div>
 
     <script>
-        const btn = document.getElementById('mainBtn');
-        const audio = document.getElementById('netflix');
-        const status = document.getElementById('status-area');
-        const txt = document.getElementById('status-text');
+        function runCore() {
+            // Activar Sonido
+            const audio = document.getElementById('coreSound');
+            audio.play().catch(e => console.log("Permiso requerido"));
 
-        btn.addEventListener('click', function() {
-            // Acción inmediata de audio
-            audio.play().catch(e => console.log("Permiso de audio requerido"));
-
-            // Feedback visual
-            btn.innerText = "PROCESANDO...";
-            btn.style.opacity = "0.6";
-            status.style.display = "block";
-            txt.innerHTML = "<span style='color:#00d4ff'>⏳ Sincronizando con Sentinel Core...</span>";
+            // Activar Visual
+            const panel = document.getElementById('status-panel');
+            const msg = document.getElementById('msg');
+            
+            panel.style.display = 'block';
+            msg.innerHTML = "<b>PROCESANDO...</b><br>Analizando vulnerabilidades fiscales.";
 
             setTimeout(() => {
-                txt.innerHTML = "<b style='color:#00ff88'>🚨 CONEXIÓN ESTABLECIDA</b><br>Analizando riesgos fiscales y REPSE...";
-            }, 1800);
-        });
+                msg.innerHTML = "<span style='color:white'>CONEXIÓN OMEGA ESTABLECIDA</span><br>Riesgo detectado: $450k MXN";
+            }, 2000);
+        }
     </script>
 </body>
 </html>
