@@ -1,16 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω - Premium</title>
+
+<style>
+:root {
+    --bg: #02060d;
+    --blue: #00c3ff;
+    --purple: #7b42ff;
+    --gold: #ff914d;
+    --red: #ff3b3b;
+}
+
+body {
+    margin:0;
+    background: radial-gradient(circle at center, #02060d, #000);
+    font-family: 'Segoe UI', sans-serif;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.app {
+    width:380px;
+    border-radius:30px;
+    padding:25px;
+    background: linear-gradient(180deg,#050a14,#000);
+    box-shadow: 0 0 60px rgba(0,195,255,0.15);
+    position:relative;
+    overflow:hidden;
+    margin: 20px auto;
+}
+
+.app::before{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background-image: radial-gradient(#1a2233 1px, transparent 1px);
+    background-size:20px 20px;
+    opacity:0.25;
+    top:0;
+    left:0;
+    pointer-events:none;
+}
+
+.header{
+    font-size:1.3rem;
+    font-weight:bold;
+}
+.header span{
+    color:var(--purple);
+}
+
+.hero{
+    text-align:center;
+    margin:20px 0;
+    font-size:1.3rem;
+}
+.hero span{
+    color:var(--blue);
+    text-shadow:0 0 15px rgba(0,195,255,.7);
+}
+
+.money-loss {
+    text-align:center;
+    font-size:.85rem;
+    color:#e74c3c;
+    margin-bottom:10px;
+}
+
+#counter {
+    font-weight:bold;
+    color:#e74c3c;
+    text-shadow:0 0 10px #e74c3c;
+}
+
+.core{
+    background:rgba(10,25,50,.7);
+    border:1px solid #233554;
+    border-radius:15px;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    font-size:.7rem;
+    margin-bottom:15px;
+    box-shadow:0 0 20px rgba(0,195,255,.1);
+}
+
+.module{
+    background:#0d1930;
+    border:1px solid #233554;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:8px;
+    display:flex;
+    justify-content:space-between;
+    transition:.3s;
+}
+.module:hover{
+    transform:scale(1.03);
+    box-shadow:0 0 15px rgba(123,66,255,.4);
+}
+
+.blue{color:var(--blue)}
+.purple{color:var(--purple)}
+.gold{color:var(--gold)}
+
+input{
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+    background:#112240;
+    border:1px solid #233554;
+    color:white;
+    border-radius:6px;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+.btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:6px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-bottom:10px;
+    transition:.3s;
+    font-size:14px;
+}
+
+.btn-blue{
+    background:linear-gradient(90deg,#007bff,#00c3ff);
+    color:white;
+}
+.btn-blue:hover{
+    box-shadow:0 0 20px #00c3ff;
+}
+
+.btn-red{
+    background:#900;
+    border:1px solid red;
+    color:white;
+}
+.btn-red:hover{
+    box-shadow:0 0 15px red;
+}
+
+.btn-pay{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:6px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-bottom:10px;
+    background:linear-gradient(90deg,#00c851,#00ff6a);
+    color:#000;
+    font-size:15px;
+    box-shadow:0 0 20px rgba(0,200,81,.4);
+    transition:.3s;
+}
+.btn-pay:hover{
+    box-shadow:0 0 30px rgba(0,200,81,.8);
+    transform:scale(1.02);
+}
+
+.alerts{
+    font-size:.75rem;
+    margin-bottom:10px;
+}
+.alerts div{
+    margin-bottom:5px;
+}
+.alerts div::before{
+    content:"⚠ ";
+    color:var(--red);
+}
+
+#chat-output{
+    margin-top:10px;
+    background:#020c1b;
+    border:1px solid #233554;
+    border-radius:10px;
+    padding:10px;
+    font-size:.75rem;
+    display:none;
+}
+
+.chat-static{
+    margin-top:10px;
+    background:#020c1b;
+    border:1px solid #233554;
+    border-radius:10px;
+    padding:10px;
+    font-size:.75rem;
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+    0%{box-shadow:0 0 5px #00c3ff;}
+    50%{box-shadow:0 0 20px #00c3ff;}
+    100%{box-shadow:0 0 5px #00c3ff;}
+}
+
+.footer{
+    text-align:center;
+    font-size:.6rem;
+    opacity:.5;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="header">MESAN <span>Ω</span></div>
+
+    <div class="hero">
+        ¿Tu empresa está <span>perdiendo dinero</span> sin que lo sepas?
+    </div>
+
+    <div class="money-loss">
+        Pérdida estimada en tiempo real:
+        <span id="counter">$0 MXN</span>
+    </div>
+
+    <div class="core">
+        <div>
+            <strong>SENTINEL CORE</strong><br>
+            ACTIVE
+        </div>
+        <div>
+            <strong>AETHER CORE</strong><br>
+            Procesando...
+        </div>
+    </div>
+
+    <div class="module">
+        MESAN ENTERPRISE
+        <span class="blue">◆</span>
+    </div>
+
+    <div class="module">
+        MESAN OMEGA
+        <span class="purple">❖</span>
+    </div>
+
+    <div class="module">
+        SOPORTE Ω
+        <span class="gold">▲</span>
+    </div>
+
+    <input id="inputRFC" placeholder="RFC / Empresa">
+
+    <button class="btn btn-blue" onclick="iniciarDiagnostico()">
+        INICIAR DIAGNÓSTICO
+    </button>
+
+    <button class="btn btn-red" onclick="activarRepse()">
+        🛡 BOTÓN REPSE
+    </button>
+
+    <div class="alerts">
+        <div>Riesgo de No Deducibilidad</div>
+        <div>RFC en Alerta</div>
+    </div>
+
+    <div id="chat-output"></div>
+
+    <div class="chat-static">
+        IA: Estatus REPSE <b style="color:red">VENCIDO</b><br>
+        Riesgo estimado: <b>$450,000 MXN</b>
+    </div>
+
+    <br>
+
+    <button class="btn-pay" onclick="irPago()">
+        🔓 Ver diagnóstico completo — $299 MXN
+    </button>
+
+    <div class="footer">MESAN Ω © 2026</div>
+
+</div>
+
+<script>
 const API = "https://mesan-api.onrender.com";
 let cliente_id = "cliente_" + Date.now();
 let perdida = 0;
 
-// CONTADOR DINERO
 setInterval(() => {
     perdida += Math.floor(Math.random() * 500 + 200);
-    document.getElementById("counter").innerText =
-        "$" + perdida.toLocaleString() + " MXN";
+    const counter = document.getElementById("counter");
+    if (counter) {
+        counter.innerText = "$" + perdida.toLocaleString() + " MXN";
+    }
 }, 1500);
 
-
-// DIAGNÓSTICO
 function iniciarDiagnostico() {
     const chat = document.getElementById("chat-output");
     chat.style.display = "block";
@@ -18,20 +311,20 @@ function iniciarDiagnostico() {
 
     setTimeout(() => {
         chat.innerHTML = `
-        🚨 ALERTA CRÍTICA DETECTADA<br><br>
+        🚨 <b>ALERTA CRÍTICA DETECTADA</b><br><br>
         Riesgos encontrados:<br>
         - No deducibilidad fiscal<br>
         - Multas IMSS<br>
         - Falta de cumplimiento<br><br>
         Impacto estimado:<br>
-        <strong>$120,000 - $450,000 MXN anuales</strong><br><br>
-        👉 Desbloquea el análisis completo por $299 MXN
+        <b>$120,000 - $450,000 MXN</b><br><br>
+        👉 <button onclick="irPago()" style="padding:8px;background:#00c3ff;border:none;border-radius:5px;cursor:pointer;">
+        Desbloquear análisis completo por $299 MXN
+        </button>
         `;
     }, 1500);
 }
 
-
-// REPSE
 async function activarRepse() {
     const chat = document.getElementById("chat-output");
     chat.style.display = "block";
@@ -52,13 +345,11 @@ async function activarRepse() {
             ? "🚨 ALERTA: " + data.analisis_ia
             : "✅ Consulta completada";
 
-    } catch {
+    } catch(e) {
         chat.innerHTML = "❌ Error de conexión";
     }
 }
 
-
-// PAGO STRIPE
 async function irPago() {
     try {
         const res = await fetch(API + "/crear-sesion-omega", {
@@ -67,8 +358,7 @@ async function irPago() {
             body: JSON.stringify({
                 cliente_id: cliente_id,
                 sector: "PRIVADO",
-                monto: 299,
-                indice: 75
+                monto: 299
             })
         });
 
@@ -77,10 +367,14 @@ async function irPago() {
         if (data.url) {
             window.location.href = data.url;
         } else {
-            alert("Error generando link de pago");
+            alert("Error generando pago");
         }
 
     } catch(e) {
         alert("Error de conexión");
     }
 }
+</script>
+
+</body>
+</html>
