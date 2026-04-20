@@ -21,13 +21,16 @@ from limiter import limiter
 from routes.evaluar import router as evaluar_router
 from routes.verificar import router as verificar_router
 from routes.consultar import router as consultar_router
+from routes.documentos import router as documentos_router
+from routes.pagos_omega import router as pagos_router
+from routes.gobierno import router as gobierno_router
 from pro.auth import auth_router
 from pro.diagnostico import diagnostico_router
 
 # =========================================
 # CONFIG
 # =========================================
-VERSION = "2.4.5"
+VERSION = "2.5.0"
 logging.basicConfig(level=logging.INFO)
 
 # =========================================
@@ -70,8 +73,22 @@ except Exception as e:
     logging.error(f"ERROR motor_financiero: {e}")
     evaluar_servicio = None
 
+try:
+    from core.motor_total import motor_total
+    logging.info("motor_total OK")
+except Exception as e:
+    logging.error(f"ERROR motor_total: {e}")
+    motor_total = None
+
+try:
+    from routes.chat_ai import router as chat_router
+    logging.info("chat_ai OK")
+except Exception as e:
+    logging.error(f"ERROR chat_ai: {e}")
+    chat_router = None
+
 # =========================================
-# VALIDACIÓN ENV
+# VALIDACION ENV
 # =========================================
 if not os.environ.get("MESAN_API_KEY"):
     logging.critical("Falta MESAN_API_KEY")
@@ -124,8 +141,14 @@ app.add_middleware(SlowAPIMiddleware)
 app.include_router(evaluar_router, prefix="/api")
 app.include_router(verificar_router, prefix="/api")
 app.include_router(consultar_router, prefix="/api")
+app.include_router(documentos_router)
+app.include_router(pagos_router)
+app.include_router(gobierno_router)
 app.include_router(auth_router, prefix="/pro")
 app.include_router(diagnostico_router, prefix="/pro")
+
+if chat_router:
+    app.include_router(chat_router)
 
 # =========================================
 # HELPERS
@@ -152,14 +175,9 @@ def serialize_lead(l):
         "giro": getattr(l, "giro", None)
     }
 
-# =========================================
-# NORMALIZE INPUT — FIX CRÍTICO
-# =========================================
 def normalize_input(data: dict) -> dict:
-
     normalized = dict(data)
 
-    # Mapeo campos frontend → motor
     field_map = {
         "situacion_fiscal": "factura",
         "gestion_contable": "contabilidad",
@@ -174,7 +192,6 @@ def normalize_input(data: dict) -> dict:
         if k in data and v not in data:
             normalized[v] = data[k]
 
-    # Blindar nombre — no se pierde
     raw_nombre = data.get("nombre")
     if raw_nombre:
         normalized["nombre"] = raw_nombre.strip()
@@ -230,19 +247,17 @@ async def enterprise(data: dict, request: Request):
 
     try:
         if not isinstance(data, dict):
-            return JSONResponse(status_code=400, content={"error": "Payload inválido"})
+            return JSONResponse(status_code=400, content={"error": "Payload invalido"})
 
-        # NORMALIZAR INPUT — FIX CRÍTICO
         data = normalize_input(data)
 
         nombre = (data.get("nombre") or "").strip() or "Sin nombre"
         email = (data.get("email") or "").strip()
-        telefono = (data.get("telefono") or "").strip() or "Sin teléfono"
+        telefono = (data.get("telefono") or "").strip() or "Sin telefono"
         giro = (data.get("giro") or "").strip()
 
-        logging.warning(f"LEAD FINAL → {nombre} | {email} | {telefono} | {giro}")
+        logging.warning(f"LEAD FINAL -> {nombre} | {email} | {telefono} | {giro}")
 
-        # MOTOR
         resultado = {}
         if sistema_enterprise:
             try:
@@ -256,7 +271,6 @@ async def enterprise(data: dict, request: Request):
                     "soluciones": []
                 }
 
-        # MODO ANÓNIMO
         if not email:
             return response({
                 "ok": True,
@@ -264,7 +278,6 @@ async def enterprise(data: dict, request: Request):
                 "resultado": resultado
             })
 
-        # CREAR LEAD
         lead_id = str(uuid.uuid4())
         lead_data = {
             "id": lead_id,
@@ -279,7 +292,6 @@ async def enterprise(data: dict, request: Request):
             "fecha": datetime.now().isoformat()
         }
 
-        # GUARDAR EN POSTGRESQL
         try:
             db = SessionLocal()
             nuevo_lead = Lead(**lead_data)
@@ -290,7 +302,6 @@ async def enterprise(data: dict, request: Request):
         except Exception:
             logging.error(f"Error guardando lead: {traceback.format_exc()}")
 
-        # EMAIL + PDF ASYNC
         def procesos_async():
             try:
                 if enviar_notificacion_lead:
@@ -335,7 +346,7 @@ async def enterprise(data: dict, request: Request):
         return response({"error": "Error interno"}, 500)
 
 # =========================================
-# PRO DIAGNÓSTICO
+# PRO DIAGNOSTICO
 # =========================================
 @app.post("/pro/diagnostico-financiero")
 async def pro_diagnostico(data: dict):
@@ -410,4 +421,3 @@ async def actualizar_lead(lead_id: str, data: dict):
 async def global_exception_handler(request: Request, exc: Exception):
     logging.error(f"ERROR GLOBAL: {traceback.format_exc()}")
     return response({"error": "Error interno"}, 500)
-
