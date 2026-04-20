@@ -3,125 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω - Experience</title>
+    <title>MESAN Ω - Full Interface</title>
     <style>
         body {
             margin: 0;
-            padding: 0;
             background: #000;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             color: white;
+            font-family: 'Segoe UI', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
-            /* Fondo de nebulosa sutil */
-            background: radial-gradient(circle at 50% 50%, #0a192f 0%, #000000 100%);
+            background-image: radial-gradient(circle at 50% 30%, #0d1b2a 0%, #000 80%);
         }
 
-        /* Capa de partículas/estrellas */
-        .stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.3;
-            z-index: 0;
+        .phone-frame {
+            width: 360px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 35px;
+            backdrop-filter: blur(25px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .interface-container {
-            position: relative;
-            z-index: 1;
-            width: 380px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 40px;
-            box-shadow: 0 0 50px rgba(0, 162, 255, 0.1);
-            text-align: center;
-        }
+        .logo { font-size: 18px; font-weight: bold; margin-bottom: 25px; letter-spacing: 1px; }
+        .logo span { color: #8a2be2; text-shadow: 0 0 10px #8a2be2; }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 3px;
-            margin-bottom: 40px;
-        }
-        .logo span { color: #7b42ff; text-shadow: 0 0 10px #7b42ff; }
+        h1 { text-align: center; font-size: 21px; font-weight: 300; line-height: 1.2; margin-bottom: 15px; }
+        h1 b { color: #00d4ff; text-shadow: 0 0 15px rgba(0, 212, 255, 0.7); }
 
-        .headline {
-            font-size: 22px;
-            line-height: 1.3;
-            margin-bottom: 20px;
-            font-weight: 300;
-        }
-        .headline b { 
-            color: #00d4ff; 
-            text-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
-            font-weight: 600;
-        }
+        .loss { color: #ff4d4d; text-align: center; font-size: 13px; margin-bottom: 20px; }
 
-        .sub-text {
-            font-size: 13px;
+        /* Panel Superior Sentinel */
+        .sentinel-bar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
             color: #8892b0;
-            margin-bottom: 40px;
-            padding: 0 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* Botón Estilo "Netflix" / Premium */
-        .btn-main {
-            background: transparent;
-            border: 2px solid #00d4ff;
-            color: #00d4ff;
-            padding: 15px 40px;
-            font-size: 14px;
+        /* Botones de Módulos (Los que faltaban) */
+        .module {
+            background: rgba(10, 25, 47, 0.6);
+            border: 1px solid rgba(28, 45, 77, 0.8);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+        .module:hover { border-color: #00d4ff; background: rgba(0, 212, 255, 0.05); }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 8px;
+            border: none;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
+            margin-top: 10px;
+        }
+        .btn-blue {
+            background: linear-gradient(180deg, #00a2ff 0%, #005bb5 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 162, 255, 0.3);
+        }
+        .btn-red {
+            background: linear-gradient(180deg, #d00000 0%, #800000 100%);
+            color: white;
+            border: 1px solid #ff4d4d;
         }
 
-        .btn-main:hover {
-            background: #00d4ff;
-            color: #000;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        /* Alerta de Procesamiento Integrada */
+        #status-area {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 3px solid #00d4ff;
+            border-radius: 4px;
+            font-size: 12px;
+            display: none;
+            text-align: left;
         }
 
-        .footer-brand {
-            margin-top: 60px;
-            font-size: 10px;
-            color: rgba(255,255,255,0.2);
-            letter-spacing: 1px;
+        .btn-pay {
+            background: #00ff88;
+            color: #00331a;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
         }
     </style>
 </head>
 <body>
 
-    <div class="stars"></div>
-
-    <div class="interface-container">
+    <div class="phone-frame">
         <div class="logo">MESAN <span>Ω</span></div>
 
-        <div class="headline">
-            Arquitectura y<br>
-            <b>Soberanía Empresarial</b>
+        <h1>¿Tu empresa está <b>perdiendo dinero</b> sin que lo sepas?</h1>
+        <div class="loss">Pérdida estimada en tiempo real: $6,862 MXN</div>
+
+        <div class="sentinel-bar">
+            <div>SENTINEL CORE<br><span style="color:#00ff88">ACTIVE</span></div>
+            <div style="text-align:right">AETHER CORE<br>READY</div>
         </div>
 
-        <div class="sub-text">
-            Modelos matemáticos avanzados diseñados para detectar vulnerabilidades fiscales y laborales.
+        <div class="module"><span>MESAN ENTERPRISE</span> <span style="color:#00d4ff">◆</span></div>
+        <div class="module"><span>MESAN OMEGA</span> <span style="color:#a155ff">❖</span></div>
+        <div class="module"><span>SOPORTE Ω</span> <span style="color:#ff914d">▲</span></div>
+
+        <button class="btn btn-blue" id="actionBtn">INICIAR DIAGNÓSTICO</button>
+        <button class="btn btn-red">🛡️ BOTÓN REPSE</button>
+
+        <div id="status-area">
+            <span id="status-text">Sincronizando con Sentinel Core...</span>
         </div>
 
-        <button class="btn-main" onclick="playNetflixSound()">
-            INICIAR DIAGNÓSTICO
-        </button>
-
-        <div class="footer-brand">MESAN Ω © 2026</div>
+        <button class="btn btn-pay">🔒 Ver diagnóstico completo — $299 MXN</button>
     </div>
 
     <audio id="netflixSound">
@@ -129,17 +136,24 @@
     </audio>
 
     <script>
-        function playNetflixSound() {
-            const sound = document.getElementById('netflixSound');
-            sound.currentTime = 0;
-            sound.play();
-            
-            // Simulación de carga después del sonido
-            setTimeout(() => {
-                alert("Sincronizando con Sentinel Core...");
-            }, 1000);
-        }
-    </script>
+        const btn = document.getElementById('actionBtn');
+        const status = document.getElementById('status-area');
+        const txt = document.getElementById('status-text');
+        const audio = document.getElementById('netflixSound');
 
+        btn.addEventListener('click', () => {
+            // Sonido
+            audio.play().catch(() => console.log("Interacción requerida"));
+            
+            // Visual
+            btn.innerText = "PROCESANDO...";
+            status.style.display = "block";
+            
+            setTimeout(() => {
+                txt.innerHTML = "<strong>CONEXIÓN ESTABLECIDA</strong><br>Analizando vulnerabilidades...";
+                txt.style.color = "#00ff88";
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
