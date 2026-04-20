@@ -36,7 +36,7 @@ select{background:#000;color:#fff;border:1px solid var(--border);padding:5px;}
 <body>
 
 <h1>MESAN-Ω CRM</h1>
-<div class="sub">Panel de Control de Leads — Hora local: Mexicali/Hermosillo</div>
+<div class="sub">Panel de Control de Leads — Hora local: Mexicali (UTC-8)</div>
 
 <div class="stats">
   <div class="stat"><div class="stat-num" id="total">0</div><div class="stat-lbl">Total</div></div>
@@ -73,8 +73,7 @@ function formatFecha(fecha) {
   if (!fecha) return "-";
   try {
     const d = new Date(fecha);
-    // Ajuste manual UTC-7 (Hermosillo — sin cambio de horario)
-    const offset = -7 * 60;
+    const offset = -8 * 60;
     const local = new Date(d.getTime() + (offset - d.getTimezoneOffset()) * 60000);
 
     const dia = String(local.getDate()).padStart(2, "0");
@@ -128,9 +127,9 @@ async function cargar(){
 function render(leads){
   document.getElementById("total").innerText = leads.length;
 
-  const criticos = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
+  const criticosList = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
   document.getElementById("criticos").innerText =
-    leads.filter(l => criticos.includes(l.clasificacion)).length;
+    leads.filter(l => criticosList.includes(l.clasificacion)).length;
   document.getElementById("pagados").innerText =
     leads.filter(l => l.estatus === "pagado").length;
 
