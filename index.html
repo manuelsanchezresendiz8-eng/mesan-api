@@ -1,131 +1,132 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω - Réplica Oficial</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MESAN Ω - SISTEMA PREMIER</title>
+    <style>
+        /* FONTO ESTELAR Y CONFIGURACIÓN BASE */
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background: #000 url('https://i.ibb.co/vBPr0P5/espacio-bg.jpg') no-repeat center center;
+            background-size: cover;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+        }
 
-<style>
-    body, html {
-        margin: 0; padding: 0; height: 100%; overflow: hidden;
-        background-color: #000;
-        font-family: 'Segoe UI', sans-serif;
-    }
+        .container {
+            width: 100%; max-width: 400px;
+            text-align: center; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+        }
 
-    /* EL CONTENEDOR USA TU IMAGEN PREMIUM COMO BASE TOTAL */
-    .viewport {
-        position: relative;
-        width: 100vw; height: 100vh;
-        background: url('https://images2.imgbox.com/71/97/BUnuAueO_o.png') no-repeat center center;
-        background-size: contain;
-    }
+        /* LOGO MESAN Ω */
+        .logo {
+            font-size: 1.2rem; font-weight: bold; letter-spacing: 3px;
+            margin-bottom: 60px;
+        }
+        .logo span { color: #00c3ff; }
 
-    /* CAPA DE INTERACCIÓN: Zonas invisibles sobre los botones de la imagen */
-    .hit-box {
-        position: absolute;
-        cursor: pointer;
-        background: rgba(0,0,0,0); /* Invisible */
-        border: none;
-        outline: none;
-    }
+        /* TÍTULOS CON LOS COLORES DE LA IMAGEN */
+        .titulo {
+            font-size: 2.3rem; font-weight: bold; line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        .highlight { color: #00c3ff; }
 
-    /* Posicionamiento preciso sobre los botones integrados en la imagen */
-    #btn-enterprise { width: 25%; height: 6%; top: 43%; left: 65%; }
-    #btn-omega      { width: 25%; height: 6%; top: 49%; left: 65%; }
-    #btn-soporte    { width: 25%; height: 6%; top: 55%; left: 65%; }
-    
-    #btn-diagnostico { width: 40%; height: 7%; top: 61.5%; left: 30%; }
-    #btn-repse       { width: 40%; height: 7%; top: 67.5%; left: 30%; }
+        .subtitulo {
+            font-size: 0.9rem; color: #b0b0b0;
+            line-height: 1.6; margin-bottom: 50px;
+            padding: 0 30px;
+        }
 
-    /* EL CONTADOR Y EL CHAT SE INTEGRAN EN LAS PANTALLAS DEL DISEÑO */
-    .display-counter {
-        position: absolute;
-        top: 28%; left: 50%;
-        transform: translateX(-50%);
-        color: #00c3ff;
-        font-size: 1.3rem;
-        font-weight: bold;
-        text-shadow: 0 0 10px rgba(0, 195, 255, 0.6);
-    }
+        /* BOTÓN EXACTO: INICIAR DIAGNÓSTICO */
+        .btn-main {
+            width: 85%;
+            padding: 18px 0;
+            background: transparent;
+            border: 2px solid #00c3ff;
+            color: #00c3ff;
+            font-size: 1rem; font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 195, 255, 0.2);
+        }
 
-    .consultor-ia {
-        position: absolute;
-        bottom: 12%; right: 6%;
-        width: 260px;
-        background: rgba(2, 12, 27, 0.9);
-        padding: 15px;
-        border-radius: 10px;
-        font-size: 0.8rem;
-        border: 1px solid #233554;
-        display: none;
-        color: #00ff88;
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
+        .btn-main:active {
+            background: rgba(0, 195, 255, 0.1);
+            transform: scale(0.98);
+        }
 
-    .pay-btn {
-        margin-top: 10px;
-        padding: 8px;
-        background: #00c3ff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        width: 100%;
-    }
-</style>
+        /* VENTANA DE ALERTA (SENTINEL CORE) */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+
+        .alert-box {
+            background: #2b2e33;
+            width: 80%; max-width: 320px;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        .alert-box h3 { margin: 0 0 10px 0; font-size: 1.2rem; font-weight: 500; }
+        .alert-box p { color: #d0d0d0; margin-bottom: 30px; font-size: 0.95rem; }
+
+        .alert-btn {
+            float: right; color: #00c3ff;
+            font-weight: bold; cursor: pointer;
+            text-transform: uppercase; font-size: 0.9rem;
+        }
+
+        .footer {
+            position: absolute; bottom: 30px;
+            font-size: 0.6rem; color: #555; letter-spacing: 1px;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="viewport">
-    <div class="display-counter" id="counter">$0 MXN</div>
+<div class="container">
+    <div class="logo">MESAN <span>Ω</span></div>
 
-    <button class="hit-box" id="btn-enterprise" onclick="runMod('ENTERPRISE')"></button>
-    <button class="hit-box" id="btn-omega"      onclick="runMod('OMEGA')"></button>
-    <button class="hit-box" id="btn-soporte"    onclick="runMod('SOPORTE')"></button>
-    
-    <button class="hit-box" id="btn-diagnostico" onclick="iniciarDiagnostico()"></button>
-    <button class="hit-box" id="btn-repse"       onclick="activarRepse()"></button>
+    <div class="titulo">
+        Arquitectura y<br><span class="highlight">Soberanía</span><br>Empresarial
+    </div>
 
-    <div class="consultor-ia" id="chat"></div>
+    <div class="subtitulo">
+        Modelos matemáticos avanzados diseñados para detectar vulnerabilidades fiscales y laborales antes de que se conviertan en pasivos críticos.
+    </div>
+
+    <button class="btn-main" onclick="activarSentinel()">INICIAR DIAGNÓSTICO</button>
+
+    <div class="footer">MESAN Ω © 2026</div>
+</div>
+
+<div class="overlay" id="sentinelOverlay">
+    <div class="alert-box">
+        <h3>mesanomega.com dice</h3>
+        <p>Sincronizando con Sentinel Core...</p>
+        <div class="alert-btn" onclick="cerrarSentinel()">Aceptar</div>
+    </div>
 </div>
 
 <script>
-const API = "https://mesan-api.onrender.com";
-let perdida = 0;
-
-/* LÓGICA DE CONTADOR */
-setInterval(() => {
-    perdida += Math.floor(Math.random() * 500 + 200);
-    document.getElementById("counter").innerText = "$" + perdida.toLocaleString() + " MXN";
-}, 1500);
-
-/* LÓGICA DE DIAGNÓSTICO (TU CÓDIGO) */
-function iniciarDiagnostico() {
-    const chat = document.getElementById("chat");
-    chat.style.display = "block";
-    chat.innerHTML = "⏳ Sincronizando con Sentinel Core...";
-
-    setTimeout(() => {
-        chat.innerHTML = `
-        🚨 <b>ALERTA CRÍTICA</b><br><br>
-        Riesgo fiscal detectado: <b>$450,000 MXN</b><br><br>
-        <button class="pay-btn" onclick="alert('Redirigiendo a Stripe...')">DESBLOQUEAR ($299)</button>
-        `;
-    }, 1500);
-}
-
-/* LÓGICA REPSE (TU CÓDIGO) */
-async function activarRepse() {
-    const chat = document.getElementById("chat");
-    chat.style.display = "block";
-    chat.innerHTML = "📡 Consultando STPS...";
-    // ... resto de tu lógica fetch ...
-}
-
-function runMod(name) {
-    console.log("Activando módulo: " + name);
-}
+    function activarSentinel() {
+        document.getElementById('sentinelOverlay').style.display = 'flex';
+    }
+    function cerrarSentinel() {
+        document.getElementById('sentinelOverlay').style.display = 'none';
+        // Aquí puedes redirigir o mostrar los resultados del riesgo de $450k
+    }
 </script>
 
 </body>
