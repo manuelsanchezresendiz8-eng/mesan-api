@@ -1,208 +1,141 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MESAN Ω - Intelligence Engine</title>
+    <style>
+        :root {
+            --accent-cyan: #00d4ff;
+            --bg-deep: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.8);
+            --border-tech: rgba(0, 212, 255, 0.2);
+        }
 
-<style>
-body{
-margin:0;
-font-family:Segoe UI;
-background:#000;
-color:white;
-text-align:center;
-}
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: radial-gradient(circle at top, #0c1e35 0%, #020617 100%);
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
 
-.container{
-padding:40px 20px;
-max-width:400px;
-margin:auto;
-}
+        .phone-view {
+            width: 100%;
+            max-width: 400px;
+            padding: 30px 20px;
+        }
 
-.logo{
-font-size:28px;
-font-weight:bold;
-letter-spacing:2px;
-}
-.logo span{color:#7b42ff;}
+        /* HEADER EJECUTIVO */
+        .brand {
+            font-size: 14px;
+            letter-spacing: 6px;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .brand span { color: var(--accent-cyan); text-shadow: 0 0 10px var(--accent-cyan); }
 
-.hero{
-margin-top:30px;
-font-size:22px;
-}
-.hero span{
-color:#00c3ff;
-text-shadow:0 0 10px #00c3ff;
-}
+        .headline {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .headline em { 
+            font-style: normal; 
+            color: var(--accent-cyan);
+            background: linear-gradient(90deg, #00d4ff, #0082ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-.btn{
-margin-top:20px;
-padding:15px;
-width:100%;
-border:none;
-border-radius:8px;
-background:linear-gradient(90deg,#007bff,#00c3ff);
-color:white;
-font-size:16px;
-cursor:pointer;
-}
+        .sub-headline {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 35px;
+            text-align: left;
+        }
 
-.modules{
-margin-top:30px;
-}
+        /* BOTÓN DE ALTO IMPACTO */
+        .btn-action {
+            width: 100%;
+            padding: 18px;
+            background: transparent;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            font-weight: 700;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.1);
+        }
+        .btn-action:hover {
+            background: var(--accent-cyan);
+            color: #000;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
+        }
 
-.module{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px;
-background:#0d1930;
-border-radius:10px;
-margin-bottom:10px;
-border:1px solid #233554;
-cursor:pointer;
-transition:0.3s;
-}
-.module:hover{
-border-color:#00c3ff;
-background:#0a1f3a;
-}
+        /* TARJETAS DE MÓDULOS */
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-tech);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
 
-.blue span{color:#00c3ff;}
-.purple span{color:#7b42ff;}
-.red span{color:#ff4d4d;}
+        .card-info b { display: block; font-size: 13px; letter-spacing: 1px; color: #f1f5f9; }
+        .card-info span { font-size: 11px; color: #64748b; text-transform: uppercase; }
+        
+        .status-icon { color: var(--accent-cyan); font-size: 18px; }
 
-.chat{
-margin-top:20px;
-background:#020c1b;
-border:1px solid #233554;
-padding:15px;
-border-radius:10px;
-display:none;
-text-align:left;
-font-size:14px;
-line-height:1.6;
-}
-
-.pay{
-margin-top:15px;
-padding:12px 20px;
-background:linear-gradient(90deg,#00c3ff,#007bff);
-border:none;
-border-radius:6px;
-cursor:pointer;
-color:white;
-font-weight:bold;
-font-size:14px;
-width:100%;
-}
-.pay:hover{
-box-shadow:0 0 20px rgba(0,195,255,0.5);
-}
-</style>
+        /* SECCIÓN DE ALERTA */
+        .alert-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(220, 38, 38, 0.05);
+            border-left: 3px solid #ef4444;
+            border-radius: 4px;
+        }
+        .alert-title { color: #ef4444; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 10px; }
+        .alert-val { font-size: 24px; font-weight: 700; color: #fff; margin: 10px 0; }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="phone-view">
+    <div class="brand">MESAN <span>Ω</span></div>
 
-<div class="logo">MESAN <span>Ω</span></div>
+    <h1 class="headline">Arquitectura y<br><em>Soberanía</em></h1>
+    <p class="sub-headline">Análisis predictivo de vulnerabilidades fiscales y laborales para toma de decisiones nivel C-Suite.</p>
 
-<div class="hero">
-¿Tu empresa está <span>perdiendo dinero</span> sin que lo sepas?
+    <button class="btn-action">Iniciar Diagnóstico</button>
+
+    <div class="card">
+        <div class="card-info">
+            <span>Core Intelligence</span>
+            <b>MESAN ENTERPRISE</b>
+        </div>
+        <div class="status-icon">⌬</div>
+    </div>
+
+    <div class="alert-box">
+        <div class="alert-title">⚠️ EXPOSICIÓN DETECTADA</div>
+        <div style="color: #94a3b8; font-size: 13px;">Riesgo estimado en estructura operativa:</div>
+        <div class="alert-val">$450,000 MXN</div>
+        <small style="color: #475569;">Basado en validación STPS/SAT directa.</small>
+    </div>
 </div>
-
-<button class="btn" onclick="iniciarDiagnostico()">
-INICIAR DIAGNÓSTICO
-</button>
-
-<div class="modules">
-
-<div class="module blue" onclick="iniciarDiagnostico()">
-<div><b>MESAN ENTERPRISE</b><br><small>Auditoría completa</small></div>
-<span>◆</span>
-</div>
-
-<div class="module purple" onclick="iniciarDiagnostico()">
-<div><b>MESAN Ω</b><br><small>Predicción avanzada</small></div>
-<span>❖</span>
-</div>
-
-<div class="module red" onclick="activarRepse()">
-<div><b>BOTÓN REPSE</b><br><small>Validación STPS</small></div>
-<span>🛡️</span>
-</div>
-
-</div>
-
-<div class="chat" id="chat"></div>
-
-</div>
-
-<script>
-const API = "https://mesan-api.onrender.com";
-let cliente_id = "cliente_" + Date.now();
-
-function iniciarDiagnostico(){
-    const chat = document.getElementById("chat");
-    chat.style.display = "block";
-    chat.innerHTML = "⏳ Analizando...";
-
-    setTimeout(()=>{
-        chat.innerHTML = `
-        🚨 <b>ALERTA DETECTADA</b><br><br>
-        Riesgos fiscales y laborales identificados.<br><br>
-        Impacto estimado:<br>
-        <b style="color:#ff4d4d">$120,000 - $450,000 MXN</b><br><br>
-        <button class="pay" onclick="irPago()">
-            🔒 Desbloquear diagnóstico completo — $299 MXN
-        </button>
-        `;
-    }, 1500);
-}
-
-async function activarRepse(){
-    const chat = document.getElementById("chat");
-    chat.style.display = "block";
-    chat.innerHTML = "⏳ Consultando STPS...";
-
-    try{
-        const res = await fetch(API + "/api/verificar", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({rfc: "ABC123456XYZ"})
-        });
-
-        const data = await res.json();
-        chat.innerHTML = data.analisis_ia || "✅ Consulta completada";
-    } catch {
-        chat.innerHTML = "❌ Error de conexión";
-    }
-}
-
-async function irPago(){
-    try {
-        const res = await fetch(API + "/crear-sesion-omega", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                cliente_id: cliente_id,
-                sector: "PRIVADO",
-                monto: 299,
-                indice: 75
-            })
-        });
-
-        const data = await res.json();
-        if(data.url) window.location.href = data.url;
-        else alert("Error generando pago");
-
-    } catch(e) {
-        alert("Error de conexión");
-    }
-}
-</script>
 
 </body>
 </html>
