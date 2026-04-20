@@ -3,272 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω - Full Interface</title>
+    <title>MESAN Ω - Final Core</title>
     <style>
         body {
-            margin: 0;
-            background: #000;
-            color: white;
+            margin: 0; background: #000; color: white;
             font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
-            background-image: radial-gradient(circle at 50% 30%, #0d1b2a 0%, #000 80%);
+            background-image: radial-gradient(circle at 50% 30%, #0d1b2a 0%, #000 90%);
         }
-
         .phone-frame {
-            width: 360px;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            border-radius: 35px;
-            backdrop-filter: blur(25px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            width: 350px; padding: 25px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 35px; backdrop-filter: blur(20px);
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.1);
         }
-
-        .logo { font-size: 18px; font-weight: bold; margin-bottom: 25px; letter-spacing: 1px; }
+        .logo { font-size: 18px; font-weight: bold; margin-bottom: 20px; letter-spacing: 1px; }
         .logo span { color: #8a2be2; text-shadow: 0 0 10px #8a2be2; }
-
-        h1 { text-align: center; font-size: 21px; font-weight: 300; line-height: 1.2; margin-bottom: 15px; }
-        h1 b { color: #00d4ff; text-shadow: 0 0 15px rgba(0, 212, 255, 0.7); }
-
-        .loss { color: #ff4d4d; text-align: center; font-size: 13px; margin-bottom: 20px; }
-
-        .sentinel-bar {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: #8892b0;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
+        h1 { text-align: center; font-size: 20px; font-weight: 300; margin-bottom: 20px; }
+        h1 b { color: #00d4ff; text-shadow: 0 0 15px rgba(0, 212, 255, 0.6); }
         .module {
-            background: rgba(10, 25, 47, 0.6);
-            border: 1px solid rgba(28, 45, 77, 0.8);
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            transition: 0.3s;
-            cursor: pointer;
+            background: rgba(10, 25, 47, 0.7); border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px; padding: 14px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center; font-size: 13px;
         }
-        .module:hover { border-color: #00d4ff; background: rgba(0, 212, 255, 0.05); }
-
         .btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 14px;
+            width: 100%; padding: 18px; border-radius: 10px; border: none;
+            font-weight: bold; text-transform: uppercase; cursor: pointer; margin-top: 10px;
+            transition: 0.3s;
         }
         .btn-blue {
             background: linear-gradient(180deg, #00a2ff 0%, #005bb5 100%);
-            color: white;
-            box-shadow: 0 5px 15px rgba(0, 162, 255, 0.3);
+            color: white; box-shadow: 0 5px 20px rgba(0, 162, 255, 0.4);
         }
-        .btn-blue:hover { box-shadow: 0 0 25px rgba(0,162,255,0.6); }
-
-        .btn-red {
-            background: linear-gradient(180deg, #d00000 0%, #800000 100%);
-            color: white;
-            border: 1px solid #ff4d4d;
-        }
-        .btn-red:hover { box-shadow: 0 0 20px rgba(255,77,77,0.5); }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 12px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(0,212,255,0.3);
-            color: white;
-            border-radius: 8px;
-            font-size: 13px;
-            box-sizing: border-box;
-        }
-
         #status-area {
-            margin-top: 15px;
-            padding: 12px;
-            background: rgba(0, 212, 255, 0.1);
-            border-left: 3px solid #00d4ff;
-            border-radius: 4px;
-            font-size: 12px;
-            display: none;
-            text-align: left;
-            line-height: 1.6;
-        }
-
-        .btn-pay {
-            width: 100%;
-            padding: 16px;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            font-size: 14px;
-            background: linear-gradient(180deg, #00ff88, #00cc6a);
-            color: #00331a;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
-            transition: 0.3s;
-        }
-        .btn-pay:hover { box-shadow: 0 0 30px rgba(0,255,136,0.6); transform: scale(1.02); }
-
-        .footer {
-            text-align: center;
-            font-size: 10px;
-            opacity: 0.4;
-            margin-top: 15px;
+            margin-top: 20px; padding: 15px; border-radius: 8px;
+            background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3);
+            display: none; font-size: 13px; text-align: left;
         }
     </style>
 </head>
 <body>
 
-<div class="phone-frame">
+    <audio id="netflix" preload="auto">
+        <source src="https://www.myinstants.com/media/sounds/netflix-ta-dum-sound-effect.mp3" type="audio/mpeg">
+    </audio>
 
-    <div class="logo">MESAN <span>Ω</span></div>
+    <div class="phone-frame">
+        <div class="logo">MESAN <span>Ω</span></div>
+        
+        <h1>¿Tu empresa está <b>perdiendo dinero</b> sin que lo sepas?</h1>
 
-    <h1>¿Tu empresa está <b>perdiendo dinero</b> sin que lo sepas?</h1>
+        <div class="module"><span>MESAN ENTERPRISE</span><span style="color:#00d4ff">◆</span></div>
+        <div class="module"><span>MESAN OMEGA</span><span style="color:#a155ff">❖</span></div>
 
-    <div class="loss">
-        Pérdida estimada en tiempo real: <span id="counter">$0 MXN</span>
+        <button class="btn btn-blue" id="mainBtn">INICIAR DIAGNÓSTICO</button>
+
+        <div id="status-area">
+            <div id="status-text"></div>
+        </div>
     </div>
 
-    <div class="sentinel-bar">
-        <div>SENTINEL CORE<br><span style="color:#00ff88">ACTIVE</span></div>
-        <div style="text-align:right">AETHER CORE<br>READY</div>
-    </div>
+    <script>
+        const btn = document.getElementById('mainBtn');
+        const audio = document.getElementById('netflix');
+        const status = document.getElementById('status-area');
+        const txt = document.getElementById('status-text');
 
-    <div class="module"><span>MESAN ENTERPRISE</span><span style="color:#00d4ff">◆</span></div>
-    <div class="module"><span>MESAN OMEGA</span><span style="color:#a155ff">❖</span></div>
-    <div class="module"><span>SOPORTE Ω</span><span style="color:#ff914d">▲</span></div>
+        btn.addEventListener('click', function() {
+            // Acción inmediata de audio
+            audio.play().catch(e => console.log("Permiso de audio requerido"));
 
-    <input id="inputRFC" placeholder="RFC / Empresa">
+            // Feedback visual
+            btn.innerText = "PROCESANDO...";
+            btn.style.opacity = "0.6";
+            status.style.display = "block";
+            txt.innerHTML = "<span style='color:#00d4ff'>⏳ Sincronizando con Sentinel Core...</span>";
 
-    <button class="btn btn-blue" onclick="iniciarDiagnostico()">
-        INICIAR DIAGNÓSTICO
-    </button>
-
-    <button class="btn btn-red" onclick="activarRepse()">
-        🛡️ BOTÓN REPSE
-    </button>
-
-    <div id="status-area">
-        <span id="status-text"></span>
-    </div>
-
-    <button class="btn-pay" onclick="irPago()">
-        🔒 Ver diagnóstico completo — $299 MXN
-    </button>
-
-    <div class="footer">MESAN Ω © 2026</div>
-
-</div>
-
-<script>
-const API = "https://mesan-api.onrender.com";
-let cliente_id = "cliente_" + Date.now();
-let perdida = 0;
-
-// CONTADOR
-setInterval(() => {
-    perdida += Math.floor(Math.random() * 500 + 200);
-    const counter = document.getElementById("counter");
-    if (counter) counter.innerText = "$" + perdida.toLocaleString() + " MXN";
-}, 1500);
-
-// DIAGNÓSTICO
-function iniciarDiagnostico() {
-    const status = document.getElementById("status-area");
-    const txt = document.getElementById("status-text");
-
-    status.style.display = "block";
-    txt.innerHTML = "⏳ Sincronizando con Sentinel Core...";
-
-    setTimeout(() => {
-        txt.innerHTML = `
-            🚨 <strong>ALERTA CRÍTICA DETECTADA</strong><br><br>
-            Riesgos encontrados:<br>
-            — No deducibilidad fiscal<br>
-            — Multas IMSS pendientes<br>
-            — Incumplimiento REPSE<br><br>
-            Impacto estimado:<br>
-            <strong style="color:#ff4d4d">$120,000 - $450,000 MXN anuales</strong><br><br>
-            👉 Desbloquea el análisis completo por $299 MXN
-        `;
-        txt.style.color = "#00ff88";
-    }, 2000);
-}
-
-// REPSE
-async function activarRepse() {
-    const status = document.getElementById("status-area");
-    const txt = document.getElementById("status-text");
-
-    status.style.display = "block";
-    txt.style.color = "white";
-    txt.innerHTML = "⏳ Consultando STPS...";
-
-    try {
-        const res = await fetch(API + "/api/verificar", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                rfc: document.getElementById("inputRFC").value || "ABC123456XYZ"
-            })
+            setTimeout(() => {
+                txt.innerHTML = "<b style='color:#00ff88'>🚨 CONEXIÓN ESTABLECIDA</b><br>Analizando riesgos fiscales y REPSE...";
+            }, 1800);
         });
-
-        const data = await res.json();
-
-        txt.innerHTML = data.analisis_ia
-            ? "🚨 ALERTA: " + data.analisis_ia
-            : "✅ Consulta completada";
-
-    } catch(e) {
-        txt.innerHTML = "❌ Error de conexión con STPS";
-    }
-}
-
-// PAGO
-async function irPago() {
-    try {
-        const res = await fetch(API + "/crear-sesion-omega", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                cliente_id: cliente_id,
-                sector: "PRIVADO",
-                monto: 299,
-                indice: 75
-            })
-        });
-
-        const data = await res.json();
-
-        if (data.url) {
-            window.location.href = data.url;
-        } else {
-            alert("Error generando link de pago");
-        }
-
-    } catch(e) {
-        alert("Error de conexión");
-    }
-}
-</script>
-
+    </script>
 </body>
 </html>
