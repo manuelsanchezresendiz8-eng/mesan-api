@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MESAN Ω - SISTEMA PREMIER</title>
     <style>
-        /* FONTO ESTELAR Y CONFIGURACIÓN BASE */
         body, html {
             margin: 0; padding: 0; height: 100%;
-            background: #000 url('https://i.ibb.co/vBPr0P5/espacio-bg.jpg') no-repeat center center;
-            background-size: cover;
+            background: radial-gradient(ellipse at center, #0d1b2a 0%, #000 80%);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             color: white;
             display: flex; justify-content: center; align-items: center;
@@ -22,14 +20,12 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* LOGO MESAN Ω */
         .logo {
             font-size: 1.2rem; font-weight: bold; letter-spacing: 3px;
             margin-bottom: 60px;
         }
         .logo span { color: #00c3ff; }
 
-        /* TÍTULOS CON LOS COLORES DE LA IMAGEN */
         .titulo {
             font-size: 2.3rem; font-weight: bold; line-height: 1.1;
             margin-bottom: 20px;
@@ -42,7 +38,6 @@
             padding: 0 30px;
         }
 
-        /* BOTÓN EXACTO: INICIAR DIAGNÓSTICO */
         .btn-main {
             width: 85%;
             padding: 18px 0;
@@ -57,12 +52,15 @@
             box-shadow: 0 0 15px rgba(0, 195, 255, 0.2);
         }
 
-        .btn-main:active {
+        .btn-main:hover {
             background: rgba(0, 195, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 195, 255, 0.5);
+        }
+
+        .btn-main:active {
             transform: scale(0.98);
         }
 
-        /* VENTANA DE ALERTA (SENTINEL CORE) */
         .overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8);
@@ -123,9 +121,10 @@
     function activarSentinel() {
         document.getElementById('sentinelOverlay').style.display = 'flex';
     }
+
     function cerrarSentinel() {
         document.getElementById('sentinelOverlay').style.display = 'none';
-        // Aquí puedes redirigir o mostrar los resultados del riesgo de $450k
+        window.location.href = '/diagnostico.html';
     }
 </script>
 
