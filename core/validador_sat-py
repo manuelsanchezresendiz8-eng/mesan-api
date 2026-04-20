@@ -1,0 +1,38 @@
+def validar_cfdi(cfdi: dict) -> dict:
+
+    alertas = []
+
+    if not cfdi or "error" in cfdi:
+        return {"alertas": ["XML invalido o no procesable"], "riesgo": True}
+
+    if float(cfdi.get("total", 0)) <= 0:
+        alertas.append("FACTURA SIN VALOR REAL")
+
+    if len(cfdi.get("conceptos", [])) == 0:
+        alertas.append("FACTURA SIN DESGLOSE DE CONCEPTOS")
+
+    if cfdi.get("emisor") == cfdi.get("receptor"):
+        alertas.append("OPERACION ENTRE PARTES RELACIONADAS")
+
+    if not cfdi.get("emisor"):
+        alertas.append("RFC EMISOR FALTANTE")
+
+    if not cfdi.get("receptor"):
+        alertas.append("RFC RECEPTOR FALTANTE")
+
+    if cfdi.get("num_conceptos", 0) > 50:
+        alertas.append("NUMERO INUSUAL DE CONCEPTOS")
+
+    nivel = (
+        "CRITICO" if len(alertas) >= 3 else
+        "ALTO" if len(alertas) >= 2 else
+        "MEDIO" if len(alertas) == 1 else
+        "OK"
+    )
+
+    return {
+        "alertas": alertas,
+        "riesgo": len(alertas) > 0,
+        "nivel": nivel,
+        "total_alertas": len(alertas)
+    }
