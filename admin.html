@@ -30,12 +30,13 @@ select{background:#000;color:#fff;border:1px solid var(--border);padding:5px;}
 .giro-tag{display:inline-block;font-size:9px;padding:2px 8px;border:1px solid rgba(0,243,255,0.3);color:var(--cyan);margin-bottom:6px;border-radius:3px;}
 .orden-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:4px 10px;font-size:10px;cursor:pointer;margin-left:10px;}
 .orden-btn.active{border-color:var(--cyan);color:var(--cyan);}
+.fecha-local{font-size:9px;color:var(--dim);}
 </style>
 </head>
 <body>
 
 <h1>MESAN-Ω CRM</h1>
-<div class="sub">Panel de Control de Leads</div>
+<div class="sub">Panel de Control de Leads — Hora local: Mexicali/Hermosillo</div>
 
 <div class="stats">
   <div class="stat"><div class="stat-num" id="total">0</div><div class="stat-lbl">Total</div></div>
@@ -71,15 +72,20 @@ function logout(){
 function formatFecha(fecha) {
   if (!fecha) return "-";
   try {
-    return new Date(fecha).toLocaleString("es-MX", {
-      timeZone: "America/Hermosillo",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true
-    });
+    const d = new Date(fecha);
+    // Ajuste manual UTC-7 (Hermosillo — sin cambio de horario)
+    const offset = -7 * 60;
+    const local = new Date(d.getTime() + (offset - d.getTimezoneOffset()) * 60000);
+
+    const dia = String(local.getDate()).padStart(2, "0");
+    const mes = String(local.getMonth() + 1).padStart(2, "0");
+    const anio = local.getFullYear();
+    const hora = local.getHours();
+    const min = String(local.getMinutes()).padStart(2, "0");
+    const ampm = hora >= 12 ? "p.m." : "a.m.";
+    const hora12 = hora % 12 || 12;
+
+    return `${dia}/${mes}/${anio}, ${hora12}:${min} ${ampm}`;
   } catch(e) {
     return fecha.substring(0, 16).replace("T", " ");
   }
@@ -121,10 +127,12 @@ async function cargar(){
 
 function render(leads){
   document.getElementById("total").innerText = leads.length;
+
+  const criticos = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
   document.getElementById("criticos").innerText =
-    leads.filter(l=>l.clasificacion==="ALTO" || l.clasificacion==="CRISIS FINANCIERA" || l.clasificacion==="RIESGO OPERATIVO" || l.clasificacion==="RIESGO LEGAL").length;
+    leads.filter(l => criticos.includes(l.clasificacion)).length;
   document.getElementById("pagados").innerText =
-    leads.filter(l=>l.estatus==="pagado").length;
+    leads.filter(l => l.estatus === "pagado").length;
 
   if (!leads.length){
     document.getElementById("leads").innerHTML =
@@ -142,9 +150,11 @@ function render(leads){
   let html = "";
 
   sorted.forEach(l => {
-    const criticos = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
-    const medios = ["MEDIO","INEFICIENCIA","RIESGO REPSE"];
-    const tipo = criticos.includes(l.clasificacion) ? "critico" : medios.includes(l.clasificacion) ? "vulnerable" : "estable";
+    const criticosList = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
+    const mediosList = ["MEDIO","INEFICIENCIA","RIESGO REPSE"];
+    const tipo = criticosList.includes(l.clasificacion) ? "critico"
+               : mediosList.includes(l.clasificacion) ? "vulnerable"
+               : "estable";
 
     const tel = (l.telefono || "").replace(/\D/g,"");
     const waMsg = encodeURIComponent(
@@ -163,7 +173,7 @@ function render(leads){
         Email: ${l.email || "-"}<br>
         Tel: ${l.telefono || "-"}<br>
         Exposición: $${(l.impacto_min||0).toLocaleString()} - $${(l.impacto_max||0).toLocaleString()} MXN<br>
-        Fecha: ${formatFecha(l.fecha)}<br><br>
+        <span class="fecha-local">📅 ${formatFecha(l.fecha)}</span><br><br>
         <a href="${waLink}" target="_blank" class="btn btn-wa">WhatsApp</a>
         <a href="tel:${l.telefono || ""}" class="btn btn-call">Llamar</a>
         <button class="btn btn-id" onclick="copiar('${l.id}')">ID</button>
@@ -210,5 +220,3 @@ cargar();
 </script>
 </body>
 </html>
-  
-     
