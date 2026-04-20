@@ -35,7 +35,6 @@
 
         .loss { color: #ff4d4d; text-align: center; font-size: 13px; margin-bottom: 20px; }
 
-        /* Panel Superior Sentinel */
         .sentinel-bar {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
@@ -48,7 +47,6 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* Botones de Módulos (Los que faltaban) */
         .module {
             background: rgba(10, 25, 47, 0.6);
             border: 1px solid rgba(28, 45, 77, 0.8);
@@ -60,6 +58,7 @@
             align-items: center;
             font-size: 13px;
             transition: 0.3s;
+            cursor: pointer;
         }
         .module:hover { border-color: #00d4ff; background: rgba(0, 212, 255, 0.05); }
 
@@ -72,19 +71,34 @@
             text-transform: uppercase;
             cursor: pointer;
             margin-top: 10px;
+            font-size: 14px;
         }
         .btn-blue {
             background: linear-gradient(180deg, #00a2ff 0%, #005bb5 100%);
             color: white;
             box-shadow: 0 5px 15px rgba(0, 162, 255, 0.3);
         }
+        .btn-blue:hover { box-shadow: 0 0 25px rgba(0,162,255,0.6); }
+
         .btn-red {
             background: linear-gradient(180deg, #d00000 0%, #800000 100%);
             color: white;
             border: 1px solid #ff4d4d;
         }
+        .btn-red:hover { box-shadow: 0 0 20px rgba(255,77,77,0.5); }
 
-        /* Alerta de Procesamiento Integrada */
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0,212,255,0.3);
+            color: white;
+            border-radius: 8px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
         #status-area {
             margin-top: 15px;
             padding: 12px;
@@ -94,66 +108,167 @@
             font-size: 12px;
             display: none;
             text-align: left;
+            line-height: 1.6;
         }
 
         .btn-pay {
-            background: #00ff88;
+            width: 100%;
+            padding: 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 14px;
+            background: linear-gradient(180deg, #00ff88, #00cc6a);
             color: #00331a;
-            margin-top: 20px;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            transition: 0.3s;
+        }
+        .btn-pay:hover { box-shadow: 0 0 30px rgba(0,255,136,0.6); transform: scale(1.02); }
+
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            opacity: 0.4;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
-    <div class="phone-frame">
-        <div class="logo">MESAN <span>Ω</span></div>
+<div class="phone-frame">
 
-        <h1>¿Tu empresa está <b>perdiendo dinero</b> sin que lo sepas?</h1>
-        <div class="loss">Pérdida estimada en tiempo real: $6,862 MXN</div>
+    <div class="logo">MESAN <span>Ω</span></div>
 
-        <div class="sentinel-bar">
-            <div>SENTINEL CORE<br><span style="color:#00ff88">ACTIVE</span></div>
-            <div style="text-align:right">AETHER CORE<br>READY</div>
-        </div>
+    <h1>¿Tu empresa está <b>perdiendo dinero</b> sin que lo sepas?</h1>
 
-        <div class="module"><span>MESAN ENTERPRISE</span> <span style="color:#00d4ff">◆</span></div>
-        <div class="module"><span>MESAN OMEGA</span> <span style="color:#a155ff">❖</span></div>
-        <div class="module"><span>SOPORTE Ω</span> <span style="color:#ff914d">▲</span></div>
-
-        <button class="btn btn-blue" id="actionBtn">INICIAR DIAGNÓSTICO</button>
-        <button class="btn btn-red">🛡️ BOTÓN REPSE</button>
-
-        <div id="status-area">
-            <span id="status-text">Sincronizando con Sentinel Core...</span>
-        </div>
-
-        <button class="btn btn-pay">🔒 Ver diagnóstico completo — $299 MXN</button>
+    <div class="loss">
+        Pérdida estimada en tiempo real: <span id="counter">$0 MXN</span>
     </div>
 
-    <audio id="netflixSound">
-        <source src="https://www.myinstants.com/media/sounds/netflix-ta-dum-sound-effect.mp3" type="audio/mpeg">
-    </audio>
+    <div class="sentinel-bar">
+        <div>SENTINEL CORE<br><span style="color:#00ff88">ACTIVE</span></div>
+        <div style="text-align:right">AETHER CORE<br>READY</div>
+    </div>
 
-    <script>
-        const btn = document.getElementById('actionBtn');
-        const status = document.getElementById('status-area');
-        const txt = document.getElementById('status-text');
-        const audio = document.getElementById('netflixSound');
+    <div class="module"><span>MESAN ENTERPRISE</span><span style="color:#00d4ff">◆</span></div>
+    <div class="module"><span>MESAN OMEGA</span><span style="color:#a155ff">❖</span></div>
+    <div class="module"><span>SOPORTE Ω</span><span style="color:#ff914d">▲</span></div>
 
-        btn.addEventListener('click', () => {
-            // Sonido
-            audio.play().catch(() => console.log("Interacción requerida"));
-            
-            // Visual
-            btn.innerText = "PROCESANDO...";
-            status.style.display = "block";
-            
-            setTimeout(() => {
-                txt.innerHTML = "<strong>CONEXIÓN ESTABLECIDA</strong><br>Analizando vulnerabilidades...";
-                txt.style.color = "#00ff88";
-            }, 2000);
+    <input id="inputRFC" placeholder="RFC / Empresa">
+
+    <button class="btn btn-blue" onclick="iniciarDiagnostico()">
+        INICIAR DIAGNÓSTICO
+    </button>
+
+    <button class="btn btn-red" onclick="activarRepse()">
+        🛡️ BOTÓN REPSE
+    </button>
+
+    <div id="status-area">
+        <span id="status-text"></span>
+    </div>
+
+    <button class="btn-pay" onclick="irPago()">
+        🔒 Ver diagnóstico completo — $299 MXN
+    </button>
+
+    <div class="footer">MESAN Ω © 2026</div>
+
+</div>
+
+<script>
+const API = "https://mesan-api.onrender.com";
+let cliente_id = "cliente_" + Date.now();
+let perdida = 0;
+
+// CONTADOR
+setInterval(() => {
+    perdida += Math.floor(Math.random() * 500 + 200);
+    const counter = document.getElementById("counter");
+    if (counter) counter.innerText = "$" + perdida.toLocaleString() + " MXN";
+}, 1500);
+
+// DIAGNÓSTICO
+function iniciarDiagnostico() {
+    const status = document.getElementById("status-area");
+    const txt = document.getElementById("status-text");
+
+    status.style.display = "block";
+    txt.innerHTML = "⏳ Sincronizando con Sentinel Core...";
+
+    setTimeout(() => {
+        txt.innerHTML = `
+            🚨 <strong>ALERTA CRÍTICA DETECTADA</strong><br><br>
+            Riesgos encontrados:<br>
+            — No deducibilidad fiscal<br>
+            — Multas IMSS pendientes<br>
+            — Incumplimiento REPSE<br><br>
+            Impacto estimado:<br>
+            <strong style="color:#ff4d4d">$120,000 - $450,000 MXN anuales</strong><br><br>
+            👉 Desbloquea el análisis completo por $299 MXN
+        `;
+        txt.style.color = "#00ff88";
+    }, 2000);
+}
+
+// REPSE
+async function activarRepse() {
+    const status = document.getElementById("status-area");
+    const txt = document.getElementById("status-text");
+
+    status.style.display = "block";
+    txt.style.color = "white";
+    txt.innerHTML = "⏳ Consultando STPS...";
+
+    try {
+        const res = await fetch(API + "/api/verificar", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                rfc: document.getElementById("inputRFC").value || "ABC123456XYZ"
+            })
         });
-    </script>
+
+        const data = await res.json();
+
+        txt.innerHTML = data.analisis_ia
+            ? "🚨 ALERTA: " + data.analisis_ia
+            : "✅ Consulta completada";
+
+    } catch(e) {
+        txt.innerHTML = "❌ Error de conexión con STPS";
+    }
+}
+
+// PAGO
+async function irPago() {
+    try {
+        const res = await fetch(API + "/crear-sesion-omega", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                cliente_id: cliente_id,
+                sector: "PRIVADO",
+                monto: 299,
+                indice: 75
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            alert("Error generando link de pago");
+        }
+
+    } catch(e) {
+        alert("Error de conexión");
+    }
+}
+</script>
+
 </body>
 </html>
