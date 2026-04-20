@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω - Executive</title>
+    <title>MESAN Ω</title>
     <style>
         :root {
-            /* Colores premium de la imagen de referencia */
-            --bg-master: #020b16; 
-            --cyan-neon: #00d4ff; 
-            --accent-glow: rgba(0, 212, 255, 0.6);
-            --card-glass: rgba(10, 25, 47, 0.7);
+            /* Colores exactos de la imagen premium */
+            --electric-cyan: #00f2ff; 
+            --deep-black-blue: #010812;
+            --aura-glow: rgba(0, 242, 255, 0.7);
+            --text-gray: #8ba2ad;
         }
 
         body {
             margin: 0;
-            background: radial-gradient(circle at 50% 35%, #0a1e35 0%, #020b16 100%);
+            background-color: var(--deep-black-blue);
+            /* Gradiente de profundidad idéntico */
+            background: radial-gradient(circle at 50% 35%, #081b33 0%, #010812 100%);
             color: #ffffff;
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             justify-content: center;
             min-height: 100vh;
@@ -26,113 +28,132 @@
         .phone-layout {
             width: 100%;
             max-width: 390px;
-            padding: 30px 25px;
+            padding: 40px 25px;
             text-align: center;
         }
 
-        /* LOGO SUPERIOR */
-        .brand-logo {
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: 6px;
-            margin-bottom: 50px;
-            color: #fff;
+        /* LOGO MESAN - Color y Espaciado Exacto */
+        .brand-header {
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 7px;
+            margin-bottom: 60px;
+            color: #ffffff;
+            text-transform: uppercase;
         }
-        .brand-logo span { 
-            color: var(--cyan-neon); 
-            text-shadow: 0 0 12px var(--cyan-neon); 
+        .brand-header span { 
+            color: var(--electric-cyan); 
+            text-shadow: 0 0 15px var(--aura-glow); 
         }
 
-        /* TÍTULO CON EFECTO SOBERANÍA */
-        .title-h1 {
-            font-size: 34px;
+        /* TÍTULOS - El "Soberanía" debe resaltar con fuego azul */
+        .hero-title {
+            font-size: 36px;
             font-weight: 800;
             line-height: 1.1;
             margin-bottom: 25px;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
         }
-        .title-h1 span {
-            color: var(--cyan-neon);
-            text-shadow: 0 0 25px var(--accent-glow);
+        .hero-title .soberania {
+            color: var(--electric-cyan);
+            /* Doble resplandor para intensidad total */
+            text-shadow: 0 0 10px var(--aura-glow), 0 0 30px rgba(0, 242, 255, 0.4);
             display: block;
+            margin: 5px 0;
         }
 
-        .desc-text {
+        .hero-desc {
             font-size: 14px;
-            color: #8892b0;
+            color: var(--text-gray);
             line-height: 1.6;
-            margin-bottom: 35px;
+            margin-bottom: 45px;
+            font-weight: 400;
         }
 
-        /* BOTÓN CON AURA NEÓN */
-        .action-btn {
+        /* BOTÓN DE DIAGNÓSTICO */
+        .btn-main {
             width: 100%;
             padding: 18px;
             background: transparent;
-            border: 2px solid var(--cyan-neon);
-            color: var(--cyan-neon);
-            font-weight: 700;
-            letter-spacing: 2.5px;
+            border: 2.5px solid var(--electric-cyan);
+            color: var(--electric-cyan);
+            font-weight: 800;
+            letter-spacing: 3px;
             border-radius: 4px;
             text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.25);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+            margin-bottom: 50px;
             cursor: pointer;
-            margin-bottom: 40px;
         }
 
-        /* MÓDULOS ESTILO CRISTAL */
-        .module-item {
-            background: var(--card-glass);
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 12px;
+        /* TARJETAS GLASSMORPISM */
+        .glass-card {
+            background: rgba(10, 25, 47, 0.6);
+            border: 1px solid rgba(0, 242, 255, 0.25);
+            border-radius: 8px;
+            padding: 22px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px);
             text-align: left;
         }
-        .module-item h3 { margin: 0; font-size: 14px; color: #ccd6f6; }
-        .module-item p { margin: 4px 0 0; font-size: 11px; color: #64748b; }
+        .glass-card h3 { margin: 0; font-size: 15px; letter-spacing: 1px; color: #ffffff; }
+        .glass-card p { margin: 5px 0 0; font-size: 11px; color: var(--text-gray); }
 
-        /* ALERTA DE RIESGO PROFESIONAL */
-        .alert-ui {
-            margin-top: 30px;
-            padding: 22px;
-            background: rgba(220, 38, 38, 0.08);
-            border-left: 4px solid #ef4444;
-            border-radius: 6px;
+        /* PANEL DE ALERTA - Rojo Impacto */
+        .alert-panel {
+            background: rgba(255, 49, 49, 0.07);
+            border-left: 5px solid #ff3131;
+            border-radius: 4px;
+            padding: 25px;
             text-align: left;
+            margin-top: 35px;
         }
-        .alert-ui h4 { color: #ef4444; font-size: 12px; margin: 0; letter-spacing: 1px; }
-        .alert-ui .price { font-size: 30px; font-weight: 900; color: #fff; margin: 10px 0; }
+        .alert-panel h4 { 
+            color: #ff3131; 
+            margin: 0; 
+            font-size: 12px; 
+            font-weight: 900; 
+            letter-spacing: 1.5px;
+        }
+        .alert-panel .amount { 
+            font-size: 32px; 
+            font-weight: 900; 
+            color: #ffffff; 
+            margin: 12px 0; 
+        }
     </style>
 </head>
 <body>
 
 <div class="phone-layout">
-    <div class="brand-logo">MESAN <span>Ω</span></div>
+    <div class="brand-header">MESAN <span>Ω</span></div>
 
-    <h1 class="title-h1">Arquitectura y<br><span>Soberanía</span><br>Empresarial</h1>
+    <h1 class="hero-title">
+        Arquitectura y<br>
+        <span class="soberania">Soberanía</span>
+        Empresarial
+    </h1>
 
-    <p class="desc-text">Análisis predictivo de vulnerabilidades diseñado para la toma de decisiones nivel C-Suite.</p>
+    <p class="hero-desc">Análisis predictivo de vulnerabilidades diseñado para la toma de decisiones nivel C-Suite.</p>
 
-    <button class="action-btn">Iniciar Diagnóstico</button>
+    <button class="btn-main">Iniciar Diagnóstico</button>
 
-    <div class="module-item">
+    <div class="glass-card">
         <div>
             <h3>MESAN ENTERPRISE</h3>
-            <p>Auditoría de Cumplimiento</p>
+            <p>Auditoría de Cumplimiento Total</p>
         </div>
-        <span style="color:var(--cyan-neon)">◆</span>
+        <span style="color:var(--electric-cyan); font-size: 18px;">◆</span>
     </div>
 
-    <div class="alert-ui">
+    <div class="alert-panel">
         <h4>🚨 EXPOSICIÓN DETECTADA</h4>
-        <div style="color: #8892b0; font-size: 13px;">Riesgo estimado en estructura:</div>
-        <div class="price">$450,000 MXN</div>
-        <small style="color: #475569; font-size: 10px;">Validación directa STPS/SAT ejecutada.</small>
+        <div style="color: var(--text-gray); font-size: 13px; margin-top: 10px;">Riesgo estimado en estructura:</div>
+        <div class="amount">$450,000 MXN</div>
+        <div style="color: #4b5a63; font-size: 10px; font-weight: bold;">Validación directa STPS/SAT ejecutada.</div>
     </div>
 </div>
 
