@@ -1,380 +1,145 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω - Premium</title>
-
-<style>
-:root {
-    --bg: #02060d;
-    --blue: #00c3ff;
-    --purple: #7b42ff;
-    --gold: #ff914d;
-    --red: #ff3b3b;
-}
-
-body {
-    margin:0;
-    background: radial-gradient(circle at center, #02060d, #000);
-    font-family: 'Segoe UI', sans-serif;
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-}
-
-.app {
-    width:380px;
-    border-radius:30px;
-    padding:25px;
-    background: linear-gradient(180deg,#050a14,#000);
-    box-shadow: 0 0 60px rgba(0,195,255,0.15);
-    position:relative;
-    overflow:hidden;
-    margin: 20px auto;
-}
-
-.app::before{
-    content:"";
-    position:absolute;
-    width:100%;
-    height:100%;
-    background-image: radial-gradient(#1a2233 1px, transparent 1px);
-    background-size:20px 20px;
-    opacity:0.25;
-    top:0;
-    left:0;
-    pointer-events:none;
-}
-
-.header{
-    font-size:1.3rem;
-    font-weight:bold;
-}
-.header span{
-    color:var(--purple);
-}
-
-.hero{
-    text-align:center;
-    margin:20px 0;
-    font-size:1.3rem;
-}
-.hero span{
-    color:var(--blue);
-    text-shadow:0 0 15px rgba(0,195,255,.7);
-}
-
-.money-loss {
-    text-align:center;
-    font-size:.85rem;
-    color:#e74c3c;
-    margin-bottom:10px;
-}
-
-#counter {
-    font-weight:bold;
-    color:#e74c3c;
-    text-shadow:0 0 10px #e74c3c;
-}
-
-.core{
-    background:rgba(10,25,50,.7);
-    border:1px solid #233554;
-    border-radius:15px;
-    padding:15px;
-    display:flex;
-    justify-content:space-between;
-    font-size:.7rem;
-    margin-bottom:15px;
-    box-shadow:0 0 20px rgba(0,195,255,.1);
-}
-
-.module{
-    background:#0d1930;
-    border:1px solid #233554;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:8px;
-    display:flex;
-    justify-content:space-between;
-    transition:.3s;
-}
-.module:hover{
-    transform:scale(1.03);
-    box-shadow:0 0 15px rgba(123,66,255,.4);
-}
-
-.blue{color:var(--blue)}
-.purple{color:var(--purple)}
-.gold{color:var(--gold)}
-
-input{
-    width:100%;
-    padding:10px;
-    margin:10px 0;
-    background:#112240;
-    border:1px solid #233554;
-    color:white;
-    border-radius:6px;
-    box-sizing:border-box;
-    font-family:'Segoe UI',sans-serif;
-}
-
-.btn{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:6px;
-    font-weight:bold;
-    cursor:pointer;
-    margin-bottom:10px;
-    transition:.3s;
-    font-size:14px;
-}
-
-.btn-blue{
-    background:linear-gradient(90deg,#007bff,#00c3ff);
-    color:white;
-}
-.btn-blue:hover{
-    box-shadow:0 0 20px #00c3ff;
-}
-
-.btn-red{
-    background:#900;
-    border:1px solid red;
-    color:white;
-}
-.btn-red:hover{
-    box-shadow:0 0 15px red;
-}
-
-.btn-pay{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:6px;
-    font-weight:bold;
-    cursor:pointer;
-    margin-bottom:10px;
-    background:linear-gradient(90deg,#00c851,#00ff6a);
-    color:#000;
-    font-size:15px;
-    box-shadow:0 0 20px rgba(0,200,81,.4);
-    transition:.3s;
-}
-.btn-pay:hover{
-    box-shadow:0 0 30px rgba(0,200,81,.8);
-    transform:scale(1.02);
-}
-
-.alerts{
-    font-size:.75rem;
-    margin-bottom:10px;
-}
-.alerts div{
-    margin-bottom:5px;
-}
-.alerts div::before{
-    content:"⚠ ";
-    color:var(--red);
-}
-
-#chat-output{
-    margin-top:10px;
-    background:#020c1b;
-    border:1px solid #233554;
-    border-radius:10px;
-    padding:10px;
-    font-size:.75rem;
-    display:none;
-}
-
-.chat-static{
-    margin-top:10px;
-    background:#020c1b;
-    border:1px solid #233554;
-    border-radius:10px;
-    padding:10px;
-    font-size:.75rem;
-    animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-    0%{box-shadow:0 0 5px #00c3ff;}
-    50%{box-shadow:0 0 20px #00c3ff;}
-    100%{box-shadow:0 0 5px #00c3ff;}
-}
-
-.footer{
-    text-align:center;
-    font-size:.6rem;
-    opacity:.5;
-    margin-top:10px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-    <div class="header">MESAN <span>Ω</span></div>
-
-    <div class="hero">
-        ¿Tu empresa está <span>perdiendo dinero</span> sin que lo sepas?
-    </div>
-
-    <div class="money-loss">
-        Pérdida estimada en tiempo real:
-        <span id="counter">$0 MXN</span>
-    </div>
-
-    <div class="core">
-        <div>
-            <strong>SENTINEL CORE</strong><br>
-            ACTIVE
-        </div>
-        <div>
-            <strong>AETHER CORE</strong><br>
-            Procesando...
-        </div>
-    </div>
-
-    <div class="module">
-        MESAN ENTERPRISE
-        <span class="blue">◆</span>
-    </div>
-
-    <div class="module">
-        MESAN OMEGA
-        <span class="purple">❖</span>
-    </div>
-
-    <div class="module">
-        SOPORTE Ω
-        <span class="gold">▲</span>
-    </div>
-
-    <input id="inputRFC" placeholder="RFC / Empresa">
-
-    <button class="btn btn-blue" onclick="iniciarDiagnostico()">
-        INICIAR DIAGNÓSTICO
-    </button>
-
-    <button class="btn btn-red" onclick="activarRepse()">
-        🛡 BOTÓN REPSE
-    </button>
-
-    <div class="alerts">
-        <div>Riesgo de No Deducibilidad</div>
-        <div>RFC en Alerta</div>
-    </div>
-
-    <div id="chat-output"></div>
-
-    <div class="chat-static">
-        IA: Estatus REPSE <b style="color:red">VENCIDO</b><br>
-        Riesgo estimado: <b>$450,000 MXN</b>
-    </div>
-
-    <br>
-
-    <button class="btn-pay" onclick="irPago()">
-        🔓 Ver diagnóstico completo — $299 MXN
-    </button>
-
-    <div class="footer">MESAN Ω © 2026</div>
-
-</div>
-
-<script>
-const API = "https://mesan-api.onrender.com";
-let cliente_id = "cliente_" + Date.now();
-let perdida = 0;
-
-setInterval(() => {
-    perdida += Math.floor(Math.random() * 500 + 200);
-    const counter = document.getElementById("counter");
-    if (counter) {
-        counter.innerText = "$" + perdida.toLocaleString() + " MXN";
-    }
-}, 1500);
-
-function iniciarDiagnostico() {
-    const chat = document.getElementById("chat-output");
-    chat.style.display = "block";
-    chat.innerHTML = "⏳ Detectando pérdidas ocultas...";
-
-    setTimeout(() => {
-        chat.innerHTML = `
-        🚨 <b>ALERTA CRÍTICA DETECTADA</b><br><br>
-        Riesgos encontrados:<br>
-        - No deducibilidad fiscal<br>
-        - Multas IMSS<br>
-        - Falta de cumplimiento<br><br>
-        Impacto estimado:<br>
-        <b>$120,000 - $450,000 MXN</b><br><br>
-        👉 <button onclick="irPago()" style="padding:8px;background:#00c3ff;border:none;border-radius:5px;cursor:pointer;">
-        Desbloquear análisis completo por $299 MXN
-        </button>
-        `;
-    }, 1500);
-}
-
-async function activarRepse() {
-    const chat = document.getElementById("chat-output");
-    chat.style.display = "block";
-    chat.innerHTML = "⏳ Consultando STPS...";
-
-    try {
-        const res = await fetch(API + "/api/verificar", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                rfc: document.getElementById("inputRFC").value || "ABC123456XYZ"
-            })
-        });
-
-        const data = await res.json();
-
-        chat.innerHTML = data.analisis_ia
-            ? "🚨 ALERTA: " + data.analisis_ia
-            : "✅ Consulta completada";
-
-    } catch(e) {
-        chat.innerHTML = "❌ Error de conexión";
-    }
-}
-
-async function irPago() {
-    try {
-        const res = await fetch(API + "/crear-sesion-omega", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                cliente_id: cliente_id,
-                sector: "PRIVADO",
-                monto: 299
-            })
-        });
-
-        const data = await res.json();
-
-        if (data.url) {
-            window.location.href = data.url;
-        } else {
-            alert("Error generando pago");
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MESAN Ω - Experience</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            /* Fondo de nebulosa sutil */
+            background: radial-gradient(circle at 50% 50%, #0a192f 0%, #000000 100%);
         }
 
-    } catch(e) {
-        alert("Error de conexión");
-    }
-}
-</script>
+        /* Capa de partículas/estrellas */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .interface-container {
+            position: relative;
+            z-index: 1;
+            width: 380px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            box-shadow: 0 0 50px rgba(0, 162, 255, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+        }
+        .logo span { color: #7b42ff; text-shadow: 0 0 10px #7b42ff; }
+
+        .headline {
+            font-size: 22px;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+        .headline b { 
+            color: #00d4ff; 
+            text-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+            font-weight: 600;
+        }
+
+        .sub-text {
+            font-size: 13px;
+            color: #8892b0;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+
+        /* Botón Estilo "Netflix" / Premium */
+        .btn-main {
+            background: transparent;
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            padding: 15px 40px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-main:hover {
+            background: #00d4ff;
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .footer-brand {
+            margin-top: 60px;
+            font-size: 10px;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+
+    <div class="interface-container">
+        <div class="logo">MESAN <span>Ω</span></div>
+
+        <div class="headline">
+            Arquitectura y<br>
+            <b>Soberanía Empresarial</b>
+        </div>
+
+        <div class="sub-text">
+            Modelos matemáticos avanzados diseñados para detectar vulnerabilidades fiscales y laborales.
+        </div>
+
+        <button class="btn-main" onclick="playNetflixSound()">
+            INICIAR DIAGNÓSTICO
+        </button>
+
+        <div class="footer-brand">MESAN Ω © 2026</div>
+    </div>
+
+    <audio id="netflixSound">
+        <source src="https://www.myinstants.com/media/sounds/netflix-ta-dum-sound-effect.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        function playNetflixSound() {
+            const sound = document.getElementById('netflixSound');
+            sound.currentTime = 0;
+            sound.play();
+            
+            // Simulación de carga después del sonido
+            setTimeout(() => {
+                alert("Sincronizando con Sentinel Core...");
+            }, 1000);
+        }
+    </script>
 
 </body>
 </html>
