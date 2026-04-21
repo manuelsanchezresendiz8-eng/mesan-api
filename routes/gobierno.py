@@ -204,4 +204,4 @@ async def boton_panico(codigo_seguridad: str, salario_minimo_vigente: float = 0)
 
 
 @router.get("/gobierno/eventos")
-as
+
