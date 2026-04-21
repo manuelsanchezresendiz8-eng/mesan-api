@@ -1,161 +1,225 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω</title>
-    <style>
-        :root {
-            /* Colores exactos de la imagen premium */
-            --electric-cyan: #00f2ff; 
-            --deep-black-blue: #010812;
-            --aura-glow: rgba(0, 242, 255, 0.7);
-            --text-gray: #8ba2ad;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω</title>
 
-        body {
-            margin: 0;
-            background-color: var(--deep-black-blue);
-            /* Gradiente de profundidad idéntico */
-            background: radial-gradient(circle at 50% 35%, #081b33 0%, #010812 100%);
-            color: #ffffff;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
+<style>
+body{
+    margin:0;
+    background:#02060d;
+    color:white;
+    font-family:Arial;
+}
 
-        .phone-layout {
-            width: 100%;
-            max-width: 390px;
-            padding: 40px 25px;
-            text-align: center;
-        }
+.hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    background: radial-gradient(circle at center, #0a0f1f, #000);
+    padding:40px 20px;
+}
 
-        /* LOGO MESAN - Color y Espaciado Exacto */
-        .brand-header {
-            font-size: 18px;
-            font-weight: 900;
-            letter-spacing: 7px;
-            margin-bottom: 60px;
-            color: #ffffff;
-            text-transform: uppercase;
-        }
-        .brand-header span { 
-            color: var(--electric-cyan); 
-            text-shadow: 0 0 15px var(--aura-glow); 
-        }
+.hero h1{
+    font-size:28px;
+    max-width:300px;
+}
 
-        /* TÍTULOS - El "Soberanía" debe resaltar con fuego azul */
-        .hero-title {
-            font-size: 36px;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 25px;
-            letter-spacing: -1px;
-        }
-        .hero-title .soberania {
-            color: var(--electric-cyan);
-            /* Doble resplandor para intensidad total */
-            text-shadow: 0 0 10px var(--aura-glow), 0 0 30px rgba(0, 242, 255, 0.4);
-            display: block;
-            margin: 5px 0;
-        }
+.hero span{
+    color:#00aaff;
+}
 
-        .hero-desc {
-            font-size: 14px;
-            color: var(--text-gray);
-            line-height: 1.6;
-            margin-bottom: 45px;
-            font-weight: 400;
-        }
+.buttons{
+    margin-top:30px;
+}
 
-        /* BOTÓN DE DIAGNÓSTICO */
-        .btn-main {
-            width: 100%;
-            padding: 18px;
-            background: transparent;
-            border: 2.5px solid var(--electric-cyan);
-            color: var(--electric-cyan);
-            font-weight: 800;
-            letter-spacing: 3px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
-            margin-bottom: 50px;
-            cursor: pointer;
-        }
+.btn{
+    display:block;
+    width:250px;
+    margin:10px auto;
+    padding:15px;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+    border:none;
+    color:white;
+    font-size:15px;
+    transition:0.3s;
+}
 
-        /* TARJETAS GLASSMORPISM */
-        .glass-card {
-            background: rgba(10, 25, 47, 0.6);
-            border: 1px solid rgba(0, 242, 255, 0.25);
-            border-radius: 8px;
-            padding: 22px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(15px);
-            text-align: left;
-        }
-        .glass-card h3 { margin: 0; font-size: 15px; letter-spacing: 1px; color: #ffffff; }
-        .glass-card p { margin: 5px 0 0; font-size: 11px; color: var(--text-gray); }
+.repse{ background:#0a84ff; }
+.repse:hover{ box-shadow:0 0 20px rgba(10,132,255,0.5); }
 
-        /* PANEL DE ALERTA - Rojo Impacto */
-        .alert-panel {
-            background: rgba(255, 49, 49, 0.07);
-            border-left: 5px solid #ff3131;
-            border-radius: 4px;
-            padding: 25px;
-            text-align: left;
-            margin-top: 35px;
-        }
-        .alert-panel h4 { 
-            color: #ff3131; 
-            margin: 0; 
-            font-size: 12px; 
-            font-weight: 900; 
-            letter-spacing: 1.5px;
-        }
-        .alert-panel .amount { 
-            font-size: 32px; 
-            font-weight: 900; 
-            color: #ffffff; 
-            margin: 12px 0; 
-        }
-    </style>
+.omega{ background:#6c2bff; }
+.omega:hover{ box-shadow:0 0 20px rgba(108,43,255,0.5); }
+
+.enterprise{ background:#ff914d; }
+.enterprise:hover{ box-shadow:0 0 20px rgba(255,145,77,0.5); }
+
+.counter{
+    margin-top:30px;
+    font-size:18px;
+    color:#ff4d4d;
+}
+
+.chat{
+    margin-top:20px;
+    max-width:300px;
+    font-size:14px;
+    display:none;
+    background:rgba(0,0,0,0.5);
+    border:1px solid #1a2a44;
+    border-radius:10px;
+    padding:15px;
+    text-align:left;
+    line-height:1.6;
+}
+
+.btn-pago{
+    margin-top:10px;
+    padding:10px 20px;
+    background:#00c3ff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    color:#000;
+    font-weight:bold;
+    font-size:13px;
+}
+
+.terminos-check{
+    margin-top:15px;
+    font-size:11px;
+    color:#888;
+    max-width:300px;
+    text-align:left;
+}
+
+.terminos-check a{
+    color:#00aaff;
+}
+
+.legal{
+    margin-top:20px;
+    font-size:11px;
+    color:#555;
+    padding:0 20px;
+    line-height:1.4;
+    max-width:300px;
+}
+</style>
 </head>
+
 <body>
 
-<div class="phone-layout">
-    <div class="brand-header">MESAN <span>Ω</span></div>
+<div class="hero">
 
-    <h1 class="hero-title">
-        Arquitectura y<br>
-        <span class="soberania">Soberanía</span>
-        Empresarial
-    </h1>
+    <h1>¿Tu empresa está <span>perdiendo dinero</span> sin que lo sepas?</h1>
 
-    <p class="hero-desc">Análisis predictivo de vulnerabilidades diseñado para la toma de decisiones nivel C-Suite.</p>
-
-    <button class="btn-main">Iniciar Diagnóstico</button>
-
-    <div class="glass-card">
-        <div>
-            <h3>MESAN ENTERPRISE</h3>
-            <p>Auditoría de Cumplimiento Total</p>
-        </div>
-        <span style="color:var(--electric-cyan); font-size: 18px;">◆</span>
+    <div class="buttons">
+        <button class="btn repse" onclick="repse()">VALIDAR REPSE</button>
+        <button class="btn omega" onclick="diagnostico()">MESAN Ω</button>
+        <button class="btn enterprise" onclick="irEnterprise()">ENTERPRISE</button>
     </div>
 
-    <div class="alert-panel">
-        <h4>🚨 EXPOSICIÓN DETECTADA</h4>
-        <div style="color: var(--text-gray); font-size: 13px; margin-top: 10px;">Riesgo estimado en estructura:</div>
-        <div class="amount">$450,000 MXN</div>
-        <div style="color: #4b5a63; font-size: 10px; font-weight: bold;">Validación directa STPS/SAT ejecutada.</div>
-    </div>
+    <div class="counter" id="counter">$0 MXN</div>
+
+    <div class="chat" id="chat"></div>
+
+    <label class="terminos-check">
+        <input type="checkbox" id="aceptoTerminos">
+        Acepto los <a href="/terminos.html">Términos</a> y
+        <a href="/privacidad.html">Aviso de Privacidad</a> de MESAN Ω
+    </label>
+
+    <p class="legal">
+        MESAN Ω integra modelos avanzados de análisis predictivo para la detección de riesgos fiscales, laborales y operativos.<br><br>
+        Los resultados son estimaciones basadas en patrones de cumplimiento y simulación financiera,
+        por lo que deben considerarse como herramientas de apoyo estratégico y no como dictámenes oficiales.<br><br>
+        Al continuar, el usuario acepta los términos de uso del sistema.
+    </p>
+
 </div>
+
+<script>
+const API = "https://mesan-api.onrender.com";
+let perdida = 0;
+
+setInterval(()=>{
+    perdida += Math.floor(Math.random()*400+200);
+    document.getElementById("counter").innerText =
+        "$" + perdida.toLocaleString() + " MXN";
+}, 1500);
+
+function diagnostico(){
+    const chat = document.getElementById("chat");
+    chat.style.display = "block";
+    chat.innerHTML = "⏳ Analizando...";
+
+    setTimeout(()=>{
+        chat.innerHTML = `
+        🚨 <b>RIESGO DETECTADO</b><br><br>
+        — IMSS<br>
+        — SAT<br>
+        — Operación<br><br>
+        Impacto estimado: <b style="color:#ff4d4d">$120k - $450k MXN</b><br><br>
+        <button class="btn-pago" onclick="pago()">
+            🔒 Desbloquear diagnóstico — $299 MXN
+        </button>
+        `;
+    }, 1500);
+}
+
+function repse(){
+    const chat = document.getElementById("chat");
+    chat.style.display = "block";
+    chat.innerHTML = "⏳ Consultando STPS...";
+
+    setTimeout(()=>{
+        chat.innerHTML = `
+        🚨 <b>REPSE VENCIDO</b><br><br>
+        Riesgo alto detectado.<br>
+        Requiere atención inmediata.<br><br>
+        <button class="btn-pago" onclick="pago()">
+            🔒 Ver solución completa — $299 MXN
+        </button>
+        `;
+    }, 1500);
+}
+
+function irEnterprise(){
+    window.location.href = "/diagnostico.html";
+}
+
+async function pago(){
+    const checkbox = document.getElementById("aceptoTerminos");
+    if(checkbox && !checkbox.checked){
+        alert("Debes aceptar los Términos y Condiciones para continuar.");
+        return;
+    }
+    try {
+        const res = await fetch(API + "/crear-sesion-omega", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                cliente_id: "cliente_" + Date.now(),
+                sector: "PRIVADO",
+                monto: 299,
+                indice: 75
+            })
+        });
+        const data = await res.json();
+        if(data.url) window.location.href = data.url;
+        else alert("Error generando pago");
+    } catch(e) {
+        alert("Error de conexión");
+    }
+}
+</script>
 
 </body>
 </html>
