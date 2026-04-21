@@ -12,7 +12,6 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 CODIGO_MAESTRO = os.getenv("CODIGO_MAESTRO")
 
-
 # =========================
 # MODELOS
 # =========================
@@ -51,7 +50,6 @@ class OmegaEngine:
         if datos.get("imss_al_dia"): puntos += 40
         if datos.get("sat_cumplimiento"): puntos += 30
         if datos.get("stps_normas"): puntos += 30
-
         nivel = "BAJO" if puntos >= 80 else "MEDIO" if puntos >= 50 else "ALTO"
         return {"puntos": puntos, "nivel": nivel}
 
@@ -64,7 +62,6 @@ class OmegaEngine:
         imse = OmegaEngine.calcular_imse(datos)
         score = imse["puntos"]
         dinero_perdido = (100 - score) * 1500
-
         return {
             "score": score,
             "riesgo": imse["nivel"],
@@ -83,7 +80,7 @@ def registrar_evento(tipo: str, descripcion: str):
         "descripcion": descripcion,
         "fecha": datetime.utcnow().isoformat()
     })
-    logging.info(f"Evento: {tipo} — {descripcion}")
+    logging.info(f"Evento: {tipo} - {descripcion}")
 
 
 # =========================
@@ -91,14 +88,11 @@ def registrar_evento(tipo: str, descripcion: str):
 # =========================
 @router.post("/gobierno/diagnostico")
 async def diagnostico_gobierno(request: AuditoriaRequest):
-
     resultado = OmegaEngine.generar_score_global(request.datos_empresa)
-
     registrar_evento(
         "DIAGNOSTICO",
         f"Sector: {request.sector} | Institucion: {request.institucion}"
     )
-
     return {
         "status": "ok",
         "cliente": request.cliente_id,
@@ -114,7 +108,6 @@ async def diagnostico_gobierno(request: AuditoriaRequest):
 async def crear_sesion_gobierno(request: AuditoriaRequest):
     try:
         monto_centavos = int(request.monto * 100)
-
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[{
@@ -136,34 +129,27 @@ async def crear_sesion_gobierno(request: AuditoriaRequest):
                 "sector": request.sector
             }
         )
-
         return {"url": session.url}
-
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("/nodo/evaluar")
 async def evaluar_nodo(datos: NodoOperativo):
-
     reembolso = OmegaEngine.calcular_reembolso(
         datos.pago_internet_total,
         datos.pago_luz_total
     )
 
     alertas = []
-
     if not datos.contrato_nom037_firmado:
         alertas.append("FALTA NOM-037")
-
     if not datos.vpn_activa:
         alertas.append("SIN VPN")
-
     if not datos.equipo_en_comodato:
         alertas.append("SIN EQUIPO EN COMODATO")
 
     riesgo_total = len(alertas) * 25
-
     nivel_global = (
         "CRITICO" if riesgo_total >= 50
         else "ALTO" if riesgo_total >= 25
@@ -187,7 +173,6 @@ async def evaluar_nodo(datos: NodoOperativo):
 
 @router.post("/gobierno/panic")
 async def boton_panico(codigo_seguridad: str, salario_minimo_vigente: float = 0):
-
     if codigo_seguridad != CODIGO_MAESTRO:
         raise HTTPException(status_code=403, detail="Codigo incorrecto")
 
@@ -204,4 +189,5 @@ async def boton_panico(codigo_seguridad: str, salario_minimo_vigente: float = 0)
 
 
 @router.get("/gobierno/eventos")
-
+async def ver_eventos():
+    return {"eventos": eventos}
