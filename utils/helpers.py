@@ -1,17 +1,31 @@
-def format_currency(v):
-    return f"${v:,.2f}"
+def normalizar_clasificacion(valor: str) -> str:
 
-def normalizar_clasificacion(valor):
     if not valor:
         return "MEDIO"
 
-    v = str(valor).upper()
+    v = str(valor).upper().strip()
 
-    if v in ["ALTO", "CRITICO", "CRÍTICO"]:
-        return "ALTO"
-    if v in ["MEDIO", "VULNERABLE", "INESTABLE"]:
-        return "MEDIO"
-    if v in ["BAJO", "ESTABLE"]:
-        return "BAJO"
+    mapa = {
+        "ALTO": "ALTO",
+        "IRP_HIGH": "RIESGO OPERATIVO",
+        "HIGH": "RIESGO OPERATIVO",
+        "CRITICO": "CRISIS FINANCIERA",
+        "CRITICAL": "CRISIS FINANCIERA",
+        "CRISIS": "CRISIS FINANCIERA",
+        "CRISIS FINANCIERA": "CRISIS FINANCIERA",
+        "RIESGO OPERATIVO": "RIESGO OPERATIVO",
+        "RIESGO LEGAL": "RIESGO LEGAL",
+        "RIESGO REPSE": "RIESGO REPSE",
+        "IRP_MED": "INEFICIENCIA",
+        "MEDIO": "MEDIO",
+        "MEDIUM": "MEDIO",
+        "INEFICIENCIA": "INEFICIENCIA",
+        "IRP_LOW": "ESTABLE",
+        "BAJO": "ESTABLE",
+        "LOW": "ESTABLE",
+        "ESTABLE": "ESTABLE",
+        "PREVENTIVO ALTO": "RIESGO OPERATIVO",
+        "CONTROLADO": "ESTABLE",
+    }
 
-    return "MEDIO"
+    return mapa.get(v, "MEDIO")
