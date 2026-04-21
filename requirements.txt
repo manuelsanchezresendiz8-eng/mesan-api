@@ -8,3 +8,4 @@ passlib[bcrypt]
 fpdf
 resend
 stripe
+python-multipart
