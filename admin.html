@@ -3,17 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN-Ω CRM</title>
+<title>MESAN Ω | Centro Nacional</title>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;600;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --accent: #38BDF8; /* Azul MESAN homologado */
+    --accent: #38BDF8; /* Azul Técnico MESAN */
     --title: #FFFFFF;
     --text: #94A3B8;
     --bg: #000000;
     --bg-deep: #0A192F;
-    --card: rgba(10,25,47,0.9);
-    --border: rgba(56,189,248,0.2);
+    --card-bg: rgba(10, 25, 47, 0.7);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -23,7 +22,7 @@ body {
     color: var(--title);
     font-family: 'Lexend', sans-serif;
     min-height: 100vh;
-    padding: 80px 20px 40px;
+    padding-top: 70px;
 }
 
 /* NAVBAR HOMOLOGADA */
@@ -34,231 +33,207 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 30px;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    background: rgba(0,0,0,0.9);
-    border-bottom: 1px solid var(--border);
+    padding: 15px 25px;
+    background: rgba(0, 0, 0, 0.9);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    z-index: 1000;
     backdrop-filter: blur(10px);
-    z-index: 100;
 }
 
-.nav-actions { display: flex; gap: 15px; align-items: center; }
-
-.nav-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 6px 14px;
-    font-family: 'Lexend', sans-serif;
-    font-size: 9px;
+.nav-brand {
+    font-size: 12px;
     letter-spacing: 2px;
-    cursor: pointer;
-    border-radius: 3px;
-    transition: 0.3s;
-}
-
-.nav-btn:hover, .nav-btn.active { 
-    border-color: var(--accent); 
     color: var(--accent);
-    background: rgba(56,189,248,0.1);
 }
 
-.timer { font-size: 9px; color: #475569; letter-spacing: 1px; }
-
-/* STATS */
-.stats {
+.nav-stats-top {
     display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 11px;
+    color: var(--text);
 }
 
-.stat {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 6px;
+.nav-stats-top span { color: var(--title); font-weight: 600; }
+
+/* CONTENEDORES DE STATS (LOS CUADROS SUPERIORES) */
+.stats-container {
+    display: flex;
+    gap: 12px;
     padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.stat-box {
     flex: 1;
-    min-width: 100px;
+    background: var(--card-bg);
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    border-radius: 8px;
+    padding: 20px;
     text-align: center;
 }
 
 .stat-num {
-    font-size: 28px;
+    display: block;
+    font-size: 32px;
     font-weight: 800;
     color: var(--accent);
-    display: block;
 }
 
-.stat-lbl {
+.stat-label {
     font-size: 9px;
     letter-spacing: 2px;
     color: var(--text);
     text-transform: uppercase;
-    margin-top: 4px;
 }
 
-/* CARDS DE LEADS */
-.card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 6px;
+/* TARJETAS DE LEADS (FILAS) */
+.lead-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    border-radius: 10px;
+    margin: 0 20px 15px 20px;
     padding: 20px;
-    margin-bottom: 12px;
-    border-left: 4px solid var(--border);
-    transition: 0.4s ease;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: 0.3s;
 }
 
-.card:hover { 
+.lead-card:hover {
     border-color: var(--accent);
-    box-shadow: 0 0 20px rgba(56,189,248,0.1);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
 }
 
-/* Indicadores de Score homologados al Azul MESAN */
-.card.critico { border-left-color: var(--accent); }
-.card.vulnerable { border-left-color: rgba(56,189,248,0.5); }
-.card.estable { border-left-color: rgba(56,189,248,0.2); }
-
-.card-nombre {
-    font-size: 15px;
+.lead-header {
+    font-size: 16px;
     font-weight: 600;
-    color: var(--title);
     margin-bottom: 10px;
-    letter-spacing: 1px;
+    color: var(--title);
 }
 
-.card-info {
-    font-size: 11px;
+.lead-details {
+    font-size: 12px;
     color: var(--text);
     line-height: 1.8;
-    margin-bottom: 15px;
 }
 
-.card-info span { color: var(--accent); font-weight: 600; }
+.lead-details span { color: var(--accent); }
 
-.card-actions {
+.score-badge {
+    color: var(--accent);
+    font-weight: 800;
+}
+
+/* BOTONES HOMOLOGADOS */
+.actions {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
+    margin-top: 20px;
 }
 
-.btn-action {
-    padding: 8px 16px;
+.btn {
+    flex: 1;
+    padding: 10px;
     background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: var(--accent);
     font-family: 'Lexend', sans-serif;
     font-size: 10px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: 0.3s;
-    text-decoration: none;
-    text-align: center;
-}
-
-.btn-action:hover { 
-    border-color: var(--accent); 
-    color: var(--accent);
-    background: rgba(56,189,248,0.05);
-}
-
-.btn-action.wa { 
-    background: rgba(56,189,248,0.1);
-    border-color: var(--accent); 
-    color: var(--accent);
     font-weight: 600;
-}
-
-.card-select {
-    background: #000;
-    border: 1px solid var(--border);
-    color: var(--accent);
-    font-family: 'Lexend', sans-serif;
-    font-size: 10px;
-    padding: 8px;
-    border-radius: 4px;
-    outline: none;
-    cursor: pointer;
-}
-
-.giro-tag {
-    display: inline-block;
-    font-size: 9px;
-    padding: 3px 10px;
-    background: rgba(56,189,248,0.1);
-    color: var(--accent);
-    border-radius: 3px;
     letter-spacing: 1px;
-    margin-bottom: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.3s;
     text-transform: uppercase;
 }
 
-.fecha {
-    font-size: 9px;
-    color: #475569;
-    letter-spacing: 1px;
+.btn:hover {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: var(--accent);
 }
 
-/* FOOTER */
-.footer {
-    text-align: center;
-    margin-top: 50px;
+.btn-wa {
+    border-color: var(--accent);
+    background: rgba(56, 189, 248, 0.05);
+}
+
+.status-select {
+    background: #000;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: var(--text);
+    font-family: 'Lexend', sans-serif;
     font-size: 10px;
-    color: #334155;
-    letter-spacing: 4px;
+    padding: 0 10px;
+    border-radius: 4px;
+    outline: none;
 }
 </style>
 </head>
 <body>
 
-<div id="loginBox" class="login-box" style="display:none;">
-    </div>
-
-<div class="nav" id="topbar">
-    <div>MESAN Ω — CRM</div>
-    <div class="nav-actions">
-        <button class="nav-btn active" id="btn-fecha" onclick="ordenar('fecha')">RECIENTES</button>
-        <button class="nav-btn" id="btn-score" onclick="ordenar('score')">SCORE</button>
-        <button class="nav-btn" onclick="cargar()">ACTUALIZAR</button>
-        <button class="nav-btn" onclick="logout()">SALIR</button>
-        <span class="timer" id="timer">30s</span>
+<div class="nav">
+    <div class="nav-brand">🌎 MESAN Ω — Centro Nacional</div>
+    <div class="nav-stats-top">
+        <div>Empresas: <span>19</span></div>
+        <div>Riesgo: <span>1</span></div>
+        <div>Impacto: <span>$0</span></div>
     </div>
 </div>
 
-<div class="stats" id="stats">
-    <div class="stat"><span class="stat-num" id="total">19</span><div class="stat-lbl">Total</div></div>
-    <div class="stat"><span class="stat-num" id="criticos">1</span><div class="stat-lbl">Críticos</div></div>
-    <div class="stat"><span class="stat-num" id="pagados">0</span><div class="stat-lbl">Pagados</div></div>
-</div>
-
-<div id="leads">
-    <div class="card critico">
-        <div class="giro-tag">EDUCACIÓN</div>
-        <div class="card-nombre">cbtis 21</div>
-        <div class="card-info">
-            Score: <span>100</span> &nbsp;|&nbsp; MEDIO<br>
-            bledsoe_18@icloud.com<br>
-            5548722116<br>
-            Exposición: <span>$7,211 — $10,816 MXN</span><br>
-            <span class="fecha">📅 19/04/2026 4:57 am</span>
-        </div>
-        <div class="card-actions">
-            <button class="btn-action wa">WHATSAPP</button>
-            <button class="btn-action">LLAMAR</button>
-            <button class="btn-action">ID</button>
-            <select class="card-select">
-                <option>NUEVO</option>
-                <option>CONTACTADO</option>
-            </select>
-        </div>
+<div class="stats-container">
+    <div class="stat-box">
+        <span class="stat-num">19</span>
+        <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-num">1</span>
+        <span class="stat-label">Críticos</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-num">0</span>
+        <span class="stat-label">Pagados</span>
     </div>
 </div>
 
-<div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
+<div class="lead-card">
+    <div class="lead-header">cbtis 21</div>
+    <div class="lead-details">
+        Score: <span class="score-badge">100</span> | MEDIO<br>
+        bledsoe_18@icloud.com<br>
+        5548722116<br>
+        Exposición: <span>$7,211 — $10,816 MXN</span><br>
+        📅 19/04/2026 4:57 am
+    </div>
+    <div class="actions">
+        <button class="btn btn-wa">WhatsApp</button>
+        <button class="btn">Llamar</button>
+        <button class="btn">ID</button>
+        <select class="status-select">
+            <option>NUEVO</option>
+            <option>CONTACTADO</option>
+        </select>
+    </div>
+</div>
+
+<div class="lead-card">
+    <div class="lead-header">discg</div>
+    <div class="lead-details">
+        Score: <span class="score-badge">50</span> | MEDIO<br>
+        manuelsanchezresendiz8@gmail.com<br>
+        5548722116<br>
+        Exposición: <span>$22,414 — $33,621 MXN</span><br>
+        📅 18/04/2026 4:03 am
+    </div>
+    <div class="actions">
+        <button class="btn btn-wa">WhatsApp</button>
+        <button class="btn">Llamar</button>
+        <button class="btn">ID</button>
+        <select class="status-select">
+            <option>NUEVO</option>
+        </select>
+    </div>
+</div>
 
 </body>
 </html>
