@@ -4,69 +4,211 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Términos y Condiciones — MESAN Ω</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#02060d;color:white;font-family:Arial;padding:40px 20px;max-width:600px;margin:auto;line-height:1.7;}
-h2{color:#00aaff;}
-h3{color:#00c3ff;margin-top:30px;}
-ul{padding-left:20px;}
-a{color:#00aaff;}
-.footer{margin-top:40px;font-size:12px;color:#555;text-align:center;}
+:root {
+    --bg: #02060a;
+    --panel: #0a1118;
+    --accent: #00f3ff;
+    --text: #e2e8f0;
+    --dim: #64748b;
+    --border: rgba(0,243,255,0.2);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 80px 20px 60px;
+}
+
+.nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    background: rgba(2,6,10,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+.nav a {
+    color: var(--dim);
+    text-decoration: none;
+    font-size: 10px;
+    letter-spacing: 2px;
+    transition: 0.3s;
+}
+
+.nav a:hover { color: var(--accent); }
+
+.container {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.hero-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--dim);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.6rem;
+    color: var(--accent);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+}
+
+.fecha {
+    font-size: 11px;
+    color: var(--dim);
+    margin-bottom: 35px;
+}
+
+h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin: 30px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+}
+
+p {
+    font-size: 13px;
+    color: var(--dim);
+    line-height: 1.8;
+    margin-bottom: 12px;
+    font-weight: 300;
+}
+
+ul {
+    list-style: none;
+    margin: 0 0 15px 0;
+}
+
+ul li {
+    font-size: 13px;
+    color: var(--dim);
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0,243,255,0.06);
+    font-weight: 300;
+}
+
+ul li::before { content: "▸ "; color: var(--accent); }
+
+.footer-links {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 20px;
+    font-size: 11px;
+}
+
+.footer-links a {
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: 0.3s;
+    opacity: 0.7;
+}
+
+.footer-links a:hover { opacity: 1; }
+
+.footer {
+    margin-top: 20px;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: var(--dim);
+    opacity: 0.4;
+    letter-spacing: 4px;
+}
 </style>
 </head>
 <body>
 
-<h2>TÉRMINOS Y CONDICIONES DE USO — MESAN Ω</h2>
-<p><strong>Última actualización:</strong> 2026</p>
+<div class="nav">
+    <div>MESAN Ω — TÉRMINOS</div>
+    <a href="/">← INICIO</a>
+</div>
 
-<h3>1. Naturaleza del Servicio</h3>
-<p>MESAN Ω es una plataforma tecnológica de análisis predictivo empresarial que utiliza modelos de riesgo, simulación financiera y parámetros de cumplimiento normativo (SAT, IMSS, STPS).</p>
-<p>Los resultados generados son de carácter informativo, estratégico y orientativo, y no constituyen asesoría legal, fiscal o contable profesional.</p>
+<div class="container">
 
-<h3>2. Alcance del Diagnóstico</h3>
-<p>El diagnóstico se basa en la información ingresada por el usuario y en modelos internos de evaluación. La precisión depende directamente de la veracidad de los datos proporcionados.</p>
+    <div class="hero-tag">// Documentación Legal</div>
+    <h1>TÉRMINOS Y CONDICIONES</h1>
+    <div class="fecha">Última actualización: 2026</div>
 
-<h3>3. Limitación de Responsabilidad</h3>
-<p>MESAN Ω no será responsable por:</p>
-<ul>
-<li>Decisiones tomadas con base en los resultados del sistema</li>
-<li>Pérdidas económicas, multas o sanciones derivadas del diagnóstico</li>
-<li>Errores derivados de información incompleta o incorrecta</li>
-</ul>
+    <h2>1. Naturaleza del Servicio</h2>
+    <p>MESAN Ω es una plataforma tecnológica de análisis predictivo empresarial que utiliza modelos de riesgo, simulación financiera y parámetros de cumplimiento normativo (SAT, IMSS, STPS).</p>
+    <p>Los resultados generados son de carácter informativo, estratégico y orientativo, y no constituyen asesoría legal, fiscal o contable profesional.</p>
 
-<h3>4. Uso de la Plataforma</h3>
-<p>El usuario se compromete a:</p>
-<ul>
-<li>Proporcionar información veraz</li>
-<li>No utilizar el sistema con fines ilícitos</li>
-<li>No intentar vulnerar la seguridad del sistema</li>
-</ul>
+    <h2>2. Alcance del Diagnóstico</h2>
+    <p>El diagnóstico se basa en la información ingresada por el usuario y en modelos internos de evaluación. La precisión depende directamente de la veracidad de los datos proporcionados.</p>
 
-<h3>5. Propiedad Intelectual</h3>
-<p>El motor de análisis, algoritmos, diseño y estructura de MESAN Ω son propiedad intelectual protegida. Queda prohibida su reproducción sin autorización expresa.</p>
+    <h2>3. Limitación de Responsabilidad</h2>
+    <p>MESAN Ω no será responsable por:</p>
+    <ul>
+        <li>Decisiones tomadas con base en los resultados del sistema</li>
+        <li>Pérdidas económicas, multas o sanciones derivadas del diagnóstico</li>
+        <li>Errores derivados de información incompleta o incorrecta</li>
+    </ul>
 
-<h3>6. Pagos y Servicios</h3>
-<p>Los pagos corresponden a servicios digitales de acceso inmediato.</p>
-<ul>
-<li>No se realizan reembolsos una vez generado el diagnóstico</li>
-<li>El acceso al resultado se considera servicio consumido</li>
-</ul>
+    <h2>4. Uso de la Plataforma</h2>
+    <p>El usuario se compromete a:</p>
+    <ul>
+        <li>Proporcionar información veraz</li>
+        <li>No utilizar el sistema con fines ilícitos</li>
+        <li>No intentar vulnerar la seguridad del sistema</li>
+    </ul>
 
-<h3>7. Entrega del Servicio</h3>
-<p>El diagnóstico puede entregarse mediante visualización en pantalla, PDF o medios electrónicos.</p>
+    <h2>5. Propiedad Intelectual</h2>
+    <p>El motor de análisis, algoritmos, diseño y estructura de MESAN Ω son propiedad intelectual protegida. Queda prohibida su reproducción sin autorización expresa.</p>
 
-<h3>8. Privacidad y Datos</h3>
-<p>MESAN Ω podrá almacenar información para mejora del sistema y análisis estadístico. No se comercializan datos personales a terceros.</p>
+    <h2>6. Pagos y Servicios</h2>
+    <p>Los pagos corresponden a servicios digitales de acceso inmediato.</p>
+    <ul>
+        <li>No se realizan reembolsos una vez generado el diagnóstico</li>
+        <li>El acceso al resultado se considera servicio consumido</li>
+    </ul>
 
-<h3>9. Modificaciones</h3>
-<p>MESAN Ω se reserva el derecho de modificar estos términos en cualquier momento.</p>
+    <h2>7. Entrega del Servicio</h2>
+    <p>El diagnóstico puede entregarse mediante visualización en pantalla, PDF o medios electrónicos.</p>
 
-<h3>10. Aceptación</h3>
-<p>El uso de la plataforma implica la aceptación total de estos términos.</p>
+    <h2>8. Privacidad y Datos</h2>
+    <p>MESAN Ω podrá almacenar información para mejora del sistema y análisis estadístico. No se comercializan datos personales a terceros.</p>
 
-<div class="footer">
-<strong>MESAN Ω © 2026 — Todos los derechos reservados</strong><br><br>
-<a href="/privacidad.html">Aviso de Privacidad</a> |
-<a href="/">Volver al inicio</a>
+    <h2>9. Modificaciones</h2>
+    <p>MESAN Ω se reserva el derecho de modificar estos términos en cualquier momento.</p>
+
+    <h2>10. Aceptación</h2>
+    <p>El uso de la plataforma implica la aceptación total de estos términos.</p>
+
+    <div class="footer-links">
+        <a href="/privacidad.html">Aviso de Privacidad</a>
+        <a href="/">Volver al inicio</a>
+    </div>
+
+    <div class="footer">MESAN Ω © 2026 — TODOS LOS DERECHOS RESERVADOS</div>
+
 </div>
 
 </body>
