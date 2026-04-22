@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | Centro Nacional</title>
+<title>MESAN-Ω CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;600;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --accent: #38BDF8; /* Azul Técnico MESAN */
+    --accent: #38BDF8; /* El Azul MESAN */
     --title: #FFFFFF;
     --text: #94A3B8;
     --bg: #000000;
     --bg-deep: #0A192F;
-    --card-bg: rgba(10, 25, 47, 0.7);
+    --card: rgba(10,25,47,0.9);
+    --border: rgba(56,189,248,0.2);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -22,218 +23,116 @@ body {
     color: var(--title);
     font-family: 'Lexend', sans-serif;
     min-height: 100vh;
-    padding-top: 70px;
+    padding: 80px 20px 40px;
 }
 
-/* NAVBAR HOMOLOGADA */
 .nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 25px;
-    background: rgba(0, 0, 0, 0.9);
-    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
-    z-index: 1000;
-    backdrop-filter: blur(10px);
+    position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 30px; font-size: 11px; letter-spacing: 3px; color: var(--accent);
+    background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--border); z-index: 100;
 }
 
-.nav-brand {
-    font-size: 12px;
-    letter-spacing: 2px;
-    color: var(--accent);
+.nav-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--text);
+    padding: 5px 12px; font-size: 9px; cursor: pointer; border-radius: 3px;
+}
+.nav-btn.active { border-color: var(--accent); color: var(--accent); }
+
+.stat-num { font-size: 28px; font-weight: 800; color: var(--accent); }
+
+.card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+    padding: 18px; margin-bottom: 12px; border-left: 3px solid var(--accent);
 }
 
-.nav-stats-top {
-    display: flex;
-    gap: 20px;
-    font-size: 11px;
-    color: var(--text);
+.btn-action {
+    padding: 6px 12px; background: transparent; border: 1px solid var(--border);
+    color: var(--accent); font-size: 9px; cursor: pointer; border-radius: 3px;
 }
 
-.nav-stats-top span { color: var(--title); font-weight: 600; }
-
-/* CONTENEDORES DE STATS (LOS CUADROS SUPERIORES) */
-.stats-container {
-    display: flex;
-    gap: 12px;
-    padding: 20px;
-    max-width: 600px;
-    margin: 0 auto;
+.login-box {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: var(--card); padding: 40px; border: 1px solid var(--accent); width: 300px; z-index: 200;
 }
 
-.stat-box {
-    flex: 1;
-    background: var(--card-bg);
-    border: 1px solid rgba(56, 189, 248, 0.1);
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
+.login-box input {
+    width: 100%; padding: 12px; background: #000; border: 1px solid var(--border);
+    color: #fff; margin-bottom: 15px; text-align: center;
 }
 
-.stat-num {
-    display: block;
-    font-size: 32px;
-    font-weight: 800;
-    color: var(--accent);
-}
-
-.stat-label {
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: var(--text);
-    text-transform: uppercase;
-}
-
-/* TARJETAS DE LEADS (FILAS) */
-.lead-card {
-    background: var(--card-bg);
-    border: 1px solid rgba(56, 189, 248, 0.1);
-    border-radius: 10px;
-    margin: 0 20px 15px 20px;
-    padding: 20px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    transition: 0.3s;
-}
-
-.lead-card:hover {
-    border-color: var(--accent);
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-}
-
-.lead-header {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: var(--title);
-}
-
-.lead-details {
-    font-size: 12px;
-    color: var(--text);
-    line-height: 1.8;
-}
-
-.lead-details span { color: var(--accent); }
-
-.score-badge {
-    color: var(--accent);
-    font-weight: 800;
-}
-
-/* BOTONES HOMOLOGADOS */
-.actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.btn {
-    flex: 1;
-    padding: 10px;
-    background: transparent;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    color: var(--accent);
-    font-family: 'Lexend', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-transform: uppercase;
-}
-
-.btn:hover {
-    background: rgba(56, 189, 248, 0.1);
-    border-color: var(--accent);
-}
-
-.btn-wa {
-    border-color: var(--accent);
-    background: rgba(56, 189, 248, 0.05);
-}
-
-.status-select {
-    background: #000;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    color: var(--text);
-    font-family: 'Lexend', sans-serif;
-    font-size: 10px;
-    padding: 0 10px;
-    border-radius: 4px;
-    outline: none;
+.btn-login {
+    width: 100%; padding: 13px; background: transparent; border: 1px solid var(--accent);
+    color: var(--accent); cursor: pointer;
 }
 </style>
 </head>
 <body>
 
-<div class="nav">
-    <div class="nav-brand">🌎 MESAN Ω — Centro Nacional</div>
-    <div class="nav-stats-top">
-        <div>Empresas: <span>19</span></div>
-        <div>Riesgo: <span>1</span></div>
-        <div>Impacto: <span>$0</span></div>
+<div id="loginBox" class="login-box">
+    <h3>MESAN Ω — CRM</h3>
+    <input id="apiKeyInput" type="password" placeholder="API KEY">
+    <button class="btn-login" onclick="iniciarSesion()">ACCEDER</button>
+</div>
+
+<div class="nav" id="topbar" style="display:none;">
+    <div>MESAN Ω — CRM</div>
+    <div style="display:flex; gap:10px;">
+        <button class="nav-btn active" id="btn-fecha" onclick="ordenar('fecha')">RECIENTES</button>
+        <button class="nav-btn" id="btn-score" onclick="ordenar('score')">SCORE</button>
+        <button class="nav-btn" onclick="logout()">SALIR</button>
+        <span id="timer" style="font-size:9px; color:#334155;">30s</span>
     </div>
 </div>
 
-<div class="stats-container">
-    <div class="stat-box">
-        <span class="stat-num">19</span>
-        <span class="stat-label">Total</span>
-    </div>
-    <div class="stat-box">
-        <span class="stat-num">1</span>
-        <span class="stat-label">Críticos</span>
-    </div>
-    <div class="stat-box">
-        <span class="stat-num">0</span>
-        <span class="stat-label">Pagados</span>
-    </div>
-</div>
+<div id="leads" style="margin-top:20px;"></div>
 
-<div class="lead-card">
-    <div class="lead-header">cbtis 21</div>
-    <div class="lead-details">
-        Score: <span class="score-badge">100</span> | MEDIO<br>
-        bledsoe_18@icloud.com<br>
-        5548722116<br>
-        Exposición: <span>$7,211 — $10,816 MXN</span><br>
-        📅 19/04/2026 4:57 am
-    </div>
-    <div class="actions">
-        <button class="btn btn-wa">WhatsApp</button>
-        <button class="btn">Llamar</button>
-        <button class="btn">ID</button>
-        <select class="status-select">
-            <option>NUEVO</option>
-            <option>CONTACTADO</option>
-        </select>
-    </div>
-</div>
+<script>
+const API = "https://mesan-api.onrender.com";
+let API_KEY = localStorage.getItem("mesan_key");
+let countdown = 30;
 
-<div class="lead-card">
-    <div class="lead-header">discg</div>
-    <div class="lead-details">
-        Score: <span class="score-badge">50</span> | MEDIO<br>
-        manuelsanchezresendiz8@gmail.com<br>
-        5548722116<br>
-        Exposición: <span>$22,414 — $33,621 MXN</span><br>
-        📅 18/04/2026 4:03 am
-    </div>
-    <div class="actions">
-        <button class="btn btn-wa">WhatsApp</button>
-        <button class="btn">Llamar</button>
-        <button class="btn">ID</button>
-        <select class="status-select">
-            <option>NUEVO</option>
-        </select>
-    </div>
-</div>
+if (API_KEY) {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("topbar").style.display = "flex";
+    cargar();
+}
 
+function iniciarSesion() {
+    const key = document.getElementById("apiKeyInput").value.trim();
+    localStorage.setItem("mesan_key", key);
+    location.reload();
+}
+
+function logout() { localStorage.removeItem("mesan_key"); location.reload(); }
+
+async function cargar() {
+    try {
+        const res = await fetch(API + "/leads", { headers: { "api-key": API_KEY } });
+        const data = await res.json();
+        render(data.leads || []);
+    } catch(e) { console.log("Error"); }
+}
+
+function render(leads) {
+    let html = "";
+    leads.forEach(l => {
+        html += `<div class="card">
+            <div style="font-size:14px; font-weight:600;">${l.nombre || "Lead"}</div>
+            <div style="font-size:11px; color:var(--text); margin:10px 0;">
+                Score: <span style="color:var(--accent)">${l.score||0}</span> | ${l.email||""}<br>
+                Exposición: <span style="color:var(--accent)">$${(l.impacto_min||0).toLocaleString()} MXN</span>
+            </div>
+            <button class="btn-action" onclick="window.open('https://wa.me/52${l.telefono}')">WHATSAPP</button>
+        </div>`;
+    });
+    document.getElementById("leads").innerHTML = html;
+}
+
+setInterval(() => {
+    countdown--;
+    document.getElementById("timer").innerText = countdown + "s";
+    if (countdown <= 0) { countdown = 30; cargar(); }
+}, 1000);
+</script>
 </body>
 </html>
