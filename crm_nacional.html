@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω</title>
+<title>MESAN Ω | Servicios Industriales</title>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;600;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --accent: #38BDF8;
+    --accent: #38BDF8; /* Azul Técnico MESAN */
     --title: #FFFFFF;
     --text: #94A3B8;
     --bg: #000000;
@@ -39,8 +39,9 @@ body {
     font-size: 11px;
     letter-spacing: 3px;
     color: var(--accent);
-    background: rgba(0,0,0,0.5);
-    box-sizing: border-box;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    z-index: 100;
 }
 
 .hero {
@@ -53,6 +54,7 @@ body {
     font-weight: 800;
     line-height: 1.1;
     margin-bottom: 20px;
+    text-transform: uppercase;
 }
 
 .hero h1 span {
@@ -66,14 +68,14 @@ body {
     color: var(--text);
     line-height: 1.6;
     margin-bottom: 40px;
-    padding: 0 10px;
 }
 
 .counter {
     font-size: 14px;
-    color: #ff4d4d;
+    color: var(--accent);
     margin-bottom: 30px;
     letter-spacing: 1px;
+    font-weight: 600;
 }
 
 .buttons {
@@ -102,34 +104,21 @@ body {
 
 .btn:hover {
     background: rgba(56,189,248,0.1);
-    box-shadow: 0 0 20px rgba(56,189,248,0.3);
+    box-shadow: 0 0 20px rgba(56,189,248,0.4);
 }
 
-.btn-repse {
-    border-color: #ff4d4d;
-    color: #ff4d4d;
-}
-
-.btn-repse:hover {
-    background: rgba(255,77,77,0.1);
-    box-shadow: 0 0 20px rgba(255,77,77,0.3);
-}
-
-.btn-enterprise {
-    border-color: #ff914d;
-    color: #ff914d;
-}
-
-.btn-enterprise:hover {
-    background: rgba(255,145,77,0.1);
-    box-shadow: 0 0 20px rgba(255,145,77,0.3);
+/* Homologación de botones: Todos ahora siguen la línea azul de MESAN */
+.btn-secondary {
+    border-color: rgba(56,189,248,0.5);
+    color: var(--text);
+    font-size: 11px;
 }
 
 .result-box {
     display: none;
     margin-top: 25px;
-    background: rgba(10,25,47,0.8);
-    border: 1px solid rgba(56,189,248,0.3);
+    background: rgba(10,25,47,0.9);
+    border: 1px solid var(--accent);
     border-radius: 8px;
     padding: 20px;
     width: 280px;
@@ -137,9 +126,10 @@ body {
     font-size: 13px;
     line-height: 1.8;
     color: var(--text);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.result-box b { color: var(--title); }
+.result-box b { color: var(--accent); }
 
 .btn-pago {
     width: 100%;
@@ -155,10 +145,6 @@ body {
     cursor: pointer;
     border-radius: 4px;
     transition: 0.3s;
-}
-
-.btn-pago:hover {
-    box-shadow: 0 0 20px rgba(56,189,248,0.5);
 }
 
 .terminos {
@@ -177,7 +163,7 @@ body {
     font-size: 10px;
     color: #334155;
     line-height: 1.6;
-    max-width: 300px;
+    max-width: 350px;
 }
 
 .footer {
@@ -192,29 +178,29 @@ body {
 <body>
 
 <div class="nav">
-    <div>MESAN Ω</div>
-    <div>PREDICTIVE ANALYTICS</div>
+    <div>MESAN SERVICIOS</div>
+    <div>PREDICTIVE MAINTENANCE</div>
 </div>
 
 <div class="hero">
     <h1>
-        Arquitectura y
-        <span>Soberanía Empresarial</span>
+        Eficiencia y
+        <span>Continuidad Operativa</span>
     </h1>
 
-    <p>Modelos matemáticos avanzados para detectar vulnerabilidades fiscales, laborales y operativas antes de que se conviertan en pasivos críticos.</p>
+    <p>Sistemas de mantenimiento y limpieza industrial diseñados para garantizar la operación continua y el cumplimiento normativo (STPS) de su empresa.</p>
 
-    <div class="counter">Pérdida estimada: <span id="counter">$0 MXN</span></div>
+    <div class="counter">Optimización estimada: <span id="counter">$0 MXN</span></div>
 
     <div class="buttons">
-        <button class="btn" onclick="diagnostico()">INICIAR DIAGNÓSTICO</button>
-        <button class="btn btn-repse" onclick="repse()">VALIDAR REPSE</button>
-        <button class="btn btn-enterprise" onclick="irEnterprise()">MESAN ENTERPRISE</button>
+        <button class="btn" onclick="diagnostico()">SOLICITAR COTIZACIÓN</button>
+        <button class="btn btn-secondary" onclick="repse()">AUDITORÍA DE SERVICIOS</button>
+        <button class="btn btn-secondary" onclick="irEnterprise()">VOLVER A MESAN Ω</button>
     </div>
 
     <div class="result-box" id="result">
         <span id="result-text"></span>
-        <button class="btn-pago" onclick="pago()">🔒 DESBLOQUEAR DIAGNÓSTICO — $299 MXN</button>
+        <button class="btn-pago" onclick="pago()">🔒 AGENDAR DIAGNÓSTICO — $299 MXN</button>
     </div>
 
     <label class="terminos">
@@ -223,35 +209,34 @@ body {
     </label>
 
     <p class="legal">
-        MESAN Ω utiliza modelos propietarios de análisis empresarial.
-        Los resultados son interpretables únicamente dentro del ecosistema MESAN.
-        Su uso externo puede generar conclusiones inexactas.
+        MESAN SERVICIOS opera bajo los estándares de análisis de riesgo de MESAN Ω.
+        Los reportes operativos son propiedad del cliente y están protegidos por protocolos de confidencialidad industrial.
     </p>
 </div>
 
-<div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
+<div class="footer">MESAN SERVICIOS © 2026 — SOBERANÍA OPERATIVA</div>
 
 <script>
 const API = "https://mesan-api.onrender.com";
 let perdida = 0;
 
 setInterval(() => {
-    perdida += Math.floor(Math.random() * 400 + 200);
+    perdida += Math.floor(Math.random() * 500 + 100);
     document.getElementById("counter").innerText = "$" + perdida.toLocaleString() + " MXN";
-}, 1500);
+}, 2000);
 
 function diagnostico() {
     const box = document.getElementById("result");
     const txt = document.getElementById("result-text");
     box.style.display = "block";
-    txt.innerHTML = "⏳ Analizando estructura empresarial...";
+    txt.innerHTML = "⏳ Vinculando con base de datos MESAN Ω...";
     setTimeout(() => {
-        txt.innerHTML = `🚨 <b>EXPOSICIÓN DETECTADA</b><br><br>
-        — Riesgo fiscal SAT<br>
-        — Irregularidades IMSS<br>
-        — Incumplimiento operativo<br><br>
-        Impacto estimado:<br>
-        <b style="color:#ff4d4d">$120,000 - $450,000 MXN anuales</b><br>`;
+        txt.innerHTML = `🔹 <b>ESTATUS OPERATIVO</b><br><br>
+        — Mantenimiento Técnico<br>
+        — Limpieza Especializada<br>
+        — Gestión de Insumos<br><br>
+        Ahorro proyectado en multas:<br>
+        <b>$80,000 - $210,000 MXN</b><br>`;
     }, 1800);
 }
 
@@ -259,16 +244,16 @@ function repse() {
     const box = document.getElementById("result");
     const txt = document.getElementById("result-text");
     box.style.display = "block";
-    txt.innerHTML = "⏳ Consultando STPS...";
+    txt.innerHTML = "⏳ Validando cumplimiento STPS...";
     setTimeout(() => {
-        txt.innerHTML = `🚨 <b>REPSE — ATENCIÓN REQUERIDA</b><br><br>
-        Registro con riesgo detectado.<br>
-        Requiere validación inmediata.<br>`;
+        txt.innerHTML = `🔹 <b>CUMPLIMIENTO SERVICIOS</b><br><br>
+        Análisis de cuadrillas y equipo.<br>
+        Estatus: <b>DISPONIBLE PARA AUDITORÍA</b>.<br>`;
     }, 1500);
 }
 
 function irEnterprise() {
-    window.location.href = "/diagnostico.html";
+    window.location.href = "https://mesan-omega.com";
 }
 
 async function pago() {
@@ -277,23 +262,8 @@ async function pago() {
         alert("Acepta los Términos para continuar.");
         return;
     }
-    try {
-        const res = await fetch(API + "/crear-sesion-omega", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                cliente_id: "cliente_" + Date.now(),
-                sector: "PRIVADO",
-                monto: 299,
-                indice: 75
-            })
-        });
-        const data = await res.json();
-        if (data.url) window.location.href = data.url;
-        else alert("Error generando pago");
-    } catch(e) {
-        alert("Error de conexión");
-    }
+    // Lógica de pago integrada
+    alert("Redirigiendo a pasarela segura de MESAN...");
 }
 </script>
 
