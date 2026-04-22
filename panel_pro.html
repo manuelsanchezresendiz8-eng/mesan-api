@@ -3,30 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | Servicios Industriales</title>
+<title>MESAN Ω — Panel Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;600;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --accent: #38BDF8; /* Azul Técnico MESAN */
-    --title: #FFFFFF;
-    --text: #94A3B8;
+    --accent: #38BDF8;
     --bg: #000000;
     --bg-deep: #0A192F;
+    --card: rgba(10,25,47,0.9);
+    --border: rgba(56,189,248,0.2);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
     background: radial-gradient(circle at center, var(--bg-deep) 0%, var(--bg) 100%);
-    color: var(--title);
+    color: var(--accent);
     font-family: 'Lexend', sans-serif;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 40px 20px;
+    padding: 80px 20px 40px;
 }
 
 .nav {
@@ -35,142 +30,183 @@ body {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    padding: 20px 40px;
+    align-items: center;
+    padding: 15px 30px;
     font-size: 11px;
     letter-spacing: 3px;
     color: var(--accent);
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.9);
+    border-bottom: 1px solid var(--border);
     backdrop-filter: blur(10px);
+    box-sizing: border-box;
     z-index: 100;
 }
 
-.hero {
-    max-width: 500px;
-    margin-top: 60px;
+.nav a {
+    color: var(--accent);
+    opacity: 0.5;
+    text-decoration: none;
+    font-size: 10px;
+    letter-spacing: 2px;
+    transition: 0.3s;
 }
 
-.hero h1 {
-    font-size: 38px;
+.nav a:hover { opacity: 1; }
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+h2 {
+    font-size: 20px;
     font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 20px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+    text-align: center;
     text-transform: uppercase;
 }
 
-.hero h1 span {
-    color: var(--accent);
+.field {
+    margin-bottom: 16px;
+}
+
+.field label {
     display: block;
-}
-
-.hero p {
-    font-size: 15px;
-    font-weight: 300;
-    color: var(--text);
-    line-height: 1.6;
-    margin-bottom: 40px;
-}
-
-.counter {
-    font-size: 14px;
+    font-size: 9px;
+    letter-spacing: 2px;
     color: var(--accent);
-    margin-bottom: 30px;
-    letter-spacing: 1px;
-    font-weight: 600;
+    opacity: 0.6;
+    text-transform: uppercase;
+    margin-bottom: 8px;
 }
 
-.buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
+.field input,
+.field select {
     width: 100%;
+    padding: 13px 15px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: 'Lexend', sans-serif;
+    font-size: 14px;
+    border-radius: 4px;
+    outline: none;
+    transition: 0.3s;
 }
 
-.btn {
-    width: 280px;
+.field input:focus,
+.field select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(56,189,248,0.15);
+}
+
+.field select option { background: #0a192f; color: #38BDF8; }
+
+.btn-main {
+    width: 100%;
     padding: 15px;
     background: transparent;
     border: 1px solid var(--accent);
     color: var(--accent);
     font-family: 'Lexend', sans-serif;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 3px;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 4px;
-}
-
-.btn:hover {
-    background: rgba(56,189,248,0.1);
-    box-shadow: 0 0 20px rgba(56,189,248,0.4);
-}
-
-/* Homologación de botones: Todos ahora siguen la línea azul de MESAN */
-.btn-secondary {
-    border-color: rgba(56,189,248,0.5);
-    color: var(--text);
-    font-size: 11px;
-}
-
-.result-box {
-    display: none;
-    margin-top: 25px;
-    background: rgba(10,25,47,0.9);
-    border: 1px solid var(--accent);
-    border-radius: 8px;
-    padding: 20px;
-    width: 280px;
-    text-align: left;
-    font-size: 13px;
-    line-height: 1.8;
-    color: var(--text);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.result-box b { color: var(--accent); }
-
-.btn-pago {
-    width: 100%;
-    margin-top: 15px;
-    padding: 12px;
-    background: var(--accent);
-    border: none;
-    color: #000;
-    font-family: 'Lexend', sans-serif;
-    font-weight: 700;
-    font-size: 12px;
-    letter-spacing: 2px;
-    cursor: pointer;
     border-radius: 4px;
     transition: 0.3s;
+    margin-top: 8px;
 }
 
-.terminos {
-    margin-top: 20px;
+.btn-main:hover {
+    background: rgba(56,189,248,0.1);
+    box-shadow: 0 0 20px rgba(56,189,248,0.3);
+}
+
+.result-card {
+    display: none;
+    margin-top: 25px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 25px;
+}
+
+.result-card.visible { display: block; }
+
+.nivel {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.decision {
     font-size: 11px;
-    color: #475569;
+    color: var(--accent);
+    opacity: 0.6;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.metric {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.metric-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    opacity: 0.5;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.metric-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.precios {
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+}
+
+.precio-row {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--accent);
+    opacity: 0.8;
+    padding: 6px 0;
 }
 
-.terminos a { color: var(--accent); text-decoration: none; }
-
-.legal {
-    margin-top: 30px;
-    font-size: 10px;
-    color: #334155;
-    line-height: 1.6;
-    max-width: 350px;
-}
+.precio-row span:last-child { opacity: 1; font-weight: 600; }
 
 .footer {
-    position: fixed;
-    bottom: 15px;
-    font-size: 10px;
-    color: #334155;
+    text-align: center;
+    margin-top: 40px;
+    font-size: 9px;
+    color: var(--accent);
+    opacity: 0.3;
     letter-spacing: 4px;
 }
 </style>
@@ -178,92 +214,143 @@ body {
 <body>
 
 <div class="nav">
-    <div>MESAN SERVICIOS</div>
-    <div>PREDICTIVE MAINTENANCE</div>
+    <div>MESAN Ω — MOTOR FINANCIERO</div>
+    <a href="/admin.html">← CRM</a>
 </div>
 
-<div class="hero">
-    <h1>
-        Eficiencia y
-        <span>Continuidad Operativa</span>
-    </h1>
+<div class="container">
 
-    <p>Sistemas de mantenimiento y limpieza industrial diseñados para garantizar la operación continua y el cumplimiento normativo (STPS) de su empresa.</p>
+    <h2>Panel Pro</h2>
 
-    <div class="counter">Optimización estimada: <span id="counter">$0 MXN</span></div>
-
-    <div class="buttons">
-        <button class="btn" onclick="diagnostico()">SOLICITAR COTIZACIÓN</button>
-        <button class="btn btn-secondary" onclick="repse()">AUDITORÍA DE SERVICIOS</button>
-        <button class="btn btn-secondary" onclick="irEnterprise()">VOLVER A MESAN Ω</button>
+    <div class="field">
+        <label>Precio del servicio ($)</label>
+        <input id="precio" type="number" placeholder="27200">
     </div>
 
-    <div class="result-box" id="result">
-        <span id="result-text"></span>
-        <button class="btn-pago" onclick="pago()">🔒 AGENDAR DIAGNÓSTICO — $299 MXN</button>
+    <div class="field">
+        <label>Número de empleados</label>
+        <input id="empleados" type="number" placeholder="1" value="1">
     </div>
 
-    <label class="terminos">
-        <input type="checkbox" id="terminos">
-        <span>Acepto <a href="/terminos.html">Términos</a> y <a href="/privacidad.html">Privacidad</a></span>
-    </label>
+    <div class="field">
+        <label>Zona</label>
+        <select id="zona">
+            <option value="general">General</option>
+            <option value="frontera">Frontera (BC, Son, Chih)</option>
+        </select>
+    </div>
 
-    <p class="legal">
-        MESAN SERVICIOS opera bajo los estándares de análisis de riesgo de MESAN Ω.
-        Los reportes operativos son propiedad del cliente y están protegidos por protocolos de confidencialidad industrial.
-    </p>
+    <button class="btn-main" onclick="diagnostico()">EJECUTAR DIAGNÓSTICO</button>
+
+    <div class="result-card" id="resultado">
+        <div class="nivel" id="nivel">—</div>
+        <div class="decision" id="decision">—</div>
+
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-label">Ingreso</div>
+                <div class="metric-value" id="ingreso">—</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Costo Total</div>
+                <div class="metric-value" id="costo">—</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Utilidad</div>
+                <div class="metric-value" id="utilidad">—</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Margen</div>
+                <div class="metric-value" id="margen">—</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Reserva</div>
+                <div class="metric-value" id="reserva">—</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Salario Base</div>
+                <div class="metric-value" id="salario">—</div>
+            </div>
+        </div>
+
+        <div class="precios">
+            <div class="precio-row">
+                <span>Precio mínimo</span>
+                <span id="p-min">—</span>
+            </div>
+            <div class="precio-row">
+                <span>Precio cierre</span>
+                <span id="p-cierre">—</span>
+            </div>
+            <div class="precio-row">
+                <span>Precio ideal</span>
+                <span id="p-ideal">—</span>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<div class="footer">MESAN SERVICIOS © 2026 — SOBERANÍA OPERATIVA</div>
+<div class="footer">MESAN Ω © 2026 — MOTOR FINANCIERO</div>
 
 <script>
 const API = "https://mesan-api.onrender.com";
-let perdida = 0;
 
-setInterval(() => {
-    perdida += Math.floor(Math.random() * 500 + 100);
-    document.getElementById("counter").innerText = "$" + perdida.toLocaleString() + " MXN";
-}, 2000);
+async function diagnostico() {
+    const precio = parseFloat(document.getElementById("precio").value);
+    const empleados = parseInt(document.getElementById("empleados").value);
+    const zona = document.getElementById("zona").value;
 
-function diagnostico() {
-    const box = document.getElementById("result");
-    const txt = document.getElementById("result-text");
-    box.style.display = "block";
-    txt.innerHTML = "⏳ Vinculando con base de datos MESAN Ω...";
-    setTimeout(() => {
-        txt.innerHTML = `🔹 <b>ESTATUS OPERATIVO</b><br><br>
-        — Mantenimiento Técnico<br>
-        — Limpieza Especializada<br>
-        — Gestión de Insumos<br><br>
-        Ahorro proyectado en multas:<br>
-        <b>$80,000 - $210,000 MXN</b><br>`;
-    }, 1800);
-}
-
-function repse() {
-    const box = document.getElementById("result");
-    const txt = document.getElementById("result-text");
-    box.style.display = "block";
-    txt.innerHTML = "⏳ Validando cumplimiento STPS...";
-    setTimeout(() => {
-        txt.innerHTML = `🔹 <b>CUMPLIMIENTO SERVICIOS</b><br><br>
-        Análisis de cuadrillas y equipo.<br>
-        Estatus: <b>DISPONIBLE PARA AUDITORÍA</b>.<br>`;
-    }, 1500);
-}
-
-function irEnterprise() {
-    window.location.href = "https://mesan-omega.com";
-}
-
-async function pago() {
-    const check = document.getElementById("terminos");
-    if (!check.checked) {
-        alert("Acepta los Términos para continuar.");
+    if (!precio || !empleados) {
+        alert("Completa todos los campos");
         return;
     }
-    // Lógica de pago integrada
-    alert("Redirigiendo a pasarela segura de MESAN...");
+
+    try {
+        const res = await fetch(API + "/pro/diagnostico", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                precio_cliente: precio,
+                empleados: empleados,
+                zona: zona
+            })
+        });
+
+        const r = await res.json();
+        const f = r.financiero || {};
+        const p = r.precios || {};
+        const d = r.decision || {};
+
+        document.getElementById("resultado").classList.add("visible");
+
+        document.getElementById("nivel").innerText = "● " + (r.clasificacion || "—");
+        document.getElementById("decision").innerText =
+            (d.decision || "") + " — " + (d.mensaje || "");
+
+        document.getElementById("ingreso").innerText =
+            "$" + (f.ingreso||0).toLocaleString();
+        document.getElementById("costo").innerText =
+            "$" + (f.costo_total||0).toLocaleString();
+        document.getElementById("utilidad").innerText =
+            "$" + (f.utilidad||0).toLocaleString();
+        document.getElementById("margen").innerText =
+            (f.margen||0) + "%";
+        document.getElementById("reserva").innerText =
+            "$" + (f.reserva||0).toLocaleString();
+        document.getElementById("salario").innerText =
+            "$" + (f.salario||0).toLocaleString();
+
+        document.getElementById("p-min").innerText =
+            "$" + (p.precio_minimo||0).toLocaleString();
+        document.getElementById("p-cierre").innerText =
+            "$" + (p.precio_cierre||0).toLocaleString();
+        document.getElementById("p-ideal").innerText =
+            "$" + (p.precio_objetivo||0).toLocaleString();
+
+    } catch(e) {
+        alert("Error de conexión");
+    }
 }
 </script>
 
