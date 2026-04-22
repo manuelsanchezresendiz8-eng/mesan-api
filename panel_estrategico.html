@@ -1,66 +1,240 @@
-<!DOCTYPE html>
+Ya <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aviso de Privacidad — MESAN Ω</title>
+<title>MESAN Ω — Panel Estratégico</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-body{margin:0;background:#02060d;color:white;font-family:Arial;padding:40px 20px;max-width:600px;margin:auto;line-height:1.7;}
-h2{color:#00aaff;}
-h3{color:#00c3ff;margin-top:30px;}
-ul{padding-left:20px;}
-a{color:#00aaff;}
-.footer{margin-top:40px;font-size:12px;color:#555;text-align:center;}
+:root {
+    --bg: #02060a;
+    --panel: #0a1118;
+    --accent: #00f3ff;
+    --text: #e2e8f0;
+    --dim: #64748b;
+    --border: rgba(0,243,255,0.2);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 80px 20px 40px;
+}
+
+.nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    background: rgba(2,6,10,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+.nav a {
+    color: var(--dim);
+    text-decoration: none;
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-family: 'Orbitron', monospace;
+    transition: 0.3s;
+}
+
+.nav a:hover { color: var(--accent); }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 25px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    box-shadow: 0 0 20px rgba(0,243,255,0.08);
+    border-color: rgba(0,243,255,0.4);
+}
+
+.card h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.alert-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 25px;
+}
+
+.alert-card h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.alert-card p {
+    font-size: 12px;
+    color: var(--dim);
+    line-height: 1.6;
+}
+
+.stat-big {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.stat-big span {
+    font-family: 'Orbitron', monospace;
+    font-size: 3rem;
+    color: var(--accent);
+    display: block;
+}
+
+.stat-big small {
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: var(--dim);
+    opacity: 0.4;
+    letter-spacing: 4px;
+}
 </style>
 </head>
 <body>
 
-<h2>AVISO DE PRIVACIDAD — MESAN Ω</h2>
-<p><strong>Responsable:</strong> MESAN Ω (Servicios Mesan)</p>
-<p><strong>Última actualización:</strong> 2026</p>
-
-<h3>1. Identidad del Responsable</h3>
-<p>MESAN Ω es responsable del tratamiento de sus datos conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
-
-<h3>2. Datos que se recaban</h3>
-<ul>
-<li>Nombre o razón social</li>
-<li>Correo electrónico</li>
-<li>Teléfono</li>
-<li>RFC (opcional)</li>
-<li>Datos empresariales (financieros, operativos, fiscales)</li>
-</ul>
-
-<h3>3. Finalidades</h3>
-<ul>
-<li>Generar diagnósticos empresariales</li>
-<li>Evaluar riesgos fiscales, laborales y operativos</li>
-<li>Procesar pagos y servicios</li>
-<li>Enviar resultados por PDF o correo</li>
-<li>Mejorar el sistema MESAN Ω</li>
-</ul>
-
-<h3>4. Transferencia de datos</h3>
-<p>Sus datos no serán vendidos. Solo se comparten con procesadores de pago (Stripe) o por obligación legal.</p>
-
-<h3>5. Protección</h3>
-<p>MESAN Ω implementa medidas técnicas y administrativas para proteger su información.</p>
-
-<h3>6. Derechos ARCO</h3>
-<p>Puede Acceder, Rectificar, Cancelar u Oponerse al uso de sus datos escribiendo a:</p>
-<p><strong>contacto@mesanomega.com</strong></p>
-
-<h3>7. Cookies</h3>
-<p>El sistema puede utilizar cookies para mejorar la experiencia del usuario.</p>
-
-<h3>8. Consentimiento</h3>
-<p>Al utilizar MESAN Ω usted acepta el presente Aviso de Privacidad.</p>
-
-<div class="footer">
-<strong>MESAN Ω © 2026</strong><br><br>
-<a href="/terminos.html">Términos y Condiciones</a> |
-<a href="/">Volver al inicio</a>
+<div class="nav">
+    <div>MESAN Ω — PANEL ESTRATÉGICO</div>
+    <a href="/admin.html">← CRM</a>
 </div>
+
+<div class="grid">
+
+    <div class="card">
+        <h3>IMSE — Salud Empresarial</h3>
+        <canvas id="gauge"></canvas>
+    </div>
+
+    <div class="alert-card">
+        <h3>⚠ Alerta Activa</h3>
+        <p>Riesgo de auditoría SAT detectado en sistema.<br><br>
+        Acción recomendada: intervención inmediata en leads críticos.</p>
+    </div>
+
+    <div class="card">
+        <h3>Tendencia de Riesgo</h3>
+        <canvas id="grafica"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Leads Activos</h3>
+        <div class="stat-big">
+            <span id="total-leads">—</span>
+            <small>en el sistema</small>
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">MESAN Ω © 2026 — PANEL ESTRATÉGICO</div>
+
+<script>
+// VELOCÍMETRO IMSE
+new Chart(document.getElementById("gauge"), {
+    type: 'doughnut',
+    data: {
+        datasets:[{
+            data: [68, 32],
+            backgroundColor: ['#00f3ff', 'rgba(0,243,255,0.08)'],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        rotation: -90,
+        circumference: 180,
+        plugins: { legend: { display: false } },
+        cutout: '70%'
+    }
+});
+
+// GRÁFICA TENDENCIA
+new Chart(document.getElementById("grafica"), {
+    type: 'line',
+    data: {
+        labels: ['Ene','Feb','Mar','Abr','May'],
+        datasets:[{
+            data: [20, 40, 35, 60, 80],
+            borderColor: '#00f3ff',
+            backgroundColor: 'rgba(0,243,255,0.05)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#00f3ff'
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { ticks: { color: '#64748b', font: { size: 9 } }, grid: { color: 'rgba(0,243,255,0.06)' } },
+            y: { ticks: { color: '#64748b', font: { size: 9 } }, grid: { color: 'rgba(0,243,255,0.06)' } }
+        }
+    }
+});
+
+// CARGAR LEADS
+async function cargarLeads() {
+    const API_KEY = localStorage.getItem("mesan_key");
+    if (!API_KEY) return;
+    try {
+        const res = await fetch("https://mesan-api.onrender.com/leads", {
+            headers: { "api-key": API_KEY }
+        });
+        const data = await res.json();
+        document.getElementById("total-leads").innerText = (data.leads || []).length;
+    } catch(e) {
+        document.getElementById("total-leads").innerText = "—";
+    }
+}
+
+cargarLeads();
+</script>
 
 </body>
 </html>
