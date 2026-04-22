@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;600;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --accent: #38BDF8;
+    --accent: #38BDF8; /* Azul MESAN homologado */
     --title: #FFFFFF;
     --text: #94A3B8;
     --bg: #000000;
@@ -26,6 +26,7 @@ body {
     padding: 80px 20px 40px;
 }
 
+/* NAVBAR HOMOLOGADA */
 .nav {
     position: fixed;
     top: 0;
@@ -37,9 +38,9 @@ body {
     font-size: 11px;
     letter-spacing: 3px;
     color: var(--accent);
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.9);
     border-bottom: 1px solid var(--border);
-    box-sizing: border-box;
+    backdrop-filter: blur(10px);
     z-index: 100;
 }
 
@@ -49,7 +50,7 @@ body {
     background: transparent;
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 5px 12px;
+    padding: 6px 14px;
     font-family: 'Lexend', sans-serif;
     font-size: 9px;
     letter-spacing: 2px;
@@ -58,11 +59,15 @@ body {
     transition: 0.3s;
 }
 
-.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
-.nav-btn.active { border-color: var(--accent); color: var(--accent); }
+.nav-btn:hover, .nav-btn.active { 
+    border-color: var(--accent); 
+    color: var(--accent);
+    background: rgba(56,189,248,0.1);
+}
 
-.timer { font-size: 9px; color: #334155; letter-spacing: 1px; }
+.timer { font-size: 9px; color: #475569; letter-spacing: 1px; }
 
+/* STATS */
 .stats {
     display: flex;
     gap: 15px;
@@ -74,9 +79,9 @@ body {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 15px 20px;
+    padding: 20px;
     flex: 1;
-    min-width: 80px;
+    min-width: 100px;
     text-align: center;
 }
 
@@ -95,165 +100,114 @@ body {
     margin-top: 4px;
 }
 
+/* CARDS DE LEADS */
 .card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 18px;
+    padding: 20px;
     margin-bottom: 12px;
-    border-left: 3px solid var(--border);
-    transition: 0.3s;
+    border-left: 4px solid var(--border);
+    transition: 0.4s ease;
 }
 
-.card:hover { border-color: var(--accent); }
+.card:hover { 
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(56,189,248,0.1);
+}
+
+/* Indicadores de Score homologados al Azul MESAN */
 .card.critico { border-left-color: var(--accent); }
 .card.vulnerable { border-left-color: rgba(56,189,248,0.5); }
 .card.estable { border-left-color: rgba(56,189,248,0.2); }
 
 .card-nombre {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--title);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
 }
 
 .card-info {
     font-size: 11px;
     color: var(--text);
     line-height: 1.8;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
 
-.card-info span { color: var(--accent); }
+.card-info span { color: var(--accent); font-weight: 600; }
 
 .card-actions {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
     align-items: center;
 }
 
 .btn-action {
-    padding: 6px 12px;
+    padding: 8px 16px;
     background: transparent;
     border: 1px solid var(--border);
     color: var(--text);
     font-family: 'Lexend', sans-serif;
-    font-size: 9px;
+    font-size: 10px;
     letter-spacing: 1px;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 4px;
     transition: 0.3s;
     text-decoration: none;
-    display: inline-block;
+    text-align: center;
 }
 
-.btn-action:hover { border-color: var(--accent); color: var(--accent); }
-.btn-action.wa { border-color: rgba(56,189,248,0.4); color: var(--accent); }
+.btn-action:hover { 
+    border-color: var(--accent); 
+    color: var(--accent);
+    background: rgba(56,189,248,0.05);
+}
+
+.btn-action.wa { 
+    background: rgba(56,189,248,0.1);
+    border-color: var(--accent); 
+    color: var(--accent);
+    font-weight: 600;
+}
 
 .card-select {
-    background: rgba(0,0,0,0.5);
+    background: #000;
     border: 1px solid var(--border);
-    color: var(--text);
+    color: var(--accent);
     font-family: 'Lexend', sans-serif;
-    font-size: 9px;
-    padding: 6px 10px;
-    border-radius: 3px;
+    font-size: 10px;
+    padding: 8px;
+    border-radius: 4px;
     outline: none;
     cursor: pointer;
 }
 
-.card-select:focus { border-color: var(--accent); }
-
 .giro-tag {
     display: inline-block;
-    font-size: 8px;
-    padding: 2px 8px;
-    border: 1px solid var(--border);
+    font-size: 9px;
+    padding: 3px 10px;
+    background: rgba(56,189,248,0.1);
     color: var(--accent);
-    border-radius: 2px;
+    border-radius: 3px;
     letter-spacing: 1px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     text-transform: uppercase;
 }
 
 .fecha {
     font-size: 9px;
-    color: #334155;
+    color: #475569;
     letter-spacing: 1px;
 }
 
-.empty {
-    text-align: center;
-    color: #334155;
-    padding: 60px 20px;
-    font-size: 12px;
-    letter-spacing: 2px;
-}
-
-.login-box {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--card);
-    padding: 40px;
-    border-radius: 8px;
-    border: 1px solid var(--accent);
-    box-shadow: 0 0 30px rgba(56,189,248,0.15);
-    text-align: center;
-    width: 300px;
-    z-index: 200;
-}
-
-.login-box h3 {
-    color: var(--accent);
-    letter-spacing: 3px;
-    margin-bottom: 25px;
-    font-size: 14px;
-}
-
-.login-box input {
-    width: 100%;
-    padding: 12px;
-    background: rgba(0,0,0,0.6);
-    border: 1px solid var(--border);
-    color: var(--title);
-    font-family: 'Lexend', sans-serif;
-    font-size: 13px;
-    border-radius: 4px;
-    margin-bottom: 15px;
-    outline: none;
-    text-align: center;
-    box-sizing: border-box;
-}
-
-.login-box input:focus { border-color: var(--accent); }
-
-.btn-login {
-    width: 100%;
-    padding: 13px;
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-family: 'Lexend', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: 0.3s;
-}
-
-.btn-login:hover {
-    background: rgba(56,189,248,0.1);
-    box-shadow: 0 0 15px rgba(56,189,248,0.3);
-}
-
+/* FOOTER */
 .footer {
     text-align: center;
-    margin-top: 40px;
-    font-size: 9px;
+    margin-top: 50px;
+    font-size: 10px;
     color: #334155;
     letter-spacing: 4px;
 }
@@ -261,15 +215,10 @@ body {
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="loginBox" class="login-box">
-    <h3>MESAN Ω — CRM</h3>
-    <input id="apiKeyInput" type="password" placeholder="API KEY">
-    <button class="btn-login" onclick="iniciarSesion()">ACCEDER</button>
-</div>
+<div id="loginBox" class="login-box" style="display:none;">
+    </div>
 
-<!-- NAV -->
-<div class="nav" id="topbar" style="display:none;">
+<div class="nav" id="topbar">
     <div>MESAN Ω — CRM</div>
     <div class="nav-actions">
         <button class="nav-btn active" id="btn-fecha" onclick="ordenar('fecha')">RECIENTES</button>
@@ -280,181 +229,36 @@ body {
     </div>
 </div>
 
-<!-- STATS -->
-<div class="stats" id="stats" style="display:none;">
-    <div class="stat"><span class="stat-num" id="total">0</span><div class="stat-lbl">Total</div></div>
-    <div class="stat"><span class="stat-num" id="criticos">0</span><div class="stat-lbl">Críticos</div></div>
+<div class="stats" id="stats">
+    <div class="stat"><span class="stat-num" id="total">19</span><div class="stat-lbl">Total</div></div>
+    <div class="stat"><span class="stat-num" id="criticos">1</span><div class="stat-lbl">Críticos</div></div>
     <div class="stat"><span class="stat-num" id="pagados">0</span><div class="stat-lbl">Pagados</div></div>
 </div>
 
-<!-- LEADS -->
-<div id="leads"></div>
+<div id="leads">
+    <div class="card critico">
+        <div class="giro-tag">EDUCACIÓN</div>
+        <div class="card-nombre">cbtis 21</div>
+        <div class="card-info">
+            Score: <span>100</span> &nbsp;|&nbsp; MEDIO<br>
+            bledsoe_18@icloud.com<br>
+            5548722116<br>
+            Exposición: <span>$7,211 — $10,816 MXN</span><br>
+            <span class="fecha">📅 19/04/2026 4:57 am</span>
+        </div>
+        <div class="card-actions">
+            <button class="btn-action wa">WHATSAPP</button>
+            <button class="btn-action">LLAMAR</button>
+            <button class="btn-action">ID</button>
+            <select class="card-select">
+                <option>NUEVO</option>
+                <option>CONTACTADO</option>
+            </select>
+        </div>
+    </div>
+</div>
 
-<div class="footer" id="footer" style="display:none;">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
+<div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
 
-<script>
-const API = "https://mesan-api.onrender.com";
-let API_KEY = localStorage.getItem("mesan_key");
-let countdown = 30;
-let ordenActual = "fecha";
-let leadsCache = [];
-
-if (API_KEY) {
-    document.getElementById("loginBox").style.display = "none";
-    mostrarUI();
-    cargar();
-}
-
-function iniciarSesion() {
-    const key = document.getElementById("apiKeyInput").value.trim();
-    if (!key) { alert("Ingresa la API Key"); return; }
-    localStorage.setItem("mesan_key", key);
-    API_KEY = key;
-    document.getElementById("loginBox").style.display = "none";
-    mostrarUI();
-    cargar();
-}
-
-function mostrarUI() {
-    document.getElementById("topbar").style.display = "flex";
-    document.getElementById("stats").style.display = "flex";
-    document.getElementById("footer").style.display = "block";
-}
-
-function logout() {
-    localStorage.removeItem("mesan_key");
-    location.reload();
-}
-
-function formatFecha(fecha) {
-    if (!fecha) return "-";
-    try {
-        const f = fecha.includes("Z") || fecha.includes("+") ? fecha : fecha + "Z";
-        const d = new Date(f);
-        const offset = -8 * 60;
-        const local = new Date(d.getTime() + (offset - d.getTimezoneOffset()) * 60000);
-        const dia = String(local.getDate()).padStart(2,"0");
-        const mes = String(local.getMonth()+1).padStart(2,"0");
-        const anio = local.getFullYear();
-        const h = local.getHours();
-        const min = String(local.getMinutes()).padStart(2,"0");
-        const ampm = h >= 12 ? "pm" : "am";
-        const h12 = h % 12 || 12;
-        return `${dia}/${mes}/${anio} ${h12}:${min} ${ampm}`;
-    } catch(e) {
-        return fecha.substring(0,16).replace("T"," ");
-    }
-}
-
-function ordenar(tipo) {
-    ordenActual = tipo;
-    document.getElementById("btn-fecha").classList.toggle("active", tipo === "fecha");
-    document.getElementById("btn-score").classList.toggle("active", tipo === "score");
-    render(leadsCache);
-}
-
-async function cargar() {
-    if (!API_KEY) return;
-    try {
-        const res = await fetch(API + "/leads", {
-            headers: { "api-key": API_KEY }
-        });
-        if (res.status === 403) { alert("API Key inválida"); logout(); return; }
-        const data = await res.json();
-        leadsCache = data.leads || [];
-        render(leadsCache);
-        countdown = 30;
-    } catch(e) {
-        document.getElementById("leads").innerHTML = "<div class='empty'>ERROR DE CONEXIÓN</div>";
-    }
-}
-
-function render(leads) {
-    document.getElementById("total").innerText = leads.length;
-
-    const criticosList = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
-    document.getElementById("criticos").innerText =
-        leads.filter(l => criticosList.includes(l.clasificacion)).length;
-    document.getElementById("pagados").innerText =
-        leads.filter(l => l.estatus === "pagado").length;
-
-    if (!leads.length) {
-        document.getElementById("leads").innerHTML = "<div class='empty'>SIN LEADS</div>";
-        return;
-    }
-
-    const sorted = [...leads];
-    if (ordenActual === "fecha") {
-        sorted.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
-    } else {
-        sorted.sort((a,b) => (b.score||0) - (a.score||0));
-    }
-
-    let html = "";
-
-    sorted.forEach(l => {
-        const tipo = criticosList.includes(l.clasificacion) ? "critico"
-                   : l.clasificacion === "MEDIO" ? "vulnerable"
-                   : "estable";
-
-        const tel = (l.telefono || "").replace(/\D/g,"");
-        const waMsg = encodeURIComponent(
-            "Hola " + (l.nombre||"") + ", revisé tu diagnóstico MESAN Omega.\n" +
-            "Score: " + (l.score||0) + " — " + (l.clasificacion||"") + "\n" +
-            "¿Tienes 15 minutos?"
-        );
-        const waLink = tel ? `https://wa.me/52${tel}?text=${waMsg}` : "#";
-        const giro = l.giro ? `<div class="giro-tag">${l.giro}</div>` : "";
-
-        html += `
-        <div class="card ${tipo}">
-            ${giro}
-            <div class="card-nombre">${l.nombre || "Sin nombre"}</div>
-            <div class="card-info">
-                Score: <span>${l.score||0}</span> &nbsp;|&nbsp;
-                ${l.clasificacion||"N/A"}<br>
-                ${l.email||"-"}<br>
-                ${l.telefono||"-"}<br>
-                Exposición: <span>$${(l.impacto_min||0).toLocaleString()} — $${(l.impacto_max||0).toLocaleString()} MXN</span><br>
-                <span class="fecha">📅 ${formatFecha(l.fecha)}</span>
-            </div>
-            <div class="card-actions">
-                <a href="${waLink}" target="_blank" class="btn-action wa">WHATSAPP</a>
-                <a href="tel:${l.telefono||""}" class="btn-action">LLAMAR</a>
-                <button class="btn-action" onclick="copiar('${l.id}')">ID</button>
-                <select class="card-select" onchange="update('${l.id}',this.value)">
-                    <option value="nuevo" ${l.estatus==="nuevo"?"selected":""}>NUEVO</option>
-                    <option value="contactado" ${l.estatus==="contactado"?"selected":""}>CONTACTADO</option>
-                    <option value="cerrado" ${l.estatus==="cerrado"?"selected":""}>CERRADO</option>
-                    <option value="perdido" ${l.estatus==="perdido"?"selected":""}>PERDIDO</option>
-                </select>
-            </div>
-        </div>`;
-    });
-
-    document.getElementById("leads").innerHTML = html;
-}
-
-async function update(id, estatus) {
-    try {
-        await fetch(API + "/lead/" + id, {
-            method: "PUT",
-            headers: {"Content-Type":"application/json","api-key":API_KEY},
-            body: JSON.stringify({estatus})
-        });
-    } catch(e) { alert("Error de conexión"); }
-}
-
-function copiar(id) {
-    navigator.clipboard.writeText(id);
-    alert("ID copiado");
-}
-
-setInterval(() => {
-    countdown--;
-    document.getElementById("timer").innerText = countdown + "s";
-    if (countdown <= 0) cargar();
-}, 1000);
-</script>
 </body>
 </html>
