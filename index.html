@@ -4,201 +4,316 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MESAN Ω</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-body{
-    margin:0;
-    background:#02060d;
-    color:white;
-    font-family:Arial;
+:root {
+    --bg: #02060a;
+    --panel: #0a1118;
+    --accent: #00f3ff;
+    --text: #e2e8f0;
+    --dim: #64748b;
+    --border: rgba(0,243,255,0.2);
 }
 
-.hero{
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    background: radial-gradient(circle at center, #0a0f1f, #000);
-    padding:40px 20px;
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
 }
 
-.hero h1{
-    font-size:28px;
-    max-width:300px;
+.nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    background: rgba(2,6,10,0.9);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    z-index: 100;
 }
 
-.hero span{
-    color:#00aaff;
+.hero {
+    max-width: 480px;
+    text-align: center;
+    margin-top: 60px;
 }
 
-.buttons{
-    margin-top:30px;
+.hero-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--dim);
+    margin-bottom: 15px;
+    text-transform: uppercase;
 }
 
-.btn{
-    display:block;
-    width:250px;
-    margin:10px auto;
-    padding:15px;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
-    border:none;
-    color:white;
-    font-size:15px;
-    transition:0.3s;
+.hero h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    color: var(--accent);
+    margin-bottom: 15px;
+    line-height: 1.1;
+    letter-spacing: 3px;
 }
 
-.repse{ background:#0a84ff; }
-.repse:hover{ box-shadow:0 0 20px rgba(10,132,255,0.5); }
-
-.omega{ background:#6c2bff; }
-.omega:hover{ box-shadow:0 0 20px rgba(108,43,255,0.5); }
-
-.enterprise{ background:#ff914d; }
-.enterprise:hover{ box-shadow:0 0 20px rgba(255,145,77,0.5); }
-
-.counter{
-    margin-top:30px;
-    font-size:18px;
-    color:#ff4d4d;
+.hero h1 span {
+    display: block;
+    font-size: 0.5em;
+    color: var(--text);
+    letter-spacing: 5px;
+    margin-bottom: 8px;
+    opacity: 0.7;
 }
 
-.chat{
-    margin-top:20px;
-    max-width:300px;
-    font-size:14px;
-    display:none;
-    background:rgba(0,0,0,0.5);
-    border:1px solid #1a2a44;
-    border-radius:10px;
-    padding:15px;
-    text-align:left;
-    line-height:1.6;
+.hero p {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--dim);
+    line-height: 1.7;
+    margin-bottom: 35px;
 }
 
-.btn-pago{
-    margin-top:10px;
-    padding:10px 20px;
-    background:#00c3ff;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    color:#000;
-    font-weight:bold;
-    font-size:13px;
+.counter {
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 35px;
+    letter-spacing: 1px;
+    opacity: 0.8;
 }
 
-.terminos-check{
-    margin-top:15px;
-    font-size:11px;
-    color:#888;
-    max-width:300px;
-    text-align:left;
+.counter span {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
 }
 
-.terminos-check a{
-    color:#00aaff;
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
 }
 
-.legal{
-    margin-top:20px;
-    font-size:11px;
-    color:#555;
-    padding:0 20px;
-    line-height:1.4;
-    max-width:300px;
+.btn {
+    padding: 16px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 6px;
+}
+
+.btn:hover {
+    background: rgba(0,243,255,0.08);
+    box-shadow: 0 0 20px rgba(0,243,255,0.25);
+}
+
+.result-box {
+    display: none;
+    margin-top: 25px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    max-width: 320px;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--dim);
+}
+
+.result-box b { color: var(--text); }
+
+.btn-pago {
+    width: 100%;
+    margin-top: 15px;
+    padding: 13px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.btn-pago:hover {
+    background: rgba(0,243,255,0.08);
+    box-shadow: 0 0 15px rgba(0,243,255,0.3);
+}
+
+.terminos {
+    margin-top: 20px;
+    font-size: 11px;
+    color: var(--dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.terminos a { color: var(--accent); text-decoration: none; }
+
+.legal {
+    margin-top: 30px;
+    font-size: 10px;
+    color: var(--dim);
+    line-height: 1.7;
+    max-width: 320px;
+    text-align: center;
+    opacity: 0.6;
+}
+
+.footer {
+    position: fixed;
+    bottom: 15px;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: var(--dim);
+    opacity: 0.4;
+    letter-spacing: 4px;
+}
+
+.wa-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 10px 15px;
+    border-radius: 50px;
+    background: rgba(2,6,10,0.9);
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: 0.3s;
+}
+
+.wa-float:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(0,243,255,0.3);
 }
 </style>
 </head>
-
 <body>
 
+<div class="nav">
+    <div>MESAN Ω</div>
+    <div style="font-size:9px;opacity:0.5;">PREDICTIVE ANALYTICS</div>
+</div>
+
 <div class="hero">
+    <div class="hero-tag">// Sistema de Inteligencia Empresarial</div>
 
-    <h1>¿Tu empresa está <span>perdiendo dinero</span> sin que lo sepas?</h1>
+    <h1>
+        <span>Arquitectura y</span>
+        Soberanía<br>Empresarial
+    </h1>
 
-    <div class="buttons">
-        <button class="btn repse" onclick="repse()">VALIDAR REPSE</button>
-        <button class="btn omega" onclick="diagnostico()">MESAN Ω</button>
-        <button class="btn enterprise" onclick="irEnterprise()">ENTERPRISE</button>
+    <p>Modelos matemáticos avanzados para detectar vulnerabilidades fiscales, laborales y operativas antes de que se conviertan en pasivos críticos.</p>
+
+    <div class="counter">
+        Pérdida estimada en tiempo real:<br>
+        <span id="counter">$0 MXN</span>
     </div>
 
-    <div class="counter" id="counter">$0 MXN</div>
+    <div class="buttons">
+        <button class="btn" onclick="diagnostico()">INICIAR DIAGNÓSTICO</button>
+        <button class="btn" onclick="repse()">VALIDAR REPSE</button>
+        <button class="btn" onclick="irEnterprise()">MESAN ENTERPRISE</button>
+    </div>
 
-    <div class="chat" id="chat"></div>
+    <div class="result-box" id="result">
+        <span id="result-text"></span>
+        <button class="btn-pago" onclick="pago()">DESBLOQUEAR DIAGNÓSTICO — $299 MXN</button>
+    </div>
 
-    <label class="terminos-check">
-        <input type="checkbox" id="aceptoTerminos">
-        Acepto los <a href="/terminos.html">Términos</a> y
-        <a href="/privacidad.html">Aviso de Privacidad</a> de MESAN Ω
+    <label class="terminos">
+        <input type="checkbox" id="terminos">
+        <span>Acepto <a href="/terminos.html">Términos</a> y <a href="/privacidad.html">Privacidad</a></span>
     </label>
 
     <p class="legal">
-        MESAN Ω integra modelos avanzados de análisis predictivo para la detección de riesgos fiscales, laborales y operativos.<br><br>
-        Los resultados son estimaciones basadas en patrones de cumplimiento y simulación financiera,
-        por lo que deben considerarse como herramientas de apoyo estratégico y no como dictámenes oficiales.<br><br>
-        Al continuar, el usuario acepta los términos de uso del sistema.
+        MESAN Ω utiliza modelos propietarios de análisis empresarial.
+        Los resultados son interpretables únicamente dentro del ecosistema MESAN.
+        Su uso externo puede generar conclusiones inexactas.
     </p>
-
 </div>
+
+<div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
+
+<a href="https://wa.me/526861629643" target="_blank" class="wa-float">WhatsApp</a>
 
 <script>
 const API = "https://mesan-api.onrender.com";
 let perdida = 0;
 
-setInterval(()=>{
-    perdida += Math.floor(Math.random()*400+200);
-    document.getElementById("counter").innerText =
-        "$" + perdida.toLocaleString() + " MXN";
+setInterval(() => {
+    perdida += Math.floor(Math.random() * 400 + 200);
+    document.getElementById("counter").innerText = "$" + perdida.toLocaleString() + " MXN";
 }, 1500);
 
-function diagnostico(){
-    const chat = document.getElementById("chat");
-    chat.style.display = "block";
-    chat.innerHTML = "⏳ Analizando...";
+function diagnostico() {
+    const box = document.getElementById("result");
+    const txt = document.getElementById("result-text");
+    box.style.display = "block";
+    txt.innerHTML = "⏳ Analizando estructura empresarial...";
+    setTimeout(() => {
+        txt.innerHTML = `🚨 <b>EXPOSICIÓN DETECTADA</b><br><br>
+        — Riesgo fiscal SAT<br>
+        — Irregularidades IMSS<br>
+        — Incumplimiento operativo<br><br>
+        Impacto estimado:<br>
+        <b style="color:var(--accent)">$120,000 - $450,000 MXN anuales</b>`;
+    }, 1800);
+}
 
-    setTimeout(()=>{
-        chat.innerHTML = `
-        🚨 <b>RIESGO DETECTADO</b><br><br>
-        — IMSS<br>
-        — SAT<br>
-        — Operación<br><br>
-        Impacto estimado: <b style="color:#ff4d4d">$120k - $450k MXN</b><br><br>
-        <button class="btn-pago" onclick="pago()">
-            🔒 Desbloquear diagnóstico — $299 MXN
-        </button>
-        `;
+function repse() {
+    const box = document.getElementById("result");
+    const txt = document.getElementById("result-text");
+    box.style.display = "block";
+    txt.innerHTML = "⏳ Consultando STPS...";
+    setTimeout(() => {
+        txt.innerHTML = `🚨 <b>REPSE — ATENCIÓN REQUERIDA</b><br><br>
+        Registro con riesgo detectado.<br>
+        Requiere validación inmediata.`;
     }, 1500);
 }
 
-function repse(){
-    const chat = document.getElementById("chat");
-    chat.style.display = "block";
-    chat.innerHTML = "⏳ Consultando STPS...";
-
-    setTimeout(()=>{
-        chat.innerHTML = `
-        🚨 <b>REPSE VENCIDO</b><br><br>
-        Riesgo alto detectado.<br>
-        Requiere atención inmediata.<br><br>
-        <button class="btn-pago" onclick="pago()">
-            🔒 Ver solución completa — $299 MXN
-        </button>
-        `;
-    }, 1500);
-}
-
-function irEnterprise(){
+function irEnterprise() {
     window.location.href = "/diagnostico.html";
 }
 
-async function pago(){
-    const checkbox = document.getElementById("aceptoTerminos");
-    if(checkbox && !checkbox.checked){
-        alert("Debes aceptar los Términos y Condiciones para continuar.");
+async function pago() {
+    const check = document.getElementById("terminos");
+    if (!check.checked) {
+        alert("Acepta los Términos para continuar.");
         return;
     }
     try {
@@ -213,7 +328,7 @@ async function pago(){
             })
         });
         const data = await res.json();
-        if(data.url) window.location.href = data.url;
+        if (data.url) window.location.href = data.url;
         else alert("Error generando pago");
     } catch(e) {
         alert("Error de conexión");
@@ -223,3 +338,4 @@ async function pago(){
 
 </body>
 </html>
+    
