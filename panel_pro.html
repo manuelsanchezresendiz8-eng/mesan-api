@@ -4,22 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MESAN Ω — Panel Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-    --accent: #38BDF8;
-    --bg: #000000;
-    --bg-deep: #0A192F;
-    --card: rgba(10,25,47,0.9);
-    --border: rgba(56,189,248,0.2);
+    --bg: #02060a;
+    --panel: #0a1118;
+    --accent: #00f3ff;
+    --text: #e2e8f0;
+    --dim: #64748b;
+    --border: rgba(0,243,255,0.2);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    background: radial-gradient(circle at center, var(--bg-deep) 0%, var(--bg) 100%);
-    color: var(--accent);
-    font-family: 'Lexend', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
     min-height: 100vh;
     padding: 80px 20px 40px;
 }
@@ -32,10 +33,11 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 15px 30px;
+    font-family: 'Orbitron', monospace;
     font-size: 11px;
     letter-spacing: 3px;
     color: var(--accent);
-    background: rgba(0,0,0,0.9);
+    background: rgba(2,6,10,0.95);
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(10px);
     box-sizing: border-box;
@@ -43,15 +45,14 @@ body {
 }
 
 .nav a {
-    color: var(--accent);
-    opacity: 0.5;
+    color: var(--dim);
     text-decoration: none;
     font-size: 10px;
     letter-spacing: 2px;
     transition: 0.3s;
 }
 
-.nav a:hover { opacity: 1; }
+.nav a:hover { color: var(--accent); }
 
 .container {
     max-width: 500px;
@@ -59,25 +60,22 @@ body {
 }
 
 h2 {
-    font-size: 20px;
-    font-weight: 800;
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
     color: var(--accent);
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     margin-bottom: 30px;
     text-align: center;
     text-transform: uppercase;
 }
 
-.field {
-    margin-bottom: 16px;
-}
+.field { margin-bottom: 16px; }
 
 .field label {
     display: block;
     font-size: 9px;
     letter-spacing: 2px;
-    color: var(--accent);
-    opacity: 0.6;
+    color: var(--dim);
     text-transform: uppercase;
     margin-bottom: 8px;
 }
@@ -85,13 +83,13 @@ h2 {
 .field input,
 .field select {
     width: 100%;
-    padding: 13px 15px;
-    background: var(--card);
+    padding: 12px 14px;
+    background: var(--panel);
     border: 1px solid var(--border);
-    color: var(--accent);
-    font-family: 'Lexend', sans-serif;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
     font-size: 14px;
-    border-radius: 4px;
+    border-radius: 6px;
     outline: none;
     transition: 0.3s;
 }
@@ -99,10 +97,10 @@ h2 {
 .field input:focus,
 .field select:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 10px rgba(56,189,248,0.15);
+    box-shadow: 0 0 10px rgba(0,243,255,0.12);
 }
 
-.field select option { background: #0a192f; color: #38BDF8; }
+.field select option { background: var(--panel); }
 
 .btn-main {
     width: 100%;
@@ -110,36 +108,35 @@ h2 {
     background: transparent;
     border: 1px solid var(--accent);
     color: var(--accent);
-    font-family: 'Lexend', sans-serif;
+    font-family: 'Orbitron', monospace;
     font-size: 11px;
-    font-weight: 600;
     letter-spacing: 3px;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 6px;
     transition: 0.3s;
     margin-top: 8px;
 }
 
 .btn-main:hover {
-    background: rgba(56,189,248,0.1);
-    box-shadow: 0 0 20px rgba(56,189,248,0.3);
+    background: rgba(0,243,255,0.08);
+    box-shadow: 0 0 20px rgba(0,243,255,0.25);
 }
 
 .result-card {
     display: none;
     margin-top: 25px;
-    background: var(--card);
+    background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 25px;
 }
 
 .result-card.visible { display: block; }
 
 .nivel {
-    font-size: 16px;
-    font-weight: 800;
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
     color: var(--accent);
     letter-spacing: 3px;
     margin-bottom: 5px;
@@ -148,8 +145,7 @@ h2 {
 
 .decision {
     font-size: 11px;
-    color: var(--accent);
-    opacity: 0.6;
+    color: var(--dim);
     letter-spacing: 1px;
     margin-bottom: 20px;
     padding-bottom: 20px;
@@ -164,24 +160,23 @@ h2 {
 }
 
 .metric {
-    background: rgba(0,0,0,0.4);
+    background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 12px;
 }
 
 .metric-label {
     font-size: 8px;
     letter-spacing: 2px;
-    color: var(--accent);
-    opacity: 0.5;
+    color: var(--dim);
     text-transform: uppercase;
     margin-bottom: 4px;
 }
 
 .metric-value {
-    font-size: 14px;
-    font-weight: 600;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
     color: var(--accent);
 }
 
@@ -194,19 +189,22 @@ h2 {
     display: flex;
     justify-content: space-between;
     font-size: 11px;
-    color: var(--accent);
-    opacity: 0.8;
+    color: var(--dim);
     padding: 6px 0;
 }
 
-.precio-row span:last-child { opacity: 1; font-weight: 600; }
+.precio-row span:last-child {
+    color: var(--accent);
+    font-weight: 600;
+}
 
 .footer {
     text-align: center;
     margin-top: 40px;
+    font-family: 'Orbitron', monospace;
     font-size: 9px;
-    color: var(--accent);
-    opacity: 0.3;
+    color: var(--dim);
+    opacity: 0.4;
     letter-spacing: 4px;
 }
 </style>
@@ -323,30 +321,19 @@ async function diagnostico() {
         const d = r.decision || {};
 
         document.getElementById("resultado").classList.add("visible");
-
         document.getElementById("nivel").innerText = "● " + (r.clasificacion || "—");
         document.getElementById("decision").innerText =
             (d.decision || "") + " — " + (d.mensaje || "");
 
-        document.getElementById("ingreso").innerText =
-            "$" + (f.ingreso||0).toLocaleString();
-        document.getElementById("costo").innerText =
-            "$" + (f.costo_total||0).toLocaleString();
-        document.getElementById("utilidad").innerText =
-            "$" + (f.utilidad||0).toLocaleString();
-        document.getElementById("margen").innerText =
-            (f.margen||0) + "%";
-        document.getElementById("reserva").innerText =
-            "$" + (f.reserva||0).toLocaleString();
-        document.getElementById("salario").innerText =
-            "$" + (f.salario||0).toLocaleString();
-
-        document.getElementById("p-min").innerText =
-            "$" + (p.precio_minimo||0).toLocaleString();
-        document.getElementById("p-cierre").innerText =
-            "$" + (p.precio_cierre||0).toLocaleString();
-        document.getElementById("p-ideal").innerText =
-            "$" + (p.precio_objetivo||0).toLocaleString();
+        document.getElementById("ingreso").innerText = "$" + (f.ingreso||0).toLocaleString();
+        document.getElementById("costo").innerText = "$" + (f.costo_total||0).toLocaleString();
+        document.getElementById("utilidad").innerText = "$" + (f.utilidad||0).toLocaleString();
+        document.getElementById("margen").innerText = (f.margen||0) + "%";
+        document.getElementById("reserva").innerText = "$" + (f.reserva||0).toLocaleString();
+        document.getElementById("salario").innerText = "$" + (f.salario||0).toLocaleString();
+        document.getElementById("p-min").innerText = "$" + (p.precio_minimo||0).toLocaleString();
+        document.getElementById("p-cierre").innerText = "$" + (p.precio_cierre||0).toLocaleString();
+        document.getElementById("p-ideal").innerText = "$" + (p.precio_objetivo||0).toLocaleString();
 
     } catch(e) {
         alert("Error de conexión");
