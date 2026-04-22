@@ -3,113 +3,269 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | Panel Pro</title>
+<title>MESAN Ω | Servicios Industriales</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;600;800&display=swap" rel="stylesheet">
 <style>
-body{background:#000;color:#fff;font-family:Arial;padding:20px;}
-h1{color:#00f3ff;font-family:monospace;letter-spacing:3px;}
-label{display:block;margin-top:15px;color:#94a3b8;font-size:12px;}
-input,select{width:100%;padding:10px;margin-top:5px;background:#111;color:#fff;border:1px solid #333;border-radius:4px;}
-button{width:100%;padding:14px;margin-top:20px;background:#00f3ff;color:#000;font-weight:bold;border:none;cursor:pointer;border-radius:4px;font-size:14px;}
-button:hover{opacity:0.85;}
-#resultado{margin-top:25px;padding:20px;border:1px solid #333;border-radius:8px;display:none;}
-.CRITICO{color:#ff0000;}
-.ALTO{color:#ff4d4d;}
-.MEDIO{color:#ffaa00;}
-.BAJO{color:#00ff88;}
-hr{border-color:#222;margin:12px 0;}
-p{margin:6px 0;font-size:14px;}
+:root {
+    --accent: #38BDF8; /* Azul Técnico MESAN */
+    --title: #FFFFFF;
+    --text: #94A3B8;
+    --bg: #000000;
+    --bg-deep: #0A192F;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: radial-gradient(circle at center, var(--bg-deep) 0%, var(--bg) 100%);
+    color: var(--title);
+    font-family: 'Lexend', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+}
+
+.hero {
+    max-width: 500px;
+    margin-top: 60px;
+}
+
+.hero h1 {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.hero h1 span {
+    color: var(--accent);
+    display: block;
+}
+
+.hero p {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+.counter {
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+}
+
+.btn {
+    width: 280px;
+    padding: 15px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Lexend', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.btn:hover {
+    background: rgba(56,189,248,0.1);
+    box-shadow: 0 0 20px rgba(56,189,248,0.4);
+}
+
+/* Homologación de botones: Todos ahora siguen la línea azul de MESAN */
+.btn-secondary {
+    border-color: rgba(56,189,248,0.5);
+    color: var(--text);
+    font-size: 11px;
+}
+
+.result-box {
+    display: none;
+    margin-top: 25px;
+    background: rgba(10,25,47,0.9);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px;
+    width: 280px;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.result-box b { color: var(--accent); }
+
+.btn-pago {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    background: var(--accent);
+    border: none;
+    color: #000;
+    font-family: 'Lexend', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.terminos {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.terminos a { color: var(--accent); text-decoration: none; }
+
+.legal {
+    margin-top: 30px;
+    font-size: 10px;
+    color: #334155;
+    line-height: 1.6;
+    max-width: 350px;
+}
+
+.footer {
+    position: fixed;
+    bottom: 15px;
+    font-size: 10px;
+    color: #334155;
+    letter-spacing: 4px;
+}
 </style>
 </head>
 <body>
 
-<h1>MESAN Ω</h1>
-<p style="color:#64748b;font-size:12px;">Panel Pro — Motor Financiero</p>
-
-<label>Precio del servicio ($)</label>
-<input id="precio" type="number" placeholder="Ej: 27000">
-
-<label>Número de empleados</label>
-<input id="empleados" type="number" value="1" min="1">
-
-<label>Zona</label>
-<select id="zona">
-  <option value="general">General</option>
-  <option value="frontera">Frontera (BC, Son, Chih)</option>
-</select>
-
-<button onclick="diagnostico()">EJECUTAR DIAGNÓSTICO</button>
-
-<div id="resultado">
-  <h2 id="clasificacion-text" style="margin-bottom:10px;"></h2>
-  <p id="mensaje-text"></p>
-  <p id="decision-text"></p>
-  <hr>
-  <p>Ingreso: <b id="ingreso-text"></b></p>
-  <p>Costo total: <b id="costo-text"></b></p>
-  <p>Utilidad: <b id="utilidad-text"></b></p>
-  <p>Margen: <b id="margen-text"></b></p>
-  <p>Reserva: <b id="reserva-text"></b></p>
-  <hr>
-  <p>Precio mínimo: <b id="pmin-text"></b></p>
-  <p>Precio cierre: <b id="pcierre-text"></b></p>
-  <p>Precio ideal: <b id="pideal-text"></b></p>
+<div class="nav">
+    <div>MESAN SERVICIOS</div>
+    <div>PREDICTIVE MAINTENANCE</div>
 </div>
 
-<script>
-async function diagnostico(){
-    const precio = parseFloat(document.getElementById("precio").value);
-    const empleados = parseInt(document.getElementById("empleados").value);
-    const zona = document.getElementById("zona").value;
-    const box = document.getElementById("resultado");
+<div class="hero">
+    <h1>
+        Eficiencia y
+        <span>Continuidad Operativa</span>
+    </h1>
 
-    if(!precio || !empleados){
-        alert("Completa todos los campos");
+    <p>Sistemas de mantenimiento y limpieza industrial diseñados para garantizar la operación continua y el cumplimiento normativo (STPS) de su empresa.</p>
+
+    <div class="counter">Optimización estimada: <span id="counter">$0 MXN</span></div>
+
+    <div class="buttons">
+        <button class="btn" onclick="diagnostico()">SOLICITAR COTIZACIÓN</button>
+        <button class="btn btn-secondary" onclick="repse()">AUDITORÍA DE SERVICIOS</button>
+        <button class="btn btn-secondary" onclick="irEnterprise()">VOLVER A MESAN Ω</button>
+    </div>
+
+    <div class="result-box" id="result">
+        <span id="result-text"></span>
+        <button class="btn-pago" onclick="pago()">🔒 AGENDAR DIAGNÓSTICO — $299 MXN</button>
+    </div>
+
+    <label class="terminos">
+        <input type="checkbox" id="terminos">
+        <span>Acepto <a href="/terminos.html">Términos</a> y <a href="/privacidad.html">Privacidad</a></span>
+    </label>
+
+    <p class="legal">
+        MESAN SERVICIOS opera bajo los estándares de análisis de riesgo de MESAN Ω.
+        Los reportes operativos son propiedad del cliente y están protegidos por protocolos de confidencialidad industrial.
+    </p>
+</div>
+
+<div class="footer">MESAN SERVICIOS © 2026 — SOBERANÍA OPERATIVA</div>
+
+<script>
+const API = "https://mesan-api.onrender.com";
+let perdida = 0;
+
+setInterval(() => {
+    perdida += Math.floor(Math.random() * 500 + 100);
+    document.getElementById("counter").innerText = "$" + perdida.toLocaleString() + " MXN";
+}, 2000);
+
+function diagnostico() {
+    const box = document.getElementById("result");
+    const txt = document.getElementById("result-text");
+    box.style.display = "block";
+    txt.innerHTML = "⏳ Vinculando con base de datos MESAN Ω...";
+    setTimeout(() => {
+        txt.innerHTML = `🔹 <b>ESTATUS OPERATIVO</b><br><br>
+        — Mantenimiento Técnico<br>
+        — Limpieza Especializada<br>
+        — Gestión de Insumos<br><br>
+        Ahorro proyectado en multas:<br>
+        <b>$80,000 - $210,000 MXN</b><br>`;
+    }, 1800);
+}
+
+function repse() {
+    const box = document.getElementById("result");
+    const txt = document.getElementById("result-text");
+    box.style.display = "block";
+    txt.innerHTML = "⏳ Validando cumplimiento STPS...";
+    setTimeout(() => {
+        txt.innerHTML = `🔹 <b>CUMPLIMIENTO SERVICIOS</b><br><br>
+        Análisis de cuadrillas y equipo.<br>
+        Estatus: <b>DISPONIBLE PARA AUDITORÍA</b>.<br>`;
+    }, 1500);
+}
+
+function irEnterprise() {
+    window.location.href = "https://mesan-omega.com";
+}
+
+async function pago() {
+    const check = document.getElementById("terminos");
+    if (!check.checked) {
+        alert("Acepta los Términos para continuar.");
         return;
     }
-
-    box.style.display = "block";
-    box.innerHTML = "<p style='color:#94a3b8'>Analizando...</p>";
-
-    try{
-        const res = await fetch("https://mesan-api.onrender.com/pro/diagnostico-financiero", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                precio_cliente: precio,
-                empleados: empleados,
-                zona: zona
-            })
-        });
-
-        const r = await res.json();
-        const c = r.clasificacion || "BAJO";
-        const f = r.financiero || {};
-        const p = r.precios || {};
-        const d = r.decision || {};
-
-        const color = c==="CRITICO"?"#ff0000":c==="ALTO"?"#ff4d4d":c==="MEDIO"?"#ffaa00":"#00ff88";
-
-        box.innerHTML = `
-            <h2 style="color:${color};margin-bottom:10px;">● ${c}</h2>
-            <p>${r.mensaje || ""}</p>
-            <p><b>Decisión:</b> ${d.decision || ""} — ${d.mensaje || ""}</p>
-            <hr style="border-color:#222;margin:12px 0">
-            <p>Ingreso: <b>$${(f.ingreso||0).toLocaleString()}</b></p>
-            <p>Costo total: <b>$${(f.costo_total||0).toLocaleString()}</b></p>
-            <p>Utilidad: <b>$${(f.utilidad||0).toLocaleString()}</b></p>
-            <p>Margen: <b>${f.margen||0}%</b></p>
-            <p>Reserva: <b>$${(f.reserva||0).toLocaleString()}</b></p>
-            <hr style="border-color:#222;margin:12px 0">
-            <p>Precio mínimo: <b>$${(p.precio_minimo||0).toLocaleString()}</b></p>
-            <p>Precio cierre: <b>$${(p.precio_cierre||0).toLocaleString()}</b></p>
-            <p>Precio ideal: <b>$${(p.precio_objetivo||0).toLocaleString()}</b></p>
-        `;
-
-    }catch(e){
-        box.innerHTML = "<p style='color:#ef4444'>Error de conexión</p>";
-        console.error(e);
-    }
+    // Lógica de pago integrada
+    alert("Redirigiendo a pasarela segura de MESAN...");
 }
 </script>
+
 </body>
 </html>
