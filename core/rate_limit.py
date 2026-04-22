@@ -1,20 +1,39 @@
-def extraer_riesgo_ai(texto: str) -> int:
+# core/rate_limit.py
 
-    t = texto.lower()
+import time
+import logging
 
-    if "crítico" in t or "critico" in t:
-        return 85
+_requests = {}
 
-    if any(x in t for x in ["alto riesgo", "riesgo alto"]):
-        return 70
+def rate_limit(user_id: str, limit: int = 10, window: int = 60) -> bool:
+    now = time.time()
 
-    if "alto" in t:
-        return 65
+    if user_id not in _requests:
+        _requests[user_id] = []
 
-    if "medio" in t:
-        return 50
+    _requests[user_id] = [
+        t for t in _requests[user_id]
+        if now - t < window
+    ]
 
-    if "bajo" in t:
-        return 30
+    if len(_requests[user_id]) >= limit:
+        logging.warning(f"[RATE_LIMIT] Bloqueado: {user_id}")
+        return False
 
-    return 50
+    _requests[user_id].append(now)
+    return True
+
+
+def get_requests_count(user_id: str, window: int = 60) -> int:
+    now = time.time()
+    if user_id not in _requests:
+        return 0
+    return len([t for t in _requests[user_id] if now - t < window])
+
+
+def limpiar_requests():
+    global _requests
+    _requests = {}
+    logging.info("[RATE_LIMIT] Registro limpiado")
+
+# v2 — actualizado
