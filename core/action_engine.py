@@ -1,7 +1,6 @@
+# core/action_engine.py
+
 def generar_plan_accion(data: dict, riesgo: int, imse: int) -> list:
-    """
-    Genera plan de acción basado en datos reales del diagnóstico.
-    """
     acciones = []
 
     salario_real = data.get("salario_real", 0)
@@ -10,54 +9,73 @@ def generar_plan_accion(data: dict, riesgo: int, imse: int) -> list:
     empleados_imss = data.get("empleados_imss", 0)
     diferencias_cfdi = data.get("diferencias_cfdi", False)
 
-    # SUBREGISTRO SALARIAL
     if salario_real > 0 and salario_declarado < salario_real:
         acciones.append({
             "problema": "Subregistro salarial detectado",
-            "impacto": "Riesgo de multa y recálculo de cuotas IMSS",
+            "impacto": "Riesgo de multa y recalculo de cuotas IMSS",
             "accion": "Ajustar SBC al salario real",
             "prioridad": "ALTA",
             "tiempo": "Inmediato"
         })
 
-    # EMPLEADOS NO REGISTRADOS
     if empleados_reales > empleados_imss:
         acciones.append({
             "problema": "Empleados no registrados en IMSS",
             "impacto": "Multa y riesgo penal laboral",
             "accion": "Regularizar plantilla faltante",
             "prioridad": "ALTA",
-            "tiempo": "1-7 días"
+            "tiempo": "1-7 dias"
         })
 
-    # DIFERENCIAS CFDI
     if diferencias_cfdi:
         acciones.append({
-            "problema": "Diferencias entre CFDI y nómina",
+            "problema": "Diferencias entre CFDI y nomina",
             "impacto": "Inconsistencia fiscal detectable por SAT",
-            "accion": "Conciliar CFDI con dispersión real",
+            "accion": "Conciliar CFDI con dispersion real",
             "prioridad": "MEDIA",
-            "tiempo": "7-15 días"
+            "tiempo": "7-15 dias"
         })
 
-    # IMSE BAJO
     if imse < 60:
         acciones.append({
             "problema": "Baja madurez de seguridad empresarial",
-            "impacto": "Alta exposición a inspecciones",
-            "accion": "Revisión integral de cumplimiento REPSE",
+            "impacto": "Alta exposicion a inspecciones",
+            "accion": "Revision integral de cumplimiento REPSE",
             "prioridad": "MEDIA",
-            "tiempo": "15-30 días"
+            "tiempo": "15-30 dias"
         })
 
-    # RIESGO CRÍTICO
     if riesgo > 80:
         acciones.append({
-            "problema": "Riesgo crítico detectado",
-            "impacto": "Alta probabilidad de auditoría IMSS/SAT",
-            "accion": "Auditoría inmediata y estrategia de regularización",
+            "problema": "Riesgo critico detectado",
+            "impacto": "Alta probabilidad de auditoria IMSS/SAT",
+            "accion": "Auditoria inmediata y estrategia de regularizacion",
             "prioridad": "URGENTE",
             "tiempo": "Inmediato"
         })
 
     return acciones
+
+
+def generar_recomendacion(nivel: str) -> dict:
+    if nivel in ["ALTO", "CRITICO"]:
+        return {
+            "accion": "Regularizacion inmediata IMSS + auditoria fiscal",
+            "ticket": 25000,
+            "urgencia": "INMEDIATA"
+        }
+    elif nivel == "MEDIO":
+        return {
+            "accion": "Optimizacion fiscal y laboral",
+            "ticket": 12000,
+            "urgencia": "30 DIAS"
+        }
+    return {
+        "accion": "Monitoreo preventivo",
+        "ticket": 3000,
+        "urgencia": "60 DIAS"
+    }
+
+# v2 — actualizado
+   
+            
