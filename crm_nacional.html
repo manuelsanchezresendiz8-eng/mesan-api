@@ -4,23 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MESAN Ω — Centro Nacional</title>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root {
-    --accent: #38BDF8;
-    --bg: #000000;
-    --bg-deep: #0A192F;
-    --card: rgba(10,25,47,0.9);
-    --border: rgba(56,189,248,0.2);
+    --bg: #02060a;
+    --panel: #0a1118;
+    --accent: #00f3ff;
+    --text: #e2e8f0;
+    --dim: #64748b;
+    --border: rgba(0,243,255,0.2);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    background: radial-gradient(circle at center, var(--bg-deep) 0%, var(--bg) 100%);
-    color: var(--accent);
-    font-family: 'Lexend', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
     overflow: hidden;
     height: 100vh;
 }
@@ -40,9 +41,9 @@ body {
     position: fixed;
     width: 100%;
     height: 100%;
-    background-image: radial-gradient(rgba(56,189,248,0.3) 0.5px, transparent 0.5px);
+    background-image: radial-gradient(rgba(0,243,255,0.3) 0.5px, transparent 0.5px);
     background-size: 25px 25px;
-    opacity: 0.15;
+    opacity: 0.12;
     z-index: 0;
 }
 
@@ -54,13 +55,15 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(0,0,0,0.85);
+    background: rgba(2,6,10,0.95);
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(10px);
     box-sizing: border-box;
     z-index: 100;
+    font-family: 'Orbitron', monospace;
     font-size: 11px;
     letter-spacing: 3px;
+    color: var(--accent);
 }
 
 .kpis { display: flex; gap: 30px; }
@@ -68,8 +71,8 @@ body {
 .kpi { text-align: center; }
 
 .kpi-val {
+    font-family: 'Orbitron', monospace;
     font-size: 20px;
-    font-weight: 800;
     color: var(--accent);
     display: block;
 }
@@ -77,27 +80,24 @@ body {
 .kpi-lbl {
     font-size: 8px;
     letter-spacing: 2px;
-    opacity: 0.5;
+    color: var(--dim);
     text-transform: uppercase;
 }
 
 .btn-salir {
     background: transparent;
     border: 1px solid var(--border);
-    color: var(--accent);
-    font-family: 'Lexend', sans-serif;
+    color: var(--dim);
+    font-family: 'Orbitron', monospace;
     font-size: 9px;
     letter-spacing: 2px;
     padding: 6px 14px;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 4px;
     transition: 0.3s;
 }
 
-.btn-salir:hover {
-    background: rgba(56,189,248,0.1);
-    box-shadow: 0 0 10px rgba(56,189,248,0.2);
-}
+.btn-salir:hover { border-color: var(--accent); color: var(--accent); }
 
 .node {
     position: absolute;
@@ -111,20 +111,9 @@ body {
     z-index: 10;
 }
 
-.node.critico {
-    background: var(--accent);
-    box-shadow: 0 0 20px var(--accent);
-}
-
-.node.medio {
-    background: rgba(56,189,248,0.6);
-    box-shadow: 0 0 12px rgba(56,189,248,0.6);
-}
-
-.node.estable {
-    background: rgba(56,189,248,0.3);
-    box-shadow: 0 0 8px rgba(56,189,248,0.3);
-}
+.node.critico { box-shadow: 0 0 20px var(--accent); }
+.node.medio { opacity: 0.6; }
+.node.estable { opacity: 0.3; }
 
 @keyframes pulse {
     0% { transform: scale(1); opacity: 1; }
@@ -138,7 +127,7 @@ body {
     left: 30px;
     width: 200px;
     height: 200px;
-    background: var(--card);
+    background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 10px;
@@ -152,36 +141,36 @@ body {
     display: none;
     justify-content: center;
     align-items: center;
-    background: rgba(0,0,0,0.85);
+    background: rgba(2,6,10,0.9);
     z-index: 200;
 }
 
 .modal-box {
-    background: var(--card);
+    background: var(--panel);
     border: 1px solid var(--accent);
-    box-shadow: 0 0 30px rgba(56,189,248,0.2);
-    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0,243,255,0.15);
+    border-radius: 10px;
     padding: 30px;
     width: 300px;
 }
 
 .modal-box h3 {
+    font-family: 'Orbitron', monospace;
     color: var(--accent);
     letter-spacing: 3px;
-    font-size: 13px;
+    font-size: 12px;
     margin-bottom: 20px;
     text-transform: uppercase;
 }
 
 .modal-box p {
     font-size: 11px;
-    color: var(--accent);
-    opacity: 0.8;
+    color: var(--dim);
     margin: 8px 0;
     line-height: 1.6;
 }
 
-.modal-box p span { opacity: 1; font-weight: 600; }
+.modal-box p span { color: var(--accent); font-weight: 600; }
 
 .btn-modal {
     width: 100%;
@@ -189,35 +178,28 @@ body {
     padding: 10px;
     background: transparent;
     border: 1px solid var(--border);
-    color: var(--accent);
-    font-family: 'Lexend', sans-serif;
+    color: var(--dim);
+    font-family: 'Orbitron', monospace;
     font-size: 9px;
     letter-spacing: 2px;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 4px;
     transition: 0.3s;
     text-decoration: none;
     display: block;
     text-align: center;
 }
 
-.btn-modal:hover {
-    border-color: var(--accent);
-    background: rgba(56,189,248,0.1);
-}
-
-.btn-modal.wa {
-    border-color: var(--accent);
-    background: rgba(56,189,248,0.08);
-    font-weight: 600;
-}
+.btn-modal:hover { border-color: var(--accent); color: var(--accent); }
+.btn-modal.wa { border-color: var(--accent); color: var(--accent); background: rgba(0,243,255,0.05); }
 
 .status-tag {
     position: fixed;
     bottom: 15px;
     right: 15px;
+    font-family: 'Orbitron', monospace;
     font-size: 9px;
-    color: var(--accent);
+    color: var(--dim);
     opacity: 0.4;
     letter-spacing: 3px;
     z-index: 50;
@@ -228,17 +210,18 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: var(--card);
+    background: var(--panel);
     padding: 40px;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid var(--accent);
-    box-shadow: 0 0 30px rgba(56,189,248,0.15);
+    box-shadow: 0 0 30px rgba(0,243,255,0.12);
     text-align: center;
     width: 300px;
     z-index: 300;
 }
 
 .login-box h3 {
+    font-family: 'Orbitron', monospace;
     color: var(--accent);
     letter-spacing: 4px;
     margin-bottom: 25px;
@@ -248,12 +231,12 @@ body {
 .login-box input {
     width: 100%;
     padding: 13px;
-    background: rgba(0,0,0,0.8);
+    background: var(--bg);
     border: 1px solid var(--border);
     color: var(--accent);
-    font-family: 'Lexend', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 13px;
-    border-radius: 4px;
+    border-radius: 6px;
     margin-bottom: 15px;
     outline: none;
     text-align: center;
@@ -261,7 +244,10 @@ body {
     transition: 0.3s;
 }
 
-.login-box input:focus { border-color: var(--accent); }
+.login-box input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0,243,255,0.12);
+}
 
 .btn-login {
     width: 100%;
@@ -269,18 +255,18 @@ body {
     background: transparent;
     border: 1px solid var(--accent);
     color: var(--accent);
-    font-family: 'Lexend', sans-serif;
-    font-size: 11px;
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
     letter-spacing: 3px;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 6px;
     transition: 0.3s;
 }
 
 .btn-login:hover {
-    background: rgba(56,189,248,0.1);
-    box-shadow: 0 0 15px rgba(56,189,248,0.3);
+    background: rgba(0,243,255,0.08);
+    box-shadow: 0 0 15px rgba(0,243,255,0.25);
 }
 </style>
 </head>
@@ -296,7 +282,7 @@ body {
 </div>
 
 <div class="topbar" id="topbar" style="display:none;">
-    <div style="letter-spacing:3px;">MESAN Ω — CENTRO NACIONAL</div>
+    <div>MESAN Ω — CENTRO NACIONAL</div>
     <div class="kpis">
         <div class="kpi"><span class="kpi-val" id="total">0</span><div class="kpi-lbl">Empresas</div></div>
         <div class="kpi"><span class="kpi-val" id="criticos">0</span><div class="kpi-lbl">Críticos</div></div>
@@ -412,18 +398,18 @@ function radar(leads, altos) {
             labels: ["CRÍTICO","MEDIO","ESTABLE"],
             datasets: [{
                 data: [altos, medios, bajos],
-                borderColor: "#38BDF8",
-                backgroundColor: "rgba(56,189,248,0.06)",
-                pointBackgroundColor: "#38BDF8"
+                borderColor: "#00f3ff",
+                backgroundColor: "rgba(0,243,255,0.05)",
+                pointBackgroundColor: "#00f3ff"
             }]
         },
         options: {
             plugins: { legend: { display: false } },
             scales: {
                 r: {
-                    ticks: { color: "rgba(56,189,248,0.4)", font: { size: 8 } },
-                    grid: { color: "rgba(56,189,248,0.1)" },
-                    pointLabels: { color: "rgba(56,189,248,0.7)", font: { size: 9 } }
+                    ticks: { color: "rgba(0,243,255,0.4)", font: { size: 8 } },
+                    grid: { color: "rgba(0,243,255,0.08)" },
+                    pointLabels: { color: "rgba(0,243,255,0.6)", font: { size: 9 } }
                 }
             }
         }
