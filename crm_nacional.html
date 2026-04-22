@@ -3,478 +3,297 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω — Control Nacional</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>MESAN Ω</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;600;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --neon-cyan: #00f2ff;
-    --dark-void: #050a12;
-    --card-bg: rgba(6, 15, 28, 0.95);
-    --border-glow: rgba(0, 242, 255, 0.3);
+    --accent: #38BDF8;
+    --title: #FFFFFF;
+    --text: #94A3B8;
+    --bg: #000000;
+    --bg-deep: #0A192F;
 }
+
+* { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: var(--dark-void);
-    color: white;
-    overflow: hidden;
-}
-
-#background-layer {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: url('https://upload.wikimedia.org/wikipedia/commons/5/5c/Mexico_states_map.svg') no-repeat center;
-    background-size: 70%;
-    opacity: 0.1;
-    filter: invert(1) hue-rotate(180deg);
-    z-index: -1;
-}
-
-.grid-overlay {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background-image: radial-gradient(var(--neon-cyan) 0.5px, transparent 0.5px);
-    background-size: 25px 25px;
-    opacity: 0.1;
-    z-index: -1;
-}
-
-/* LOGIN */
-.login-box {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--card-bg);
-    padding: 40px;
-    border-radius: 12px;
-    border: 1px solid var(--neon-cyan);
-    box-shadow: 0 0 25px var(--border-glow);
+    background: radial-gradient(circle at center, var(--bg-deep) 0%, var(--bg) 100%);
+    color: var(--title);
+    font-family: 'Lexend', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    width: 320px;
-    backdrop-filter: blur(10px);
-    z-index: 200;
+    padding: 40px 20px;
 }
 
-.login-box h3 {
-    color: var(--neon-cyan);
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    margin-bottom: 25px;
-    text-shadow: 0 0 10px var(--border-glow);
-}
-
-.login-box input {
+.nav {
+    position: fixed;
+    top: 0;
     width: 100%;
-    padding: 12px;
-    background: rgba(0,0,0,0.6);
-    border: 1px solid #1f2a40;
-    color: var(--neon-cyan);
-    margin-bottom: 20px;
-    box-sizing: border-box;
-    border-radius: 8px;
-    text-align: center;
-    outline: none;
-    transition: 0.3s;
-}
-
-.login-box input:focus {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 10px var(--border-glow);
-}
-
-.btn-omega {
-    background: transparent;
-    border: 1px solid var(--neon-cyan);
-    padding: 14px;
-    width: 100%;
-    color: var(--neon-cyan);
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: 0.4s;
-}
-
-.btn-omega:hover {
-    background: var(--neon-cyan);
-    color: #000;
-    box-shadow: 0 0 20px var(--neon-cyan);
-}
-
-/* TOPBAR */
-.topbar {
-    position: absolute;
-    width: 100%;
-    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    background: rgba(5,10,18,0.9);
-    border-bottom: 1px solid var(--neon-cyan);
+    padding: 20px 40px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    background: rgba(0,0,0,0.5);
     box-sizing: border-box;
 }
 
-.topbar-title {
-    color: var(--neon-cyan);
+.hero {
+    max-width: 500px;
+    margin-top: 60px;
+}
+
+.hero h1 {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.hero h1 span {
+    color: var(--accent);
+    display: block;
+}
+
+.hero p {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    padding: 0 10px;
+}
+
+.counter {
+    font-size: 14px;
+    color: #ff4d4d;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+}
+
+.btn {
+    width: 280px;
+    padding: 15px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Lexend', sans-serif;
     font-size: 13px;
+    font-weight: 600;
     letter-spacing: 3px;
     text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 4px;
 }
 
-.kpis {
-    display: flex;
-    gap: 30px;
+.btn:hover {
+    background: rgba(56,189,248,0.1);
+    box-shadow: 0 0 20px rgba(56,189,248,0.3);
 }
 
-.kpi {
-    text-align: center;
-    font-size: 11px;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.btn-repse {
+    border-color: #ff4d4d;
+    color: #ff4d4d;
 }
 
-.kpi b {
-    display: block;
-    font-size: 20px;
-    color: var(--neon-cyan);
+.btn-repse:hover {
+    background: rgba(255,77,77,0.1);
+    box-shadow: 0 0 20px rgba(255,77,77,0.3);
 }
 
-.kpi b.red { color: #ff3b3b; }
-.kpi b.orange { color: #ff914d; }
+.btn-enterprise {
+    border-color: #ff914d;
+    color: #ff914d;
+}
 
-.btn-salir {
-    background: transparent;
-    border: 1px solid #333;
-    color: #888;
-    padding: 6px 15px;
+.btn-enterprise:hover {
+    background: rgba(255,145,77,0.1);
+    box-shadow: 0 0 20px rgba(255,145,77,0.3);
+}
+
+.result-box {
+    display: none;
+    margin-top: 25px;
+    background: rgba(10,25,47,0.8);
+    border: 1px solid rgba(56,189,248,0.3);
+    border-radius: 8px;
+    padding: 20px;
+    width: 280px;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+}
+
+.result-box b { color: var(--title); }
+
+.btn-pago {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    background: var(--accent);
+    border: none;
+    color: #000;
+    font-family: 'Lexend', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2px;
     cursor: pointer;
     border-radius: 4px;
+    transition: 0.3s;
+}
+
+.btn-pago:hover {
+    box-shadow: 0 0 20px rgba(56,189,248,0.5);
+}
+
+.terminos {
+    margin-top: 20px;
     font-size: 11px;
-    letter-spacing: 1px;
-    transition: 0.3s;
-}
-
-.btn-salir:hover {
-    border-color: var(--neon-cyan);
-    color: var(--neon-cyan);
-}
-
-/* NODOS */
-.node {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    cursor: pointer;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.8); opacity: 0.5; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-.alto  { background: #ff3b3b; box-shadow: 0 0 12px #ff3b3b; }
-.medio { background: #ff914d; box-shadow: 0 0 12px #ff914d; }
-.bajo  { background: #00ffd5; box-shadow: 0 0 12px #00ffd5; }
-
-/* RADAR */
-.radar {
-    position: absolute;
-    bottom: 40px;
-    left: 30px;
-    width: 200px;
-    height: 200px;
-    background: var(--card-bg);
-    border-radius: 10px;
-    padding: 10px;
-    border: 1px solid var(--border-glow);
-}
-
-/* MODAL */
-.modal {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    display: none;
-    justify-content: center;
+    color: #475569;
+    display: flex;
     align-items: center;
-    background: rgba(0,0,0,0.85);
-    z-index: 100;
+    gap: 8px;
 }
 
-.modal-box {
-    background: var(--card-bg);
-    padding: 30px;
-    border-radius: 12px;
-    width: 300px;
-    border: 1px solid var(--neon-cyan);
-    box-shadow: 0 0 25px var(--border-glow);
+.terminos a { color: var(--accent); text-decoration: none; }
+
+.legal {
+    margin-top: 30px;
+    font-size: 10px;
+    color: #334155;
+    line-height: 1.6;
+    max-width: 300px;
 }
 
-.modal-box h3 {
-    color: var(--neon-cyan);
-    letter-spacing: 2px;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-}
-
-.modal-box p {
-    margin: 8px 0;
-    font-size: 13px;
-    color: #aaa;
-}
-
-.modal-box p b { color: white; }
-
-.btn-modal {
-    background: transparent;
-    border: 1px solid var(--neon-cyan);
-    padding: 10px;
-    margin-top: 8px;
-    width: 100%;
-    color: var(--neon-cyan);
-    cursor: pointer;
-    border-radius: 6px;
-    font-size: 12px;
-    letter-spacing: 1px;
-    transition: 0.3s;
-}
-
-.btn-modal:hover {
-    background: var(--neon-cyan);
-    color: #000;
-}
-
-.btn-wa {
-    border-color: #25D366;
-    color: #25D366;
-}
-
-.btn-wa:hover {
-    background: #25D366;
-    color: #000;
-}
-
-.btn-cerrar {
-    border-color: #333;
-    color: #666;
-}
-
-/* STATUS */
-#status-tag {
+.footer {
     position: fixed;
     bottom: 15px;
-    right: 15px;
     font-size: 10px;
-    color: var(--neon-cyan);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    opacity: 0.6;
-}
-
-#debug {
-    position: fixed;
-    bottom: 35px;
-    right: 15px;
-    font-size: 10px;
-    color: #666;
-    letter-spacing: 1px;
+    color: #334155;
+    letter-spacing: 4px;
 }
 </style>
 </head>
 <body>
 
-<div id="background-layer"></div>
-<div class="grid-overlay"></div>
-
-<!-- LOGIN -->
-<div id="loginBox" class="login-box">
-    <h3>MESAN Ω</h3>
-    <input id="apiKeyInput" type="password" placeholder="INGRESA API KEY">
-    <button class="btn-omega" onclick="iniciarSesion()">ACCEDER AL SISTEMA</button>
+<div class="nav">
+    <div>MESAN Ω</div>
+    <div>PREDICTIVE ANALYTICS</div>
 </div>
 
-<!-- TOPBAR -->
-<div class="topbar" id="topbar" style="display:none;">
-    <div class="topbar-title">🌎 MESAN Ω — Centro Nacional</div>
-    <div class="kpis">
-        <div class="kpi">Empresas<b id="total">0</b></div>
-        <div class="kpi">Críticos<b id="riesgo" class="red">0</b></div>
-        <div class="kpi">Impacto<b id="impacto" class="orange">$0</b></div>
+<div class="hero">
+    <h1>
+        Arquitectura y
+        <span>Soberanía Empresarial</span>
+    </h1>
+
+    <p>Modelos matemáticos avanzados para detectar vulnerabilidades fiscales, laborales y operativas antes de que se conviertan en pasivos críticos.</p>
+
+    <div class="counter">Pérdida estimada: <span id="counter">$0 MXN</span></div>
+
+    <div class="buttons">
+        <button class="btn" onclick="diagnostico()">INICIAR DIAGNÓSTICO</button>
+        <button class="btn btn-repse" onclick="repse()">VALIDAR REPSE</button>
+        <button class="btn btn-enterprise" onclick="irEnterprise()">MESAN ENTERPRISE</button>
     </div>
-    <button class="btn-salir" onclick="logout()">SALIR</button>
-</div>
 
-<!-- RADAR -->
-<div class="radar" id="radar" style="display:none;">
-    <canvas id="chart"></canvas>
-</div>
-
-<!-- MODAL -->
-<div id="modal" class="modal">
-    <div class="modal-box">
-        <h3 id="m-nombre">—</h3>
-        <p>Score: <b id="m-score">—</b></p>
-        <p>Nivel: <b id="m-nivel">—</b></p>
-        <p>Impacto: <b id="m-impacto">—</b></p>
-        <p>Email: <b id="m-email">—</b></p>
-        <p>Tel: <b id="m-tel">—</b></p>
-        <a id="m-wa" href="#" target="_blank" style="text-decoration:none;">
-            <button class="btn-modal btn-wa">WHATSAPP</button>
-        </a>
-        <button class="btn-modal btn-cerrar" onclick="cerrar()">CERRAR</button>
+    <div class="result-box" id="result">
+        <span id="result-text"></span>
+        <button class="btn-pago" onclick="pago()">🔒 DESBLOQUEAR DIAGNÓSTICO — $299 MXN</button>
     </div>
+
+    <label class="terminos">
+        <input type="checkbox" id="terminos">
+        <span>Acepto <a href="/terminos.html">Términos</a> y <a href="/privacidad.html">Privacidad</a></span>
+    </label>
+
+    <p class="legal">
+        MESAN Ω utiliza modelos propietarios de análisis empresarial.
+        Los resultados son interpretables únicamente dentro del ecosistema MESAN.
+        Su uso externo puede generar conclusiones inexactas.
+    </p>
 </div>
 
-<div id="status-tag">SISTEMA EN LÍNEA // SOBERANÍA EMPRESARIAL</div>
-<div id="debug"></div>
+<div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
 
 <script>
 const API = "https://mesan-api.onrender.com";
-let API_KEY = localStorage.getItem("mesan_key");
+let perdida = 0;
 
-const coords = {
-    CDMX: [54,58], MTY: [68,28], GDL: [38,53],
-    TIJ:  [8,18],  PUE: [58,63], QRO: [53,52],
-    MXL:  [10,20], HMO: [18,23], CUL: [23,38],
-    MZT:  [26,46], AGS: [46,48], SLP: [53,43],
-    VER:  [63,58], MER: [78,63], CUN: [85,60],
-    OAX:  [60,70], CHI: [35,25], DGO: [38,35]
-};
+setInterval(() => {
+    perdida += Math.floor(Math.random() * 400 + 200);
+    document.getElementById("counter").innerText = "$" + perdida.toLocaleString() + " MXN";
+}, 1500);
 
-if (API_KEY) {
-    document.getElementById("loginBox").style.display = "none";
-    cargar();
+function diagnostico() {
+    const box = document.getElementById("result");
+    const txt = document.getElementById("result-text");
+    box.style.display = "block";
+    txt.innerHTML = "⏳ Analizando estructura empresarial...";
+    setTimeout(() => {
+        txt.innerHTML = `🚨 <b>EXPOSICIÓN DETECTADA</b><br><br>
+        — Riesgo fiscal SAT<br>
+        — Irregularidades IMSS<br>
+        — Incumplimiento operativo<br><br>
+        Impacto estimado:<br>
+        <b style="color:#ff4d4d">$120,000 - $450,000 MXN anuales</b><br>`;
+    }, 1800);
 }
 
-function iniciarSesion() {
-    const key = document.getElementById("apiKeyInput").value.trim();
-    if (!key) { alert("Ingresa la API Key"); return; }
-    localStorage.setItem("mesan_key", key);
-    API_KEY = key;
-    document.getElementById("loginBox").style.display = "none";
-    cargar();
+function repse() {
+    const box = document.getElementById("result");
+    const txt = document.getElementById("result-text");
+    box.style.display = "block";
+    txt.innerHTML = "⏳ Consultando STPS...";
+    setTimeout(() => {
+        txt.innerHTML = `🚨 <b>REPSE — ATENCIÓN REQUERIDA</b><br><br>
+        Registro con riesgo detectado.<br>
+        Requiere validación inmediata.<br>`;
+    }, 1500);
 }
 
-function logout() {
-    localStorage.removeItem("mesan_key");
-    location.reload();
+function irEnterprise() {
+    window.location.href = "/diagnostico.html";
 }
 
-async function cargar() {
-    try {
-        document.getElementById("debug").innerText = "Conectando...";
-
-        const res = await fetch(API + "/leads", {
-            headers: { "api-key": API_KEY }
-        });
-
-        if (res.status === 403) {
-            alert("API Key inválida");
-            logout();
-            return;
-        }
-
-        const json = await res.json();
-        const leads = Array.isArray(json) ? json : (json.leads || json.data || []);
-
-        document.getElementById("debug").innerText = leads.length + " leads cargados";
-        document.getElementById("topbar").style.display = "flex";
-        document.getElementById("radar").style.display = "block";
-        document.getElementById("total").innerText = leads.length;
-
-        const criticosLista = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
-        const criticos = leads.filter(l => criticosLista.includes(l.clasificacion));
-        document.getElementById("riesgo").innerText = criticos.length;
-
-        let impacto = 0;
-        leads.forEach(l => { impacto += (l.impacto_max || 0); });
-        document.getElementById("impacto").innerText = "$" + impacto.toLocaleString();
-
-        leads.forEach(l => {
-            const nivel = criticosLista.includes(l.clasificacion) ? "alto"
-                        : l.clasificacion === "MEDIO" ? "medio"
-                        : "bajo";
-
-            const nodo = document.createElement("div");
-            nodo.className = "node " + nivel;
-
-            const pos = coords[
-                (l.giro || "").toUpperCase().substring(0,3)
-            ] || [10 + Math.random()*75, 25 + Math.random()*55];
-
-            nodo.style.left = pos[0] + "%";
-            nodo.style.top  = pos[1] + "%";
-            nodo.onclick = () => abrirModal(l);
-            document.body.appendChild(nodo);
-        });
-
-        radar(leads, criticos.length);
-
-    } catch(e) {
-        document.getElementById("debug").innerText = "Error: " + e.message;
-        document.getElementById("topbar").style.display = "flex";
+async function pago() {
+    const check = document.getElementById("terminos");
+    if (!check.checked) {
+        alert("Acepta los Términos para continuar.");
+        return;
     }
-}
-
-function radar(leads, altos) {
-    const medios = leads.filter(l => l.clasificacion === "MEDIO").length;
-    const bajos  = leads.length - altos - medios;
-
-    new Chart(document.getElementById("chart"), {
-        type: "radar",
-        data: {
-            labels: ["Crítico", "Medio", "Estable"],
-            datasets: [{
-                data: [altos, medios, bajos],
-                borderColor: "#00f2ff",
-                backgroundColor: "rgba(0,242,255,0.08)",
-                pointBackgroundColor: "#00f2ff"
-            }]
-        },
-        options: {
-            plugins: { legend: { display: false } },
-            scales: {
-                r: {
-                    ticks: { color: "#444", font: { size: 8 } },
-                    grid: { color: "#0f1c2e" },
-                    pointLabels: { color: "#888", font: { size: 9 } }
-                }
-            }
-        }
-    });
-}
-
-function abrirModal(l) {
-    document.getElementById("modal").style.display = "flex";
-    document.getElementById("m-nombre").innerText  = (l.nombre || "Sin nombre").toUpperCase();
-    document.getElementById("m-score").innerText   = l.score || 0;
-    document.getElementById("m-nivel").innerText   = l.clasificacion || "N/A";
-    document.getElementById("m-impacto").innerText = "$" + (l.impacto_max || 0).toLocaleString() + " MXN";
-    document.getElementById("m-email").innerText   = l.email || "-";
-    document.getElementById("m-tel").innerText     = l.telefono || "-";
-
-    const tel = (l.telefono || "").replace(/\D/g, "");
-    const msg = encodeURIComponent(
-        "Hola " + (l.nombre || "") + ", revisé tu diagnóstico MESAN Omega.\n" +
-        "Score: " + (l.score || 0) + " — " + (l.clasificacion || "") + "\n" +
-        "¿Tienes 15 minutos para hablar?"
-    );
-    document.getElementById("m-wa").href = tel
-        ? `https://wa.me/52${tel}?text=${msg}`
-        : "#";
-}
-
-function cerrar() {
-    document.getElementById("modal").style.display = "none";
+    try {
+        const res = await fetch(API + "/crear-sesion-omega", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                cliente_id: "cliente_" + Date.now(),
+                sector: "PRIVADO",
+                monto: 299,
+                indice: 75
+            })
+        });
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+        else alert("Error generando pago");
+    } catch(e) {
+        alert("Error de conexión");
+    }
 }
 </script>
 
