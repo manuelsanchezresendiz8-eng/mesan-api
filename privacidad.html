@@ -4,62 +4,216 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aviso de Privacidad — MESAN Ω</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#02060d;color:white;font-family:Arial;padding:40px 20px;max-width:600px;margin:auto;line-height:1.7;}
-h2{color:#00aaff;}
-h3{color:#00c3ff;margin-top:30px;}
-ul{padding-left:20px;}
-a{color:#00aaff;}
-.footer{margin-top:40px;font-size:12px;color:#555;text-align:center;}
+:root {
+    --bg: #02060a;
+    --panel: #0a1118;
+    --accent: #00f3ff;
+    --text: #e2e8f0;
+    --dim: #64748b;
+    --border: rgba(0,243,255,0.2);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 80px 20px 60px;
+}
+
+.nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    background: rgba(2,6,10,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+.nav a {
+    color: var(--dim);
+    text-decoration: none;
+    font-size: 10px;
+    letter-spacing: 2px;
+    transition: 0.3s;
+}
+
+.nav a:hover { color: var(--accent); }
+
+.container {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.hero-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--dim);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.6rem;
+    color: var(--accent);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+}
+
+.fecha {
+    font-size: 11px;
+    color: var(--dim);
+    margin-bottom: 35px;
+}
+
+h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin: 30px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+}
+
+p {
+    font-size: 13px;
+    color: var(--dim);
+    line-height: 1.8;
+    margin-bottom: 12px;
+    font-weight: 300;
+}
+
+ul {
+    list-style: none;
+    margin: 0 0 15px 0;
+}
+
+ul li {
+    font-size: 13px;
+    color: var(--dim);
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0,243,255,0.06);
+    font-weight: 300;
+}
+
+ul li::before { content: "▸ "; color: var(--accent); }
+
+.contacto {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    font-size: 13px;
+    color: var(--accent);
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 2px;
+}
+
+.footer-links {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 20px;
+    font-size: 11px;
+}
+
+.footer-links a {
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: 0.3s;
+    opacity: 0.7;
+}
+
+.footer-links a:hover { opacity: 1; }
+
+.footer {
+    margin-top: 20px;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: var(--dim);
+    opacity: 0.4;
+    letter-spacing: 4px;
+}
 </style>
 </head>
 <body>
 
-<h2>AVISO DE PRIVACIDAD — MESAN Ω</h2>
-<p><strong>Responsable:</strong> MESAN Ω (Servicios Mesan)</p>
-<p><strong>Última actualización:</strong> 2026</p>
+<div class="nav">
+    <div>MESAN Ω — PRIVACIDAD</div>
+    <a href="/">← INICIO</a>
+</div>
 
-<h3>1. Identidad del Responsable</h3>
-<p>MESAN Ω es responsable del tratamiento de sus datos conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
+<div class="container">
 
-<h3>2. Datos que se recaban</h3>
-<ul>
-<li>Nombre o razón social</li>
-<li>Correo electrónico</li>
-<li>Teléfono</li>
-<li>RFC (opcional)</li>
-<li>Datos empresariales (financieros, operativos, fiscales)</li>
-</ul>
+    <div class="hero-tag">// Documentación Legal</div>
+    <h1>AVISO DE PRIVACIDAD</h1>
+    <div class="fecha">Responsable: MESAN Ω (Servicios Mesan) — 2026</div>
 
-<h3>3. Finalidades</h3>
-<ul>
-<li>Generar diagnósticos empresariales</li>
-<li>Evaluar riesgos fiscales, laborales y operativos</li>
-<li>Procesar pagos y servicios</li>
-<li>Enviar resultados por PDF o correo</li>
-<li>Mejorar el sistema MESAN Ω</li>
-</ul>
+    <h2>1. Identidad del Responsable</h2>
+    <p>MESAN Ω es responsable del tratamiento de sus datos conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
 
-<h3>4. Transferencia de datos</h3>
-<p>Sus datos no serán vendidos. Solo se comparten con procesadores de pago (Stripe) o por obligación legal.</p>
+    <h2>2. Datos que se Recaban</h2>
+    <ul>
+        <li>Nombre o razón social</li>
+        <li>Correo electrónico</li>
+        <li>Teléfono</li>
+        <li>RFC (opcional)</li>
+        <li>Datos empresariales (financieros, operativos, fiscales)</li>
+    </ul>
 
-<h3>5. Protección</h3>
-<p>MESAN Ω implementa medidas técnicas y administrativas para proteger su información.</p>
+    <h2>3. Finalidades</h2>
+    <ul>
+        <li>Generar diagnósticos empresariales</li>
+        <li>Evaluar riesgos fiscales, laborales y operativos</li>
+        <li>Procesar pagos y servicios</li>
+        <li>Enviar resultados por PDF o correo</li>
+        <li>Mejorar el sistema MESAN Ω</li>
+    </ul>
 
-<h3>6. Derechos ARCO</h3>
-<p>Puede Acceder, Rectificar, Cancelar u Oponerse al uso de sus datos escribiendo a:</p>
-<p><strong>contacto@mesanomega.com</strong></p>
+    <h2>4. Transferencia de Datos</h2>
+    <p>Sus datos no serán vendidos. Solo se comparten con procesadores de pago (Stripe) o por obligación legal.</p>
 
-<h3>7. Cookies</h3>
-<p>El sistema puede utilizar cookies para mejorar la experiencia del usuario.</p>
+    <h2>5. Protección</h2>
+    <p>MESAN Ω implementa medidas técnicas y administrativas para proteger su información contra accesos no autorizados.</p>
 
-<h3>8. Consentimiento</h3>
-<p>Al utilizar MESAN Ω usted acepta el presente Aviso de Privacidad.</p>
+    <h2>6. Derechos ARCO</h2>
+    <p>Puede Acceder, Rectificar, Cancelar u Oponerse al uso de sus datos escribiendo a:</p>
 
-<div class="footer">
-<strong>MESAN Ω © 2026</strong><br><br>
-<a href="/terminos.html">Términos y Condiciones</a> |
-<a href="/">Volver al inicio</a>
+    <div class="contacto">contacto@mesanomega.com</div>
+
+    <h2>7. Cookies</h2>
+    <p>El sistema puede utilizar cookies para mejorar la experiencia del usuario y analizar el uso de la plataforma.</p>
+
+    <h2>8. Consentimiento</h2>
+    <p>Al utilizar MESAN Ω usted acepta el presente Aviso de Privacidad en su totalidad.</p>
+
+    <div class="footer-links">
+        <a href="/terminos.html">Términos y Condiciones</a>
+        <a href="/">Volver al inicio</a>
+    </div>
+
+    <div class="footer">MESAN Ω © 2026 — TODOS LOS DERECHOS RESERVADOS</div>
+
 </div>
 
 </body>
