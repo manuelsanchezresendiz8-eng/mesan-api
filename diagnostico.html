@@ -4,104 +4,353 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MESAN Omega | Diagnóstico Empresarial</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;600;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg: #02060a; --panel: #0a1118; --accent: #00f3ff;
-    --magenta: #ff0055; --text: #e2e8f0; --dim: #64748b;
+    --accent: #38BDF8;
+    --bg: #000000;
+    --bg-deep: #0A192F;
+    --card: rgba(10,25,47,0.9);
+    --border: rgba(56,189,248,0.2);
+    --text: #94A3B8;
+    --dim: #475569;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; }
-.container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
-.hero-tag { color: var(--dim); font-size: 11px; letter-spacing: 3px; margin-bottom: 10px; }
-h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 15px; line-height: 1.1; color: var(--accent); }
-.subtitulo { color: var(--dim); margin-bottom: 30px; max-width: 500px; font-size: 14px; line-height: 1.6; }
-.form-group { margin-bottom: 18px; }
-.form-group label { display: block; font-size: 11px; letter-spacing: 2px; color: var(--dim); margin-bottom: 8px; text-transform: uppercase; }
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: radial-gradient(circle at center, var(--bg-deep) 0%, var(--bg) 100%);
+    color: var(--accent);
+    font-family: 'Lexend', sans-serif;
+    min-height: 100vh;
+}
+
+.nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    background: rgba(0,0,0,0.9);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+.nav a {
+    color: var(--accent);
+    opacity: 0.5;
+    text-decoration: none;
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 100px 20px 60px;
+}
+
+.hero-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--dim);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+h1 {
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    font-weight: 800;
+    margin-bottom: 12px;
+    line-height: 1.1;
+    color: var(--accent);
+    letter-spacing: 2px;
+}
+
+.subtitulo {
+    color: var(--text);
+    margin-bottom: 35px;
+    font-size: 13px;
+    line-height: 1.7;
+    font-weight: 300;
+}
+
+.form-group { margin-bottom: 16px; }
+
+.form-group label {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    opacity: 0.6;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
 input, select {
     width: 100%;
-    padding: 8px 12px;
-    background: var(--panel);
-    border: 1px solid rgba(0,243,255,0.4);
-    color: var(--text);
-    font-size: 14px;
-    border-radius: 6px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
-input:focus, select:focus {
+    padding: 12px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 13px;
+    font-family: 'Lexend', sans-serif;
+    border-radius: 4px;
+    transition: 0.3s;
     outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 12px rgba(0,243,255,0.15);
 }
-select option { background: var(--panel); }
+
+input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(56,189,248,0.15);
+}
+
+select option { background: #0a192f; color: #38BDF8; }
+
 .btn-primary {
     background: transparent;
     border: 1px solid var(--accent);
     color: var(--accent);
     padding: 15px 30px;
     cursor: pointer;
-    font-family: 'Orbitron';
-    font-size: 12px;
+    font-family: 'Lexend', sans-serif;
+    font-size: 11px;
     letter-spacing: 3px;
+    text-transform: uppercase;
     transition: all 0.3s;
     width: 100%;
     margin-top: 15px;
-    border-radius: 6px;
+    border-radius: 4px;
 }
-.btn-primary:hover { background: var(--accent); color: var(--bg); box-shadow: 0 0 20px rgba(0,243,255,0.3); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-primary:hover {
+    background: rgba(56,189,248,0.1);
+    box-shadow: 0 0 20px rgba(56,189,248,0.3);
+}
+
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .tipo-btn {
-    background: var(--panel);
-    border: 1px solid rgba(0,243,255,0.25);
-    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--accent);
     padding: 18px 20px;
     cursor: pointer;
     width: 100%;
     margin-bottom: 10px;
     text-align: left;
     transition: all 0.3s ease;
-    border-radius: 8px;
+    border-radius: 6px;
     display: block;
 }
-.tipo-btn:hover { border-color: rgba(0,243,255,0.6); box-shadow: 0 0 16px rgba(0,243,255,0.12); }
-.tipo-btn.selected { border-color: var(--accent); background: rgba(0,243,255,0.06); box-shadow: 0 0 20px rgba(0,243,255,0.2); }
-.tipo-title { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; color: var(--accent); margin-bottom: 4px; }
-.tipo-desc { font-size: 12px; color: var(--dim); line-height: 1.4; }
+
+.tipo-btn:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(56,189,248,0.15);
+}
+
+.tipo-btn.selected {
+    border-color: var(--accent);
+    background: rgba(56,189,248,0.06);
+    box-shadow: 0 0 20px rgba(56,189,248,0.2);
+}
+
+.tipo-title {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.tipo-desc {
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.4;
+    font-weight: 300;
+}
+
 .cuestionario { display: none; }
 .cuestionario.visible { display: block; }
+
+.seccion-titulo {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    opacity: 0.6;
+    margin: 28px 0 14px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    text-transform: uppercase;
+}
+
 #resultado {
     margin-top: 30px;
     display: none;
     padding: 25px;
-    border: 1px solid rgba(0,243,255,0.3);
-    background: var(--panel);
+    border: 1px solid var(--border);
+    background: var(--card);
     border-radius: 8px;
 }
+
 #resultado.show { display: block; }
-.score-big { font-family: 'Orbitron'; font-size: 4rem; color: var(--accent); text-align: center; }
-.clasificacion { text-align: center; font-size: 1.2rem; font-weight: bold; margin: 10px 0 20px; letter-spacing: 3px; }
-.impacto-box { background: rgba(255,0,85,0.08); border: 1px solid rgba(255,0,85,0.3); padding: 20px; margin: 15px 0; text-align: center; border-radius: 8px; }
-.impacto-val { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--magenta); }
-.impacto-lbl { font-size: 10px; color: var(--dim); letter-spacing: 2px; margin-top: 4px; }
-.anual-line { color: var(--dim); font-size: 12px; text-align: center; margin: 8px 0 15px; }
+
+.score-big {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--accent);
+    text-align: center;
+    letter-spacing: 5px;
+}
+
+.clasificacion {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 10px 0 20px;
+    letter-spacing: 4px;
+    color: var(--accent);
+}
+
+.impacto-box {
+    background: rgba(56,189,248,0.05);
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin: 15px 0;
+    text-align: center;
+    border-radius: 6px;
+}
+
+.impacto-val {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.impacto-lbl {
+    font-size: 9px;
+    color: var(--dim);
+    letter-spacing: 2px;
+    margin-top: 4px;
+    text-transform: uppercase;
+}
+
+.anual-line {
+    color: var(--text);
+    font-size: 11px;
+    text-align: center;
+    margin: 8px 0 15px;
+    opacity: 0.7;
+}
+
 .soluciones { list-style: none; margin: 15px 0; }
-.soluciones li { padding: 10px 0; border-bottom: 1px solid rgba(0,243,255,0.08); font-size: 13px; color: var(--dim); }
+
+.soluciones li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text);
+}
+
 .soluciones li::before { content: "▸ "; color: var(--accent); }
-.btn-agenda { display: block; text-align: center; padding: 16px; margin-top: 20px; background: var(--magenta); color: #fff; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; text-decoration: none; border-radius: 6px; }
-.btn-wa { display: block; text-align: center; padding: 13px; margin-top: 10px; border: 1px solid #25D366; color: #25D366; cursor: pointer; font-size: 12px; text-decoration: none; border-radius: 6px; }
-.legal { margin-top: 40px; font-size: 10px; color: var(--dim); text-align: center; line-height: 1.6; }
-.wa-float { position: fixed; bottom: 20px; right: 20px; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 10px 15px; border-radius: 50px; background: rgba(0,0,0,0.85); font-size: 12px; }
-.seccion-titulo { font-family: 'Orbitron'; font-size: 10px; letter-spacing: 3px; color: var(--accent); margin: 28px 0 14px; border-bottom: 1px solid rgba(0,243,255,0.1); padding-bottom: 8px; }
+
+.btn-agenda {
+    display: block;
+    text-align: center;
+    padding: 16px;
+    margin-top: 20px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    cursor: pointer;
+    font-family: 'Lexend', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.btn-agenda:hover {
+    background: rgba(56,189,248,0.1);
+    box-shadow: 0 0 20px rgba(56,189,248,0.3);
+}
+
+.btn-wa {
+    display: block;
+    text-align: center;
+    padding: 13px;
+    margin-top: 10px;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    opacity: 0.7;
+    cursor: pointer;
+    font-size: 11px;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.btn-wa:hover { opacity: 1; border-color: var(--accent); }
+
+.legal {
+    margin-top: 40px;
+    font-size: 10px;
+    color: var(--dim);
+    text-align: center;
+    line-height: 1.7;
+}
+
+.wa-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 10px 15px;
+    border-radius: 50px;
+    background: rgba(0,0,0,0.9);
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: 0.3s;
+}
+
+.wa-float:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(56,189,248,0.3);
+}
+
+.footer {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 9px;
+    color: var(--dim);
+    letter-spacing: 4px;
+}
 </style>
 </head>
 <body>
+
+<div class="nav">
+    <div>MESAN Ω — DIAGNÓSTICO</div>
+    <a href="/">← INICIO</a>
+</div>
 
 <section class="container">
     <div class="hero-tag">// Sistema de Inteligencia Empresarial</div>
     <h1>MESAN Omega</h1>
     <p class="subtitulo">Responde 8 preguntas y te digo exactamente dónde está perdiendo dinero tu empresa.</p>
 
-    <div class="seccion-titulo">01 — DATOS DE CONTACTO</div>
+    <div class="seccion-titulo">01 — Datos de Contacto</div>
     <div class="form-group">
         <label>Nombre de tu empresa</label>
         <input type="text" id="nombre" placeholder="Constructora ABC">
@@ -115,8 +364,8 @@ select option { background: var(--panel); }
         <input type="tel" id="tel" placeholder="686 123 4567">
     </div>
 
-    <div class="seccion-titulo">02 — TIPO DE EMPRESA</div>
-    <p style="color:var(--dim);font-size:12px;margin-bottom:14px;">¿Tu empresa subcontrata servicios o los presta?</p>
+    <div class="seccion-titulo">02 — Tipo de Empresa</div>
+    <p style="color:var(--text);font-size:12px;margin-bottom:14px;font-weight:300;">¿Tu empresa subcontrata servicios o los presta?</p>
 
     <button class="tipo-btn" id="btn-repse" onclick="seleccionarTipo('repse')">
         <div class="tipo-title">PRESTO SERVICIOS</div>
@@ -132,7 +381,7 @@ select option { background: var(--panel); }
     </button>
 
     <div id="paso-repse" class="cuestionario">
-        <div class="seccion-titulo">03 — DIAGNÓSTICO REPSE</div>
+        <div class="seccion-titulo">03 — Diagnóstico REPSE</div>
         <div class="form-group">
             <label>Giro de tu empresa</label>
             <select id="giro">
@@ -215,7 +464,7 @@ select option { background: var(--panel); }
     </div>
 
     <div id="paso-subcontrata" class="cuestionario">
-        <div class="seccion-titulo">03 — DIAGNÓSTICO PROVEEDOR</div>
+        <div class="seccion-titulo">03 — Diagnóstico Proveedor</div>
         <div class="form-group">
             <label>¿Cuántos proveedores de servicios tienes?</label>
             <input type="number" id="num_proveedores" placeholder="Ej: 3" min="1" value="1">
@@ -249,7 +498,7 @@ select option { background: var(--panel); }
     </div>
 
     <div id="paso-nuevo" class="cuestionario">
-        <div class="seccion-titulo">03 — ANÁLISIS DE VIABILIDAD</div>
+        <div class="seccion-titulo">03 — Análisis de Viabilidad</div>
         <div class="form-group">
             <label>¿Qué tipo de empresa quieres crear?</label>
             <select id="giro_nuevo">
@@ -292,15 +541,18 @@ select option { background: var(--panel); }
         <div class="anual-line" id="anual-line"></div>
         <ul class="soluciones" id="soluciones"></ul>
         <a href="#" class="btn-agenda" id="btn-agenda" target="_blank">
-            🚨 AGENDA TU LLAMADA GRATUITA DE 15 MIN
+            AGENDA TU LLAMADA GRATUITA DE 15 MIN
         </a>
         <a href="#" class="btn-wa" id="btn-wa" target="_blank">Contactar por WhatsApp</a>
     </div>
 
     <div class="legal">
-        MESAN Omega es un sistema de análisis predictivo.<br>
-        Los resultados son indicadores orientativos.
+        MESAN Ω utiliza modelos propietarios de análisis empresarial.<br>
+        Los resultados son interpretables únicamente dentro del ecosistema MESAN.<br>
+        Su uso externo puede generar conclusiones inexactas.
     </div>
+
+    <div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
 </section>
 
 <a href="https://wa.me/526861629643" target="_blank" class="wa-float">WhatsApp</a>
@@ -310,17 +562,13 @@ let tipoEmpresa = "";
 
 function seleccionarTipo(tipo) {
     tipoEmpresa = tipo;
-
     document.querySelectorAll(".tipo-btn").forEach(b => b.classList.remove("selected"));
     document.getElementById("btn-" + tipo).classList.add("selected");
-
-    ["paso-repse", "paso-subcontrata", "paso-nuevo"].forEach(id => {
+    ["paso-repse","paso-subcontrata","paso-nuevo"].forEach(id => {
         document.getElementById(id).classList.remove("visible");
     });
-
     const pasoId = tipo === "repse" ? "paso-repse" : tipo === "subcontrata" ? "paso-subcontrata" : "paso-nuevo";
     document.getElementById(pasoId).classList.add("visible");
-
     setTimeout(() => {
         document.getElementById(pasoId).scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
@@ -342,7 +590,7 @@ async function ejecutar(tipo) {
     }
 
     let payload = {
-        nombre: nombre.replace("Ω", "Omega"),
+        nombre: nombre.replace("Ω","Omega"),
         email: email,
         telefono: telefono,
         tipo_empresa: tipo
@@ -398,58 +646,4 @@ async function ejecutar(tipo) {
         const impacto = data.impacto || resultado?.impacto || {};
         const impMin = impacto.impacto_min || 0;
         const impMax = impacto.impacto_max || 0;
-        const soluciones = data.soluciones || resultado?.soluciones || [];
-
-        document.getElementById("score").textContent = score;
-        document.getElementById("clasificacion").textContent = cl;
-
-        const colores = {
-            "CRISIS FINANCIERA": "#ff3b5c",
-            "RIESGO LEGAL": "#ff3b5c",
-            "RIESGO OPERATIVO": "#ff3b5c",
-            "RIESGO REPSE": "#ffaa00",
-            "INEFICIENCIA": "#ffaa00",
-            "OPTIMIZACION": "#00f3ff",
-            "ESTABLE": "#00e5a0"
-        };
-        document.getElementById("clasificacion").style.color = colores[cl] || "#00e5a0";
-
-        document.getElementById("impacto-min").textContent = "$" + impMin.toLocaleString() + " MXN";
-        document.getElementById("impacto-max").textContent = "$" + impMax.toLocaleString() + " MXN";
-        document.getElementById("anual-line").textContent = "Riesgo estimado: hasta $" + impMax.toLocaleString() + " MXN";
-
-        const lista = document.getElementById("soluciones");
-        lista.innerHTML = "";
-        soluciones.forEach(s => {
-            const li = document.createElement("li");
-            li.textContent = typeof s === "string" ? s : `${s.area || ""} — ${s.accion || ""}`;
-            lista.appendChild(li);
-        });
-
-        const msg = encodeURIComponent(
-            "Hola, hice el diagnóstico MESAN Omega.\n\n" +
-            "Empresa: " + nombre + "\n" +
-            "Teléfono: " + telefono + "\n\n" +
-            "Resultado: " + cl + " (Score: " + score + ")\n" +
-            "Quiero agendar una llamada gratuita."
-        );
-
-        const waUrl = "https://wa.me/526861629643?text=" + msg;
-        document.getElementById("btn-wa").href = waUrl;
-        document.getElementById("btn-agenda").href = waUrl;
-
-        document.getElementById("resultado").classList.add("show");
-        document.getElementById("resultado").scrollIntoView({ behavior: "smooth", block: "start" });
-
-        btn.disabled = false;
-        btn.querySelector("span").textContent = "DIAGNÓSTICO COMPLETADO ✅";
-
-    } catch (e) {
-        console.error(e);
-        btn.disabled = false;
-        btn.querySelector("span").textContent = "Error - Reintentar";
-    }
-}
-</script>
-</body>
-</html>
+        c
