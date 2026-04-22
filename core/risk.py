@@ -18,3 +18,4 @@ def extraer_riesgo_ai(texto: str) -> int:
         return 30
 
     return 50
+# v2 — actualizado
