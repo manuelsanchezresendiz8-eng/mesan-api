@@ -3,28 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN-Ω CRM</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<title>MESAN Ω | CRM Central</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root {
-    --bg: #02060a;
-    --panel: #0a1118;
-    --accent: #00f3ff;
-    --text: #e2e8f0;
-    --dim: #64748b;
-    --border: rgba(0,243,255,0.2);
+    --bg: #010508;
+    --panel: #06121D;
+    --accent: #00BFFF;
+    --border: #1A3B61;
+    --text: #FFFFFF;
+    --dim: #5E7A94;
+    --input-bg: #0A1929;
+    --alert: #FF3B30;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    background: var(--bg);
+    background-color: var(--bg);
     color: var(--text);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    padding: 80px 20px 40px;
+    padding: 70px 20px 40px;
 }
 
+/* NAV */
 .nav {
     position: fixed;
     top: 0;
@@ -32,26 +36,26 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 30px;
-    font-family: 'Orbitron', monospace;
+    padding: 12px 20px;
+    font-family: 'Orbitron', sans-serif;
     font-size: 11px;
     letter-spacing: 3px;
-    color: var(--accent);
-    background: rgba(2,6,10,0.95);
+    color: var(--text);
+    background: rgba(1,5,8,0.97);
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(10px);
     box-sizing: border-box;
     z-index: 100;
 }
 
-.nav-actions { display: flex; gap: 12px; align-items: center; }
+.nav-actions { display: flex; gap: 10px; align-items: center; }
 
 .nav-btn {
     background: transparent;
     border: 1px solid var(--border);
     color: var(--dim);
-    padding: 6px 14px;
-    font-family: 'Orbitron', monospace;
+    padding: 5px 12px;
+    font-family: 'Orbitron', sans-serif;
     font-size: 9px;
     letter-spacing: 2px;
     cursor: pointer;
@@ -60,14 +64,105 @@ body {
 }
 
 .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
-.nav-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,243,255,0.06); }
+.timer { font-size: 9px; color: var(--dim); font-family: 'Orbitron', sans-serif; }
 
-.timer { font-size: 9px; color: var(--dim); font-family: 'Orbitron', monospace; }
+/* LOGIN */
+.login-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: var(--panel);
+    padding: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 30px rgba(0,191,255,0.1);
+    text-align: center;
+    width: 300px;
+    z-index: 200;
+}
 
+.login-box .main-brand {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 13px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    outline: none;
+    text-align: center;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+.login-box input:focus { border-color: var(--accent); }
+
+.btn-login {
+    width: 100%;
+    padding: 13px;
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.btn-login:hover {
+    background: rgba(0,191,255,0.08);
+    box-shadow: 0 0 15px rgba(0,191,255,0.2);
+}
+
+/* TABS */
+.tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+    overflow-x: auto;
+}
+
+.tab {
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--dim);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.tab:hover { color: var(--accent); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* STATS */
 .stats {
     display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
+    gap: 12px;
+    margin-bottom: 20px;
     flex-wrap: wrap;
 }
 
@@ -75,15 +170,15 @@ body {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 20px;
+    padding: 15px 20px;
     flex: 1;
     min-width: 80px;
     text-align: center;
 }
 
 .stat-num {
-    font-family: 'Orbitron', monospace;
-    font-size: 28px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
     color: var(--accent);
     display: block;
 }
@@ -96,6 +191,7 @@ body {
     margin-top: 4px;
 }
 
+/* CARDS LEADS */
 .card {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -106,18 +202,16 @@ body {
     transition: 0.3s;
 }
 
-.card:hover { box-shadow: 0 0 15px rgba(0,243,255,0.08); }
-.card.critico { border-left-color: var(--accent); }
-.card.vulnerable { border-left-color: rgba(0,243,255,0.4); }
-.card.estable { border-left-color: rgba(0,243,255,0.15); }
+.card.critico { border-left-color: var(--alert); }
+.card.vulnerable { border-left-color: var(--accent); }
+.card.estable { border-left-color: var(--border); }
 
 .card-nombre {
-    font-family: 'Orbitron', monospace;
+    font-family: 'Orbitron', sans-serif;
     font-size: 12px;
-    font-weight: 700;
     color: var(--accent);
     margin-bottom: 10px;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
@@ -128,7 +222,7 @@ body {
     margin-bottom: 14px;
 }
 
-.card-info span { color: var(--accent); font-weight: 600; }
+.card-info span { color: var(--text); font-weight: 600; }
 
 .card-actions {
     display: flex;
@@ -142,8 +236,7 @@ body {
     background: transparent;
     border: 1px solid var(--border);
     color: var(--dim);
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 1px;
     cursor: pointer;
     border-radius: 4px;
@@ -153,14 +246,14 @@ body {
 }
 
 .btn-action:hover { border-color: var(--accent); color: var(--accent); }
-.btn-action.wa { border-color: var(--accent); color: var(--accent); background: rgba(0,243,255,0.05); }
+.btn-action.wa { border-color: var(--accent); color: var(--accent); }
 
 .card-select {
-    background: var(--bg);
+    background: var(--input-bg);
     border: 1px solid var(--border);
     color: var(--accent);
     font-family: 'Inter', sans-serif;
-    font-size: 10px;
+    font-size: 9px;
     padding: 7px 10px;
     border-radius: 4px;
     outline: none;
@@ -171,142 +264,410 @@ body {
     display: inline-block;
     font-size: 8px;
     padding: 3px 10px;
-    background: rgba(0,243,255,0.06);
+    background: rgba(0,191,255,0.06);
     border: 1px solid var(--border);
     color: var(--accent);
     border-radius: 3px;
     letter-spacing: 2px;
     margin-bottom: 10px;
     text-transform: uppercase;
-    font-family: 'Orbitron', monospace;
+    font-family: 'Orbitron', sans-serif;
 }
 
 .fecha { font-size: 9px; color: var(--dim); letter-spacing: 1px; }
 
-.empty {
-    text-align: center;
-    color: var(--dim);
-    padding: 60px;
-    font-size: 11px;
-    letter-spacing: 3px;
-    font-family: 'Orbitron', monospace;
-}
-
-.login-box {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--panel);
-    padding: 40px;
-    border-radius: 10px;
-    border: 1px solid var(--accent);
-    box-shadow: 0 0 30px rgba(0,243,255,0.12);
-    text-align: center;
-    width: 300px;
-    z-index: 200;
-}
-
-.login-box h3 {
-    font-family: 'Orbitron', monospace;
-    color: var(--accent);
-    letter-spacing: 4px;
-    margin-bottom: 25px;
-    font-size: 13px;
-}
-
-.login-box input {
+/* MAPA */
+#mapa-bg {
+    position: relative;
     width: 100%;
-    padding: 13px;
-    background: var(--bg);
+    height: 400px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/5/5c/Mexico_states_map.svg') no-repeat center;
+    background-size: contain;
+    opacity: 0.08;
+    filter: invert(1) hue-rotate(180deg);
+}
+
+.mapa-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: var(--panel);
     border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.mapa-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/5/5c/Mexico_states_map.svg') no-repeat center;
+    background-size: 80%;
+    opacity: 0.08;
+    filter: invert(1) hue-rotate(180deg);
+}
+
+.node {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    animation: pulse 2s infinite;
+    z-index: 10;
+}
+
+.node.critico { background: var(--alert); box-shadow: 0 0 12px var(--alert); }
+.node.medio { background: var(--accent); opacity: 0.6; }
+.node.estable { background: var(--accent); opacity: 0.3; }
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.8); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* MODAL MAPA */
+.modal {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(1,5,8,0.9);
+    z-index: 300;
+    top: 0;
+    left: 0;
+}
+
+.modal-box {
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 30px rgba(0,191,255,0.15);
+    border-radius: 10px;
+    padding: 30px;
+    width: 300px;
+}
+
+.modal-box h3 {
+    font-family: 'Orbitron', sans-serif;
     color: var(--accent);
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    border-radius: 6px;
+    letter-spacing: 2px;
+    font-size: 12px;
     margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.modal-box p { font-size: 11px; color: var(--dim); margin: 8px 0; }
+.modal-box p span { color: var(--text); font-weight: 600; }
+
+/* MOTOR FINANCIERO */
+.field { margin-bottom: 16px; }
+
+.field label {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.field input,
+.field select {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    border-radius: 6px;
     outline: none;
-    text-align: center;
-    box-sizing: border-box;
     transition: 0.3s;
 }
 
-.login-box input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 10px rgba(0,243,255,0.12);
-}
+.field input:focus,
+.field select:focus { border-color: var(--accent); }
+.field select option { background: var(--panel); }
 
-.btn-login {
+.btn-main {
     width: 100%;
-    padding: 13px;
-    background: transparent;
+    padding: 15px;
+    background: var(--panel);
     border: 1px solid var(--accent);
     color: var(--accent);
-    font-family: 'Orbitron', monospace;
-    font-size: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
     letter-spacing: 3px;
     text-transform: uppercase;
     cursor: pointer;
     border-radius: 6px;
     transition: 0.3s;
+    margin-top: 8px;
 }
 
-.btn-login:hover {
-    background: rgba(0,243,255,0.08);
-    box-shadow: 0 0 15px rgba(0,243,255,0.25);
+.btn-main:hover {
+    background: rgba(0,191,255,0.05);
+    box-shadow: 0 0 20px rgba(0,191,255,0.2);
+}
+
+.result-card {
+    display: none;
+    margin-top: 20px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.result-card.visible { display: block; }
+
+.nivel {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+.decision {
+    font-size: 11px;
+    color: var(--dim);
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.metric {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.metric-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.metric-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    color: var(--accent);
+}
+
+.precios { padding-top: 12px; border-top: 1px solid var(--border); }
+
+.precio-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--dim);
+    padding: 5px 0;
+}
+
+.precio-row span:last-child { color: var(--accent); font-weight: 600; }
+
+/* ESTRATEGICO */
+.chart-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.chart-card h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.empty {
+    text-align: center;
+    color: var(--dim);
+    padding: 40px;
+    font-size: 11px;
+    letter-spacing: 2px;
 }
 
 .footer {
     text-align: center;
     margin-top: 40px;
-    font-family: 'Orbitron', monospace;
+    font-family: 'Orbitron', sans-serif;
     font-size: 9px;
     color: var(--dim);
-    opacity: 0.4;
+    opacity: 0.3;
     letter-spacing: 4px;
 }
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="loginBox" class="login-box">
-    <h3>MESAN Ω — CRM</h3>
+    <div class="main-brand">MESAN Ω — CRM</div>
     <input id="apiKeyInput" type="password" placeholder="API KEY">
     <button class="btn-login" onclick="iniciarSesion()">ACCEDER</button>
 </div>
 
+<!-- NAV -->
 <div class="nav" id="topbar" style="display:none;">
-    <div>MESAN Ω — CRM</div>
+    <div>MESAN Ω — CONTROL</div>
     <div class="nav-actions">
-        <button class="nav-btn active" id="btn-fecha" onclick="ordenar('fecha')">RECIENTES</button>
-        <button class="nav-btn" id="btn-score" onclick="ordenar('score')">SCORE</button>
-        <button class="nav-btn" onclick="cargar()">ACTUALIZAR</button>
+        <button class="nav-btn" onclick="cargarLeads()">ACTUALIZAR</button>
         <button class="nav-btn" onclick="logout()">SALIR</button>
         <span class="timer" id="timer">30s</span>
     </div>
 </div>
 
-<div class="stats" id="stats" style="display:none;">
-    <div class="stat"><span class="stat-num" id="total">0</span><div class="stat-lbl">Total</div></div>
-    <div class="stat"><span class="stat-num" id="criticos">0</span><div class="stat-lbl">Críticos</div></div>
-    <div class="stat"><span class="stat-num" id="pagados">0</span><div class="stat-lbl">Pagados</div></div>
+<!-- TABS -->
+<div id="mainContent" style="display:none;">
+    <div class="tabs">
+        <button class="tab active" onclick="cambiarTab('leads')">LEADS</button>
+        <button class="tab" onclick="cambiarTab('mapa')">MAPA NACIONAL</button>
+        <button class="tab" onclick="cambiarTab('estrategico')">ESTRATÉGICO</button>
+        <button class="tab" onclick="cambiarTab('motor')">MOTOR FINANCIERO</button>
+    </div>
+
+    <!-- TAB 1: LEADS -->
+    <div id="tab-leads" class="tab-content active">
+        <div class="stats">
+            <div class="stat"><span class="stat-num" id="total">0</span><div class="stat-lbl">Total</div></div>
+            <div class="stat"><span class="stat-num" id="criticos">0</span><div class="stat-lbl">Críticos</div></div>
+            <div class="stat"><span class="stat-num" id="pagados">0</span><div class="stat-lbl">Pagados</div></div>
+        </div>
+        <div id="leads"></div>
+    </div>
+
+    <!-- TAB 2: MAPA -->
+    <div id="tab-mapa" class="tab-content">
+        <div class="stats">
+            <div class="stat"><span class="stat-num" id="mapa-total">0</span><div class="stat-lbl">Empresas</div></div>
+            <div class="stat"><span class="stat-num" id="mapa-criticos">0</span><div class="stat-lbl">Críticos</div></div>
+            <div class="stat"><span class="stat-num" id="mapa-impacto">$0</span><div class="stat-lbl">Impacto</div></div>
+        </div>
+        <div class="mapa-container" id="mapaContainer">
+            <div class="mapa-overlay"></div>
+        </div>
+        <div class="chart-card">
+            <h3>Distribución de Riesgo</h3>
+            <canvas id="radarChart"></canvas>
+        </div>
+    </div>
+
+    <!-- TAB 3: ESTRATÉGICO -->
+    <div id="tab-estrategico" class="tab-content">
+        <div class="chart-card">
+            <h3>IMSE — Salud Empresarial</h3>
+            <canvas id="gaugeChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Tendencia de Riesgo</h3>
+            <canvas id="lineChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Leads Activos</h3>
+            <div style="text-align:center;padding:20px;">
+                <span style="font-family:'Orbitron',sans-serif;font-size:3rem;color:var(--accent);" id="est-total">—</span>
+                <div style="font-size:9px;color:var(--dim);letter-spacing:2px;margin-top:5px;">EN EL SISTEMA</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: MOTOR FINANCIERO -->
+    <div id="tab-motor" class="tab-content">
+        <div class="field">
+            <label>Precio del servicio ($)</label>
+            <input id="precio" type="number" placeholder="27200">
+        </div>
+        <div class="field">
+            <label>Número de empleados</label>
+            <input id="empleados" type="number" placeholder="1" value="1">
+        </div>
+        <div class="field">
+            <label>Zona</label>
+            <select id="zona">
+                <option value="general">General</option>
+                <option value="frontera">Frontera (BC, Son, Chih)</option>
+            </select>
+        </div>
+        <button class="btn-main" onclick="ejecutarMotor()">EJECUTAR DIAGNÓSTICO</button>
+        <div class="result-card" id="resultado">
+            <div class="nivel" id="nivel">—</div>
+            <div class="decision" id="decision">—</div>
+            <div class="metrics">
+                <div class="metric"><div class="metric-label">Ingreso</div><div class="metric-value" id="ingreso">—</div></div>
+                <div class="metric"><div class="metric-label">Costo Total</div><div class="metric-value" id="costo">—</div></div>
+                <div class="metric"><div class="metric-label">Utilidad</div><div class="metric-value" id="utilidad">—</div></div>
+                <div class="metric"><div class="metric-label">Margen</div><div class="metric-value" id="margen">—</div></div>
+                <div class="metric"><div class="metric-label">Reserva</div><div class="metric-value" id="reserva">—</div></div>
+                <div class="metric"><div class="metric-label">Salario Base</div><div class="metric-value" id="salario">—</div></div>
+            </div>
+            <div class="precios">
+                <div class="precio-row"><span>Precio mínimo</span><span id="p-min">—</span></div>
+                <div class="precio-row"><span>Precio cierre</span><span id="p-cierre">—</span></div>
+                <div class="precio-row"><span>Precio ideal</span><span id="p-ideal">—</span></div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div id="leads"></div>
+<!-- MODAL MAPA -->
+<div id="modal" class="modal">
+    <div class="modal-box">
+        <h3 id="m-nombre">—</h3>
+        <p>Score: <span id="m-score">—</span></p>
+        <p>Nivel: <span id="m-nivel">—</span></p>
+        <p>Impacto: <span id="m-impacto">—</span></p>
+        <p>Email: <span id="m-email">—</span></p>
+        <p>Tel: <span id="m-tel">—</span></p>
+        <a id="m-wa" href="#" target="_blank" class="btn-action wa" style="display:block;margin-top:10px;text-align:center;">WHATSAPP</a>
+        <button class="btn-action" onclick="cerrarModal()" style="width:100%;margin-top:8px;text-align:center;">CERRAR</button>
+    </div>
+</div>
 
 <div class="footer" id="footer" style="display:none;">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
 
 <script>
 const API = "https://mesan-api.onrender.com";
 let API_KEY = localStorage.getItem("mesan_key");
-let countdown = 30;
-let ordenActual = "fecha";
 let leadsCache = [];
+let countdown = 30;
+let mapaIniciado = false;
+let estrategicoIniciado = false;
+
+const coords = {
+    CDMX:[54,58], MTY:[68,28], GDL:[38,53],
+    TIJ:[8,18], PUE:[58,63], QRO:[53,52],
+    MXL:[10,20], HMO:[18,23], CUL:[23,38],
+    MZT:[26,46], AGS:[46,48], SLP:[53,43],
+    VER:[63,58], MER:[78,63], CUN:[85,60]
+};
 
 if (API_KEY) {
     document.getElementById("loginBox").style.display = "none";
     mostrarUI();
-    cargar();
+    cargarLeads();
 }
 
 function iniciarSesion() {
@@ -316,18 +677,34 @@ function iniciarSesion() {
     API_KEY = key;
     document.getElementById("loginBox").style.display = "none";
     mostrarUI();
-    cargar();
+    cargarLeads();
 }
 
 function mostrarUI() {
     document.getElementById("topbar").style.display = "flex";
-    document.getElementById("stats").style.display = "flex";
+    document.getElementById("mainContent").style.display = "block";
     document.getElementById("footer").style.display = "block";
 }
 
 function logout() {
     localStorage.removeItem("mesan_key");
     location.reload();
+}
+
+function cambiarTab(tab) {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+    event.target.classList.add("active");
+    document.getElementById("tab-" + tab).classList.add("active");
+
+    if (tab === "mapa" && !mapaIniciado && leadsCache.length) {
+        iniciarMapa(leadsCache);
+        mapaIniciado = true;
+    }
+    if (tab === "estrategico" && !estrategicoIniciado) {
+        iniciarEstrategico();
+        estrategicoIniciado = true;
+    }
 }
 
 function formatFecha(fecha) {
@@ -339,124 +716,17 @@ function formatFecha(fecha) {
         const local = new Date(d.getTime() + (offset - d.getTimezoneOffset()) * 60000);
         const dia = String(local.getDate()).padStart(2,"0");
         const mes = String(local.getMonth()+1).padStart(2,"0");
-        const anio = local.getFullYear();
         const h = local.getHours();
         const min = String(local.getMinutes()).padStart(2,"0");
         const ampm = h >= 12 ? "pm" : "am";
         const h12 = h % 12 || 12;
-        return `${dia}/${mes}/${anio} ${h12}:${min} ${ampm}`;
-    } catch(e) {
-        return fecha.substring(0,16).replace("T"," ");
-    }
+        return `${dia}/${mes} ${h12}:${min} ${ampm}`;
+    } catch(e) { return "-"; }
 }
 
-function ordenar(tipo) {
-    ordenActual = tipo;
-    document.getElementById("btn-fecha").classList.toggle("active", tipo === "fecha");
-    document.getElementById("btn-score").classList.toggle("active", tipo === "score");
-    render(leadsCache);
-}
-
-async function cargar() {
+async function cargarLeads() {
     if (!API_KEY) return;
     try {
-        const res = await fetch(API + "/leads", {
-            headers: { "api-key": API_KEY }
-        });
+        const res = await fetch(API + "/leads", { headers: { "api-key": API_KEY } });
         if (res.status === 403) { alert("API Key inválida"); logout(); return; }
-        const data = await res.json();
-        leadsCache = data.leads || [];
-        render(leadsCache);
-        countdown = 30;
-    } catch(e) {
-        document.getElementById("leads").innerHTML = "<div class='empty'>ERROR DE CONEXIÓN</div>";
-    }
-}
-
-function render(leads) {
-    document.getElementById("total").innerText = leads.length;
-    const criticosList = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
-    document.getElementById("criticos").innerText =
-        leads.filter(l => criticosList.includes(l.clasificacion)).length;
-    document.getElementById("pagados").innerText =
-        leads.filter(l => l.estatus === "pagado").length;
-
-    if (!leads.length) {
-        document.getElementById("leads").innerHTML = "<div class='empty'>SIN LEADS</div>";
-        return;
-    }
-
-    const sorted = [...leads];
-    if (ordenActual === "fecha") {
-        sorted.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
-    } else {
-        sorted.sort((a,b) => (b.score||0) - (a.score||0));
-    }
-
-    let html = "";
-    sorted.forEach(l => {
-        const tipo = criticosList.includes(l.clasificacion) ? "critico"
-                   : l.clasificacion === "MEDIO" ? "vulnerable"
-                   : "estable";
-
-        const tel = (l.telefono || "").replace(/\D/g,"");
-        const waMsg = encodeURIComponent(
-            "Hola " + (l.nombre||"") + ", revisé tu diagnóstico MESAN Omega.\n" +
-            "Score: " + (l.score||0) + " — " + (l.clasificacion||"") + "\n" +
-            "¿Tienes 15 minutos?"
-        );
-        const waLink = tel ? `https://wa.me/52${tel}?text=${waMsg}` : "#";
-        const giro = l.giro ? `<div class="giro-tag">${l.giro}</div>` : "";
-
-        html += `
-        <div class="card ${tipo}">
-            ${giro}
-            <div class="card-nombre">${l.nombre || "Sin nombre"}</div>
-            <div class="card-info">
-                Score: <span>${l.score||0}</span> &nbsp;|&nbsp; ${l.clasificacion||"N/A"}<br>
-                ${l.email||"-"}<br>
-                ${l.telefono||"-"}<br>
-                Exposición: <span>$${(l.impacto_min||0).toLocaleString()} — $${(l.impacto_max||0).toLocaleString()} MXN</span><br>
-                <span class="fecha">📅 ${formatFecha(l.fecha)}</span>
-            </div>
-            <div class="card-actions">
-                <a href="${waLink}" target="_blank" class="btn-action wa">WHATSAPP</a>
-                <a href="tel:${l.telefono||""}" class="btn-action">LLAMAR</a>
-                <button class="btn-action" onclick="copiar('${l.id}')">ID</button>
-                <select class="card-select" onchange="update('${l.id}',this.value)">
-                    <option value="nuevo" ${l.estatus==="nuevo"?"selected":""}>NUEVO</option>
-                    <option value="contactado" ${l.estatus==="contactado"?"selected":""}>CONTACTADO</option>
-                    <option value="cerrado" ${l.estatus==="cerrado"?"selected":""}>CERRADO</option>
-                    <option value="perdido" ${l.estatus==="perdido"?"selected":""}>PERDIDO</option>
-                </select>
-            </div>
-        </div>`;
-    });
-
-    document.getElementById("leads").innerHTML = html;
-}
-
-async function update(id, estatus) {
-    try {
-        await fetch(API + "/lead/" + id, {
-            method: "PUT",
-            headers: {"Content-Type":"application/json","api-key":API_KEY},
-            body: JSON.stringify({estatus})
-        });
-    } catch(e) { alert("Error de conexión"); }
-}
-
-function copiar(id) {
-    navigator.clipboard.writeText(id);
-    alert("ID copiado");
-}
-
-setInterval(() => {
-    countdown--;
-    document.getElementById("timer").innerText = countdown + "s";
-    if (countdown <= 0) cargar();
-}, 1000);
-</script>
-</body>
-</html>
-
+        const d
