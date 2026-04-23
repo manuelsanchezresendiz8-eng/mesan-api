@@ -1,153 +1,143 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | Consola de Diagnóstico</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-<style>
-/* --- CORE VISUAL: HOMOLOGACIÓN RADICAL --- */
-:root {
-    /* Base Unificada */
-    --bg-base: #010508; 
-    
-    /* Acentos */
-    --electric-cyan: #00BFFF; 
-    --metal-blue: #1A3B61; 
-    --alert-risk: #FF3B30; 
-    
-    /* Textos */
-    --text-white: #FFFFFF;
-    --text-dim: #5E7A94;
-    
-    /* Efecto de Brillo (Glow) */
-    --glow-cyan: rgba(0, 191, 255, 0.2);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MESAN Ω | Diagnóstico Unificado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #010508;
+            --panel: #06121D;
+            --accent: #00BFFF;
+            --border: #1A3B61;
+            --text: #FFFFFF;
+            --dim: #5E7A94;
+            --glow: rgba(0, 191, 255, 0.25);
+        }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-body {
-    background-color: var(--bg-base);
-    color: var(--text-white);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    padding: 30px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        .container { max-width: 400px; width: 100%; }
 
-.system-container {
-    max-width: 460px;
-    width: 100%;
-}
+        /* HEADER IDENTIDAD */
+        .brand {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
 
-h1 {
-    font-family: 'Orbitron', monospace;
-    color: var(--electric-cyan);
-    font-size: 26px;
-    letter-spacing: 1.5px;
-    margin-bottom: 25px;
-}
+        .main-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            text-align: center;
+            line-height: 1.2;
+            margin-bottom: 30px;
+        }
 
-.intro-text {
-    font-size: 13px;
-    color: var(--text-dim);
-    line-height: 1.6;
-    margin-bottom: 35px;
-}
+        .main-title span { color: var(--accent); }
 
-/* Marcadores de Sección */
-.section-marker {
-    font-family: 'Orbitron', monospace;
-    font-size: 11px;
-    color: var(--text-dim);
-    border-bottom: 1px solid rgba(26, 59, 97, 0.4);
-    padding-bottom: 8px;
-    margin: 30px 0 20px 0;
-    letter-spacing: 2px;
-}
+        /* BOTÓN DE ACCIÓN */
+        .btn-main {
+            border: 1px solid var(--accent);
+            background: rgba(0, 191, 255, 0.05);
+            color: var(--accent);
+            font-family: 'Orbitron', sans-serif;
+            padding: 15px;
+            text-align: center;
+            border-radius: 4px;
+            letter-spacing: 1.5px;
+            box-shadow: 0 0 15px var(--glow);
+            margin-bottom: 30px;
+            cursor: pointer;
+        }
 
-/* Inputs Unificados Estilo Terminal */
-input {
-    width: 100%;
-    background: #0A1929;
-    border: 1px solid var(--metal-blue);
-    padding: 15px;
-    color: var(--text-white);
-    border-radius: 4px;
-    font-family: 'Inter', sans-serif;
-    outline: none;
-    transition: 0.3s ease;
-}
+        /* TARJETAS DE SELECCIÓN */
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            position: relative;
+            cursor: pointer;
+        }
 
-input:focus {
-    border-color: var(--electric-cyan);
-    box-shadow: 0 0 12px var(--glow-cyan);
-}
+        .card.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--glow);
+        }
 
-/* Celdas de Decisión Estilo "Módulo" */
-.energy-cell {
-    background: #06121D;
-    border: 1px solid var(--metal-blue);
-    padding: 22px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    cursor: pointer;
-    transition: 0.3s ease;
-}
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
 
-.energy-cell.active, .energy-cell:hover {
-    border-color: var(--electric-cyan);
-    background: rgba(0, 191, 255, 0.05);
-    box-shadow: 0 0 15px var(--glow-cyan);
-}
+        .card-subtitle {
+            color: var(--dim);
+            font-size: 11px;
+        }
 
-.cell-title {
-    font-family: 'Orbitron', monospace;
-    color: var(--electric-cyan);
-    font-size: 13px;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-}
+        /* ICONOS DE ESTADO */
+        .status-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
 
-.cell-desc {
-    font-size: 11px;
-    color: var(--text-dim);
-    line-height: 1.4;
-}
-
-.wa-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: transparent;
-    border: 1px solid var(--electric-cyan);
-    color: var(--electric-cyan);
-    padding: 10px 20px;
-    border-radius: 50px;
-}
-</style>
+        /* WHATSAPP FLOTANTE */
+        .whatsapp {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            border: 1px solid var(--accent);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: var(--accent);
+            font-size: 12px;
+            background: var(--bg);
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="brand">MESAN <span style="color:var(--accent)">Ω</span></div>
+        
+        <h1 class="main-title">Arquitectura y <br><span>Soberanía Empresarial</span></h1>
 
-<div class="system-container">
-    <div style="font-family:'Orbitron',monospace; font-size:10px; color:var(--text-dim); letter-spacing:2px; margin-bottom:5px;">// CONSOLA DE DIAGNÓSTICO MESAN Ω</div>
-    <h1>Maestría Empresarial</h1>
-    <p class="intro-text">Todo formato ahora comparte la misma imagen de textura de consola.</p>
+        <div class="btn-main">INICIAR DIAGNÓSTICO</div>
+
+        <div class="card">
+            <div class="card-title">MESAN ENTERPRISE</div>
+            <div class="card-subtitle">Auditoría completa</div>
+            <div class="status-icon"></div>
+        </div>
+
+        <div class="card active">
+            <div class="card-title" style="color:var(--accent)">MESAN Ω</div>
+            <div class="card-subtitle">Predicción avanzada</div>
+            <div class="status-icon" style="background:#8A2BE2"></div>
+        </div>
+    </div>
     
-    <div class="input-field">
-        <label>Identificador de Formato</label>
-        <input type="text" placeholder="FMT-OMEGA-UNIT-001">
-    </div>
-
-    <div class="energy-cell active">
-        <div class="cell-title">ESTADO: HOMOLOGADO</div>
-        <div class="cell-desc">La imagen de fondo de la consola es idéntica en el Diagnóstico, la Landing y el Panel.</div>
-    </div>
-</div>
-
-<a href="#" class="wa-btn">WhatsApp</a>
-
+    <div class="whatsapp">WhatsApp</div>
 </body>
 </html>
