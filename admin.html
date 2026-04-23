@@ -120,10 +120,7 @@ body {
     transition: 0.3s;
 }
 
-.btn-login:hover {
-    background: rgba(0,191,255,0.08);
-    box-shadow: 0 0 15px rgba(0,191,255,0.2);
-}
+.btn-login:hover { background: rgba(0,191,255,0.08); }
 
 .tabs {
     display: flex;
@@ -206,21 +203,10 @@ body {
     text-transform: uppercase;
 }
 
-.card-info {
-    font-size: 11px;
-    color: var(--dim);
-    line-height: 1.9;
-    margin-bottom: 14px;
-}
-
+.card-info { font-size: 11px; color: var(--dim); line-height: 1.9; margin-bottom: 14px; }
 .card-info span { color: var(--text); font-weight: 600; }
 
-.card-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center;
-}
+.card-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
 .btn-action {
     padding: 7px 14px;
@@ -280,8 +266,7 @@ body {
 .mapa-overlay {
     position: absolute;
     top: 0; left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     background: url('https://upload.wikimedia.org/wikipedia/commons/5/5c/Mexico_states_map.svg') no-repeat center;
     background-size: 80%;
     opacity: 0.06;
@@ -290,8 +275,7 @@ body {
 
 .node {
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 10px; height: 10px;
     border-radius: 50%;
     cursor: pointer;
     animation: pulse 2s infinite;
@@ -367,19 +351,16 @@ body {
     margin-top: 8px;
 }
 
-.btn-main:hover { background: rgba(0,191,255,0.05); box-shadow: 0 0 20px rgba(0,191,255,0.2); }
+.btn-main:hover { background: rgba(0,191,255,0.05); }
 
 .result-card { display: none; margin-top: 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
 .result-card.visible { display: block; }
-
 .nivel { font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--accent); letter-spacing: 2px; margin-bottom: 5px; }
 .decision { font-size: 11px; color: var(--dim); margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
-
 .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
 .metric { background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
 .metric-label { font-size: 8px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; margin-bottom: 4px; }
 .metric-value { font-family: 'Orbitron', sans-serif; font-size: 12px; color: var(--accent); }
-
 .precios { padding-top: 12px; border-top: 1px solid var(--border); }
 .precio-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--dim); padding: 5px 0; }
 .precio-row span:last-child { color: var(--accent); font-weight: 600; }
@@ -409,7 +390,6 @@ body {
 .modal-box p span { color: var(--text); }
 
 .empty { text-align: center; color: var(--dim); padding: 40px; font-size: 11px; letter-spacing: 2px; }
-
 .footer { text-align: center; margin-top: 40px; font-family: 'Orbitron', sans-serif; font-size: 9px; color: var(--dim); opacity: 0.3; letter-spacing: 4px; }
 </style>
 </head>
@@ -418,7 +398,7 @@ body {
 <div id="loginBox" class="login-box">
     <div class="login-title">MESAN Ω — CRM</div>
     <input id="apiKeyInput" type="password" placeholder="API KEY">
-    <button class="btn-login" id="btnLogin">ACCEDER</button>
+    <button class="btn-login" onclick="iniciarSesion()">ACCEDER</button>
 </div>
 
 <div class="nav" id="topbar" style="display:none;">
@@ -432,10 +412,10 @@ body {
 
 <div id="mainContent" style="display:none;">
     <div class="tabs">
-        <button class="tab active" id="tab-btn-leads" onclick="cambiarTab('leads',this)">LEADS</button>
-        <button class="tab" id="tab-btn-mapa" onclick="cambiarTab('mapa',this)">MAPA</button>
-        <button class="tab" id="tab-btn-estrategico" onclick="cambiarTab('estrategico',this)">ESTRATÉGICO</button>
-        <button class="tab" id="tab-btn-motor" onclick="cambiarTab('motor',this)">MOTOR</button>
+        <button class="tab active" onclick="cambiarTab('leads',this)">LEADS</button>
+        <button class="tab" onclick="cambiarTab('mapa',this)">MAPA</button>
+        <button class="tab" onclick="cambiarTab('estrategico',this)">ESTRATÉGICO</button>
+        <button class="tab" onclick="cambiarTab('motor',this)">MOTOR</button>
     </div>
 
     <div id="tab-leads" class="tab-content active">
@@ -548,8 +528,7 @@ const coords = {
     VER:[63,58], MER:[78,63], CUN:[85,60]
 };
 
-// LOGIN
-document.getElementById("btnLogin").addEventListener("click", function() {
+function iniciarSesion() {
     const key = document.getElementById("apiKeyInput").value.trim();
     if (!key) { alert("Ingresa la API Key"); return; }
     localStorage.setItem("mesan_key", key);
@@ -557,11 +536,7 @@ document.getElementById("btnLogin").addEventListener("click", function() {
     document.getElementById("loginBox").style.display = "none";
     mostrarUI();
     cargarLeads();
-});
-
-document.getElementById("apiKeyInput").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") document.getElementById("btnLogin").click();
-});
+}
 
 if (API_KEY) {
     document.getElementById("loginBox").style.display = "none";
@@ -585,7 +560,6 @@ function cambiarTab(tab, el) {
     document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
     el.classList.add("active");
     document.getElementById("tab-" + tab).classList.add("active");
-
     if (tab === "mapa" && !mapaIniciado && leadsCache.length) {
         iniciarMapa(leadsCache);
         mapaIniciado = true;
@@ -635,4 +609,14 @@ function renderLeads(leads) {
     document.getElementById("est-total").innerText = leads.length;
 
     if (!leads.length) {
-        document.getElementById("leads").innerHTML = "<div class='empty'>SIN LEADS</div
+        document.getElementById("leads").innerHTML = "<div class='empty'>SIN LEADS</div>";
+        return;
+    }
+
+    const sorted = [...leads].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+    let html = "";
+    sorted.forEach(l => {
+        const tipo = criticosList.includes(l.clasificacion) ? "critico"
+                   : l.clasificacion === "MEDIO" ? "vulnerable" : "estable";
+        const tel = (l.telefono || "").replace(/\D/g,"");
+        const waMsg = encodeURIComponent("Hola " + (l.nombre||
