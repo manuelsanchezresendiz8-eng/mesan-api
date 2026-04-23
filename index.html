@@ -81,8 +81,23 @@ body {
     opacity: 0.8;
 }
 
+.section-header {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    border-bottom: 1px solid rgba(26,59,97,0.4);
+    padding-bottom: 8px;
+    margin: 25px 0 20px;
+    text-transform: uppercase;
+}
+
 .loss-box {
-    margin-bottom: 30px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 5px;
     text-align: center;
 }
 
@@ -92,41 +107,44 @@ body {
     color: var(--dim);
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .loss-value {
     font-family: 'Orbitron', sans-serif;
-    font-size: 22px;
+    font-size: 24px;
     color: var(--alert);
     font-weight: 700;
 }
 
-.buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 25px;
-}
-
-.btn {
-    padding: 16px;
+.select-card {
     background: var(--panel);
     border: 1px solid var(--border);
-    color: var(--accent);
-    font-family: 'Orbitron', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 12px;
     cursor: pointer;
-    transition: all 0.3s;
-    border-radius: 6px;
+    transition: 0.3s;
 }
 
-.btn:hover {
+.select-card:hover {
     border-color: var(--accent);
-    background: rgba(0,191,255,0.05);
+    background: rgba(0,191,255,0.04);
     box-shadow: 0 0 12px rgba(0,191,255,0.1);
+}
+
+.card-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.card-info {
+    font-size: 11px;
+    color: var(--dim);
+    line-height: 1.5;
 }
 
 .result-box {
@@ -170,7 +188,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 20px;
+    margin: 20px 0;
 }
 
 .terminos a { color: var(--accent); text-decoration: none; }
@@ -179,7 +197,7 @@ body {
     font-size: 10px;
     color: var(--dim);
     line-height: 1.8;
-    opacity: 0.6;
+    opacity: 0.5;
     margin-bottom: 40px;
 }
 
@@ -216,19 +234,33 @@ body {
 </div>
 
 <div class="frame">
+
     <div class="system-label">// Sistema de Inteligencia Empresarial</div>
     <div class="main-brand">MESAN Omega</div>
     <p class="sub-desc">Modelos matemáticos avanzados para detectar vulnerabilidades fiscales, laborales y operativas antes de que se conviertan en pasivos críticos.</p>
 
+    <div class="section-header">01 — Estado en tiempo real</div>
+
     <div class="loss-box">
-        <div class="loss-label">Pérdida estimada en tiempo real</div>
+        <div class="loss-label">Pérdida estimada</div>
         <div class="loss-value" id="counter">$0 MXN</div>
     </div>
 
-    <div class="buttons">
-        <button class="btn" onclick="diagnostico()">INICIAR DIAGNÓSTICO</button>
-        <button class="btn" onclick="repse()">VALIDAR REPSE</button>
-        <button class="btn" onclick="irEnterprise()">MESAN ENTERPRISE</button>
+    <div class="section-header">02 — Selecciona tu acceso</div>
+
+    <div class="select-card" onclick="irDiagnostico()">
+        <div class="card-title">INICIAR DIAGNÓSTICO</div>
+        <div class="card-info">Detecta riesgos fiscales, laborales y operativos en minutos.</div>
+    </div>
+
+    <div class="select-card" onclick="validarRepse()">
+        <div class="card-title">VALIDAR REPSE</div>
+        <div class="card-info">Verifica el estatus de tu registro ante la STPS.</div>
+    </div>
+
+    <div class="select-card" onclick="irEnterprise()">
+        <div class="card-title">MESAN ENTERPRISE</div>
+        <div class="card-info">Diagnóstico completo con motor IRP, impacto económico y plan de acción.</div>
     </div>
 
     <div class="result-box" id="result">
@@ -246,6 +278,7 @@ body {
         Los resultados son interpretables únicamente dentro del ecosistema MESAN.<br>
         Su uso externo puede generar conclusiones inexactas.
     </p>
+
 </div>
 
 <div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
@@ -260,13 +293,12 @@ setInterval(() => {
     document.getElementById("counter").innerText = "$" + perdida.toLocaleString() + " MXN";
 }, 1500);
 
-function diagnostico() {
-    const box = document.getElementById("result");
-    const txt = document.getElementById("result-text");
-    box.style.display = "block";
-    txt.innerHTML = "⏳ Analizando estructura empresarial...";
+function irDiagnostico() {
+    document.getElementById("result").style.display = "block";
+    document.getElementById("result-text").innerHTML = "⏳ Analizando estructura empresarial...";
     setTimeout(() => {
-        txt.innerHTML = `🚨 <b>EXPOSICIÓN DETECTADA</b><br><br>
+        document.getElementById("result-text").innerHTML = `
+        🚨 <b>EXPOSICIÓN DETECTADA</b><br><br>
         — Riesgo fiscal SAT<br>
         — Irregularidades IMSS<br>
         — Incumplimiento operativo<br><br>
@@ -275,13 +307,12 @@ function diagnostico() {
     }, 1800);
 }
 
-function repse() {
-    const box = document.getElementById("result");
-    const txt = document.getElementById("result-text");
-    box.style.display = "block";
-    txt.innerHTML = "⏳ Consultando STPS...";
+function validarRepse() {
+    document.getElementById("result").style.display = "block";
+    document.getElementById("result-text").innerHTML = "⏳ Consultando STPS...";
     setTimeout(() => {
-        txt.innerHTML = `🚨 <b>REPSE — ATENCIÓN REQUERIDA</b><br><br>
+        document.getElementById("result-text").innerHTML = `
+        🚨 <b>REPSE — ATENCIÓN REQUERIDA</b><br><br>
         Registro con riesgo detectado.<br>
         Requiere validación inmediata.`;
     }, 1500);
@@ -319,3 +350,4 @@ async function pago() {
 
 </body>
 </html>
+    
