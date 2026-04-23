@@ -3,165 +3,340 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | Vista Previa</title>
+<title>MESAN Ω | Arquitectura y Soberanía</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-    /* --- CONFIGURACIÓN DE SOBERANÍA EMPRESARIAL --- */
-    :root {
-        --bg: #010508;               /* Fondo Negro Absoluto */
-        --panel: #06121D;            /* Azul Profundo */
-        --accent: #00BFFF;           /* Cian Eléctrico */
-        --border: #1A3B61;           /* Azul Metálico */
-        --text: #FFFFFF;             /* Blanco Puro */
-        --dim: #5E7A94;              /* Gris Técnico */
-        --glow: rgba(0, 191, 255, 0.2);
-    }
+:root {
+    --bg: #010508;
+    --panel: #06121D;
+    --accent: #00BFFF;
+    --border: #1A3B61;
+    --text: #FFFFFF;
+    --dim: #5E7A94;
+    --alert: #FF3B30;
+    --glow: rgba(0,191,255,0.2);
+}
 
-    * { margin:0; padding:0; box-sizing:border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-    body {
-        background-color: var(--bg);
-        /* Textura unificada de consola */
-        background-image: radial-gradient(circle at top right, rgba(26, 59, 97, 0.05), transparent);
-        color: var(--text);
-        font-family: 'Inter', sans-serif;
-        display: flex;
-        justify-content: center;
-        padding: 40px 20px;
-        min-height: 100vh;
-    }
+body {
+    background-color: var(--bg);
+    background-image: radial-gradient(circle at top right, rgba(26,59,97,0.05), transparent);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 80px 20px 40px;
+    min-height: 100vh;
+}
 
-    .preview-frame {
-        max-width: 440px;
-        width: 100%;
-    }
+.nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text);
+    background: rgba(1,5,8,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    z-index: 100;
+}
 
-    /* Cabecera del Sistema */
-    .sys-header {
-        font-size: 11px;
-        color: var(--dim);
-        letter-spacing: 2.5px;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-    }
+.frame {
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+}
 
-    h1 {
-        font-family: 'Orbitron', monospace;
-        font-size: 28px;
-        color: var(--accent);
-        margin-bottom: 20px;
-        letter-spacing: 1.5px;
-    }
+.sys-header {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
 
-    .intro {
-        font-size: 14px;
-        color: var(--dim);
-        line-height: 1.6;
-        margin-bottom: 40px;
-    }
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--accent);
+    margin-bottom: 15px;
+    line-height: 1.2;
+    letter-spacing: 1.5px;
+}
 
-    /* Marcadores 01, 02 */
-    .step-marker {
-        font-family: 'Orbitron', monospace;
-        font-size: 11px;
-        color: var(--accent);
-        border-bottom: 1px solid rgba(26, 59, 97, 0.4);
-        padding-bottom: 10px;
-        margin: 30px 0 25px 0;
-        letter-spacing: 2px;
-    }
+h1 span {
+    display: block;
+    font-size: 0.65em;
+    color: var(--text);
+    letter-spacing: 4px;
+    margin-bottom: 5px;
+    font-weight: 400;
+}
 
-    /* Terminal Inputs */
-    .field { margin-bottom: 25px; }
-    
-    label {
-        display: block;
-        font-size: 10px;
-        color: var(--dim);
-        margin-bottom: 10px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-    }
+.intro {
+    font-size: 14px;
+    color: var(--dim);
+    line-height: 1.7;
+    margin-bottom: 30px;
+    font-weight: 300;
+}
 
-    input {
-        width: 100%;
-        background: #0A1929;
-        border: 1px solid var(--border);
-        padding: 16px;
-        color: var(--text);
-        border-radius: 6px;
-        font-size: 14px;
-        outline: none;
-        transition: 0.3s ease;
-    }
+.loss-box {
+    margin-bottom: 30px;
+}
 
-    input:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 15px var(--glow);
-    }
+.loss-label {
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
 
-    /* Módulos de Selección (Cards) */
-    .card {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        padding: 24px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
+.loss-value {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--alert);
+}
 
-    .card.active {
-        border-color: var(--accent);
-        background: rgba(0, 191, 255, 0.04);
-        box-shadow: 0 0 20px var(--glow);
-    }
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 25px;
+}
 
-    .card-title {
-        font-family: 'Orbitron', monospace;
-        color: var(--accent);
-        font-size: 14px;
-        margin-bottom: 8px;
-        letter-spacing: 1px;
-    }
+.btn {
+    padding: 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 6px;
+}
 
-    .card-info {
-        font-size: 11px;
-        color: var(--dim);
-        line-height: 1.5;
-    }
+.btn:hover {
+    border-color: var(--accent);
+    background: rgba(0,191,255,0.05);
+    box-shadow: 0 0 20px var(--glow);
+}
 
-    /* Footer de Advertencia */
-    .footer {
-        margin-top: 50px;
-        text-align: center;
-        font-size: 10px;
-        color: #2D3E4F;
-        line-height: 1.8;
-    }
+.result-box {
+    display: none;
+    margin: 0 auto 20px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    max-width: 320px;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--dim);
+}
 
-    .whatsapp {
-        position: fixed;
-        bottom: 30px;
-        right: 25px;
-        border: 1px solid var(--accent);
-        color: var(--accent);
-        padding: 12px 25px;
-        border-radius: 50px;
-        font-size: 12px;
-        text-decoration: none;
-        background: rgba(6, 18, 29, 0.8);
-        backdrop-filter: blur(5px);
-    }
+.result-box b { color: var(--text); }
+
+.btn-pago {
+    width: 100%;
+    margin-top: 15px;
+    padding: 13px;
+    background: var(--panel);
+    border: 1px solid var(--alert);
+    color: var(--text);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.btn-pago:hover {
+    background: var(--alert);
+    color: var(--text);
+}
+
+.terminos {
+    margin-top: 15px;
+    font-size: 11px;
+    color: var(--dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.terminos a { color: var(--accent); text-decoration: none; }
+
+.legal {
+    margin-top: 25px;
+    font-size: 10px;
+    color: #2D3E4F;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.footer {
+    position: fixed;
+    bottom: 15px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    color: #2D3E4F;
+    letter-spacing: 4px;
+}
+
+.wa-float {
+    position: fixed;
+    bottom: 30px;
+    right: 25px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-size: 12px;
+    text-decoration: none;
+    background: rgba(6,18,29,0.8);
+    backdrop-filter: blur(5px);
+    z-index: 200;
+}
 </style>
 </head>
 <body>
 
-<div class="preview-frame">
-    <div class="sys-header">// SISTEMA DE INTELIGENCIA EMPRESARIAL</div>
-    <h1>MESAN Omega</h1>
-    <p class="intro">Responde y detecta exactamente dónde está perdiendo dinero tu empresa.</p>
+<div class="nav">
+    <div>MESAN Ω</div>
+    <div style="font-size:9px;opacity:0.5;font-family:'Orbitron',sans-serif;">PREDICTIVE ANALYTICS</div>
+</div>
 
-    <div class="step-marker">01 — DATOS DE CONTACTO</div>
-    
-    <div class
+<div class="frame">
+    <div class="sys-header">// Sistema de Inteligencia Empresarial</div>
+
+    <h1>
+        <span>Arquitectura y</span>
+        Soberanía Empresarial
+    </h1>
+
+    <p class="intro">Modelos matemáticos avanzados para detectar vulnerabilidades fiscales, laborales y operativas antes de que se conviertan en pasivos críticos.</p>
+
+    <div class="loss-box">
+        <div class="loss-label">Pérdida estimada en tiempo real</div>
+        <div class="loss-value" id="counter">$0 MXN</div>
+    </div>
+
+    <div class="buttons">
+        <button class="btn" onclick="diagnostico()">INICIAR DIAGNÓSTICO</button>
+        <button class="btn" onclick="repse()">VALIDAR REPSE</button>
+        <button class="btn" onclick="irEnterprise()">MESAN ENTERPRISE</button>
+    </div>
+
+    <div class="result-box" id="result">
+        <div id="result-text"></div>
+        <button class="btn-pago" onclick="pago()">DESBLOQUEAR DIAGNÓSTICO — $299 MXN</button>
+    </div>
+
+    <label class="terminos">
+        <input type="checkbox" id="terminos">
+        <span>Acepto <a href="/terminos.html">Términos</a> y <a href="/privacidad.html">Privacidad</a></span>
+    </label>
+
+    <p class="legal">
+        MESAN Ω utiliza modelos propietarios de análisis empresarial.<br>
+        Los resultados son interpretables únicamente dentro del ecosistema MESAN.<br>
+        Su uso externo puede generar conclusiones inexactas.
+    </p>
+</div>
+
+<div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
+<a href="https://wa.me/526861629643" target="_blank" class="wa-float">WhatsApp</a>
+
+<script>
+const API = "https://mesan-api.onrender.com";
+let perdida = 0;
+
+setInterval(() => {
+    perdida += Math.floor(Math.random() * 400 + 200);
+    document.getElementById("counter").innerText = "$" + perdida.toLocaleString() + " MXN";
+}, 1500);
+
+function diagnostico() {
+    const box = document.getElementById("result");
+    const txt = document.getElementById("result-text");
+    box.style.display = "block";
+    txt.innerHTML = "⏳ Analizando estructura empresarial...";
+    setTimeout(() => {
+        txt.innerHTML = `🚨 <b>EXPOSICIÓN DETECTADA</b><br><br>
+        — Riesgo fiscal SAT<br>
+        — Irregularidades IMSS<br>
+        — Incumplimiento operativo<br><br>
+        Impacto estimado:<br>
+        <b style="color:var(--alert)">$120,000 - $450,000 MXN anuales</b>`;
+    }, 1800);
+}
+
+function repse() {
+    const box = document.getElementById("result");
+    const txt = document.getElementById("result-text");
+    box.style.display = "block";
+    txt.innerHTML = "⏳ Consultando STPS...";
+    setTimeout(() => {
+        txt.innerHTML = `🚨 <b>REPSE — ATENCIÓN REQUERIDA</b><br><br>
+        Registro con riesgo detectado.<br>
+        Requiere validación inmediata.`;
+    }, 1500);
+}
+
+function irEnterprise() {
+    window.location.href = "/diagnostico.html";
+}
+
+async function pago() {
+    const check = document.getElementById("terminos");
+    if (!check.checked) {
+        alert("Acepta los Términos para continuar.");
+        return;
+    }
+    try {
+        const res = await fetch(API + "/crear-sesion-omega", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                cliente_id: "cliente_" + Date.now(),
+                sector: "PRIVADO",
+                monto: 299,
+                indice: 75
+            })
+        });
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+        else alert("Error generando pago");
+    } catch(e) {
+        alert("Error de conexión");
+    }
+}
+</script>
+
+</body>
+</html>
