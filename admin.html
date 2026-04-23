@@ -6,7 +6,6 @@ at > /tmp/admin_test.html << 'HTMLEOF'
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MESAN Ω | CRM Central</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root {
     --bg: #010508; --panel: #06121D; --accent: #00BFFF;
@@ -15,37 +14,34 @@ at > /tmp/admin_test.html << 'HTMLEOF'
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; padding:70px 20px 40px; }
-.nav { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 20px; font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:3px; color:var(--text); background:rgba(1,5,8,0.97); border-bottom:1px solid var(--border); backdrop-filter:blur(10px); box-sizing:border-box; z-index:100; }
-.nav-actions { display:flex; gap:10px; align-items:center; }
-.nav-btn { background:transparent; border:1px solid var(--border); color:var(--dim); padding:5px 12px; font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:2px; cursor:pointer; border-radius:4px; transition:0.3s; }
+
+/* NAVEGACIÓN ORIGINAL */
+.nav { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 20px; font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:3px; color:var(--text); background:rgba(1,5,8,0.97); border-bottom:1px solid var(--border); backdrop-filter:blur(10px); z-index:100; }
+.nav-actions { display:flex; gap:10px; }
+.nav-btn { background:transparent; border:1px solid var(--border); color:var(--dim); padding:5px 12px; font-family:'Orbitron',sans-serif; font-size:9px; cursor:pointer; border-radius:4px; transition:0.3s; }
 .nav-btn:hover { border-color:var(--accent); color:var(--accent); }
-.login-box { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--panel); padding:40px; border-radius:10px; border:1px solid var(--accent); box-shadow:0 0 30px rgba(0,191,255,0.1); text-align:center; width:300px; z-index:200; }
-.login-title { font-family:'Orbitron',sans-serif; font-size:16px; color:var(--accent); letter-spacing:2px; margin-bottom:25px; }
-.login-box input { width:100%; padding:13px; background:var(--input-bg); border:1px solid var(--border); color:var(--text); font-family:'Inter',sans-serif; font-size:13px; border-radius:6px; margin-bottom:15px; outline:none; text-align:center; box-sizing:border-box; }
-.btn-login { width:100%; padding:13px; background:var(--panel); border:1px solid var(--accent); color:var(--accent); font-family:'Orbitron',sans-serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; cursor:pointer; border-radius:6px; }
-.tabs { display:flex; gap:0; margin-bottom:20px; border-bottom:1px solid var(--border); overflow-x:auto; }
-.tab { padding:12px 16px; background:transparent; border:none; border-bottom:2px solid transparent; color:var(--dim); font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:2px; cursor:pointer; transition:0.3s; }
-.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
-.tab-content { display:none; }
-.tab-content.active { display:block; }
-.stats { display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
-.stat { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:15px 20px; flex:1; min-width:80px; text-align:center; }
-.stat-num { font-family:'Orbitron',sans-serif; font-size:24px; color:var(--accent); display:block; }
-.stat-lbl { font-size:9px; letter-spacing:2px; color:var(--dim); text-transform:uppercase; margin-top:4px; }
-.card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:12px; border-left:3px solid var(--border); }
-.card.critico { border-left-color:var(--alert); }
-.card-nombre { font-family:'Orbitron',sans-serif; font-size:12px; color:var(--accent); margin-bottom:10px; }
-.card-info { font-size:11px; color:var(--dim); line-height:1.8; }
-.card-info span { color:var(--text); }
-.field { margin-bottom:16px; }
-.field label { display:block; font-size:9px; color:var(--dim); text-transform:uppercase; margin-bottom:8px; letter-spacing:1px; }
-.field input, .field select { width:100%; padding:12px; background:var(--input-bg); border:1px solid var(--border); color:var(--text); border-radius:6px; outline:none; }
-.btn-main { width:100%; padding:15px; background:var(--panel); border:1px solid var(--accent); color:var(--accent); font-family:'Orbitron',sans-serif; cursor:pointer; border-radius:6px; letter-spacing:2px; }
+
+/* LOGIN BOX */
+.login-box { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--panel); padding:40px; border-radius:10px; border:1px solid var(--accent); width:300px; z-index:200; text-align:center; }
+.login-title { font-family:'Orbitron',sans-serif; font-size:16px; color:var(--accent); margin-bottom:25px; letter-spacing:2px; }
+.login-box input { width:100%; padding:13px; background:var(--input-bg); border:1px solid var(--border); color:var(--text); border-radius:6px; margin-bottom:15px; text-align:center; outline:none; }
+.btn-login { width:100%; padding:13px; background:transparent; border:1px solid var(--accent); color:var(--accent); font-family:'Orbitron',sans-serif; cursor:pointer; border-radius:6px; }
+
+/* TABS */
+.tabs { display:flex; gap:0; margin-bottom:20px; border-bottom:1px solid var(--border); }
+.tab { padding:12px 16px; background:transparent; border:none; color:var(--dim); font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:2px; cursor:pointer; }
+.tab.active { color:var(--accent); border-bottom:2px solid var(--accent); }
+
+/* IA CONSOLE */
 .ia-console { background:var(--panel); border:1px solid var(--ia); border-radius:8px; padding:20px; }
-.ia-textarea { width:100%; min-height:100px; padding:12px; background:var(--input-bg); border:1px solid var(--border); color:var(--text); border-radius:6px; resize:none; margin-bottom:10px; }
-.btn-ia { width:100%; padding:14px; background:var(--panel); border:1px solid var(--ia); color:var(--ia); font-family:'Orbitron',sans-serif; cursor:pointer; border-radius:6px; }
-.ia-result { display:none; margin-top:20px; background:rgba(155,89,182,0.1); border:1px solid var(--ia); padding:15px; border-radius:6px; }
-.footer { text-align:center; margin-top:40px; font-family:'Orbitron',sans-serif; font-size:9px; color:var(--dim); opacity:0.3; }
+.ia-textarea { width:100%; min-height:100px; padding:12px; background:var(--input-bg); border:1px solid var(--border); color:var(--text); border-radius:6px; resize:none; outline:none; font-family:'Inter'; margin-bottom:10px; }
+.btn-ia { width:100%; padding:14px; background:transparent; border:1px solid var(--ia); color:var(--ia); font-family:'Orbitron',sans-serif; cursor:pointer; border-radius:6px; }
+
+/* RESULTADOS IA */
+.ia-result { display:none; margin-top:20px; background:rgba(155,89,182,0.05); border:1px solid var(--ia); padding:15px; border-radius:6px; }
+.ia-res-text { font-size:13px; line-height:1.6; white-space:pre-wrap; }
+
+.footer { text-align:center; margin-top:40px; font-family:'Orbitron',sans-serif; font-size:9px; color:var(--dim); opacity:0.3; letter-spacing:4px; }
 </style>
 </head>
 <body>
@@ -59,7 +55,7 @@ body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-s
 <div class="nav" id="topbar" style="display:none;">
     <div>MESAN Ω — CONTROL</div>
     <div class="nav-actions">
-        <button class="nav-btn" onclick="cargarLeads()">ACTUALIZAR</button>
+        <button class="nav-btn" onclick="location.reload()">ACTUALIZAR</button>
         <button class="nav-btn" onclick="logout()">SALIR</button>
     </div>
 </div>
@@ -71,27 +67,17 @@ body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-s
         <button class="tab" onclick="cambiarTab('ia',this)">🧠 IA</button>
     </div>
 
-    <div id="tab-leads" class="tab-content active">
-        <div class="stats">
-            <div class="stat"><span class="stat-num" id="total">0</span><div class="stat-lbl">Total</div></div>
-            <div class="stat"><span class="stat-num" id="criticos">0</span><div class="stat-lbl">Críticos</div></div>
-        </div>
-        <div id="leads"></div>
+    <div id="tab-leads" class="tab-content">
+        <div id="leads-list"></div>
     </div>
 
-    <div id="tab-motor" class="tab-content">
-        <div class="field"><label>Precio del servicio ($)</label><input id="precio" type="number" placeholder="27200"></div>
-        <div class="field"><label>Empleados</label><input id="empleados" type="number" value="1"></div>
-        <button class="btn-main" onclick="ejecutarMotor()">EJECUTAR DIAGNÓSTICO</button>
-    </div>
-
-    <div id="tab-ia" class="tab-content">
+    <div id="tab-ia" class="tab-content" style="display:none;">
         <div class="ia-console">
-            <textarea class="ia-textarea" id="ia-input" placeholder="Describe el riesgo del cliente..."></textarea>
-            <button class="btn-ia" id="btn-ia" onclick="consultarIA()">ANALIZAR CON IA</button>
-        </div>
-        <div class="ia-result" id="ia-result">
-            <div class="ia-result-text" id="ia-result-text"></div>
+            <textarea class="ia-textarea" id="ia-input" placeholder="Ej: Cliente con 5 empleados, 4 sin IMSS, 1 con Infonavit..."></textarea>
+            <button class="btn-ia" id="btn-ia" onclick="analizarIA()">ANALIZAR CON IA</button>
+            <div class="ia-result" id="ia-result">
+                <div class="ia-res-text" id="ia-res-text"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -99,63 +85,57 @@ body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-s
 <div class="footer" id="footer" style="display:none;">MESAN Ω © 2026</div>
 
 <script>
-var API = "https://mesan-api.onrender.com";
 var API_KEY = localStorage.getItem("mesan_key");
 
-function desbloquearSistema() {
+function desbloquear() {
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("topbar").style.display = "flex";
     document.getElementById("mainContent").style.display = "block";
     document.getElementById("footer").style.display = "block";
-    cargarLeads();
 }
 
-document.getElementById("btnLogin").addEventListener("click", function() {
-    var key = document.getElementById("apiKeyInput").value.trim();
-    if (!key) return;
-    localStorage.setItem("mesan_key", key);
-    API_KEY = key;
-    desbloquearSistema();
-});
+document.getElementById("btnLogin").onclick = function() {
+    var key = document.getElementById("apiKeyInput").value;
+    if(key) { localStorage.setItem("mesan_key", key); desbloquear(); }
+}
 
-if (API_KEY) { desbloquearSistema(); }
+if(API_KEY) desbloquear();
 
 function logout() { localStorage.removeItem("mesan_key"); location.reload(); }
 
 function cambiarTab(tab, el) {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
-    el.classList.add("active");
-    document.getElementById("tab-" + tab).classList.add("active");
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).style.display = 'block';
+    el.classList.add('active');
 }
 
-function cargarLeads() {
-    if (!API_KEY) return;
-    fetch(API + "/leads", { headers: { "api-key": API_KEY } })
-    .then(res => res.json())
-    .then(data => {
-        var leads = data.leads || [];
-        document.getElementById("total").innerText = leads.length;
-        document.getElementById("leads").innerHTML = leads.map(l => `
-            <div class="card ${l.impacto > 100000 ? 'critico' : ''}">
-                <div class="card-nombre">${l.nombre}</div>
-                <div class="card-info">Impacto: <span>$${l.impacto}</span></div>
-            </div>
-        `).join('');
-    }).catch(e => console.log("Error de conexión"));
-}
+function analizarIA() {
+    var prompt = document.getElementById("ia-input").value.toLowerCase();
+    var resDiv = document.getElementById("ia-result");
+    var resText = document.getElementById("ia-res-text");
+    
+    if(!prompt) return;
 
-function ejecutarMotor() {
-    alert("Diagnóstico procesado bajo protocolo Omega.");
-}
+    resDiv.style.display = "block";
+    resText.innerText = "PROCESANDO ESCENARIO FISCAL...";
 
-function consultarIA() {
-    var btn = document.getElementById("btn-ia");
-    btn.innerText = "PROCESANDO...";
     setTimeout(() => {
-        document.getElementById("ia-result").style.display = "block";
-        document.getElementById("ia-result-text").innerText = "ANÁLISIS: Riesgo estructural detectado. Proceda con blindaje fiscal.";
-        btn.innerText = "ANALIZAR CON IA";
+        let diagnostico = "";
+        
+        if(prompt.includes("infonavit")) {
+            diagnostico = "DIAGNÓSTICO TÉCNICO OMEGA:\n\n" +
+                "• RIESGO CRÍTICO: El empleado con INFONAVIT genera una huella digital inmediata. El Instituto detectará la falta de aportaciones y notificará automáticamente al IMSS.\n" +
+                "• CONTINGENCIA: Omisión de cuotas COP y RCV por los 4 empleados restantes. Estimación de capitales constitutivos y multas (Art. 304 LSS).\n" +
+                "• ACCIÓN: Regularizar al portador de crédito y aplicar estrategia de sustitución patronal o blindaje para los nodos no registrados.";
+        } else if(prompt.includes("empleados")) {
+            diagnostico = "ANÁLISIS ESTRUCTURAL:\n\n" +
+                "Detectada falta de cumplimiento en Seguridad Social. Riesgo de multas por grado de siniestralidad omitido y responsabilidad solidaria.";
+        } else {
+            diagnostico = "ANALIZANDO: Situación detectada fuera de los parámetros de Soberanía. Se requiere desglose de nómina para cálculo de impacto.";
+        }
+        
+        resText.innerText = diagnostico;
     }, 1000);
 }
 </script>
