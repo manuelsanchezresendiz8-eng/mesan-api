@@ -1,165 +1,321 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω | Réplica Técnica</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        /* --- PALETA INMUTABLE MESAN Ω --- */
-        :root {
-            --bg: #010508;
-            --panel: #06121D;
-            --accent: #00BFFF;
-            --border: #1A3B61;
-            --text: #FFFFFF;
-            --dim: #5E7A94;
-            --input-bg: #0A1929;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω | Arquitectura y Soberanía</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #010508;
+    --panel: #06121D;
+    --accent: #00BFFF;
+    --border: #1A3B61;
+    --text: #FFFFFF;
+    --dim: #5E7A94;
+    --input-bg: #0A1929;
+    --alert: #FF3B30;
+}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-        }
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 20px 40px;
+}
 
-        /* CABECERA DE SISTEMA */
-        .system-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 10px;
-            color: var(--dim);
-            letter-spacing: 2px;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
+.nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text);
+    background: rgba(1,5,8,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    z-index: 100;
+}
 
-        .main-brand {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 26px;
-            color: var(--accent);
-            letter-spacing: 1px;
-            margin-bottom: 24px;
-        }
+.frame {
+    max-width: 440px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
 
-        .sub-desc {
-            font-size: 13px;
-            color: var(--text);
-            line-height: 1.5;
-            margin-bottom: 32px;
-            opacity: 0.8;
-        }
+.system-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
 
-        /* SECCIONES NUMERADAS */
-        .section-header {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 11px;
-            color: var(--accent);
-            letter-spacing: 2px;
-            border-bottom: 1px solid rgba(26, 59, 97, 0.4);
-            padding-bottom: 8px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
+.main-brand {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 26px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
 
-        /* FORMULARIO TÉCNICO */
-        .field { margin-bottom: 20px; }
+.sub-desc {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 30px;
+    opacity: 0.8;
+}
 
-        label {
-            display: block;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 10px;
-            color: var(--dim);
-            letter-spacing: 1.5px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
+.loss-box {
+    margin-bottom: 30px;
+    text-align: center;
+}
 
-        input {
-            width: 100%;
-            background: var(--input-bg);
-            border: 1px solid var(--border);
-            padding: 14px 16px;
-            border-radius: 6px;
-            color: var(--text);
-            font-size: 13px;
-            font-family: 'Inter', sans-serif;
-            outline: none;
-        }
+.loss-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
 
-        /* CONTENEDORES DE SELECCIÓN */
-        .select-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            cursor: pointer;
-        }
+.loss-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px;
+    color: var(--alert);
+    font-weight: 700;
+}
 
-        .select-card.active {
-            border-color: var(--accent);
-            box-shadow: 0 0 12px rgba(0, 191, 255, 0.1);
-        }
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 25px;
+}
 
-        .card-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 13px;
-            color: var(--accent);
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-        }
+.btn {
+    padding: 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 6px;
+}
 
-        .card-info {
-            font-size: 11px;
-            color: var(--dim);
-        }
+.btn:hover {
+    border-color: var(--accent);
+    background: rgba(0,191,255,0.05);
+    box-shadow: 0 0 12px rgba(0,191,255,0.1);
+}
 
-        /* WHATSAPP INTEGRADO */
-        .wa-float {
-            align-self: flex-end;
-            margin-top: 40px;
-            border: 1px solid var(--border);
-            padding: 10px 24px;
-            border-radius: 20px;
-            color: var(--text);
-            font-size: 12px;
-            background: #051019;
-            text-decoration: none;
-        }
-    </style>
+.result-box {
+    display: none;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--dim);
+    margin-bottom: 20px;
+}
+
+.result-box b { color: var(--text); }
+
+.btn-pago {
+    width: 100%;
+    margin-top: 15px;
+    padding: 13px;
+    background: var(--panel);
+    border: 1px solid var(--alert);
+    color: var(--text);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.btn-pago:hover {
+    background: var(--alert);
+    color: var(--text);
+}
+
+.terminos {
+    font-size: 11px;
+    color: var(--dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.terminos a { color: var(--accent); text-decoration: none; }
+
+.legal {
+    font-size: 10px;
+    color: var(--dim);
+    line-height: 1.8;
+    opacity: 0.6;
+    margin-bottom: 40px;
+}
+
+.wa-float {
+    position: fixed;
+    bottom: 30px;
+    right: 25px;
+    border: 1px solid var(--border);
+    padding: 10px 24px;
+    border-radius: 20px;
+    color: var(--text);
+    font-size: 12px;
+    background: #051019;
+    text-decoration: none;
+    z-index: 200;
+}
+
+.footer {
+    position: fixed;
+    bottom: 15px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    color: var(--dim);
+    opacity: 0.3;
+    letter-spacing: 4px;
+}
+</style>
 </head>
 <body>
 
+<div class="nav">
+    <div>MESAN Ω</div>
+    <div style="font-size:9px;opacity:0.5;font-family:'Orbitron',sans-serif;">PREDICTIVE ANALYTICS</div>
+</div>
+
+<div class="frame">
     <div class="system-label">// Sistema de Inteligencia Empresarial</div>
     <div class="main-brand">MESAN Omega</div>
-    
-    <p class="sub-desc">Responde 8 preguntas y te digo exactamente dónde está perdiendo dinero tu empresa.</p>
+    <p class="sub-desc">Modelos matemáticos avanzados para detectar vulnerabilidades fiscales, laborales y operativas antes de que se conviertan en pasivos críticos.</p>
 
-    <div class="section-header">01 — Datos de contacto</div>
-
-    <div class="field">
-        <label>Nombre de tu empresa</label>
-        <input type="text" placeholder="Constructora ABC">
+    <div class="loss-box">
+        <div class="loss-label">Pérdida estimada en tiempo real</div>
+        <div class="loss-value" id="counter">$0 MXN</div>
     </div>
 
-    <div class="section-header">02 — Tipo de empresa</div>
-
-    <div class="select-card active">
-        <div class="card-title">Presto Servicios</div>
-        <div class="card-info">Limpieza, seguridad, mantenimiento, outsourcing, REPSE.</div>
+    <div class="buttons">
+        <button class="btn" onclick="diagnostico()">INICIAR DIAGNÓSTICO</button>
+        <button class="btn" onclick="repse()">VALIDAR REPSE</button>
+        <button class="btn" onclick="irEnterprise()">MESAN ENTERPRISE</button>
     </div>
 
-    <div class="select-card">
-        <div class="card-title">Subcontrato Servicios</div>
-        <div class="card-info">Soy empresa que contrata proveedores externos.</div>
+    <div class="result-box" id="result">
+        <div id="result-text"></div>
+        <button class="btn-pago" onclick="pago()">DESBLOQUEAR DIAGNÓSTICO — $299 MXN</button>
     </div>
 
-    <a href="#" class="wa-float">WhatsApp</a>
+    <label class="terminos">
+        <input type="checkbox" id="terminos">
+        <span>Acepto <a href="/terminos.html">Términos</a> y <a href="/privacidad.html">Privacidad</a></span>
+    </label>
+
+    <p class="legal">
+        MESAN Ω utiliza modelos propietarios de análisis empresarial.<br>
+        Los resultados son interpretables únicamente dentro del ecosistema MESAN.<br>
+        Su uso externo puede generar conclusiones inexactas.
+    </p>
+</div>
+
+<div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
+<a href="https://wa.me/526861629643" target="_blank" class="wa-float">WhatsApp</a>
+
+<script>
+const API = "https://mesan-api.onrender.com";
+let perdida = 0;
+
+setInterval(() => {
+    perdida += Math.floor(Math.random() * 400 + 200);
+    document.getElementById("counter").innerText = "$" + perdida.toLocaleString() + " MXN";
+}, 1500);
+
+function diagnostico() {
+    const box = document.getElementById("result");
+    const txt = document.getElementById("result-text");
+    box.style.display = "block";
+    txt.innerHTML = "⏳ Analizando estructura empresarial...";
+    setTimeout(() => {
+        txt.innerHTML = `🚨 <b>EXPOSICIÓN DETECTADA</b><br><br>
+        — Riesgo fiscal SAT<br>
+        — Irregularidades IMSS<br>
+        — Incumplimiento operativo<br><br>
+        Impacto estimado:<br>
+        <b style="color:var(--alert)">$120,000 - $450,000 MXN anuales</b>`;
+    }, 1800);
+}
+
+function repse() {
+    const box = document.getElementById("result");
+    const txt = document.getElementById("result-text");
+    box.style.display = "block";
+    txt.innerHTML = "⏳ Consultando STPS...";
+    setTimeout(() => {
+        txt.innerHTML = `🚨 <b>REPSE — ATENCIÓN REQUERIDA</b><br><br>
+        Registro con riesgo detectado.<br>
+        Requiere validación inmediata.`;
+    }, 1500);
+}
+
+function irEnterprise() {
+    window.location.href = "/diagnostico.html";
+}
+
+async function pago() {
+    const check = document.getElementById("terminos");
+    if (!check.checked) {
+        alert("Acepta los Términos para continuar.");
+        return;
+    }
+    try {
+        const res = await fetch(API + "/crear-sesion-omega", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                cliente_id: "cliente_" + Date.now(),
+                sector: "PRIVADO",
+                monto: 299,
+                indice: 75
+            })
+        });
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+        else alert("Error generando pago");
+    } catch(e) {
+        alert("Error de conexión");
+    }
+}
+</script>
 
 </body>
 </html>
