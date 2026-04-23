@@ -28,7 +28,6 @@ body {
     padding: 70px 20px 40px;
 }
 
-/* NAV */
 .nav {
     position: fixed;
     top: 0;
@@ -66,7 +65,6 @@ body {
 .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
 .timer { font-size: 9px; color: var(--dim); font-family: 'Orbitron', sans-serif; }
 
-/* LOGIN */
 .login-box {
     position: fixed;
     top: 50%;
@@ -82,9 +80,9 @@ body {
     z-index: 200;
 }
 
-.login-box .main-brand {
+.login-title {
     font-family: 'Orbitron', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     color: var(--accent);
     letter-spacing: 2px;
     margin-bottom: 25px;
@@ -103,7 +101,6 @@ body {
     outline: none;
     text-align: center;
     box-sizing: border-box;
-    transition: 0.3s;
 }
 
 .login-box input:focus { border-color: var(--accent); }
@@ -128,18 +125,16 @@ body {
     box-shadow: 0 0 15px rgba(0,191,255,0.2);
 }
 
-/* TABS */
 .tabs {
     display: flex;
-    gap: 5px;
+    gap: 0;
     margin-bottom: 20px;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 0;
     overflow-x: auto;
 }
 
 .tab {
-    padding: 10px 16px;
+    padding: 12px 16px;
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
@@ -158,7 +153,6 @@ body {
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-/* STATS */
 .stats {
     display: flex;
     gap: 12px;
@@ -191,7 +185,6 @@ body {
     margin-top: 4px;
 }
 
-/* CARDS LEADS */
 .card {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -199,12 +192,10 @@ body {
     padding: 20px;
     margin-bottom: 12px;
     border-left: 3px solid var(--border);
-    transition: 0.3s;
 }
 
 .card.critico { border-left-color: var(--alert); }
 .card.vulnerable { border-left-color: var(--accent); }
-.card.estable { border-left-color: var(--border); }
 
 .card-nombre {
     font-family: 'Orbitron', sans-serif;
@@ -252,7 +243,6 @@ body {
     background: var(--input-bg);
     border: 1px solid var(--border);
     color: var(--accent);
-    font-family: 'Inter', sans-serif;
     font-size: 9px;
     padding: 7px 10px;
     border-radius: 4px;
@@ -274,23 +264,12 @@ body {
     font-family: 'Orbitron', sans-serif;
 }
 
-.fecha { font-size: 9px; color: var(--dim); letter-spacing: 1px; }
-
-/* MAPA */
-#mapa-bg {
-    position: relative;
-    width: 100%;
-    height: 400px;
-    background: url('https://upload.wikimedia.org/wikipedia/commons/5/5c/Mexico_states_map.svg') no-repeat center;
-    background-size: contain;
-    opacity: 0.08;
-    filter: invert(1) hue-rotate(180deg);
-}
+.fecha { font-size: 9px; color: var(--dim); }
 
 .mapa-container {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 350px;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -305,7 +284,7 @@ body {
     height: 100%;
     background: url('https://upload.wikimedia.org/wikipedia/commons/5/5c/Mexico_states_map.svg') no-repeat center;
     background-size: 80%;
-    opacity: 0.08;
+    opacity: 0.06;
     filter: invert(1) hue-rotate(180deg);
 }
 
@@ -315,15 +294,13 @@ body {
     height: 10px;
     border-radius: 50%;
     cursor: pointer;
-    background: var(--accent);
-    box-shadow: 0 0 12px var(--accent);
     animation: pulse 2s infinite;
     z-index: 10;
 }
 
 .node.critico { background: var(--alert); box-shadow: 0 0 12px var(--alert); }
-.node.medio { background: var(--accent); opacity: 0.6; }
-.node.estable { background: var(--accent); opacity: 0.3; }
+.node.medio { background: var(--accent); box-shadow: 0 0 8px var(--accent); opacity: 0.7; }
+.node.estable { background: var(--accent); box-shadow: 0 0 6px var(--accent); opacity: 0.4; }
 
 @keyframes pulse {
     0% { transform: scale(1); opacity: 1; }
@@ -331,42 +308,23 @@ body {
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* MODAL MAPA */
-.modal {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    background: rgba(1,5,8,0.9);
-    z-index: 300;
-    top: 0;
-    left: 0;
-}
-
-.modal-box {
+.chart-card {
     background: var(--panel);
-    border: 1px solid var(--accent);
-    box-shadow: 0 0 30px rgba(0,191,255,0.15);
-    border-radius: 10px;
-    padding: 30px;
-    width: 300px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
 }
 
-.modal-box h3 {
+.chart-card h3 {
     font-family: 'Orbitron', sans-serif;
-    color: var(--accent);
+    font-size: 10px;
     letter-spacing: 2px;
-    font-size: 12px;
+    color: var(--accent);
     margin-bottom: 15px;
     text-transform: uppercase;
 }
 
-.modal-box p { font-size: 11px; color: var(--dim); margin: 8px 0; }
-.modal-box p span { color: var(--text); font-weight: 600; }
-
-/* MOTOR FINANCIERO */
 .field { margin-bottom: 16px; }
 
 .field label {
@@ -378,8 +336,7 @@ body {
     margin-bottom: 8px;
 }
 
-.field input,
-.field select {
+.field input, .field select {
     width: 100%;
     padding: 12px 14px;
     background: var(--input-bg);
@@ -389,11 +346,9 @@ body {
     font-size: 14px;
     border-radius: 6px;
     outline: none;
-    transition: 0.3s;
 }
 
-.field input:focus,
-.field select:focus { border-color: var(--accent); }
+.field input:focus, .field select:focus { border-color: var(--accent); }
 .field select option { background: var(--panel); }
 
 .btn-main {
@@ -412,125 +367,60 @@ body {
     margin-top: 8px;
 }
 
-.btn-main:hover {
-    background: rgba(0,191,255,0.05);
-    box-shadow: 0 0 20px rgba(0,191,255,0.2);
-}
+.btn-main:hover { background: rgba(0,191,255,0.05); box-shadow: 0 0 20px rgba(0,191,255,0.2); }
 
-.result-card {
-    display: none;
-    margin-top: 20px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-}
-
+.result-card { display: none; margin-top: 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
 .result-card.visible { display: block; }
 
-.nivel {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 13px;
-    color: var(--accent);
-    letter-spacing: 2px;
-    margin-bottom: 5px;
-}
+.nivel { font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--accent); letter-spacing: 2px; margin-bottom: 5px; }
+.decision { font-size: 11px; color: var(--dim); margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
 
-.decision {
-    font-size: 11px;
-    color: var(--dim);
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border);
-}
-
-.metrics {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.metric {
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px;
-}
-
-.metric-label {
-    font-size: 8px;
-    letter-spacing: 2px;
-    color: var(--dim);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-}
-
-.metric-value {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 12px;
-    color: var(--accent);
-}
+.metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+.metric { background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
+.metric-label { font-size: 8px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; margin-bottom: 4px; }
+.metric-value { font-family: 'Orbitron', sans-serif; font-size: 12px; color: var(--accent); }
 
 .precios { padding-top: 12px; border-top: 1px solid var(--border); }
-
-.precio-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--dim);
-    padding: 5px 0;
-}
-
+.precio-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--dim); padding: 5px 0; }
 .precio-row span:last-child { color: var(--accent); font-weight: 600; }
 
-/* ESTRATEGICO */
-.chart-card {
+.modal {
+    position: fixed;
+    width: 100%; height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(1,5,8,0.9);
+    z-index: 300;
+    top: 0; left: 0;
+}
+
+.modal-box {
     background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 15px;
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 30px rgba(0,191,255,0.15);
+    border-radius: 10px;
+    padding: 30px;
+    width: 300px;
 }
 
-.chart-card h3 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--accent);
-    margin-bottom: 15px;
-    text-transform: uppercase;
-}
+.modal-box h3 { font-family: 'Orbitron', sans-serif; color: var(--accent); font-size: 12px; margin-bottom: 15px; }
+.modal-box p { font-size: 11px; color: var(--dim); margin: 8px 0; }
+.modal-box p span { color: var(--text); }
 
-.empty {
-    text-align: center;
-    color: var(--dim);
-    padding: 40px;
-    font-size: 11px;
-    letter-spacing: 2px;
-}
+.empty { text-align: center; color: var(--dim); padding: 40px; font-size: 11px; letter-spacing: 2px; }
 
-.footer {
-    text-align: center;
-    margin-top: 40px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 9px;
-    color: var(--dim);
-    opacity: 0.3;
-    letter-spacing: 4px;
-}
+.footer { text-align: center; margin-top: 40px; font-family: 'Orbitron', sans-serif; font-size: 9px; color: var(--dim); opacity: 0.3; letter-spacing: 4px; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="loginBox" class="login-box">
-    <div class="main-brand">MESAN Ω — CRM</div>
+    <div class="login-title">MESAN Ω — CRM</div>
     <input id="apiKeyInput" type="password" placeholder="API KEY">
-    <button class="btn-login" onclick="iniciarSesion()">ACCEDER</button>
+    <button class="btn-login" id="btnLogin">ACCEDER</button>
 </div>
 
-<!-- NAV -->
 <div class="nav" id="topbar" style="display:none;">
     <div>MESAN Ω — CONTROL</div>
     <div class="nav-actions">
@@ -540,16 +430,14 @@ body {
     </div>
 </div>
 
-<!-- TABS -->
 <div id="mainContent" style="display:none;">
     <div class="tabs">
-        <button class="tab active" onclick="cambiarTab('leads')">LEADS</button>
-        <button class="tab" onclick="cambiarTab('mapa')">MAPA NACIONAL</button>
-        <button class="tab" onclick="cambiarTab('estrategico')">ESTRATÉGICO</button>
-        <button class="tab" onclick="cambiarTab('motor')">MOTOR FINANCIERO</button>
+        <button class="tab active" id="tab-btn-leads" onclick="cambiarTab('leads',this)">LEADS</button>
+        <button class="tab" id="tab-btn-mapa" onclick="cambiarTab('mapa',this)">MAPA</button>
+        <button class="tab" id="tab-btn-estrategico" onclick="cambiarTab('estrategico',this)">ESTRATÉGICO</button>
+        <button class="tab" id="tab-btn-motor" onclick="cambiarTab('motor',this)">MOTOR</button>
     </div>
 
-    <!-- TAB 1: LEADS -->
     <div id="tab-leads" class="tab-content active">
         <div class="stats">
             <div class="stat"><span class="stat-num" id="total">0</span><div class="stat-lbl">Total</div></div>
@@ -559,7 +447,6 @@ body {
         <div id="leads"></div>
     </div>
 
-    <!-- TAB 2: MAPA -->
     <div id="tab-mapa" class="tab-content">
         <div class="stats">
             <div class="stat"><span class="stat-num" id="mapa-total">0</span><div class="stat-lbl">Empresas</div></div>
@@ -575,7 +462,6 @@ body {
         </div>
     </div>
 
-    <!-- TAB 3: ESTRATÉGICO -->
     <div id="tab-estrategico" class="tab-content">
         <div class="chart-card">
             <h3>IMSE — Salud Empresarial</h3>
@@ -586,15 +472,14 @@ body {
             <canvas id="lineChart"></canvas>
         </div>
         <div class="chart-card">
-            <h3>Leads Activos</h3>
+            <h3>Leads en el Sistema</h3>
             <div style="text-align:center;padding:20px;">
                 <span style="font-family:'Orbitron',sans-serif;font-size:3rem;color:var(--accent);" id="est-total">—</span>
-                <div style="font-size:9px;color:var(--dim);letter-spacing:2px;margin-top:5px;">EN EL SISTEMA</div>
+                <div style="font-size:9px;color:var(--dim);letter-spacing:2px;margin-top:5px;">EMPRESAS ACTIVAS</div>
             </div>
         </div>
     </div>
 
-    <!-- TAB 4: MOTOR FINANCIERO -->
     <div id="tab-motor" class="tab-content">
         <div class="field">
             <label>Precio del servicio ($)</label>
@@ -632,7 +517,6 @@ body {
     </div>
 </div>
 
-<!-- MODAL MAPA -->
 <div id="modal" class="modal">
     <div class="modal-box">
         <h3 id="m-nombre">—</h3>
@@ -664,17 +548,22 @@ const coords = {
     VER:[63,58], MER:[78,63], CUN:[85,60]
 };
 
-if (API_KEY) {
-    document.getElementById("loginBox").style.display = "none";
-    mostrarUI();
-    cargarLeads();
-}
-
-function iniciarSesion() {
+// LOGIN
+document.getElementById("btnLogin").addEventListener("click", function() {
     const key = document.getElementById("apiKeyInput").value.trim();
     if (!key) { alert("Ingresa la API Key"); return; }
     localStorage.setItem("mesan_key", key);
     API_KEY = key;
+    document.getElementById("loginBox").style.display = "none";
+    mostrarUI();
+    cargarLeads();
+});
+
+document.getElementById("apiKeyInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") document.getElementById("btnLogin").click();
+});
+
+if (API_KEY) {
     document.getElementById("loginBox").style.display = "none";
     mostrarUI();
     cargarLeads();
@@ -691,10 +580,10 @@ function logout() {
     location.reload();
 }
 
-function cambiarTab(tab) {
+function cambiarTab(tab, el) {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
-    event.target.classList.add("active");
+    el.classList.add("active");
     document.getElementById("tab-" + tab).classList.add("active");
 
     if (tab === "mapa" && !mapaIniciado && leadsCache.length) {
@@ -729,4 +618,21 @@ async function cargarLeads() {
     try {
         const res = await fetch(API + "/leads", { headers: { "api-key": API_KEY } });
         if (res.status === 403) { alert("API Key inválida"); logout(); return; }
-        const d
+        const data = await res.json();
+        leadsCache = data.leads || [];
+        renderLeads(leadsCache);
+        countdown = 30;
+    } catch(e) {
+        document.getElementById("leads").innerHTML = "<div class='empty'>ERROR DE CONEXIÓN</div>";
+    }
+}
+
+function renderLeads(leads) {
+    const criticosList = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
+    document.getElementById("total").innerText = leads.length;
+    document.getElementById("criticos").innerText = leads.filter(l => criticosList.includes(l.clasificacion)).length;
+    document.getElementById("pagados").innerText = leads.filter(l => l.estatus === "pagado").length;
+    document.getElementById("est-total").innerText = leads.length;
+
+    if (!leads.length) {
+        document.getElementById("leads").innerHTML = "<div class='empty'>SIN LEADS</div
