@@ -3,340 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | Arquitectura y Soberanía</title>
+<title>MESAN Ω | Consola de Diagnóstico</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
+/* --- CORE VISUAL: HOMOLOGACIÓN RADICAL --- */
 :root {
-    --bg: #010508;
-    --panel: #06121D;
-    --accent: #00BFFF;
-    --border: #1A3B61;
-    --text: #FFFFFF;
-    --dim: #5E7A94;
-    --alert: #FF3B30;
-    --glow: rgba(0,191,255,0.2);
+    /* Base Unificada */
+    --bg-base: #010508; 
+    
+    /* Acentos */
+    --electric-cyan: #00BFFF; 
+    --metal-blue: #1A3B61; 
+    --alert-risk: #FF3B30; 
+    
+    /* Textos */
+    --text-white: #FFFFFF;
+    --text-dim: #5E7A94;
+    
+    /* Efecto de Brillo (Glow) */
+    --glow-cyan: rgba(0, 191, 255, 0.2);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    background-color: var(--bg);
-    background-image: radial-gradient(circle at top right, rgba(26,59,97,0.05), transparent);
-    color: var(--text);
+    background-color: var(--bg-base);
+    color: var(--text-white);
     font-family: 'Inter', sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 80px 20px 40px;
     min-height: 100vh;
-}
-
-.nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
+    padding: 30px 20px;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    padding: 15px 30px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--text);
-    background: rgba(1,5,8,0.95);
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(10px);
-    box-sizing: border-box;
-    z-index: 100;
 }
 
-.frame {
-    max-width: 440px;
+.system-container {
+    max-width: 460px;
     width: 100%;
-    text-align: center;
-}
-
-.sys-header {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 10px;
-    color: var(--dim);
-    letter-spacing: 3px;
-    margin-bottom: 15px;
-    text-transform: uppercase;
 }
 
 h1 {
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 700;
-    font-size: 28px;
-    color: var(--accent);
-    margin-bottom: 15px;
-    line-height: 1.2;
+    font-family: 'Orbitron', monospace;
+    color: var(--electric-cyan);
+    font-size: 26px;
     letter-spacing: 1.5px;
+    margin-bottom: 25px;
 }
 
-h1 span {
-    display: block;
-    font-size: 0.65em;
-    color: var(--text);
-    letter-spacing: 4px;
-    margin-bottom: 5px;
-    font-weight: 400;
-}
-
-.intro {
-    font-size: 14px;
-    color: var(--dim);
-    line-height: 1.7;
-    margin-bottom: 30px;
-    font-weight: 300;
-}
-
-.loss-box {
-    margin-bottom: 30px;
-}
-
-.loss-label {
-    font-size: 10px;
-    color: var(--dim);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-}
-
-.loss-value {
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 700;
-    font-size: 22px;
-    color: var(--alert);
-}
-
-.buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    max-width: 320px;
-    margin: 0 auto 25px;
-}
-
-.btn {
-    padding: 16px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    color: var(--accent);
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s;
-    border-radius: 6px;
-}
-
-.btn:hover {
-    border-color: var(--accent);
-    background: rgba(0,191,255,0.05);
-    box-shadow: 0 0 20px var(--glow);
-}
-
-.result-box {
-    display: none;
-    margin: 0 auto 20px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    width: 100%;
-    max-width: 320px;
-    text-align: left;
+.intro-text {
     font-size: 13px;
-    line-height: 1.8;
-    color: var(--dim);
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 35px;
 }
 
-.result-box b { color: var(--text); }
-
-.btn-pago {
-    width: 100%;
-    margin-top: 15px;
-    padding: 13px;
-    background: var(--panel);
-    border: 1px solid var(--alert);
-    color: var(--text);
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 700;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: 0.3s;
-}
-
-.btn-pago:hover {
-    background: var(--alert);
-    color: var(--text);
-}
-
-.terminos {
-    margin-top: 15px;
+/* Marcadores de Sección */
+.section-marker {
+    font-family: 'Orbitron', monospace;
     font-size: 11px;
-    color: var(--dim);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: center;
+    color: var(--text-dim);
+    border-bottom: 1px solid rgba(26, 59, 97, 0.4);
+    padding-bottom: 8px;
+    margin: 30px 0 20px 0;
+    letter-spacing: 2px;
 }
 
-.terminos a { color: var(--accent); text-decoration: none; }
-
-.legal {
-    margin-top: 25px;
-    font-size: 10px;
-    color: #2D3E4F;
-    line-height: 1.8;
-    text-align: center;
+/* Inputs Unificados Estilo Terminal */
+input {
+    width: 100%;
+    background: #0A1929;
+    border: 1px solid var(--metal-blue);
+    padding: 15px;
+    color: var(--text-white);
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: 0.3s ease;
 }
 
-.footer {
+input:focus {
+    border-color: var(--electric-cyan);
+    box-shadow: 0 0 12px var(--glow-cyan);
+}
+
+/* Celdas de Decisión Estilo "Módulo" */
+.energy-cell {
+    background: #06121D;
+    border: 1px solid var(--metal-blue);
+    padding: 22px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.energy-cell.active, .energy-cell:hover {
+    border-color: var(--electric-cyan);
+    background: rgba(0, 191, 255, 0.05);
+    box-shadow: 0 0 15px var(--glow-cyan);
+}
+
+.cell-title {
+    font-family: 'Orbitron', monospace;
+    color: var(--electric-cyan);
+    font-size: 13px;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.cell-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+}
+
+.wa-btn {
     position: fixed;
-    bottom: 15px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 9px;
-    color: #2D3E4F;
-    letter-spacing: 4px;
-}
-
-.wa-float {
-    position: fixed;
-    bottom: 30px;
-    right: 25px;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    padding: 12px 25px;
+    bottom: 20px;
+    right: 20px;
+    background: transparent;
+    border: 1px solid var(--electric-cyan);
+    color: var(--electric-cyan);
+    padding: 10px 20px;
     border-radius: 50px;
-    font-size: 12px;
-    text-decoration: none;
-    background: rgba(6,18,29,0.8);
-    backdrop-filter: blur(5px);
-    z-index: 200;
 }
 </style>
 </head>
 <body>
 
-<div class="nav">
-    <div>MESAN Ω</div>
-    <div style="font-size:9px;opacity:0.5;font-family:'Orbitron',sans-serif;">PREDICTIVE ANALYTICS</div>
+<div class="system-container">
+    <div style="font-family:'Orbitron',monospace; font-size:10px; color:var(--text-dim); letter-spacing:2px; margin-bottom:5px;">// CONSOLA DE DIAGNÓSTICO MESAN Ω</div>
+    <h1>Maestría Empresarial</h1>
+    <p class="intro-text">Todo formato ahora comparte la misma imagen de textura de consola.</p>
+    
+    <div class="input-field">
+        <label>Identificador de Formato</label>
+        <input type="text" placeholder="FMT-OMEGA-UNIT-001">
+    </div>
+
+    <div class="energy-cell active">
+        <div class="cell-title">ESTADO: HOMOLOGADO</div>
+        <div class="cell-desc">La imagen de fondo de la consola es idéntica en el Diagnóstico, la Landing y el Panel.</div>
+    </div>
 </div>
 
-<div class="frame">
-    <div class="sys-header">// Sistema de Inteligencia Empresarial</div>
-
-    <h1>
-        <span>Arquitectura y</span>
-        Soberanía Empresarial
-    </h1>
-
-    <p class="intro">Modelos matemáticos avanzados para detectar vulnerabilidades fiscales, laborales y operativas antes de que se conviertan en pasivos críticos.</p>
-
-    <div class="loss-box">
-        <div class="loss-label">Pérdida estimada en tiempo real</div>
-        <div class="loss-value" id="counter">$0 MXN</div>
-    </div>
-
-    <div class="buttons">
-        <button class="btn" onclick="diagnostico()">INICIAR DIAGNÓSTICO</button>
-        <button class="btn" onclick="repse()">VALIDAR REPSE</button>
-        <button class="btn" onclick="irEnterprise()">MESAN ENTERPRISE</button>
-    </div>
-
-    <div class="result-box" id="result">
-        <div id="result-text"></div>
-        <button class="btn-pago" onclick="pago()">DESBLOQUEAR DIAGNÓSTICO — $299 MXN</button>
-    </div>
-
-    <label class="terminos">
-        <input type="checkbox" id="terminos">
-        <span>Acepto <a href="/terminos.html">Términos</a> y <a href="/privacidad.html">Privacidad</a></span>
-    </label>
-
-    <p class="legal">
-        MESAN Ω utiliza modelos propietarios de análisis empresarial.<br>
-        Los resultados son interpretables únicamente dentro del ecosistema MESAN.<br>
-        Su uso externo puede generar conclusiones inexactas.
-    </p>
-</div>
-
-<div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
-<a href="https://wa.me/526861629643" target="_blank" class="wa-float">WhatsApp</a>
-
-<script>
-const API = "https://mesan-api.onrender.com";
-let perdida = 0;
-
-setInterval(() => {
-    perdida += Math.floor(Math.random() * 400 + 200);
-    document.getElementById("counter").innerText = "$" + perdida.toLocaleString() + " MXN";
-}, 1500);
-
-function diagnostico() {
-    const box = document.getElementById("result");
-    const txt = document.getElementById("result-text");
-    box.style.display = "block";
-    txt.innerHTML = "⏳ Analizando estructura empresarial...";
-    setTimeout(() => {
-        txt.innerHTML = `🚨 <b>EXPOSICIÓN DETECTADA</b><br><br>
-        — Riesgo fiscal SAT<br>
-        — Irregularidades IMSS<br>
-        — Incumplimiento operativo<br><br>
-        Impacto estimado:<br>
-        <b style="color:var(--alert)">$120,000 - $450,000 MXN anuales</b>`;
-    }, 1800);
-}
-
-function repse() {
-    const box = document.getElementById("result");
-    const txt = document.getElementById("result-text");
-    box.style.display = "block";
-    txt.innerHTML = "⏳ Consultando STPS...";
-    setTimeout(() => {
-        txt.innerHTML = `🚨 <b>REPSE — ATENCIÓN REQUERIDA</b><br><br>
-        Registro con riesgo detectado.<br>
-        Requiere validación inmediata.`;
-    }, 1500);
-}
-
-function irEnterprise() {
-    window.location.href = "/diagnostico.html";
-}
-
-async function pago() {
-    const check = document.getElementById("terminos");
-    if (!check.checked) {
-        alert("Acepta los Términos para continuar.");
-        return;
-    }
-    try {
-        const res = await fetch(API + "/crear-sesion-omega", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                cliente_id: "cliente_" + Date.now(),
-                sector: "PRIVADO",
-                monto: 299,
-                indice: 75
-            })
-        });
-        const data = await res.json();
-        if (data.url) window.location.href = data.url;
-        else alert("Error generando pago");
-    } catch(e) {
-        alert("Error de conexión");
-    }
-}
-</script>
+<a href="#" class="wa-btn">WhatsApp</a>
 
 </body>
 </html>
