@@ -18,7 +18,7 @@
     --alert: #FF3B30;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 70px 20px 40px; }
+body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; padding:70px 20px 40px; }
 .nav { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 20px; font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:3px; color:var(--text); background:rgba(1,5,8,0.97); border-bottom:1px solid var(--border); backdrop-filter:blur(10px); box-sizing:border-box; z-index:100; }
 .nav-actions { display:flex; gap:10px; align-items:center; }
 .nav-btn { background:transparent; border:1px solid var(--border); color:var(--dim); padding:5px 12px; font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:2px; cursor:pointer; border-radius:4px; transition:0.3s; }
@@ -50,9 +50,15 @@ body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sa
 .btn-action { padding:7px 14px; background:transparent; border:1px solid var(--border); color:var(--dim); font-size:9px; letter-spacing:1px; cursor:pointer; border-radius:4px; transition:0.3s; text-decoration:none; display:inline-block; }
 .btn-action:hover { border-color:var(--accent); color:var(--accent); }
 .btn-action.wa { border-color:var(--accent); color:var(--accent); }
+.btn-action.ia { border-color:#9B59B6; color:#9B59B6; }
+.btn-action.ia:hover { border-color:#9B59B6; background:rgba(155,89,182,0.1); }
+.btn-action.ia.loading { opacity:0.5; cursor:wait; }
 .card-select { background:var(--input-bg); border:1px solid var(--border); color:var(--accent); font-size:9px; padding:7px 10px; border-radius:4px; outline:none; cursor:pointer; }
 .giro-tag { display:inline-block; font-size:8px; padding:3px 10px; background:rgba(0,191,255,0.06); border:1px solid var(--border); color:var(--accent); border-radius:3px; letter-spacing:2px; margin-bottom:10px; text-transform:uppercase; font-family:'Orbitron',sans-serif; }
 .fecha { font-size:9px; color:var(--dim); }
+.ia-msg { display:none; margin-top:12px; padding:12px; background:rgba(155,89,182,0.08); border:1px solid rgba(155,89,182,0.3); border-radius:6px; font-size:11px; color:var(--text); line-height:1.7; }
+.ia-msg.show { display:block; }
+.ia-actions { display:flex; gap:8px; margin-top:10px; }
 .mapa-container { position:relative; width:100%; height:350px; background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:20px; }
 .mapa-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:url('https://upload.wikimedia.org/wikipedia/commons/5/5c/Mexico_states_map.svg') no-repeat center; background-size:80%; opacity:0.06; filter:invert(1) hue-rotate(180deg); }
 .node { position:absolute; width:10px; height:10px; border-radius:50%; cursor:pointer; animation:pulse 2s infinite; z-index:10; }
@@ -224,30 +230,35 @@ const coords = {
     VER:[63,58], MER:[78,63], CUN:[85,60]
 };
 
-document.getElementById("btnLogin").addEventListener("click", function() {
-    const key = document.getElementById("apiKeyInput").value.trim();
-    if (!key) { alert("Ingresa la API Key"); return; }
-    localStorage.setItem("mesan_key", key);
-    API_KEY = key;
-    document.getElementById("loginBox").style.display = "none";
-    mostrarUI();
-    cargarLeads();
-});
+const loginBox = document.getElementById("loginBox");
+const mainContent = document.getElementById("mainContent");
+const topbar = document.getElementById("topbar");
+const footer = document.getElementById("footer");
+const btnLogin = document.getElementById("btnLogin");
+const apiKeyInput = document.getElementById("apiKeyInput");
 
-document.getElementById("apiKeyInput").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") document.getElementById("btnLogin").click();
-});
-
-if (API_KEY) {
-    document.getElementById("loginBox").style.display = "none";
-    mostrarUI();
+function desbloquearSistema() {
+    loginBox.style.display = "none";
+    topbar.style.display = "flex";
+    mainContent.style.display = "block";
+    footer.style.display = "block";
     cargarLeads();
 }
 
-function mostrarUI() {
-    document.getElementById("topbar").style.display = "flex";
-    document.getElementById("mainContent").style.display = "block";
-    document.getElementById("footer").style.display = "block";
+btnLogin.addEventListener("click", function() {
+    const key = apiKeyInput.value.trim();
+    if (key === "") { alert("ERROR: SE REQUIERE LLAVE DE ACCESO"); return; }
+    localStorage.setItem("mesan_key", key);
+    API_KEY = key;
+    desbloquearSistema();
+});
+
+apiKeyInput.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") btnLogin.click();
+});
+
+if (localStorage.getItem("mesan_key")) {
+    desbloquearSistema();
 }
 
 function logout() {
@@ -315,149 +326,16 @@ function renderLeads(leads) {
 
     const sorted = [...leads].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
     let html = "";
-    sorted.forEach(l => {
+    sorted.forEach((l, i) => {
         const tipo = criticosList.includes(l.clasificacion) ? "critico"
                    : l.clasificacion === "MEDIO" ? "vulnerable" : "estable";
         const tel = (l.telefono || "").replace(/\D/g,"");
-        const waMsg = encodeURIComponent("Hola " + (l.nombre||"") + ", revisé tu diagnóstico MESAN Omega.\nScore: " + (l.score||0) + " — " + (l.clasificacion||"") + "\n¿Tienes 15 minutos?");
-        const waLink = tel ? `https://wa.me/52${tel}?text=${waMsg}` : "#";
+        const waLink = tel ? `https://wa.me/52${tel}?text=${encodeURIComponent("Hola " + (l.nombre||"") + ", revisé tu diagnóstico MESAN Omega.\nScore: " + (l.score||0) + " — " + (l.clasificacion||"") + "\n¿Tienes 15 minutos?")}` : "#";
         const giro = l.giro ? `<div class="giro-tag">${l.giro}</div>` : "";
+
         html += `
-        <div class="card ${tipo}">
+        <div class="card ${tipo}" id="card-${i}">
             ${giro}
             <div class="card-nombre">${l.nombre || "Sin nombre"}</div>
             <div class="card-info">
                 Score: <span>${l.score||0}</span> | ${l.clasificacion||"N/A"}<br>
-                ${l.email||"-"}<br>
-                ${l.telefono||"-"}<br>
-                Exposición: <span>$${(l.impacto_min||0).toLocaleString()} — $${(l.impacto_max||0).toLocaleString()} MXN</span><br>
-                <span class="fecha">📅 ${formatFecha(l.fecha)}</span>
-            </div>
-            <div class="card-actions">
-                <a href="${waLink}" target="_blank" class="btn-action wa">WHATSAPP</a>
-                <a href="tel:${l.telefono||""}" class="btn-action">LLAMAR</a>
-                <select class="card-select" onchange="update('${l.id}',this.value)">
-                    <option value="nuevo" ${l.estatus==="nuevo"?"selected":""}>NUEVO</option>
-                    <option value="contactado" ${l.estatus==="contactado"?"selected":""}>CONTACTADO</option>
-                    <option value="cerrado" ${l.estatus==="cerrado"?"selected":""}>CERRADO</option>
-                    <option value="perdido" ${l.estatus==="perdido"?"selected":""}>PERDIDO</option>
-                </select>
-            </div>
-        </div>`;
-    });
-    document.getElementById("leads").innerHTML = html;
-}
-
-function iniciarMapa(leads) {
-    const criticosList = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
-    const criticos = leads.filter(l => criticosList.includes(l.clasificacion));
-    document.getElementById("mapa-total").innerText = leads.length;
-    document.getElementById("mapa-criticos").innerText = criticos.length;
-    let impacto = 0;
-    leads.forEach(l => { impacto += (l.impacto_max || 0); });
-    document.getElementById("mapa-impacto").innerText = "$" + impacto.toLocaleString();
-
-    const container = document.getElementById("mapaContainer");
-    leads.forEach(l => {
-        const nivel = criticosList.includes(l.clasificacion) ? "critico"
-                    : l.clasificacion === "MEDIO" ? "medio" : "estable";
-        const nodo = document.createElement("div");
-        nodo.className = "node " + nivel;
-        const pos = coords[(l.giro||"").toUpperCase().substring(0,3)]
-                 || [10 + Math.random()*75, 25 + Math.random()*55];
-        nodo.style.left = pos[0] + "%";
-        nodo.style.top = pos[1] + "%";
-        nodo.onclick = () => abrirModal(l);
-        container.appendChild(nodo);
-    });
-
-    const altos = criticos.length;
-    const medios = leads.filter(l => l.clasificacion === "MEDIO").length;
-    const bajos = leads.length - altos - medios;
-
-    new Chart(document.getElementById("radarChart"), {
-        type: "radar",
-        data: { labels: ["CRÍTICO","MEDIO","ESTABLE"], datasets: [{ data: [altos,medios,bajos], borderColor: "#00BFFF", backgroundColor: "rgba(0,191,255,0.05)", pointBackgroundColor: "#00BFFF" }] },
-        options: { plugins: { legend: { display: false } }, scales: { r: { ticks: { color: "rgba(0,191,255,0.4)", font: { size: 8 } }, grid: { color: "rgba(26,59,97,0.4)" }, pointLabels: { color: "#5E7A94", font: { size: 9 } } } } }
-    });
-}
-
-function iniciarEstrategico() {
-    new Chart(document.getElementById("gaugeChart"), {
-        type: 'doughnut',
-        data: { datasets: [{ data: [68,32], backgroundColor: ['#00BFFF','rgba(26,59,97,0.3)'], borderWidth: 0 }] },
-        options: { rotation: -90, circumference: 180, plugins: { legend: { display: false } }, cutout: '70%' }
-    });
-
-    new Chart(document.getElementById("lineChart"), {
-        type: 'line',
-        data: { labels: ['Ene','Feb','Mar','Abr','May'], datasets: [{ data: [20,40,35,60,80], borderColor: '#00BFFF', backgroundColor: 'rgba(0,191,255,0.05)', tension: 0.4, fill: true, pointBackgroundColor: '#00BFFF' }] },
-        options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5E7A94', font: { size: 9 } }, grid: { color: 'rgba(26,59,97,0.3)' } }, y: { ticks: { color: '#5E7A94', font: { size: 9 } }, grid: { color: 'rgba(26,59,97,0.3)' } } } }
-    });
-}
-
-function abrirModal(l) {
-    document.getElementById("modal").style.display = "flex";
-    document.getElementById("m-nombre").innerText = (l.nombre||"Sin nombre").toUpperCase();
-    document.getElementById("m-score").innerText = l.score || 0;
-    document.getElementById("m-nivel").innerText = l.clasificacion || "N/A";
-    document.getElementById("m-impacto").innerText = "$" + (l.impacto_max||0).toLocaleString() + " MXN";
-    document.getElementById("m-email").innerText = l.email || "-";
-    document.getElementById("m-tel").innerText = l.telefono || "-";
-    const tel = (l.telefono||"").replace(/\D/g,"");
-    const msg = encodeURIComponent("Hola " + (l.nombre||"") + "\nScore: " + (l.score||0) + "\n¿Tienes 15 minutos?");
-    document.getElementById("m-wa").href = tel ? `https://wa.me/52${tel}?text=${msg}` : "#";
-}
-
-function cerrarModal() {
-    document.getElementById("modal").style.display = "none";
-}
-
-async function update(id, estatus) {
-    try {
-        await fetch(API + "/lead/" + id, {
-            method: "PUT",
-            headers: {"Content-Type":"application/json","api-key":API_KEY},
-            body: JSON.stringify({estatus})
-        });
-    } catch(e) { alert("Error"); }
-}
-
-async function ejecutarMotor() {
-    const precio = parseFloat(document.getElementById("precio").value);
-    const empleados = parseInt(document.getElementById("empleados").value);
-    const zona = document.getElementById("zona").value;
-    if (!precio || !empleados) { alert("Completa todos los campos"); return; }
-    try {
-        const res = await fetch(API + "/pro/diagnostico-financiero", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ precio_cliente: precio, empleados, zona })
-        });
-        const r = await res.json();
-        const f = r.financiero || {};
-        const p = r.precios || {};
-        const d = r.decision || {};
-        document.getElementById("resultado").classList.add("visible");
-        document.getElementById("nivel").innerText = "● " + (r.clasificacion||"—");
-        document.getElementById("decision").innerText = (d.decision||"") + " — " + (d.mensaje||"");
-        document.getElementById("ingreso").innerText = "$" + (f.ingreso||0).toLocaleString();
-        document.getElementById("costo").innerText = "$" + (f.costo_total||0).toLocaleString();
-        document.getElementById("utilidad").innerText = "$" + (f.utilidad||0).toLocaleString();
-        document.getElementById("margen").innerText = (f.margen||0) + "%";
-        document.getElementById("reserva").innerText = "$" + (f.reserva||0).toLocaleString();
-        document.getElementById("salario").innerText = "$" + (f.salario||0).toLocaleString();
-        document.getElementById("p-min").innerText = "$" + (p.precio_minimo||0).toLocaleString();
-        document.getElementById("p-cierre").innerText = "$" + (p.precio_cierre||0).toLocaleString();
-        document.getElementById("p-ideal").innerText = "$" + (p.precio_objetivo||0).toLocaleString();
-    } catch(e) { alert("Error de conexión"); }
-}
-
-setInterval(() => {
-    countdown--;
-    document.getElementById("timer").innerText = countdown + "s";
-    if (countdown <= 0) cargarLeads();
-}, 1000);
-</script>
-</body>
-</html>
