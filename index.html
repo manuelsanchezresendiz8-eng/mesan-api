@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | Diagnóstico</title>
+<title>MESAN Ω | Diagnóstico de Inteligencia</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
+/* --- CORE VISUAL MESAN Ω --- */
 :root {
-    --bg: #010508;               /* Fondo Negro Medianoche Puro */
-    --panel: #06121D;            /* Fondo de Módulos */
+    --bg: #010508;               /* Negro Medianoche */
+    --panel: #06121D;            /* Azul Marino de Módulos */
     --accent: #00BFFF;           /* Cian Eléctrico */
     --border: #1A3B61;           /* Azul Metálico Industrial */
     --text: #FFFFFF;             /* Blanco Puro */
@@ -23,24 +24,21 @@ body {
     color: var(--text);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 25px 20px;
 }
 
 .system-container {
-    max-width: 450px;
+    max-width: 480px;
     width: 100%;
 }
 
-.system-header {
-    margin-bottom: 30px;
-}
-
+/* Header de Alta Jerarquía */
 .tagline {
     font-family: 'Orbitron', monospace;
-    font-size: 9px;
+    font-size: 10px;
     letter-spacing: 3px;
     color: var(--dim);
     margin-bottom: 8px;
@@ -52,26 +50,32 @@ h1 {
     font-size: 26px;
     color: var(--accent);
     letter-spacing: 1px;
+    margin-bottom: 15px;
 }
 
-p.intro {
+.intro-text {
     font-size: 13px;
     color: var(--dim);
-    margin-top: 10px;
     line-height: 1.5;
+    margin-bottom: 35px;
 }
 
-.section-title {
+/* Secciones de Datos */
+.section-marker {
     font-family: 'Orbitron', monospace;
     font-size: 11px;
-    color: var(--dim);
+    color: var(--accent);
     border-bottom: 1px solid var(--border);
-    padding-bottom: 5px;
-    margin: 35px 0 20px 0;
+    padding-bottom: 6px;
+    margin: 30px 0 20px 0;
     letter-spacing: 2px;
 }
 
-/* Campos de entrada estilo Consola */
+/* Inputs de Consola */
+.input-field {
+    margin-bottom: 25px;
+}
+
 label {
     display: block;
     font-size: 10px;
@@ -83,107 +87,108 @@ label {
 
 input {
     width: 100%;
-    background: var(--panel);
+    background: #0A1929;
     border: 1px solid var(--border);
-    padding: 14px;
+    padding: 15px;
     color: var(--text);
     border-radius: 4px;
     font-family: 'Inter', sans-serif;
     outline: none;
-    margin-bottom: 20px;
-    transition: 0.3s;
+    transition: all 0.3s ease;
 }
 
 input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 10px var(--glow);
+    box-shadow: 0 0 12px var(--glow);
 }
 
-/* Módulos Interactivos (Cards) */
-.module-card {
+/* Módulos de Decisión (Cards) */
+.decision-card {
     background: var(--panel);
     border: 1px solid var(--border);
-    padding: 18px;
+    padding: 20px;
     border-radius: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s ease;
 }
 
-.module-card:hover, .module-card.active {
+.decision-card:hover, .decision-card.active {
     border-color: var(--accent);
     background: rgba(0, 191, 255, 0.05);
     box-shadow: 0 0 15px var(--glow);
 }
 
-.module-title {
+.card-title {
     font-family: 'Orbitron', monospace;
     color: var(--accent);
-    font-size: 12px;
-    margin-bottom: 5px;
+    font-size: 13px;
     letter-spacing: 1px;
+    margin-bottom: 6px;
 }
 
-.module-desc {
+.card-desc {
     font-size: 11px;
     color: var(--dim);
     line-height: 1.4;
 }
 
-.whatsapp-float {
+/* Botón Flotante WhatsApp Homologado */
+.wa-float {
     position: fixed;
-    bottom: 20px;
+    bottom: 25px;
     right: 20px;
-    background: rgba(6, 18, 29, 0.9);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 8px 15px;
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 10px 20px;
     border-radius: 50px;
     font-size: 11px;
+    font-family: 'Orbitron', sans-serif;
     text-decoration: none;
+    box-shadow: 0 0 10px var(--glow);
 }
 </style>
 </head>
 <body>
 
 <div class="system-container">
-    <div class="system-header">
-        <div class="tagline">// SISTEMA DE INTELIGENCIA EMPRESARIAL</div>
-        <h1>MESAN Omega</h1>
-        <p class="intro">Responde 8 preguntas y te digo exactamente dónde está perdiendo dinero tu empresa.</p>
+    <div class="tagline">// SISTEMA DE INTELIGENCIA EMPRESARIAL</div>
+    <h1>MESAN Omega</h1>
+    <p class="intro-text">Responde 8 preguntas y te digo exactamente dónde está perdiendo dinero tu empresa.</p>
+
+    <div class="section-marker">01 — DATOS DE CONTACTO</div>
+    
+    <div class="input-field">
+        <label>Nombre de tu empresa</label>
+        <input type="text" placeholder="Ej. Constructora ABC">
     </div>
 
-    <div class="section-label">01 — DATOS DE CONTACTO</div>
-    
-    <label>Nombre de tu empresa</label>
-    <input type="text" placeholder="Constructora ABC">
+    <div class="input-field">
+        <label>Email Corporativo</label>
+        <input type="email" placeholder="tu@empresa.com">
+    </div>
 
-    <label>Email</label>
-    <input type="email" placeholder="tu@empresa.com">
-
-    <label>Teléfono WhatsApp</label>
-    <input type="tel" placeholder="686 123 4567">
-
-    <div class="section-label">02 — TIPO DE EMPRESA</div>
+    <div class="section-marker">02 — NATURALEZA OPERATIVA</div>
     <p style="font-size: 12px; color: var(--dim); margin-bottom: 15px;">¿Tu empresa subcontrata servicios o los presta?</p>
 
-    <div class="module-card active">
-        <div class="module-title">PRESTO SERVICIOS</div>
-        <div class="module-desc">Limpieza, seguridad, mantenimiento, outsourcing, REPSE.</div>
+    <div class="decision-card active">
+        <div class="card-title">PRESTO SERVICIOS</div>
+        <div class="card-desc">Limpieza, seguridad, mantenimiento, outsourcing, REPSE.</div>
     </div>
 
-    <div class="module-card">
-        <div class="module-title">SUBCONTRATO SERVICIOS</div>
-        <div class="module-desc">Soy empresa que contrata proveedores externos.</div>
+    <div class="decision-card">
+        <div class="card-title">SUBCONTRATO SERVICIOS</div>
+        <div class="card-desc">Soy empresa que contrata proveedores externos.</div>
     </div>
 
-    <div class="module-card">
-        <div class="module-title">QUIERO CREAR UNA EMPRESA</div>
-        <div class="module-desc">Tengo un proyecto y quiero saber si es viable.</div>
+    <div class="decision-card">
+        <div class="card-title">QUIERO CREAR UNA EMPRESA</div>
+        <div class="card-desc">Tengo un proyecto y quiero saber si es viable.</div>
     </div>
 </div>
 
-<a href="#" class="whatsapp-float">WhatsApp</a>
+<a href="#" class="wa-float">WHATSAPP</a>
 
 </body>
 </html>
