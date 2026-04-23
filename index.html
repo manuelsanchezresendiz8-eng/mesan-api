@@ -3,192 +3,165 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | Diagnóstico de Inteligencia</title>
+<title>MESAN Ω | Vista Previa</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-/* --- CORE VISUAL MESAN Ω --- */
-:root {
-    --bg: #010508;               /* Negro Medianoche */
-    --panel: #06121D;            /* Azul Marino de Módulos */
-    --accent: #00BFFF;           /* Cian Eléctrico */
-    --border: #1A3B61;           /* Azul Metálico Industrial */
-    --text: #FFFFFF;             /* Blanco Puro */
-    --dim: #5E7A94;              /* Gris de Apoyo */
-    --glow: rgba(0, 191, 255, 0.2);
-}
+    /* --- CONFIGURACIÓN DE SOBERANÍA EMPRESARIAL --- */
+    :root {
+        --bg: #010508;               /* Fondo Negro Absoluto */
+        --panel: #06121D;            /* Azul Profundo */
+        --accent: #00BFFF;           /* Cian Eléctrico */
+        --border: #1A3B61;           /* Azul Metálico */
+        --text: #FFFFFF;             /* Blanco Puro */
+        --dim: #5E7A94;              /* Gris Técnico */
+        --glow: rgba(0, 191, 255, 0.2);
+    }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+    * { margin:0; padding:0; box-sizing:border-box; }
 
-body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 25px 20px;
-}
+    body {
+        background-color: var(--bg);
+        /* Textura unificada de consola */
+        background-image: radial-gradient(circle at top right, rgba(26, 59, 97, 0.05), transparent);
+        color: var(--text);
+        font-family: 'Inter', sans-serif;
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+        min-height: 100vh;
+    }
 
-.system-container {
-    max-width: 480px;
-    width: 100%;
-}
+    .preview-frame {
+        max-width: 440px;
+        width: 100%;
+    }
 
-/* Header de Alta Jerarquía */
-.tagline {
-    font-family: 'Orbitron', monospace;
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--dim);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-}
+    /* Cabecera del Sistema */
+    .sys-header {
+        font-size: 11px;
+        color: var(--dim);
+        letter-spacing: 2.5px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
 
-h1 {
-    font-family: 'Orbitron', monospace;
-    font-size: 26px;
-    color: var(--accent);
-    letter-spacing: 1px;
-    margin-bottom: 15px;
-}
+    h1 {
+        font-family: 'Orbitron', monospace;
+        font-size: 28px;
+        color: var(--accent);
+        margin-bottom: 20px;
+        letter-spacing: 1.5px;
+    }
 
-.intro-text {
-    font-size: 13px;
-    color: var(--dim);
-    line-height: 1.5;
-    margin-bottom: 35px;
-}
+    .intro {
+        font-size: 14px;
+        color: var(--dim);
+        line-height: 1.6;
+        margin-bottom: 40px;
+    }
 
-/* Secciones de Datos */
-.section-marker {
-    font-family: 'Orbitron', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 6px;
-    margin: 30px 0 20px 0;
-    letter-spacing: 2px;
-}
+    /* Marcadores 01, 02 */
+    .step-marker {
+        font-family: 'Orbitron', monospace;
+        font-size: 11px;
+        color: var(--accent);
+        border-bottom: 1px solid rgba(26, 59, 97, 0.4);
+        padding-bottom: 10px;
+        margin: 30px 0 25px 0;
+        letter-spacing: 2px;
+    }
 
-/* Inputs de Consola */
-.input-field {
-    margin-bottom: 25px;
-}
+    /* Terminal Inputs */
+    .field { margin-bottom: 25px; }
+    
+    label {
+        display: block;
+        font-size: 10px;
+        color: var(--dim);
+        margin-bottom: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
 
-label {
-    display: block;
-    font-size: 10px;
-    text-transform: uppercase;
-    color: var(--dim);
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-}
+    input {
+        width: 100%;
+        background: #0A1929;
+        border: 1px solid var(--border);
+        padding: 16px;
+        color: var(--text);
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;
+        transition: 0.3s ease;
+    }
 
-input {
-    width: 100%;
-    background: #0A1929;
-    border: 1px solid var(--border);
-    padding: 15px;
-    color: var(--text);
-    border-radius: 4px;
-    font-family: 'Inter', sans-serif;
-    outline: none;
-    transition: all 0.3s ease;
-}
+    input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 15px var(--glow);
+    }
 
-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 12px var(--glow);
-}
+    /* Módulos de Selección (Cards) */
+    .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 24px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
 
-/* Módulos de Decisión (Cards) */
-.decision-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    padding: 20px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+    .card.active {
+        border-color: var(--accent);
+        background: rgba(0, 191, 255, 0.04);
+        box-shadow: 0 0 20px var(--glow);
+    }
 
-.decision-card:hover, .decision-card.active {
-    border-color: var(--accent);
-    background: rgba(0, 191, 255, 0.05);
-    box-shadow: 0 0 15px var(--glow);
-}
+    .card-title {
+        font-family: 'Orbitron', monospace;
+        color: var(--accent);
+        font-size: 14px;
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+    }
 
-.card-title {
-    font-family: 'Orbitron', monospace;
-    color: var(--accent);
-    font-size: 13px;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-}
+    .card-info {
+        font-size: 11px;
+        color: var(--dim);
+        line-height: 1.5;
+    }
 
-.card-desc {
-    font-size: 11px;
-    color: var(--dim);
-    line-height: 1.4;
-}
+    /* Footer de Advertencia */
+    .footer {
+        margin-top: 50px;
+        text-align: center;
+        font-size: 10px;
+        color: #2D3E4F;
+        line-height: 1.8;
+    }
 
-/* Botón Flotante WhatsApp Homologado */
-.wa-float {
-    position: fixed;
-    bottom: 25px;
-    right: 20px;
-    background: var(--panel);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-size: 11px;
-    font-family: 'Orbitron', sans-serif;
-    text-decoration: none;
-    box-shadow: 0 0 10px var(--glow);
-}
+    .whatsapp {
+        position: fixed;
+        bottom: 30px;
+        right: 25px;
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-size: 12px;
+        text-decoration: none;
+        background: rgba(6, 18, 29, 0.8);
+        backdrop-filter: blur(5px);
+    }
 </style>
 </head>
 <body>
 
-<div class="system-container">
-    <div class="tagline">// SISTEMA DE INTELIGENCIA EMPRESARIAL</div>
+<div class="preview-frame">
+    <div class="sys-header">// SISTEMA DE INTELIGENCIA EMPRESARIAL</div>
     <h1>MESAN Omega</h1>
-    <p class="intro-text">Responde 8 preguntas y te digo exactamente dónde está perdiendo dinero tu empresa.</p>
+    <p class="intro">Responde y detecta exactamente dónde está perdiendo dinero tu empresa.</p>
 
-    <div class="section-marker">01 — DATOS DE CONTACTO</div>
+    <div class="step-marker">01 — DATOS DE CONTACTO</div>
     
-    <div class="input-field">
-        <label>Nombre de tu empresa</label>
-        <input type="text" placeholder="Ej. Constructora ABC">
-    </div>
-
-    <div class="input-field">
-        <label>Email Corporativo</label>
-        <input type="email" placeholder="tu@empresa.com">
-    </div>
-
-    <div class="section-marker">02 — NATURALEZA OPERATIVA</div>
-    <p style="font-size: 12px; color: var(--dim); margin-bottom: 15px;">¿Tu empresa subcontrata servicios o los presta?</p>
-
-    <div class="decision-card active">
-        <div class="card-title">PRESTO SERVICIOS</div>
-        <div class="card-desc">Limpieza, seguridad, mantenimiento, outsourcing, REPSE.</div>
-    </div>
-
-    <div class="decision-card">
-        <div class="card-title">SUBCONTRATO SERVICIOS</div>
-        <div class="card-desc">Soy empresa que contrata proveedores externos.</div>
-    </div>
-
-    <div class="decision-card">
-        <div class="card-title">QUIERO CREAR UNA EMPRESA</div>
-        <div class="card-desc">Tengo un proyecto y quiero saber si es viable.</div>
-    </div>
-</div>
-
-<a href="#" class="wa-float">WHATSAPP</a>
-
-</body>
-</html>
+    <div class
