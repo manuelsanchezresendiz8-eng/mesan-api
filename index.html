@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESAN Ω | Diagnóstico Unificado</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>MESAN Ω | Réplica Técnica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
+        /* --- PALETA INMUTABLE MESAN Ω --- */
         :root {
             --bg: #010508;
             --panel: #06121D;
@@ -13,131 +14,152 @@
             --border: #1A3B61;
             --text: #FFFFFF;
             --dim: #5E7A94;
-            --glow: rgba(0, 191, 255, 0.25);
+            --input-bg: #0A1929;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--bg);
             color: var(--text);
             font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            align-items: center;
         }
 
-        .container { max-width: 400px; width: 100%; }
-
-        /* HEADER IDENTIDAD */
-        .brand {
+        /* CABECERA DE SISTEMA */
+        .system-label {
             font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            text-align: center;
+            font-size: 10px;
+            color: var(--dim);
             letter-spacing: 2px;
-            margin-bottom: 20px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
         }
 
-        .main-title {
+        .main-brand {
             font-family: 'Orbitron', sans-serif;
-            font-size: 24px;
-            text-align: center;
-            line-height: 1.2;
-            margin-bottom: 30px;
-        }
-
-        .main-title span { color: var(--accent); }
-
-        /* BOTÓN DE ACCIÓN */
-        .btn-main {
-            border: 1px solid var(--accent);
-            background: rgba(0, 191, 255, 0.05);
+            font-size: 26px;
             color: var(--accent);
-            font-family: 'Orbitron', sans-serif;
-            padding: 15px;
-            text-align: center;
-            border-radius: 4px;
-            letter-spacing: 1.5px;
-            box-shadow: 0 0 15px var(--glow);
-            margin-bottom: 30px;
-            cursor: pointer;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
         }
 
-        /* TARJETAS DE SELECCIÓN */
-        .card {
+        .sub-desc {
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+            margin-bottom: 32px;
+            opacity: 0.8;
+        }
+
+        /* SECCIONES NUMERADAS */
+        .section-header {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(26, 59, 97, 0.4);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        /* FORMULARIO TÉCNICO */
+        .field { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            color: var(--dim);
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            padding: 14px 16px;
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+
+        /* CONTENEDORES DE SELECCIÓN */
+        .select-card {
             background: var(--panel);
             border: 1px solid var(--border);
-            padding: 18px;
-            border-radius: 6px;
+            padding: 20px;
+            border-radius: 8px;
             margin-bottom: 12px;
-            position: relative;
             cursor: pointer;
         }
 
-        .card.active {
+        .select-card.active {
             border-color: var(--accent);
-            box-shadow: 0 0 10px var(--glow);
+            box-shadow: 0 0 12px rgba(0, 191, 255, 0.1);
         }
 
         .card-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
+            font-size: 13px;
+            color: var(--accent);
             letter-spacing: 1px;
             margin-bottom: 4px;
         }
 
-        .card-subtitle {
-            color: var(--dim);
+        .card-info {
             font-size: 11px;
+            color: var(--dim);
         }
 
-        /* ICONOS DE ESTADO */
-        .status-icon {
-            position: absolute;
-            right: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 10px;
-            height: 10px;
-            background: var(--accent);
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-        }
-
-        /* WHATSAPP FLOTANTE */
-        .whatsapp {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            border: 1px solid var(--accent);
-            padding: 10px 20px;
+        /* WHATSAPP INTEGRADO */
+        .wa-float {
+            align-self: flex-end;
+            margin-top: 40px;
+            border: 1px solid var(--border);
+            padding: 10px 24px;
             border-radius: 20px;
-            color: var(--accent);
+            color: var(--text);
             font-size: 12px;
-            background: var(--bg);
+            background: #051019;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="brand">MESAN <span style="color:var(--accent)">Ω</span></div>
-        
-        <h1 class="main-title">Arquitectura y <br><span>Soberanía Empresarial</span></h1>
 
-        <div class="btn-main">INICIAR DIAGNÓSTICO</div>
-
-        <div class="card">
-            <div class="card-title">MESAN ENTERPRISE</div>
-            <div class="card-subtitle">Auditoría completa</div>
-            <div class="status-icon"></div>
-        </div>
-
-        <div class="card active">
-            <div class="card-title" style="color:var(--accent)">MESAN Ω</div>
-            <div class="card-subtitle">Predicción avanzada</div>
-            <div class="status-icon" style="background:#8A2BE2"></div>
-        </div>
-    </div>
+    <div class="system-label">// Sistema de Inteligencia Empresarial</div>
+    <div class="main-brand">MESAN Omega</div>
     
-    <div class="whatsapp">WhatsApp</div>
+    <p class="sub-desc">Responde 8 preguntas y te digo exactamente dónde está perdiendo dinero tu empresa.</p>
+
+    <div class="section-header">01 — Datos de contacto</div>
+
+    <div class="field">
+        <label>Nombre de tu empresa</label>
+        <input type="text" placeholder="Constructora ABC">
+    </div>
+
+    <div class="section-header">02 — Tipo de empresa</div>
+
+    <div class="select-card active">
+        <div class="card-title">Presto Servicios</div>
+        <div class="card-info">Limpieza, seguridad, mantenimiento, outsourcing, REPSE.</div>
+    </div>
+
+    <div class="select-card">
+        <div class="card-title">Subcontrato Servicios</div>
+        <div class="card-info">Soy empresa que contrata proveedores externos.</div>
+    </div>
+
+    <a href="#" class="wa-float">WhatsApp</a>
+
 </body>
 </html>
