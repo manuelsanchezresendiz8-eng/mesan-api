@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω</title>
+<title>MESAN Ω | Arquitectura y Soberanía</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -13,6 +13,7 @@
     --text: #FFFFFF;
     --dim: #5E7A94;
     --border: #1A3B61;
+    --alert: #FF3B30;
     --border-glow: rgba(0,191,255,0.2);
 }
 
@@ -66,19 +67,14 @@ body {
 .hero h1 {
     font-family: 'Orbitron', monospace;
     font-size: clamp(1.8rem, 6vw, 3rem);
-    color: var(--accent);
+    color: var(--text);
     margin-bottom: 15px;
     line-height: 1.1;
     letter-spacing: 3px;
 }
 
-.hero h1 span {
-    display: block;
-    font-size: 0.5em;
-    color: var(--text);
-    letter-spacing: 5px;
-    margin-bottom: 8px;
-    opacity: 0.7;
+.hero h1 span.highlight {
+    color: var(--accent);
 }
 
 .hero p {
@@ -98,8 +94,9 @@ body {
 
 .counter span {
     font-family: 'Orbitron', monospace;
-    font-size: 16px;
-    color: var(--accent);
+    font-size: 20px;
+    color: var(--alert);
+    font-weight: bold;
 }
 
 .buttons {
@@ -153,8 +150,8 @@ body {
     margin-top: 15px;
     padding: 13px;
     background: var(--panel);
-    border: 1px solid var(--border);
-    color: var(--accent);
+    border: 1px solid var(--alert);
+    color: var(--text);
     font-family: 'Orbitron', monospace;
     font-size: 10px;
     letter-spacing: 2px;
@@ -165,9 +162,8 @@ body {
 }
 
 .btn-pago:hover {
-    border-color: var(--accent);
-    background: rgba(0,191,255,0.05);
-    box-shadow: 0 0 15px var(--border-glow);
+    background: var(--alert);
+    color: var(--text);
 }
 
 .terminos {
@@ -230,8 +226,8 @@ body {
     <div class="hero-tag">// Sistema de Inteligencia Empresarial</div>
 
     <h1>
-        <span>Arquitectura y</span>
-        Soberanía<br>Empresarial
+        Arquitectura y<br>
+        <span class="highlight">Soberanía Empresarial</span>
     </h1>
 
     <p>Modelos matemáticos avanzados para detectar vulnerabilidades fiscales, laborales y operativas antes de que se conviertan en pasivos críticos.</p>
@@ -248,7 +244,7 @@ body {
     </div>
 
     <div class="result-box" id="result">
-        <span id="result-text"></span>
+        <div id="result-text"></div>
         <button class="btn-pago" onclick="pago()">DESBLOQUEAR DIAGNÓSTICO — $299 MXN</button>
     </div>
 
@@ -258,8 +254,8 @@ body {
     </label>
 
     <p class="legal">
-        MESAN Ω utiliza modelos propietarios de análisis empresarial.
-        Los resultados son interpretables únicamente dentro del ecosistema MESAN.
+        MESAN Ω utiliza modelos propietarios de análisis empresarial.<br>
+        Los resultados son interpretables únicamente dentro del ecosistema MESAN.<br>
         Su uso externo puede generar conclusiones inexactas.
     </p>
 </div>
@@ -288,7 +284,7 @@ function diagnostico() {
         — Irregularidades IMSS<br>
         — Incumplimiento operativo<br><br>
         Impacto estimado:<br>
-        <b style="color:var(--accent)">$120,000 - $450,000 MXN anuales</b>`;
+        <b style="color:var(--alert)">$120,000 - $450,000 MXN anuales</b>`;
     }, 1800);
 }
 
