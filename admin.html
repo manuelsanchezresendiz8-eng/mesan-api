@@ -16,6 +16,7 @@
     --dim: #5E7A94;
     --input-bg: #0A1929;
     --alert: #FF3B30;
+    --ia: #9B59B6;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; padding:70px 20px 40px; }
@@ -34,6 +35,8 @@ body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-s
 .tab { padding:12px 16px; background:transparent; border:none; border-bottom:2px solid transparent; color:var(--dim); font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:2px; cursor:pointer; transition:0.3s; white-space:nowrap; }
 .tab:hover { color:var(--accent); }
 .tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tab.ia-tab { color:var(--ia); }
+.tab.ia-tab.active { color:var(--ia); border-bottom-color:var(--ia); }
 .tab-content { display:none; }
 .tab-content.active { display:block; }
 .stats { display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
@@ -50,15 +53,136 @@ body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-s
 .btn-action { padding:7px 14px; background:transparent; border:1px solid var(--border); color:var(--dim); font-size:9px; letter-spacing:1px; cursor:pointer; border-radius:4px; transition:0.3s; text-decoration:none; display:inline-block; }
 .btn-action:hover { border-color:var(--accent); color:var(--accent); }
 .btn-action.wa { border-color:var(--accent); color:var(--accent); }
-.btn-action.ia { border-color:#9B59B6; color:#9B59B6; }
-.btn-action.ia:hover { border-color:#9B59B6; background:rgba(155,89,182,0.1); }
-.btn-action.ia.loading { opacity:0.5; cursor:wait; }
 .card-select { background:var(--input-bg); border:1px solid var(--border); color:var(--accent); font-size:9px; padding:7px 10px; border-radius:4px; outline:none; cursor:pointer; }
 .giro-tag { display:inline-block; font-size:8px; padding:3px 10px; background:rgba(0,191,255,0.06); border:1px solid var(--border); color:var(--accent); border-radius:3px; letter-spacing:2px; margin-bottom:10px; text-transform:uppercase; font-family:'Orbitron',sans-serif; }
 .fecha { font-size:9px; color:var(--dim); }
-.ia-msg { display:none; margin-top:12px; padding:12px; background:rgba(155,89,182,0.08); border:1px solid rgba(155,89,182,0.3); border-radius:6px; font-size:11px; color:var(--text); line-height:1.7; }
-.ia-msg.show { display:block; }
-.ia-actions { display:flex; gap:8px; margin-top:10px; }
+
+/* CONSULTOR IA */
+.ia-console {
+    background: var(--panel);
+    border: 1px solid rgba(155,89,182,0.4);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.ia-console-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--ia);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.ia-console-sub {
+    font-size: 11px;
+    color: var(--dim);
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.ia-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    border-radius: 6px;
+    outline: none;
+    resize: vertical;
+    box-sizing: border-box;
+    line-height: 1.6;
+    transition: 0.3s;
+}
+
+.ia-textarea:focus { border-color: rgba(155,89,182,0.6); }
+.ia-textarea::placeholder { color: var(--dim); opacity: 0.6; }
+
+.btn-ia {
+    width: 100%;
+    padding: 14px;
+    background: var(--panel);
+    border: 1px solid var(--ia);
+    color: var(--ia);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.3s;
+    margin-top: 12px;
+}
+
+.btn-ia:hover { background: rgba(155,89,182,0.08); box-shadow: 0 0 15px rgba(155,89,182,0.2); }
+.btn-ia:disabled { opacity: 0.5; cursor: wait; }
+
+.ia-result {
+    display: none;
+    margin-top: 20px;
+    background: rgba(155,89,182,0.06);
+    border: 1px solid rgba(155,89,182,0.3);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.ia-result.show { display: block; }
+
+.ia-result-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    color: var(--ia);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.ia-result-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+.ia-result-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.ia-history {
+    margin-top: 20px;
+}
+
+.ia-history-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.ia-history-item {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    font-size: 11px;
+    color: var(--dim);
+}
+
+.ia-history-item .pregunta { color: var(--accent); margin-bottom: 6px; font-style: italic; }
+.ia-history-item .respuesta { color: var(--text); line-height: 1.6; }
+
 .mapa-container { position:relative; width:100%; height:350px; background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:20px; }
 .mapa-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:url('https://upload.wikimedia.org/wikipedia/commons/5/5c/Mexico_states_map.svg') no-repeat center; background-size:80%; opacity:0.06; filter:invert(1) hue-rotate(180deg); }
 .node { position:absolute; width:10px; height:10px; border-radius:50%; cursor:pointer; animation:pulse 2s infinite; z-index:10; }
@@ -118,8 +242,10 @@ body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-s
         <button class="tab" onclick="cambiarTab('mapa',this)">MAPA</button>
         <button class="tab" onclick="cambiarTab('estrategico',this)">ESTRATÉGICO</button>
         <button class="tab" onclick="cambiarTab('motor',this)">MOTOR</button>
+        <button class="tab ia-tab" onclick="cambiarTab('ia',this)">🧠 CONSULTOR IA</button>
     </div>
 
+    <!-- TAB LEADS -->
     <div id="tab-leads" class="tab-content active">
         <div class="stats">
             <div class="stat"><span class="stat-num" id="total">0</span><div class="stat-lbl">Total</div></div>
@@ -129,6 +255,7 @@ body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-s
         <div id="leads"></div>
     </div>
 
+    <!-- TAB MAPA -->
     <div id="tab-mapa" class="tab-content">
         <div class="stats">
             <div class="stat"><span class="stat-num" id="mapa-total">0</span><div class="stat-lbl">Empresas</div></div>
@@ -144,6 +271,7 @@ body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-s
         </div>
     </div>
 
+    <!-- TAB ESTRATÉGICO -->
     <div id="tab-estrategico" class="tab-content">
         <div class="chart-card">
             <h3>IMSE — Salud Empresarial</h3>
@@ -162,6 +290,7 @@ body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-s
         </div>
     </div>
 
+    <!-- TAB MOTOR -->
     <div id="tab-motor" class="tab-content">
         <div class="field">
             <label>Precio del servicio ($)</label>
@@ -197,6 +326,35 @@ body { background-color:var(--bg); color:var(--text); font-family:'Inter',sans-s
             </div>
         </div>
     </div>
+
+    <!-- TAB CONSULTOR IA -->
+    <div id="tab-ia" class="tab-content">
+        <div class="ia-console">
+            <div class="ia-console-title">🧠 Consultor IA — MESAN Omega</div>
+            <div class="ia-console-sub">Describe el problema de tu cliente y la IA generará un análisis profesional y un mensaje listo para WhatsApp.</div>
+            <textarea
+                class="ia-textarea"
+                id="ia-input"
+                placeholder="Ejemplo: Cliente tiene empresa de limpieza con 8 empleados, ninguno registrado en IMSS, facturas irregulares y tiene inspección programada la próxima semana. ¿Cómo le explico el riesgo y qué le recomiendo?"
+            ></textarea>
+            <button class="btn-ia" id="btn-ia" onclick="consultarIA()">ANALIZAR CON IA</button>
+        </div>
+
+        <div class="ia-result" id="ia-result">
+            <div class="ia-result-title">Análisis MESAN Omega</div>
+            <div class="ia-result-text" id="ia-result-text"></div>
+            <div class="ia-result-actions">
+                <button class="btn-action wa" onclick="iaAWhatsApp()">ENVIAR POR WHATSAPP</button>
+                <button class="btn-action" onclick="copiarIA()">COPIAR</button>
+                <button class="btn-action" onclick="limpiarIA()">NUEVA CONSULTA</button>
+            </div>
+        </div>
+
+        <div class="ia-history" id="ia-history" style="display:none;">
+            <div class="ia-history-title">Consultas Recientes</div>
+            <div id="ia-history-list"></div>
+        </div>
+    </div>
 </div>
 
 <div id="modal" class="modal">
@@ -221,6 +379,7 @@ let leadsCache = [];
 let countdown = 30;
 let mapaIniciado = false;
 let estrategicoIniciado = false;
+let iaHistory = [];
 
 const coords = {
     CDMX:[54,58], MTY:[68,28], GDL:[38,53],
@@ -234,108 +393,4 @@ const loginBox = document.getElementById("loginBox");
 const mainContent = document.getElementById("mainContent");
 const topbar = document.getElementById("topbar");
 const footer = document.getElementById("footer");
-const btnLogin = document.getElementById("btnLogin");
-const apiKeyInput = document.getElementById("apiKeyInput");
-
-function desbloquearSistema() {
-    loginBox.style.display = "none";
-    topbar.style.display = "flex";
-    mainContent.style.display = "block";
-    footer.style.display = "block";
-    cargarLeads();
-}
-
-btnLogin.addEventListener("click", function() {
-    const key = apiKeyInput.value.trim();
-    if (key === "") { alert("ERROR: SE REQUIERE LLAVE DE ACCESO"); return; }
-    localStorage.setItem("mesan_key", key);
-    API_KEY = key;
-    desbloquearSistema();
-});
-
-apiKeyInput.addEventListener("keypress", function(e) {
-    if (e.key === "Enter") btnLogin.click();
-});
-
-if (localStorage.getItem("mesan_key")) {
-    desbloquearSistema();
-}
-
-function logout() {
-    localStorage.removeItem("mesan_key");
-    location.reload();
-}
-
-function cambiarTab(tab, el) {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
-    el.classList.add("active");
-    document.getElementById("tab-" + tab).classList.add("active");
-    if (tab === "mapa" && !mapaIniciado && leadsCache.length) {
-        iniciarMapa(leadsCache);
-        mapaIniciado = true;
-    }
-    if (tab === "estrategico" && !estrategicoIniciado) {
-        iniciarEstrategico();
-        estrategicoIniciado = true;
-    }
-}
-
-function formatFecha(fecha) {
-    if (!fecha) return "-";
-    try {
-        const f = fecha.includes("Z") || fecha.includes("+") ? fecha : fecha + "Z";
-        const d = new Date(f);
-        const offset = -8 * 60;
-        const local = new Date(d.getTime() + (offset - d.getTimezoneOffset()) * 60000);
-        const dia = String(local.getDate()).padStart(2,"0");
-        const mes = String(local.getMonth()+1).padStart(2,"0");
-        const h = local.getHours();
-        const min = String(local.getMinutes()).padStart(2,"0");
-        const ampm = h >= 12 ? "pm" : "am";
-        const h12 = h % 12 || 12;
-        return `${dia}/${mes} ${h12}:${min} ${ampm}`;
-    } catch(e) { return "-"; }
-}
-
-async function cargarLeads() {
-    if (!API_KEY) return;
-    try {
-        const res = await fetch(API + "/leads", { headers: { "api-key": API_KEY } });
-        if (res.status === 403) { alert("API Key inválida"); logout(); return; }
-        const data = await res.json();
-        leadsCache = data.leads || [];
-        renderLeads(leadsCache);
-        countdown = 30;
-    } catch(e) {
-        document.getElementById("leads").innerHTML = "<div class='empty'>ERROR DE CONEXIÓN</div>";
-    }
-}
-
-function renderLeads(leads) {
-    const criticosList = ["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO","RIESGO LEGAL"];
-    document.getElementById("total").innerText = leads.length;
-    document.getElementById("criticos").innerText = leads.filter(l => criticosList.includes(l.clasificacion)).length;
-    document.getElementById("pagados").innerText = leads.filter(l => l.estatus === "pagado").length;
-    document.getElementById("est-total").innerText = leads.length;
-
-    if (!leads.length) {
-        document.getElementById("leads").innerHTML = "<div class='empty'>SIN LEADS</div>";
-        return;
-    }
-
-    const sorted = [...leads].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
-    let html = "";
-    sorted.forEach((l, i) => {
-        const tipo = criticosList.includes(l.clasificacion) ? "critico"
-                   : l.clasificacion === "MEDIO" ? "vulnerable" : "estable";
-        const tel = (l.telefono || "").replace(/\D/g,"");
-        const waLink = tel ? `https://wa.me/52${tel}?text=${encodeURIComponent("Hola " + (l.nombre||"") + ", revisé tu diagnóstico MESAN Omega.\nScore: " + (l.score||0) + " — " + (l.clasificacion||"") + "\n¿Tienes 15 minutos?")}` : "#";
-        const giro = l.giro ? `<div class="giro-tag">${l.giro}</div>` : "";
-
-        html += `
-        <div class="card ${tipo}" id="card-${i}">
-            ${giro}
-            <div class="card-nombre">${l.nombre || "Sin nombre"}</div>
-            <div class="card-info">
-                Score: <span>${l.score||0}</span> | ${l.clasificacion||"N/A"}<br>
+const btnLogin
