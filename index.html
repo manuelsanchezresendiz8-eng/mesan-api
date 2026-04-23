@@ -7,12 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg: #02060a;
-    --panel: #0a1118;
-    --accent: #00f3ff;
-    --text: #e2e8f0;
-    --dim: #64748b;
-    --border: rgba(0,243,255,0.2);
+    --bg: #010508;
+    --panel: #06121D;
+    --accent: #00BFFF;
+    --text: #FFFFFF;
+    --dim: #5E7A94;
+    --border: #1A3B61;
+    --border-glow: rgba(0,191,255,0.2);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -40,8 +41,8 @@ body {
     font-family: 'Orbitron', monospace;
     font-size: 11px;
     letter-spacing: 3px;
-    color: var(--accent);
-    background: rgba(2,6,10,0.9);
+    color: var(--text);
+    background: rgba(1,5,8,0.95);
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(10px);
     box-sizing: border-box;
@@ -90,15 +91,15 @@ body {
 
 .counter {
     font-size: 13px;
-    color: var(--accent);
+    color: var(--dim);
     margin-bottom: 35px;
     letter-spacing: 1px;
-    opacity: 0.8;
 }
 
 .counter span {
     font-family: 'Orbitron', monospace;
     font-size: 16px;
+    color: var(--accent);
 }
 
 .buttons {
@@ -112,8 +113,8 @@ body {
 
 .btn {
     padding: 16px;
-    background: transparent;
-    border: 1px solid var(--accent);
+    background: var(--panel);
+    border: 1px solid var(--border);
     color: var(--accent);
     font-family: 'Orbitron', monospace;
     font-size: 11px;
@@ -125,8 +126,9 @@ body {
 }
 
 .btn:hover {
-    background: rgba(0,243,255,0.08);
-    box-shadow: 0 0 20px rgba(0,243,255,0.25);
+    border-color: var(--accent);
+    background: rgba(0,191,255,0.05);
+    box-shadow: 0 0 20px var(--border-glow);
 }
 
 .result-box {
@@ -150,11 +152,10 @@ body {
     width: 100%;
     margin-top: 15px;
     padding: 13px;
-    background: transparent;
-    border: 1px solid var(--accent);
+    background: var(--panel);
+    border: 1px solid var(--border);
     color: var(--accent);
     font-family: 'Orbitron', monospace;
-    font-weight: 600;
     font-size: 10px;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -164,8 +165,9 @@ body {
 }
 
 .btn-pago:hover {
-    background: rgba(0,243,255,0.08);
-    box-shadow: 0 0 15px rgba(0,243,255,0.3);
+    border-color: var(--accent);
+    background: rgba(0,191,255,0.05);
+    box-shadow: 0 0 15px var(--border-glow);
 }
 
 .terminos {
@@ -204,20 +206,16 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    color: var(--accent);
+    color: #25D366;
     text-decoration: none;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(37,211,102,0.3);
     padding: 10px 15px;
     border-radius: 50px;
-    background: rgba(2,6,10,0.9);
+    background: rgba(1,5,8,0.9);
     font-size: 11px;
     letter-spacing: 1px;
     transition: 0.3s;
-}
-
-.wa-float:hover {
-    border-color: var(--accent);
-    box-shadow: 0 0 15px rgba(0,243,255,0.3);
+    z-index: 200;
 }
 </style>
 </head>
@@ -225,7 +223,7 @@ body {
 
 <div class="nav">
     <div>MESAN Ω</div>
-    <div style="font-size:9px;opacity:0.5;">PREDICTIVE ANALYTICS</div>
+    <div style="font-size:9px;opacity:0.5;font-family:'Orbitron',monospace;">PREDICTIVE ANALYTICS</div>
 </div>
 
 <div class="hero">
@@ -338,4 +336,3 @@ async function pago() {
 
 </body>
 </html>
-    
