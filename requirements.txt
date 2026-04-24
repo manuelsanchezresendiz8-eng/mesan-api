@@ -9,3 +9,4 @@ fpdf
 resend
 stripe
 python-multipart
+openai>=1.30.0
