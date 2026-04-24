@@ -24,7 +24,7 @@ from routes.consultar import router as consultar_router
 from routes.documentos import router as documentos_router
 from routes.pagos_omega import router as pagos_router
 from routes.gobierno import router as gobierno_router
-from routes.ai_diagnostico import router as ai_router  # ← NUEVO
+from routes.ia_diagnostico import router as ai_router  # ← NUEVO
 from pro.auth import auth_router
 from pro.diagnostico import diagnostico_router
 
