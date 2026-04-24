@@ -1,55 +1,155 @@
-async function ejecutarDictamen() {
-    const input = document.getElementById("ia-input").value.trim();
-    if (!input) { alert("Describe la situación de la empresa"); return; }
-
-    const out = document.getElementById("output");
-    out.style.display = "block";
-    document.getElementById("diag-text").innerText = "Procesando...";
-    document.getElementById("money-text").innerText = "...";
-    document.getElementById("wa-text").innerText = "...";
-
-    try {
-        // 1. Diagnóstico
-        const resDiag = await fetch("https://mesan-api.onrender.com/pro/diagnostico", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                empleados: [{
-                    nombre: "Análisis General",
-                    sueldo_base: 8000,
-                    percepciones_gravables: 8000
-                }]
-            })
-        });
-        const dataDiag = await resDiag.json();
-
-        // 2. IA real
-        const resIA = await fetch("https://mesan-api.onrender.com/api/consultar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ texto: input })
-        });
-        const dataIA = await resIA.json();
-
-        const respuesta = dataIA.respuesta || dataIA.resultado || dataIA.diagnostico || JSON.stringify(dataIA);
-
-        // Actualizar tacómetro
-        const nivel = respuesta.toLowerCase().includes("crítico") ? 88 :
-                      respuesta.toLowerCase().includes("alto") ? 70 : 45;
-        gauge.data.datasets[0].data = [nivel, 100 - nivel];
-        gauge.update();
-        document.getElementById("gaugeText").innerText = nivel + "%";
-
-        // Mostrar resultado
-        document.getElementById("diag-text").innerText = respuesta;
-        document.getElementById("money-text").innerText = "VER ANÁLISIS ↑";
-
-        // Mensaje WhatsApp
-        document.getElementById("wa-text").innerText =
-            `MESAN Ω INFORME:\n\n${respuesta.substring(0, 200)}...\n\n¿Agendamos llamada para resolver esto hoy?`;
-
-    } catch(e) {
-        document.getElementById("diag-text").innerText = "Error de conexión con el servidor MESAN.";
-        document.getElementById("money-text").innerText = "—";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω | CONSOLA DE DIAGNÓSTICO</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    :root {
+        --bg: #010508; --accent: #00FFFF; --border: #1A3B61;
+        --text: #FFFFFF; --dim: #5E7A94; --alert: #FF3B30; --ia: #9B59B6;
     }
-}
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background-color:var(--bg); color:var(--text); font-family:'Inter', sans-serif; padding:20px; }
+    
+    .header-master { font-family:'Orbitron', sans-serif; margin-bottom:30px; }
+    .header-sub { font-size: 10px; color: var(--dim); letter-spacing: 2px; margin-bottom: 5px; }
+    .header-title { color: var(--accent); font-size: 22px; letter-spacing: 3px; }
+
+    .console-box { border: 1px solid var(--border); border-radius: 4px; padding: 25px; background: rgba(6, 18, 29, 0.3); margin-bottom: 20px; position: relative; }
+    .console-label { font-family: 'Orbitron'; font-size: 9px; color: var(--dim); letter-spacing: 2px; margin-bottom: 15px; display: block; text-transform: uppercase; }
+
+    .gauge-wrapper { width: 180px; margin: 0 auto 20px; position: relative; }
+    .gauge-val { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); font-family: 'Orbitron'; font-size: 24px; color: var(--alert); }
+
+    .ia-textarea { width: 100%; background: #0A1929; border: 1px solid var(--border); border-left: 4px solid var(--ia); padding: 15px; color: white; font-family: 'Inter'; font-size: 13px; outline: none; resize: none; border-radius: 4px; }
+    .btn-analizar { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--ia); color: var(--ia); font-family: 'Orbitron'; cursor: pointer; margin-top: 10px; letter-spacing: 2px; transition: 0.3s; font-size: 11px; }
+    .btn-analizar:hover { background: rgba(155, 89, 182, 0.1); }
+
+    .result-pane { display: none; margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    .data-row { margin-bottom: 15px; }
+    .data-label { font-family: 'Orbitron'; font-size: 10px; color: var(--ia); margin-bottom: 5px; display: block; }
+    .data-text { font-size: 14px; color: var(--text); line-height: 1.6; white-space: pre-wrap; }
+    .money-val { font-family: 'Orbitron'; font-size: 26px; color: var(--alert); }
+
+    .wa-card { background: rgba(0, 255, 255, 0.03); border: 1px dashed var(--accent); padding: 15px; color: var(--accent); font-size: 12px; margin-top: 15px; border-radius: 4px; white-space: pre-wrap; }
+
+    .loading { color: var(--dim); font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; animation: blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+</style>
+</head>
+<body>
+
+    <div class="header-master">
+        <div class="header-sub">// CONSOLA DE DIAGNÓSTICO MESAN Ω</div>
+        <div class="header-title">Maestría Empresarial</div>
+    </div>
+
+    <div class="console-box" style="border-color: var(--accent);">
+        <span class="console-label">Nivel de Riesgo Operativo</span>
+        <div class="gauge-wrapper">
+            <canvas id="gaugeChart"></canvas>
+            <div id="gaugeText" class="gauge-val">0%</div>
+        </div>
+    </div>
+
+    <div class="console-box" style="border-color: var(--ia);">
+        <span class="console-label">Consultor Estratégico Activo</span>
+        <textarea id="ia-input" class="ia-textarea" rows="3" placeholder="Describa la situación de la empresa..."></textarea>
+        <button class="btn-analizar" onclick="ejecutarDictamen()">ANALIZAR CON IA</button>
+
+        <div id="output" class="result-pane">
+            <div class="data-row">
+                <span class="data-label">Diagnóstico de Impacto</span>
+                <div id="diag-text" class="data-text"></div>
+            </div>
+            <div class="data-row">
+                <span class="data-label">Nivel de Riesgo</span>
+                <div id="money-text" class="money-val"></div>
+            </div>
+            <div class="data-row">
+                <span class="data-label">Propuesta WhatsApp para el CEO</span>
+                <div id="wa-text" class="wa-card"></div>
+                <button class="btn-analizar" style="border-color: var(--accent); color: var(--accent);" onclick="copyWA()">COPIAR PARA ENVÍO</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const API = "https://mesan-api.onrender.com";
+
+    // Inicializar Tacómetro
+    const ctx = document.getElementById('gaugeChart').getContext('2d');
+    const gauge = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [0, 100],
+                backgroundColor: ['#FF3B30', '#1A3B61'],
+                borderWidth: 0, circumference: 180, rotation: 270, cutout: '85%'
+            }]
+        },
+        options: { plugins: { tooltip: { enabled: false } }, responsive: true }
+    });
+
+    async function ejecutarDictamen() {
+        const input = document.getElementById("ia-input").value.trim();
+        if (!input) { alert("Describe la situación de la empresa"); return; }
+
+        const out = document.getElementById("output");
+        out.style.display = "block";
+        document.getElementById("diag-text").innerHTML = "<span class='loading'>PROCESANDO DIAGNÓSTICO...</span>";
+        document.getElementById("money-text").innerText = "...";
+        document.getElementById("wa-text").innerText = "...";
+
+        try {
+            // Llamada a IA real
+            const resIA = await fetch(API + "/api/consultar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ texto: input })
+            });
+
+            const dataIA = await resIA.json();
+            const respuesta = dataIA.respuesta || dataIA.resultado || dataIA.diagnostico || dataIA.analisis || JSON.stringify(dataIA);
+
+            // Calcular nivel visual
+            const txt = respuesta.toLowerCase();
+            const nivel = txt.includes("crítico") || txt.includes("crisis") || txt.includes("clausura") ? 88 :
+                          txt.includes("alto") || txt.includes("riesgo") ? 65 : 40;
+
+            // Actualizar tacómetro
+            gauge.data.datasets[0].data = [nivel, 100 - nivel];
+            gauge.update();
+            document.getElementById("gaugeText").innerText = nivel + "%";
+
+            // Mostrar diagnóstico
+            document.getElementById("diag-text").innerText = respuesta;
+
+            // Nivel texto
+            const nivelTexto = nivel >= 80 ? "CRÍTICO" : nivel >= 60 ? "ALTO" : "MEDIO";
+            document.getElementById("money-text").innerText = nivelTexto;
+            document.getElementById("money-text").style.color = nivel >= 80 ? "var(--alert)" : nivel >= 60 ? "#FF8C00" : "var(--accent)";
+
+            // Mensaje WhatsApp
+            document.getElementById("wa-text").innerText =
+                `MESAN Ω INFORME:\n\n${respuesta.substring(0, 300)}...\n\n¿Agendamos llamada para resolver esto hoy?`;
+
+        } catch(e) {
+            document.getElementById("diag-text").innerText = "Error de conexión. Verifica que la API esté activa en Render.";
+            document.getElementById("money-text").innerText = "—";
+            document.getElementById("wa-text").innerText = "—";
+        }
+    }
+
+    function copyWA() {
+        navigator.clipboard.writeText(document.getElementById("wa-text").innerText);
+        alert("Mensaje copiado.");
+    }
+</script>
+</body>
+</html>
