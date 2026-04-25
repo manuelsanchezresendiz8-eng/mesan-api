@@ -10,7 +10,7 @@
     :root {
         --bg: #010508; --accent: #00FFFF; --border: #1A3B61;
         --text: #FFFFFF; --dim: #5E7A94; --alert: #FF3B30; --ia: #00BFFF;
-        --ok: #00FF9C; --warn: #FF8C00;
+        --ok: #00FF9C; --warn: #FF8C00; --panel: #06121D;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background-color:var(--bg); color:var(--text); font-family:'Inter', sans-serif; padding:20px; }
@@ -22,46 +22,36 @@
     .gauge-wrapper { width: 180px; margin: 0 auto 20px; position: relative; }
     .gauge-val { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); font-family: 'Orbitron'; font-size: 24px; color: var(--alert); }
     .ia-textarea { width: 100%; background: #0A1929; border: 1px solid var(--border); border-left: 4px solid var(--ia); padding: 15px; color: white; font-family: 'Inter'; font-size: 13px; outline: none; resize: none; border-radius: 4px; }
-    .btn-analizar { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--ia); color: var(--ia); font-family: 'Orbitron'; cursor: pointer; margin-top: 10px; letter-spacing: 2px; transition: 0.3s; font-size: 11px; }
-    .btn-analizar:hover { background: rgba(0,191,255,0.1); }
+    .btn-main { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--ia); color: var(--ia); font-family: 'Orbitron'; cursor: pointer; margin-top: 10px; letter-spacing: 2px; transition: 0.3s; font-size: 11px; }
+    .btn-main:hover { background: rgba(0,191,255,0.1); }
     .btn-accent { border-color: var(--accent); color: var(--accent); }
+    .btn-opcion { padding: 8px 14px; margin: 4px; background: transparent; border: 1px solid var(--border); color: var(--dim); font-size: 11px; cursor: pointer; border-radius: 4px; transition: 0.3s; font-family: 'Inter'; }
+    .btn-opcion:hover { border-color: var(--ia); color: var(--ia); }
+    .btn-opcion.selected { background: rgba(0,191,255,0.15); border-color: var(--ia); color: var(--ia); }
     .result-pane { display: none; margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px; }
     .data-row { margin-bottom: 20px; }
     .data-label { font-family: 'Orbitron'; font-size: 9px; color: var(--ia); margin-bottom: 8px; display: block; letter-spacing: 2px; text-transform: uppercase; }
-
-    /* RIESGO BADGE */
     .riesgo-badge { font-family: 'Orbitron'; font-size: 22px; padding: 10px 24px; border-radius: 4px; display: inline-block; }
     .CRITICO { background: rgba(255,59,48,0.15); border: 1px solid var(--alert); color: var(--alert); }
     .ALTO { background: rgba(255,140,0,0.15); border: 1px solid var(--warn); color: var(--warn); }
     .MEDIO { background: rgba(0,191,255,0.1); border: 1px solid var(--accent); color: var(--accent); }
     .BAJO { background: rgba(0,255,156,0.1); border: 1px solid var(--ok); color: var(--ok); }
-
-    /* IMPACTO */
     .impacto-box { background: rgba(255,59,48,0.05); border: 1px solid rgba(255,59,48,0.3); border-radius: 6px; padding: 15px; }
     .impacto-num { font-family: 'Orbitron'; font-size: 26px; color: var(--alert); }
     .impacto-sub { font-size: 11px; color: var(--dim); margin-top: 4px; }
-
-    /* CAUSAS */
     .causa-item { padding: 10px 14px; margin: 6px 0; background: rgba(255,59,48,0.05); border-left: 3px solid var(--alert); font-size: 12px; color: var(--text); line-height: 1.5; }
-
-    /* CONSECUENCIAS */
     .consecuencia-item { padding: 8px 14px; margin: 5px 0; background: rgba(255,140,0,0.05); border-left: 3px solid var(--warn); font-size: 12px; color: var(--dim); }
-
-    /* PLAN */
     .plan-item { padding: 8px 14px; margin: 5px 0; background: rgba(0,191,255,0.04); border-left: 3px solid var(--ia); font-size: 12px; color: var(--dim); }
     .plan-num { color: var(--ia); font-weight: 600; margin-right: 8px; }
-
-    /* PREGUNTAS */
-    .pregunta-input { width: 100%; background: #0A1929; border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 4px; font-size: 13px; margin: 5px 0; outline: none; }
-    .pregunta-input:focus { border-color: var(--accent); }
-
-    /* WA */
+    .pregunta-block { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 15px; margin-bottom: 12px; }
+    .pregunta-text { font-size: 13px; color: var(--text); margin-bottom: 10px; font-weight: 500; }
+    .industria-tag { display: inline-block; font-size: 8px; padding: 3px 10px; background: rgba(0,191,255,0.06); border: 1px solid var(--border); color: var(--ia); border-radius: 3px; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase; font-family: 'Orbitron'; }
     .wa-card { background: rgba(0,191,255,0.03); border: 1px dashed var(--accent); padding: 15px; color: var(--accent); font-size: 12px; border-radius: 4px; white-space: pre-wrap; line-height: 1.6; }
-
+    .divider { border: none; border-top: 1px solid var(--border); margin: 15px 0; }
     .loading { color: var(--dim); font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; animation: blink 1s infinite; }
     @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-
-    .divider { border: none; border-top: 1px solid var(--border); margin: 15px 0; }
+    .segunda-capa { display: none; margin-top: 20px; border-top: 2px solid var(--ia); padding-top: 20px; }
+    .segunda-capa-title { font-family: 'Orbitron'; font-size: 10px; color: var(--ia); letter-spacing: 2px; margin-bottom: 15px; }
 </style>
 </head>
 <body>
@@ -82,11 +72,13 @@
 <div class="console-box" style="border-color: var(--ia);">
     <span class="console-label">Consultor Estratégico IA</span>
     <textarea id="ia-input" class="ia-textarea" rows="3" placeholder="Describe el problema de la empresa..."></textarea>
-    <button class="btn-analizar" onclick="ejecutarDictamen()">ANALIZAR CON IA</button>
+    <button class="btn-main" onclick="ejecutarDictamen()">ANALIZAR CON IA</button>
 
+    <!-- RESULTADO INICIAL -->
     <div id="output" class="result-pane">
 
         <div class="data-row">
+            <div id="industria-tag"></div>
             <span class="data-label">Nivel de Riesgo</span>
             <div id="riesgo-badge"></div>
             <div id="tendencia" style="font-size:11px;color:var(--dim);margin-top:6px;"></div>
@@ -121,12 +113,13 @@
             <div id="plan-list"></div>
         </div>
 
-        <hr class="divider">
-
-        <div class="data-row" id="preguntas-box" style="display:none;">
-            <span class="data-label">Para afinar el diagnóstico</span>
-            <div id="preguntas-inputs"></div>
-            <button class="btn-analizar btn-accent" onclick="guardarLead()" style="margin-top:10px;">GUARDAR EN CRM →</button>
+        <!-- SEGUNDA CAPA — PREGUNTAS -->
+        <div class="segunda-capa" id="segunda-capa">
+            <div class="segunda-capa-title">⚡ PARA AFINAR TU DIAGNÓSTICO</div>
+            <div id="preguntas-container"></div>
+            <button class="btn-main btn-accent" onclick="enviarRespuestas()" style="margin-top:10px;">
+                REFINAR DIAGNÓSTICO →
+            </button>
         </div>
 
         <hr class="divider">
@@ -134,7 +127,7 @@
         <div class="data-row">
             <span class="data-label">Mensaje WhatsApp para el CEO</span>
             <div id="wa-text" class="wa-card"></div>
-            <button class="btn-analizar btn-accent" onclick="copyWA()" style="margin-top:8px;">COPIAR Y ENVIAR</button>
+            <button class="btn-main btn-accent" onclick="copyWA()" style="margin-top:8px;">COPIAR Y ENVIAR</button>
         </div>
 
     </div>
@@ -142,7 +135,8 @@
 
 <script>
 const API = "https://mesan-api.onrender.com";
-let dataIA = {};
+let textoOriginal = "";
+let respuestas = {};
 
 const ctx = document.getElementById('gaugeChart').getContext('2d');
 const gauge = new Chart(ctx, {
@@ -161,103 +155,115 @@ async function ejecutarDictamen() {
     const input = document.getElementById("ia-input").value.trim();
     if (!input) { alert("Describe la situación"); return; }
 
+    textoOriginal = input;
+    respuestas = {};
+
     const out = document.getElementById("output");
     out.style.display = "block";
     document.getElementById("riesgo-badge").innerHTML = "<span class='loading'>ANALIZANDO...</span>";
 
+    await llamarAPI(input, {});
+}
+
+async function enviarRespuestas() {
+    await llamarAPI(textoOriginal, respuestas);
+}
+
+async function llamarAPI(texto, resp) {
     try {
         const res = await fetch(API + "/ai/diagnostico", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ texto: input })
+            body: JSON.stringify({ texto: texto, respuestas: resp })
         });
 
-        dataIA = await res.json();
-
-        const riesgo = dataIA.riesgo || "MEDIO";
-        const nivel = riesgo === "CRÍTICO" ? 92 : riesgo === "ALTO" ? 72 : riesgo === "MEDIO" ? 48 : 20;
-
-        gauge.data.datasets[0].data = [nivel, 100 - nivel];
-        gauge.update();
-        document.getElementById("gaugeText").innerText = nivel + "%";
-
-        // Riesgo badge
-        const riesgoKey = riesgo.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-        document.getElementById("riesgo-badge").innerHTML =
-            `<span class="riesgo-badge ${riesgoKey}">${riesgo}</span>`;
-
-        // Tendencia
-        document.getElementById("tendencia").innerText = dataIA.tendencia || "";
-
-        // Impacto
-        const min = (dataIA.impacto_min || 0).toLocaleString();
-        const max = (dataIA.impacto_max || 0).toLocaleString();
-        document.getElementById("impacto-val").innerText = `$${min} – $${max} MXN`;
-
-        // Causas
-        const causas = dataIA.causas || [];
-        document.getElementById("causas-list").innerHTML =
-            causas.map(c => `<div class="causa-item">⚠ ${c}</div>`).join("");
-
-        // Consecuencias
-        const consecuencias = dataIA.consecuencias || [
-            "Multas directas y capitales constitutivos retroactivos",
-            "Riesgo de demandas laborales sin defensa legal",
-            "Auditoría sorpresa con embargo preventivo"
-        ];
-        document.getElementById("consecuencias-list").innerHTML =
-            consecuencias.map(c => `<div class="consecuencia-item">→ ${c}</div>`).join("");
-
-        // Plan
-        const plan = dataIA.plan_30_dias || [];
-        document.getElementById("plan-list").innerHTML =
-            plan.map((p,i) => `<div class="plan-item"><span class="plan-num">S${i+1}</span>${p}</div>`).join("");
-
-        // Preguntas
-        const preguntas = dataIA.preguntas || [];
-        if (preguntas.length > 0) {
-            document.getElementById("preguntas-box").style.display = "block";
-            document.getElementById("preguntas-inputs").innerHTML =
-                preguntas.map((p, i) => `
-                    <div style="margin-bottom:8px;">
-                        <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">${i+1}. ${p}</div>
-                        <input type="text" class="pregunta-input" id="p${i}" placeholder="Tu respuesta...">
-                    </div>
-                `).join("");
-        }
-
-        // WhatsApp
-        document.getElementById("wa-text").innerText = dataIA.whatsapp ||
-            `MESAN Ω ALERTA:\n\nDetectamos riesgo ${riesgo} en su empresa.\nImpacto estimado: $${min} – $${max} MXN\n\n${causas[0] || ""}\n\n${dataIA.cierre || "¿Agendamos llamada hoy?"}`;
+        const d = await res.json();
+        renderResultado(d);
 
     } catch(e) {
         document.getElementById("riesgo-badge").innerText = "Error de conexión";
     }
 }
 
-async function guardarLead() {
-    const preguntas = dataIA.preguntas || [];
-    const respuestas = preguntas.map((_, i) => document.getElementById("p"+i)?.value || "");
+function renderResultado(d) {
+    const riesgo = d.riesgo || "MEDIO";
+    const nivel = riesgo === "CRÍTICO" ? 92 : riesgo === "ALTO" ? 72 : riesgo === "MEDIO" ? 48 : 20;
 
-    try {
-        await fetch(API + "/crm/interaccion", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                nombre: "Lead Web",
-                email: "pendiente@mesan.com",
-                telefono: "0000000000",
-                texto_inicial: document.getElementById("ia-input").value,
-                respuestas: respuestas,
-                riesgo: dataIA.riesgo || "MEDIO",
-                impacto_min: dataIA.impacto_min || 0,
-                impacto_max: dataIA.impacto_max || 0
-            })
-        });
-        alert("✅ Lead guardado en CRM");
-    } catch(e) {
-        alert("Error guardando en CRM");
+    gauge.data.datasets[0].data = [nivel, 100 - nivel];
+    gauge.update();
+    document.getElementById("gaugeText").innerText = nivel + "%";
+
+    // Industria tag
+    document.getElementById("industria-tag").innerHTML =
+        `<div class="industria-tag">SECTOR: ${d.industria || "GENERAL"}</div>`;
+
+    // Riesgo badge
+    const riesgoKey = riesgo.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    document.getElementById("riesgo-badge").innerHTML =
+        `<span class="riesgo-badge ${riesgoKey}">${riesgo}</span>`;
+
+    document.getElementById("tendencia").innerText = d.tendencia || "";
+
+    // Impacto
+    const min = (d.impacto_min || d.impacto || 0).toLocaleString();
+    const max = (d.impacto_max || 0).toLocaleString();
+    document.getElementById("impacto-val").innerText = `$${min} – $${max} MXN`;
+
+    // Causas
+    const causas = d.causas || [];
+    document.getElementById("causas-list").innerHTML =
+        causas.map(c => `<div class="causa-item">⚠ ${c}</div>`).join("");
+
+    // Consecuencias
+    const consecuencias = d.consecuencias || [];
+    document.getElementById("consecuencias-list").innerHTML =
+        consecuencias.map(c => `<div class="consecuencia-item">→ ${c}</div>`).join("");
+
+    // Plan
+    const plan = d.plan_30_dias || [];
+    document.getElementById("plan-list").innerHTML =
+        plan.map((p,i) => `<div class="plan-item"><span class="plan-num">S${i+1}</span>${p}</div>`).join("");
+
+    // Preguntas interactivas
+    const preguntas = d.preguntas || [];
+    if (preguntas.length > 0) {
+        document.getElementById("segunda-capa").style.display = "block";
+        renderPreguntas(preguntas);
     }
+
+    // WhatsApp
+    document.getElementById("wa-text").innerText = d.whatsapp ||
+        `MESAN Ω ALERTA:\n\nDetectamos riesgo ${riesgo}.\nImpacto: $${min} – $${max} MXN\n\n${d.cierre || "¿Agendamos hoy?"}`;
+}
+
+function renderPreguntas(preguntas) {
+    const container = document.getElementById("preguntas-container");
+    container.innerHTML = "";
+
+    preguntas.forEach((p, index) => {
+        let html = `
+            <div class="pregunta-block">
+                <div class="pregunta-text">${index + 1}. ${p.pregunta}</div>
+                <div>
+        `;
+
+        (p.opciones || []).forEach(op => {
+            html += `<button class="btn-opcion" id="btn-${p.id}-${op.replace(/\s/g,'_')}"
+                onclick="responder('${p.id}', '${op}', this)">${op}</button>`;
+        });
+
+        html += `</div></div>`;
+        container.innerHTML += html;
+    });
+}
+
+function responder(id, valor, btn) {
+    respuestas[id] = valor;
+
+    // Resaltar botón seleccionado
+    const bloques = btn.parentElement.querySelectorAll('.btn-opcion');
+    bloques.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
 }
 
 function copyWA() {
