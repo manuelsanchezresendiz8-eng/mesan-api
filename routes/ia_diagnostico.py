@@ -1,10 +1,9 @@
 import os
+import anthropic
 from fastapi import APIRouter
-from openai import OpenAI
 
 router = APIRouter()
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-
+client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
 @router.post("/ai/diagnostico")
 async def ai_diagnostico(data: dict):
@@ -14,34 +13,32 @@ async def ai_diagnostico(data: dict):
     if not texto:
         return {"error": "Se requiere texto del caso"}
 
-    prompt = f"""
-Eres auditor fiscal y laboral experto en México (IMSS, SAT, REPSE, CFDI).
+    prompt = f"""Eres auditor fiscal y laboral experto en México (IMSS, SAT, REPSE, CFDI).
 
 Analiza este caso empresarial:
 {texto}
 
-Responde EXACTAMENTE con este formato, sin texto adicional:
+Responde EXACTAMENTE con este formato:
 
 RIESGO: (CRÍTICO / ALTO / MEDIO / BAJO)
-CAUSAS: (lista las causas principales)
-IMPACTO: (monto estimado en pesos MXN)
-PROBABILIDAD DE AUDITORÍA: (ALTA / MEDIA / BAJA)
+CAUSAS: (lista las causas principales con detalle técnico)
+IMPACTO: (monto estimado en pesos MXN con justificación)
+PROBABILIDAD DE AUDITORÍA: (ALTA / MEDIA / BAJA con razón)
 PLAN 30 DÍAS:
-  Semana 1: (acción)
-  Semana 2: (acción)
-  Semana 3: (acción)
-  Semana 4: (acción)
-RECOMENDACIÓN FINAL: (una línea directa)
-CIERRE: (mensaje corto invitando a contratar MESAN Ω)
-"""
+  Semana 1: (acción concreta)
+  Semana 2: (acción concreta)
+  Semana 3: (acción concreta)
+  Semana 4: (acción concreta)
+RECOMENDACIÓN FINAL: (una línea directa y ejecutiva)
+CIERRE: (mensaje corto invitando a contratar MESAN Ω)"""
 
     try:
-        res = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3
+        res = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=1024,
+            messages=[{"role": "user", "content": prompt}]
         )
-        respuesta = res.choices[0].message.content
+        respuesta = res.content[0].text
         return {"ok": True, "respuesta": respuesta}
 
     except Exception as e:
@@ -53,8 +50,11 @@ def _fallback(texto: str) -> str:
     impacto = 0
     problemas = []
 
+    if "incapacidad" in t:
+        problemas.append("Trabajador incapacitado laborando — fraude al IMSS")
+        impacto += 250000
     if "imss" in t:
-        problemas.append("Incumplimiento IMSS")
+        problemas.append("Incumplimiento IMSS — capitales constitutivos")
         impacto += 80000
     if "cfdi" in t or "factura" in t:
         problemas.append("Inconsistencias fiscales CFDI")
