@@ -1,10 +1,16 @@
 def detectar_industria(texto: str) -> str:
     t = texto.lower()
 
-    if any(p in t for p in ["consultorio", "medico", "clinica", "cofepris", "farmacia", "hospital", "salud"]):
+    if any(p in t for p in [
+        "consultorio", "consultario", "consultoio",
+        "medico", "medico", "doctor", "medicina",
+        "clinica", "clinika", "farmacia",
+        "cofepris", "cofepreis", "cofepri", "copefris",
+        "hospital", "salud", "sanitario"
+    ]):
         return "SALUD"
 
-    if any(p in t for p in ["tienda", "ropa", "retail", "ventas", "mostrador", "comercio"]):
+    if any(p in t for p in ["tienda", "ropa", "retail", "mostrador", "comercio"]):
         return "RETAIL"
 
     if any(p in t for p in ["obra", "construccion", "albanil", "contratista", "edificio"]):
