@@ -25,6 +25,7 @@ from routes.documentos import router as documentos_router
 from routes.pagos_omega import router as pagos_router
 from routes.gobierno import router as gobierno_router
 from routes.ia_diagnostico import router as ai_router
+from routes.crm import router as crm_router
 from pro.auth import auth_router
 from pro.diagnostico import diagnostico_router
 
@@ -125,6 +126,7 @@ app.include_router(documentos_router)
 app.include_router(pagos_router)
 app.include_router(gobierno_router)
 app.include_router(ai_router)
+app.include_router(crm_router)
 app.include_router(auth_router, prefix="/pro")
 app.include_router(diagnostico_router, prefix="/pro")
 
@@ -292,56 +294,3 @@ async def pro_diagnostico(data: dict):
         precio = float(data.get("precio_cliente", 0))
         empleados = int(data.get("empleados", 1))
         zona = data.get("zona", "general")
-        return response(evaluar_servicio(precio, empleados, zona=zona))
-    except Exception:
-        logging.error(traceback.format_exc())
-        return response({"error": "Error en motor financiero"}, 500)
-
-@app.get("/leads")
-async def obtener_leads(api_key: str = Header(None, alias="api-key")):
-    if not api_key or api_key != os.environ.get("MESAN_API_KEY"):
-        return response({"error": "No autorizado"}, 403)
-    try:
-        db = SessionLocal()
-        leads = db.query(Lead).all()
-        db.close()
-        return response({"leads": [serialize_lead(l) for l in leads]})
-    except Exception:
-        logging.error(traceback.format_exc())
-        return response({"error": "Error obteniendo leads"}, 500)
-
-@app.get("/lead/{lead_id}")
-async def obtener_lead(lead_id: str, api_key: str = Header(None, alias="api-key")):
-    if not api_key or api_key != os.environ.get("MESAN_API_KEY"):
-        return response({"error": "No autorizado"}, 403)
-    try:
-        db = SessionLocal()
-        lead = db.query(Lead).filter(Lead.id == lead_id).first()
-        db.close()
-        if not lead:
-            return response({"error": "No encontrado"}, 404)
-        return response(serialize_lead(lead))
-    except Exception:
-        logging.error(traceback.format_exc())
-        return response({"error": "Error obteniendo lead"}, 500)
-
-@app.put("/lead/{lead_id}")
-async def actualizar_lead(lead_id: str, data: dict):
-    try:
-        db = SessionLocal()
-        lead = db.query(Lead).filter(Lead.id == lead_id).first()
-        if not lead:
-            db.close()
-            return response({"ok": False})
-        lead.estatus = data.get("estatus", lead.estatus)
-        db.commit()
-        db.close()
-        return response({"ok": True})
-    except Exception:
-        logging.error(traceback.format_exc())
-        return response({"error": "Error actualizando lead"}, 500)
-
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    logging.error(f"ERROR GLOBAL: {traceback.format_exc()}")
-    return response({"error": "Error interno"}, 500)
