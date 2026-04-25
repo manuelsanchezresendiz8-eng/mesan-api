@@ -1,8 +1,16 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
+from typing import List
 import unicodedata
+import sys
+import os
 
-router = APIRouter(prefix="/ai", tags=["AI"])
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from core.industria import detectar_industria
+from core.motor_industrias import analizar_por_industria
+
+router = APIRouter()
 
 
 class InputAI(BaseModel):
@@ -16,73 +24,68 @@ def normalizar(texto: str) -> str:
     return texto
 
 
-@router.post("/diagnostico")
+@router.post("/ai/diagnostico")
 async def ai_diagnostico(data: InputAI):
 
     texto = normalizar(data.texto)
 
-    impacto = 0
-    causas = []
+    industria = detectar_industria(texto)
 
-    # --- MOTOR DE DETECCIÓN ---
-    if "incapacitado" in texto or "incapacidad" in texto:
-        causas.append("Trabajador incapacitado laborando — fraude IMSS y Capital Constitutivo")
-        impacto += 250000
+    causas, impacto, preguntas, consecuencias = analizar_por_industria(texto, industria)
 
-    if "imss" in texto:
-        causas.append("Incumplimiento IMSS — multas y capitales constitutivos")
-        impacto += 80000
-
-    if "cfdi" in texto or "factura" in texto:
-        causas.append("Inconsistencias CFDI — riesgo de auditoría SAT")
-        impacto += 120000
-
-    if "repse" in texto:
-        causas.append("REPSE vencido — responsabilidad solidaria activa")
-        impacto += 150000
-
-    if "contrato" in texto:
-        causas.append("Sin contratos laborales — vulnerabilidad legal")
-        impacto += 50000
-
-    if "clausura" in texto or "cofepris" in texto:
-        causas.append("Bloqueo operativo — pérdida inmediata de flujo")
-        impacto += 300000
-
-    if "sat" in texto or "auditoria" in texto:
-        causas.append("Auditoría SAT activa — riesgo de embargo")
-        impacto += 200000
-
-    # --- CLASIFICACIÓN ---
     if impacto > 300000:
         riesgo = "CRÍTICO"
         prob = "ALTA"
-    elif impacto > 100000:
+        tendencia = "CRÍTICO — acción inmediata requerida"
+    elif impacto > 150000:
         riesgo = "ALTO"
         prob = "ALTA"
-    elif impacto > 50000:
+        tendencia = "ALTO — con riesgo de escalar a CRÍTICO"
+    elif impacto > 70000:
         riesgo = "MEDIO"
         prob = "MEDIA"
+        tendencia = "MEDIO → con tendencia a ALTO"
     else:
         riesgo = "BAJO"
         prob = "BAJA"
+        tendencia = "ESTABLE — monitoreo preventivo recomendado"
 
-    if not causas:
-        causas = ["Requiere análisis más detallado"]
+    impacto_min = impacto
+    impacto_max = int(impacto * 3)
 
-    # --- RESPUESTA ESTRUCTURADA ---
+    causa_principal = causas[0] if causas else ""
+
+    whatsapp = (
+        f"MESAN Ω — ALERTA {industria}\n\n"
+        f"Detectamos riesgo {riesgo} en tu operación.\n\n"
+        f"{causa_principal}\n\n"
+        f"Impacto estimado:\n"
+        f"${impacto_min:,} – ${impacto_max:,} MXN\n\n"
+        f"Antes de darte la solución exacta necesito confirmar:\n\n"
+    )
+    for i, p in enumerate(preguntas[:2]):
+        whatsapp += f"{i+1}. {p}\n"
+    whatsapp += "\nSi quieres lo vemos hoy y te digo exactamente cómo corregirlo en 30 días."
+
     return {
         "ok": True,
         "riesgo": riesgo,
+        "tendencia": tendencia,
+        "industria": industria,
         "impacto": impacto,
+        "impacto_min": impacto_min,
+        "impacto_max": impacto_max,
         "probabilidad": prob,
         "causas": causas,
+        "consecuencias": consecuencias,
+        "preguntas": preguntas[:3],
         "plan_30_dias": [
-            "Semana 1: Auditoría interna urgente",
-            "Semana 2: Corrección legal y laboral",
-            "Semana 3: Ajuste fiscal y CFDI",
+            f"Semana 1: Auditoría especializada en sector {industria}",
+            "Semana 2: Corrección normativa y regularización inmediata",
+            "Semana 3: Alineación fiscal y legal",
             "Semana 4: Blindaje operativo MESAN Ω"
         ],
-        "mensaje": f"Riesgo {riesgo} con impacto estimado de ${impacto:,} MXN",
-        "cierre": "Podemos corregir esto en 30 días. ¿Agendamos llamada hoy?"
+        "whatsapp": whatsapp,
+        "cierre": f"Este caso requiere atención especializada en {industria}. MESAN Ω puede resolverlo en 30 días. ¿Agendamos hoy?"
     }
+    
