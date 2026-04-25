@@ -1,17 +1,17 @@
 import os
-import anthropic
+import httpx
 from fastapi import APIRouter
 
 router = APIRouter()
-client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
 @router.post("/ai/diagnostico")
 async def ai_diagnostico(data: dict):
 
     texto = data.get("texto", "")
-
     if not texto:
         return {"error": "Se requiere texto del caso"}
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
 
     prompt = f"""Eres auditor fiscal y laboral experto en México (IMSS, SAT, REPSE, CFDI).
 
@@ -33,12 +33,22 @@ RECOMENDACIÓN FINAL: (una línea directa y ejecutiva)
 CIERRE: (mensaje corto invitando a contratar MESAN Ω)"""
 
     try:
-        res = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=1024,
-            messages=[{"role": "user", "content": prompt}]
+        response = httpx.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": api_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json"
+            },
+            json={
+                "model": "claude-sonnet-4-6",
+                "max_tokens": 1024,
+                "messages": [{"role": "user", "content": prompt}]
+            },
+            timeout=30
         )
-        respuesta = res.content[0].text
+        result = response.json()
+        respuesta = result["content"][0]["text"]
         return {"ok": True, "respuesta": respuesta}
 
     except Exception as e:
