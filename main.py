@@ -24,7 +24,8 @@ from routes.consultar import router as consultar_router
 from routes.documentos import router as documentos_router
 from routes.pagos_omega import router as pagos_router
 from routes.gobierno import router as gobierno_router
-from routes.ia_diagnostico import router as ai_router  # ← NUEVO
+from routes.ia_diagnostico import router as ai_router
+from routes.crm import router as crm_router
 from pro.auth import auth_router
 from pro.diagnostico import diagnostico_router
 
@@ -145,7 +146,8 @@ app.include_router(consultar_router, prefix="/api")
 app.include_router(documentos_router)
 app.include_router(pagos_router)
 app.include_router(gobierno_router)
-app.include_router(ai_router)  # ← NUEVO
+app.include_router(ai_router)
+app.include_router(crm_router)
 app.include_router(auth_router, prefix="/pro")
 app.include_router(diagnostico_router, prefix="/pro")
 
@@ -162,6 +164,25 @@ def response(data, status=200):
         headers={"X-MESAN-VERSION": VERSION}
     )
 
+def calcular_prioridad(lead):
+    score = 0
+    clas = (lead.clasificacion or "").upper()
+    if clas in ["ALTO", "CRISIS FINANCIERA", "RIESGO OPERATIVO", "RIESGO LEGAL"]:
+        score += 50
+    elif clas == "MEDIO":
+        score += 30
+    else:
+        score += 10
+    if lead.impacto_max:
+        score += min(int(lead.impacto_max / 1000), 50)
+    texto = ((getattr(lead, "contexto", "") or "") + (getattr(lead, "diagnostico", "") or "")).lower()
+    if "acta" in texto: score += 40
+    if "auditoria" in texto or "auditoría" in texto: score += 30
+    if "cofepris" in texto: score += 35
+    if "clausura" in texto: score += 45
+    if "embargo" in texto: score += 40
+    return score
+
 def serialize_lead(l):
     return {
         "id": l.id,
@@ -174,12 +195,15 @@ def serialize_lead(l):
         "impacto_max": l.impacto_max,
         "estatus": l.estatus,
         "fecha": str(l.fecha) if l.fecha else None,
-        "giro": getattr(l, "giro", None)
+        "giro": getattr(l, "giro", None),
+        "contexto": getattr(l, "contexto", None),
+        "diagnostico": getattr(l, "diagnostico", None),
+        "whatsapp": getattr(l, "whatsapp", None),
+        "prioridad": calcular_prioridad(l),
     }
 
 def normalize_input(data: dict) -> dict:
     normalized = dict(data)
-
     field_map = {
         "situacion_fiscal": "factura",
         "gestion_contable": "contabilidad",
@@ -189,15 +213,12 @@ def normalize_input(data: dict) -> dict:
         "ante_inspeccion": "inspeccion",
         "historial_multas": "historial",
     }
-
     for k, v in field_map.items():
         if k in data and v not in data:
             normalized[v] = data[k]
-
     raw_nombre = data.get("nombre")
     if raw_nombre:
         normalized["nombre"] = raw_nombre.strip()
-
     return normalized
 
 # =========================================
@@ -239,6 +260,41 @@ def preflight_leads():
     )
 
 # =========================================
+# DASHBOARD
+# =========================================
+@app.get("/dashboard")
+async def dashboard(api_key: str = Header(None, alias="api-key")):
+    if not api_key or api_key != os.environ.get("MESAN_API_KEY"):
+        return response({"error": "No autorizado"}, 403)
+    try:
+        db = SessionLocal()
+        leads = db.query(Lead).all()
+        total = len(leads)
+        nuevo      = sum(1 for l in leads if l.estatus == "nuevo")
+        contactado = sum(1 for l in leads if l.estatus == "contactado")
+        calificado = sum(1 for l in leads if l.estatus == "calificado")
+        cerrado    = sum(1 for l in leads if l.estatus == "cerrado")
+        pipeline       = sum(l.impacto_max or 0 for l in leads if l.estatus != "cerrado")
+        cerrados_valor = sum(l.impacto_max or 0 for l in leads if l.estatus == "cerrado")
+        ticket     = cerrados_valor / cerrado if cerrado > 0 else 0
+        conversion = round(cerrado / total * 100, 2) if total > 0 else 0
+        db.close()
+        return response({
+            "total": total,
+            "nuevo": nuevo,
+            "contactado": contactado,
+            "calificado": calificado,
+            "cerrado": cerrado,
+            "pipeline": pipeline,
+            "cerrados_valor": cerrados_valor,
+            "ticket_promedio": int(ticket),
+            "conversion": conversion
+        })
+    except Exception:
+        logging.error(traceback.format_exc())
+        return response({"error": "Error en dashboard"}, 500)
+
+# =========================================
 # ENDPOINT PRINCIPAL
 # =========================================
 @app.post("/enterprise")
@@ -253,10 +309,10 @@ async def enterprise(data: dict, request: Request):
 
         data = normalize_input(data)
 
-        nombre = (data.get("nombre") or "").strip() or "Sin nombre"
-        email = (data.get("email") or "").strip()
+        nombre   = (data.get("nombre") or "").strip() or "Sin nombre"
+        email    = (data.get("email") or "").strip()
         telefono = (data.get("telefono") or "").strip() or "Sin telefono"
-        giro = (data.get("giro") or "").strip()
+        giro     = (data.get("giro") or "").strip()
 
         logging.warning(f"LEAD FINAL -> {nombre} | {email} | {telefono} | {giro}")
 
@@ -274,24 +330,21 @@ async def enterprise(data: dict, request: Request):
                 }
 
         if not email:
-            return response({
-                "ok": True,
-                "modo": "anonimo",
-                "resultado": resultado
-            })
+            return response({"ok": True, "modo": "anonimo", "resultado": resultado})
 
         lead_id = str(uuid.uuid4())
         lead_data = {
-            "id": lead_id,
-            "nombre": nombre,
-            "email": email,
-            "telefono": telefono,
-            "score": resultado.get("diagnostico", {}).get("score") or 0,
+            "id":            lead_id,
+            "nombre":        nombre,
+            "email":         email,
+            "telefono":      telefono,
+            "score":         resultado.get("diagnostico", {}).get("score") or 0,
             "clasificacion": normalizar_clasificacion(resultado.get("clasificacion")),
-            "impacto_min": resultado.get("impacto", {}).get("impacto_min") or 0,
-            "impacto_max": resultado.get("impacto", {}).get("impacto_max") or 0,
-            "estatus": "nuevo",
-            "fecha": datetime.now().isoformat()
+            "impacto_min":   resultado.get("impacto", {}).get("impacto_min") or 0,
+            "impacto_max":   resultado.get("impacto", {}).get("impacto_max") or 0,
+            "estatus":       "nuevo",
+            "fecha":         datetime.now().isoformat(),
+            "giro":          giro,
         }
 
         try:
@@ -355,9 +408,9 @@ async def pro_diagnostico(data: dict):
     if not evaluar_servicio:
         return response({"error": "Motor financiero no disponible"}, 500)
     try:
-        precio = float(data.get("precio_cliente", 0))
+        precio    = float(data.get("precio_cliente", 0))
         empleados = int(data.get("empleados", 1))
-        zona = data.get("zona", "general")
+        zona      = data.get("zona", "general")
         return response(evaluar_servicio(precio, empleados, zona=zona))
     except Exception:
         logging.error(traceback.format_exc())
@@ -403,12 +456,15 @@ async def obtener_lead(lead_id: str, api_key: str = Header(None, alias="api-key"
 @app.put("/lead/{lead_id}")
 async def actualizar_lead(lead_id: str, data: dict):
     try:
+        estatus = data.get("estatus")
+        if estatus not in ["nuevo", "contactado", "calificado", "cerrado", "pagado"]:
+            return response({"error": "Estatus inválido"}, 400)
         db = SessionLocal()
         lead = db.query(Lead).filter(Lead.id == lead_id).first()
         if not lead:
             db.close()
             return response({"ok": False})
-        lead.estatus = data.get("estatus", lead.estatus)
+        lead.estatus = estatus
         db.commit()
         db.close()
         return response({"ok": True})
