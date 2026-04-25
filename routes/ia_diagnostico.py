@@ -45,16 +45,17 @@ async def ai_diagnostico(data: InputAI):
         if "asistente" in texto or "solo" in texto:
             causas.append("Estructura operativa mínima — mayor exposición en inspección")
             impacto += 20000
-        # Segunda capa — respuestas del usuario
+
+        # SEGUNDA CAPA — escalamiento de urgencia
         if respuestas.get("acta") == "Acta levantada":
-            causas.append("Acta de inspección levantada — proceso formal iniciado")
-            impacto += 50000
+            causas.append("⚠ ACTA LEVANTADA — proceso sancionador iniciado formalmente")
+            impacto += 70000
         if respuestas.get("aviso") == "No":
-            causas.append("Sin aviso de funcionamiento — operación ilegal ante COFEPRIS")
-            impacto += 40000
+            causas.append("Sin aviso de funcionamiento — operación irregular ante COFEPRIS")
+            impacto += 50000
         if respuestas.get("expediente") == "No":
-            causas.append("Sin expediente sanitario — sin defensa ante inspección")
-            impacto += 60000
+            causas.append("Sin expediente sanitario — sin defensa técnica ante inspección")
+            impacto += 80000
 
     elif industria == "RETAIL":
         if "rotacion" in texto or "empleados" in texto:
@@ -135,17 +136,30 @@ async def ai_diagnostico(data: InputAI):
 
     preguntas = generar_preguntas(industria, texto, riesgo)
 
-    causa_principal = causas[0] if causas else ""
-
-    whatsapp = (
-        f"MESAN Ω — ALERTA {industria}\n\n"
-        f"Detectamos riesgo {riesgo} en tu operación.\n\n"
-        f"{causa_principal}\n\n"
-        f"Impacto estimado:\n"
-        f"${impacto_min:,} – ${impacto_max:,} MXN\n\n"
-        f"¿Ya te levantaron acta o apenas es la visita?\n\n"
-        f"Si quieres lo vemos hoy y te digo exactamente cómo corregirlo en 30 días."
-    )
+    # WhatsApp dinámico según segunda capa
+    if respuestas.get("acta") == "Acta levantada":
+        whatsapp = (
+            f"MESAN Ω — ALERTA CRÍTICA\n\n"
+            f"Ya existe una inspección activa de COFEPRIS en tu consultorio.\n\n"
+            f"Esto ya no es preventivo.\n"
+            f"Estás en fase de posible sanción.\n\n"
+            f"Impacto estimado:\n"
+            f"${impacto_min:,} – ${impacto_max:,} MXN\n\n"
+            f"Si no se corrige a tiempo puede derivar en clausura.\n\n"
+            f"¿Ya te dejaron observaciones específicas en el acta?\n\n"
+            f"Te explico hoy mismo cómo evitar la sanción."
+        )
+    else:
+        causa_principal = causas[0] if causas else ""
+        whatsapp = (
+            f"MESAN Ω — ALERTA {industria}\n\n"
+            f"Detectamos riesgo {riesgo} en tu operación.\n\n"
+            f"{causa_principal}\n\n"
+            f"Impacto estimado:\n"
+            f"${impacto_min:,} – ${impacto_max:,} MXN\n\n"
+            f"¿Ya te levantaron acta o apenas es la visita?\n\n"
+            f"Si quieres lo vemos hoy y te digo exactamente cómo corregirlo en 30 días."
+        )
 
     consecuencias = {
         "SALUD": ["Suspensión temporal del establecimiento", "Multas sanitarias acumulativas", "Clausura parcial o total"],
