@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω | CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #010508;
+    --surface: #060E16;
+    --panel: #0A1929;
+    --accent: #00D4FF;
+    --accent2: #0090CC;
+    --border: #0F2A45;
+    --border2: #1A3B61;
+    --text: #E8F4FF;
+    --dim: #4A7A9B;
+    --dim2: #2A5A7B;
+    --alert: #FF3B30;
+    --warn: #FF9500;
+    --ok: #00C896;
+    --purple: #7B4FFF;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ═══ LOGIN ═══ */
+.login-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.login-box {
+    width: 340px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(0,212,255,0.08);
+}
+
+.login-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    color: var(--accent);
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+}
+
+.login-sub {
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    outline: none;
+    text-align: center;
+    margin-bottom: 14px;
+    transition: 0.3s;
+}
+
+.login-input:focus { border-color: var(--accent); }
+
+.login-btn {
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-btn:hover { background: rgba(0,212,255,0.08); }
+
+/* ═══ NAVBAR ═══ */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: rgba(1,5,8,0.97);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+}
+
+.nav-brand {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 3px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--dim);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.nav-timer {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    color: var(--dim);
+}
+
+/* ═══ MAIN ═══ */
+.main {
+    padding: 76px 24px 40px;
+    display: none;
+}
+
+/* ═══ STATS BAR ═══ */
+.stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.stat-card:hover { border-color: var(--border2); }
+
+.stat-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.stat-lbl {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--dim);
+    text-transform: uppercase;
+}
+
+/* ═══ TABS ═══ */
+.tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 18px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--dim);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.tab:hover { color: var(--accent); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ═══ PIPELINE ═══ */
+.pipeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.pipeline-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    min-height: 500px;
+}
+
+.col-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.col-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--accent);
+}
+
+.col-count {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    color: var(--dim);
+    background: var(--panel);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* ═══ LEAD CARD ═══ */
+.lead-card {
+    background: var(--panel);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-left: 3px solid var(--border2);
+}
+
+.lead-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.lead-card.prioridad-critica { border-left-color: var(--alert); }
+.lead-card.prioridad-alta { border-left-color: var(--warn); }
+.lead-card.prioridad-media { border-left-color: var(--accent); }
+.lead-card.prioridad-baja { border-left-color: var(--dim2); }
+
+.lead-nombre {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    color: var(--text);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.lead-giro {
+    font-size: 9px;
+    color: var(--dim);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.lead-impacto {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: var(--alert);
+    margin-bottom: 8px;
+}
+
+.lead-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.badge-alto { background: rgba(255,59,48,0.15); color: var(--alert); border: 1px solid rgba(255,59,48,0.3); }
+.badge-medio { background: rgba(255,149,0,0.15); color: var(--warn); border: 1px solid rgba(255,149,0,0.3); }
+.badge-bajo { background: rgba(0,200,150,0.15); color: var(--ok); border: 1px solid rgba(0,200,150,0.3); }
+
+.prioridad-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.prioridad-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: 0.5s;
+}
+
+.lead-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    color: var(--dim);
+    font-size: 9px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm.wa { border-color: rgba(0,212,255,0.4); color: var(--accent); }
+
+.fecha-lead {
+    font-size: 9px;
+    color: var(--dim2);
+    margin-top: 6px;
+}
+
+/* ═══ LISTA VIEW ═══ */
+.leads-lista { display: flex; flex-direction: column; gap: 10px; }
+
+.lista-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+    gap: 16px;
+    align-items: center;
+    border-left: 4px solid var(--border);
+    transition: 0.3s;
+}
+
+.lista-card:hover { border-color: var(--border2); }
+.lista-card.critica { border-left-color: var(--alert); }
+.lista-card.alta { border-left-color: var(--warn); }
+.lista-card.media { border-left-color: var(--accent); }
+
+.lista-nombre { font-size: 13px; font-weight: 600; }
+.lista-sub { font-size: 10px; color: var(--dim); margin-top: 2px; }
+.lista-val { font-family: 'Orbitron', sans-serif; font-size: 12px; }
+.lista-actions { display: flex; gap: 6px; }
+
+/* ═══ MODAL ═══ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(1,5,8,0.92);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 28px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.modal-field {
+    margin-bottom: 14px;
+}
+
+.modal-label {
+    font-size: 9px;
+    color: var(--dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.modal-val {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+}
+
+.modal-diag {
+    font-size: 11px;
+    color: var(--dim);
+    line-height: 1.7;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-modal {
+    padding: 9px 16px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--dim);
+    font-size: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+}
+
+.btn-modal:hover { border-color: var(--accent); color: var(--accent); }
+.btn-modal.primary { border-color: var(--accent); color: var(--accent); }
+.btn-modal.danger { border-color: var(--alert); color: var(--alert); }
+
+/* ═══ EMPTY STATE ═══ */
+.empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--dim2);
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+/* ═══ SEARCH ═══ */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-input:focus { border-color: var(--accent); }
+
+.filter-btn {
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--dim);
+    font-size: 11px;
+    cursor: pointer;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <div class="login-logo">MESAN Ω</div>
+        <div class="login-sub">CRM — CONTROL TOTAL</div>
+        <input class="login-input" type="password" id="apiKeyInput" placeholder="API KEY">
+        <button class="login-btn" id="loginBtn">ACCEDER AL SISTEMA</button>
+    </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar" style="display:none;">
+    <div class="nav-brand">MESAN Ω — CRM</div>
+    <div class="nav-right">
+        <button class="nav-btn" onclick="cargarLeads()">↻ ACTUALIZAR</button>
+        <button class="nav-btn" onclick="logout()">SALIR</button>
+        <span class="nav-timer" id="timer">30s</span>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main" id="main">
+
+    <!-- STATS -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <span class="stat-num" id="stat-total">0</span>
+            <div class="stat-lbl">Total Leads</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-num" id="stat-criticos" style="color:var(--alert)">0</span>
+            <div class="stat-lbl">Críticos</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-num" id="stat-impacto" style="color:var(--warn)">$0</span>
+            <div class="stat-lbl">Impacto Total</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-num" id="stat-cerrados" style="color:var(--ok)">0</span>
+            <div class="stat-lbl">Cerrados</div>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab active" onclick="cambiarTab('pipeline', this)">PIPELINE</button>
+        <button class="tab" onclick="cambiarTab('lista', this)">LISTA</button>
+    </div>
+
+    <!-- PIPELINE -->
+    <div id="tab-pipeline" class="tab-content active">
+        <div class="pipeline">
+            <div class="pipeline-col">
+                <div class="col-header">
+                    <span class="col-title">NUEVO</span>
+                    <span class="col-count" id="cnt-nuevo">0</span>
+                </div>
+                <div id="col-nuevo"></div>
+            </div>
+            <div class="pipeline-col">
+                <div class="col-header">
+                    <span class="col-title">CONTACTADO</span>
+                    <span class="col-count" id="cnt-contactado">0</span>
+                </div>
+                <div id="col-contactado"></div>
+            </div>
+            <div class="pipeline-col">
+                <div class="col-header">
+                    <span class="col-title">CALIFICADO</span>
+                    <span class="col-count" id="cnt-calificado">0</span>
+                </div>
+                <div id="col-calificado"></div>
+            </div>
+            <div class="pipeline-col">
+                <div class="col-header">
+                    <span class="col-title">CERRADO</span>
+                    <span class="col-count" id="cnt-cerrado">0</span>
+                </div>
+                <div id="col-cerrado"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LISTA -->
+    <div id="tab-lista" class="tab-content">
+        <div class="search-bar">
+            <input class="search-input" id="searchInput" placeholder="Buscar empresa, email..." oninput="filtrarLeads()">
+            <button class="filter-btn active" id="f-todos" onclick="setFiltro('todos', this)">TODOS</button>
+            <button class="filter-btn" id="f-alto" onclick="setFiltro('alto', this)">ALTO</button>
+            <button class="filter-btn" id="f-medio" onclick="setFiltro('medio', this)">MEDIO</button>
+        </div>
+        <div id="lista-leads" class="leads-lista"></div>
+    </div>
+
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" id="modal" onclick="cerrarModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-title" id="m-nombre">—</div>
+
+        <div class="modal-field">
+            <span class="modal-label">Clasificación</span>
+            <div class="modal-val" id="m-clasif">—</div>
+        </div>
+        <div class="modal-field">
+            <span class="modal-label">Impacto Estimado</span>
+            <div class="modal-val" id="m-impacto">—</div>
+        </div>
+        <div class="modal-field">
+            <span class="modal-label">Contacto</span>
+            <div class="modal-val" id="m-contacto">—</div>
+        </div>
+        <div class="modal-field" id="m-ctx-box" style="display:none;">
+            <span class="modal-label">Contexto del caso</span>
+            <div class="modal-diag" id="m-ctx">—</div>
+        </div>
+        <div class="modal-field" id="m-diag-box" style="display:none;">
+            <span class="modal-label">Diagnóstico IA</span>
+            <div class="modal-diag" id="m-diag">—</div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-modal primary" id="m-wa-btn">📲 WHATSAPP</button>
+            <button class="btn-modal" onclick="moverLead(modalLeadId, 'contactado')">→ CONTACTADO</button>
+            <button class="btn-modal" onclick="moverLead(modalLeadId, 'calificado')">✓ CALIFICADO</button>
+            <button class="btn-modal danger" onclick="moverLead(modalLeadId, 'cerrado')">✔ CERRAR</button>
+            <button class="btn-modal" onclick="cerrarModal()">✕ CERRAR</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const API = "https://mesan-api.onrender.com";
+let API_KEY = localStorage.getItem("mesan_key") || "";
+let leadsCache = [];
+let filtroActivo = "todos";
+let modalLeadId = null;
+let countdown = 30;
+let timerInterval;
+
+// ═══ LOGIN ═══
+document.getElementById("loginBtn").onclick = function() {
+    const key = document.getElementById("apiKeyInput").value.trim();
+    if (!key) { alert("Ingresa tu API KEY"); return; }
+    localStorage.setItem("mesan_key", key);
+    API_KEY = key;
+    iniciarSistema();
+};
+
+document.getElementById("apiKeyInput").addEventListener("keypress", e => {
+    if (e.key === "Enter") document.getElementById("loginBtn").click();
+});
+
+if (API_KEY) iniciarSistema();
+
+function iniciarSistema() {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("navbar").style.display = "flex";
+    document.getElementById("main").style.display = "block";
+    cargarLeads();
+    iniciarTimer();
+}
+
+function logout() {
+    localStorage.removeItem("mesan_key");
+    clearInterval(timerInterval);
+    location.reload();
+}
+
+// ═══ TIMER ═══
+function iniciarTimer() {
+    timerInterval = setInterval(() => {
+        countdown--;
+        document.getElementById("timer").innerText = countdown + "s";
+        if (countdown <= 0) {
+            cargarLeads();
+            countdown = 30;
+        }
+    }, 1000);
+}
+
+// ═══ TABS ═══
+function cambiarTab(tab, el) {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+    el.classList.add("active");
+    document.getElementById("tab-" + tab).classList.add("active");
+}
+
+// ═══ CARGAR LEADS ═══
+async function cargarLeads() {
+    try {
+        const res = await fetch(API + "/leads", { headers: { "api-key": API_KEY } });
+        if (res.status === 403) { alert("API Key inválida"); logout(); return; }
+        const data = await res.json();
+        leadsCache = (data.leads || []).map(l => ({
+            ...l,
+            prioridad: calcularPrioridad(l)
+        }));
+        leadsCache.sort((a, b) => b.prioridad - a.prioridad);
+        renderStats(leadsCache);
+        renderPipeline(leadsCache);
+        renderLista(leadsCache);
+        countdown = 30;
+    } catch(e) {
+        console.error("Error cargando leads:", e);
+    }
+}
+
+// ═══ PRIORIDAD ═══
+function calcularPrioridad(lead) {
+    let score = 0;
+    const clas = (lead.clasificacion || "").toUpperCase();
+    if (clas === "ALTO" || clas === "CRISIS FINANCIERA" || clas === "RIESGO OPERATIVO") score += 50;
+    else if (clas === "MEDIO") score += 30;
+    else score += 10;
+
+    if (lead.impacto_max) score += Math.min(parseInt(lead.impacto_max / 1000), 50);
+
+    const texto = ((lead.contexto || "") + (lead.diagnostico || "")).toLowerCase();
+    if (texto.includes("acta")) score += 40;
+    if (texto.includes("auditoria") || texto.includes("auditoría")) score += 30;
+    if (texto.includes("cofepris")) score += 35;
+    if (texto.includes("clausura")) score += 45;
+    if (texto.includes("embargo")) score += 40;
+
+    return score;
+}
+
+f
