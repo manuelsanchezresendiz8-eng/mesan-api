@@ -1,0 +1,135 @@
+def analizar_por_industria(texto: str, industria: str):
+
+    causas = []
+    impacto = 0
+    preguntas = []
+    consecuencias = []
+
+    # =========================
+    # SALUD
+    # =========================
+    if industria == "SALUD":
+        if any(p in texto for p in ["cofepris", "inspeccion", "revision", "visita"]):
+            causas.append("Revisión COFEPRIS activa — riesgo de clausura sanitaria")
+            impacto += 80000
+            preguntas.append("¿Ya te levantaron acta o apenas es la visita?")
+            preguntas.append("¿Cuentas con aviso de funcionamiento vigente?")
+            consecuencias.append("Suspensión temporal del establecimiento")
+            consecuencias.append("Multas sanitarias acumulativas")
+
+        if any(p in texto for p in ["sin licencia", "sin aviso", "sin permiso"]):
+            causas.append("Falta de aviso de funcionamiento sanitario")
+            impacto += 50000
+            preguntas.append("¿Tienes expediente sanitario documentado?")
+            consecuencias.append("Clausura por operación sin licencia")
+
+        if "clausura" in texto or "sello" in texto:
+            causas.append("Clausura activa — pérdida total de operación")
+            impacto += 250000
+            consecuencias.append("Pérdida inmediata de ingresos y pacientes")
+
+    # =========================
+    # RETAIL
+    # =========================
+    elif industria == "RETAIL":
+        if any(p in texto for p in ["rotacion", "empleados", "despido"]):
+            causas.append("Alta rotación laboral — riesgo de demandas e inspecciones")
+            impacto += 60000
+            preguntas.append("¿Tienes contratos firmados con todos tus empleados?")
+            consecuencias.append("Demandas laborales por despido injustificado")
+
+        if "sin contrato" in texto or "contrato" in texto:
+            causas.append("Sin contratos laborales — vulnerabilidad legal total")
+            impacto += 50000
+            consecuencias.append("Exposición ante cualquier conflicto laboral")
+
+        if "imss" in texto:
+            causas.append("Incumplimiento IMSS en personal de mostrador")
+            impacto += 80000
+            preguntas.append("¿Están todos tus empleados registrados en IMSS?")
+            consecuencias.append("Capitales constitutivos retroactivos")
+
+    # =========================
+    # CONSTRUCCION
+    # =========================
+    elif industria == "CONSTRUCCION":
+        if "obra" in texto or "albanil" in texto:
+            causas.append("Riesgo IMSS en obra — capitales constitutivos por accidente")
+            impacto += 150000
+            preguntas.append("¿Tienes a tus trabajadores de obra registrados en IMSS?")
+            consecuencias.append("Capital constitutivo millonario en caso de accidente")
+
+        if "repse" in texto:
+            causas.append("REPSE vencido — responsabilidad solidaria activa")
+            impacto += 150000
+            consecuencias.append("Responsabilidad solidaria ante el cliente contratante")
+
+        if "contrato" in texto:
+            causas.append("Sin contratos de obra — riesgo legal ante el cliente")
+            impacto += 80000
+            consecuencias.append("Disputas legales sin respaldo documental")
+
+    # =========================
+    # ALIMENTOS
+    # =========================
+    elif industria == "ALIMENTOS":
+        if any(p in texto for p in ["cofepris", "inspeccion", "sanidad"]):
+            causas.append("Inspección sanitaria COFEPRIS — riesgo de clausura")
+            impacto += 100000
+            preguntas.append("¿Tienes licencia sanitaria y manejo de alimentos vigente?")
+            consecuencias.append("Clausura del establecimiento por incumplimiento NOM")
+
+        if "empleados" in texto or "imss" in texto:
+            causas.append("Irregularidades laborales en personal de cocina")
+            impacto += 60000
+            consecuencias.append("Multas IMSS y riesgo de inspección laboral")
+
+    # =========================
+    # MANUFACTURA
+    # =========================
+    elif industria == "MANUFACTURA":
+        if any(p in texto for p in ["produccion", "maquinaria", "linea", "refaccion"]):
+            causas.append("Falla en línea de producción — pérdida de capacidad operativa")
+            impacto += 180000
+            preguntas.append("¿Cuántas horas lleva detenida la producción?")
+            preguntas.append("¿Tienes proveedor de refacciones alterno?")
+            consecuencias.append("Incumplimiento de pedidos y penalizaciones")
+
+        if "imss" in texto:
+            causas.append("Riesgo IMSS en personal de planta")
+            impacto += 80000
+            consecuencias.append("Capitales constitutivos por accidente laboral")
+
+    # =========================
+    # GENERAL
+    # =========================
+    else:
+        if "imss" in texto:
+            causas.append("Incumplimiento IMSS — multas y capitales constitutivos")
+            impacto += 80000
+            consecuencias.append("Multas y embargo preventivo")
+
+        if "sat" in texto or "auditoria" in texto:
+            causas.append("Auditoría SAT activa — riesgo de embargo")
+            impacto += 200000
+            consecuencias.append("Embargo de cuentas bancarias")
+
+        if "contrato" in texto:
+            causas.append("Sin contratos laborales — vulnerabilidad legal")
+            impacto += 50000
+            consecuencias.append("Demandas laborales sin defensa")
+
+        if "cfdi" in texto or "factura" in texto:
+            causas.append("Inconsistencias CFDI — riesgo SAT")
+            impacto += 120000
+            consecuencias.append("Multas fiscales y cancelación de sellos")
+
+    # =========================
+    # ANTI $0
+    # =========================
+    if impacto == 0:
+        impacto = 20000
+        causas = causas or ["Requiere análisis más detallado"]
+        consecuencias = consecuencias or ["Riesgo latente sin información suficiente"]
+
+    return causas, impacto, preguntas, consecuencias
