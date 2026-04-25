@@ -24,19 +24,13 @@ from routes.consultar import router as consultar_router
 from routes.documentos import router as documentos_router
 from routes.pagos_omega import router as pagos_router
 from routes.gobierno import router as gobierno_router
-from routes.ia_diagnostico import router as ai_router  # ← NUEVO
+from routes.ia_diagnostico import router as ai_router
 from pro.auth import auth_router
 from pro.diagnostico import diagnostico_router
 
-# =========================================
-# CONFIG
-# =========================================
 VERSION = "2.5.0"
 logging.basicConfig(level=logging.INFO)
 
-# =========================================
-# IMPORTS SEGUROS
-# =========================================
 try:
     from enterprise.enterprise_engine import sistema_enterprise
     logging.info("enterprise_engine OK")
@@ -88,9 +82,6 @@ except Exception as e:
     logging.error(f"ERROR chat_ai: {e}")
     chat_router = None
 
-# =========================================
-# VALIDACION ENV
-# =========================================
 if not os.environ.get("MESAN_API_KEY"):
     logging.critical("Falta MESAN_API_KEY")
     sys.exit(1)
@@ -99,9 +90,6 @@ if not os.environ.get("DATABASE_URL"):
     logging.critical("Falta DATABASE_URL")
     sys.exit(1)
 
-# =========================================
-# INIT
-# =========================================
 try:
     init_db()
     logging.info("DB init OK")
@@ -110,9 +98,6 @@ except Exception as e:
 
 app = FastAPI(title="MESAN API", version=VERSION)
 
-# =========================================
-# CORS
-# =========================================
 origins = [
     "https://mesanomega.com",
     "https://www.mesanomega.com",
@@ -129,32 +114,23 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# =========================================
-# RATE LIMIT
-# =========================================
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIMiddleware)
 
-# =========================================
-# ROUTERS
-# =========================================
 app.include_router(evaluar_router, prefix="/api")
 app.include_router(verificar_router, prefix="/api")
 app.include_router(consultar_router, prefix="/api")
 app.include_router(documentos_router)
 app.include_router(pagos_router)
 app.include_router(gobierno_router)
-app.include_router(ai_router)  # ← NUEVO
+app.include_router(ai_router)
 app.include_router(auth_router, prefix="/pro")
 app.include_router(diagnostico_router, prefix="/pro")
 
 if chat_router:
     app.include_router(chat_router)
 
-# =========================================
-# HELPERS
-# =========================================
 def response(data, status=200):
     return JSONResponse(
         status_code=status,
@@ -179,7 +155,6 @@ def serialize_lead(l):
 
 def normalize_input(data: dict) -> dict:
     normalized = dict(data)
-
     field_map = {
         "situacion_fiscal": "factura",
         "gestion_contable": "contabilidad",
@@ -189,20 +164,14 @@ def normalize_input(data: dict) -> dict:
         "ante_inspeccion": "inspeccion",
         "historial_multas": "historial",
     }
-
     for k, v in field_map.items():
         if k in data and v not in data:
             normalized[v] = data[k]
-
     raw_nombre = data.get("nombre")
     if raw_nombre:
         normalized["nombre"] = raw_nombre.strip()
-
     return normalized
 
-# =========================================
-# ROOT / HEALTH
-# =========================================
 @app.get("/")
 @app.head("/")
 async def root():
@@ -213,9 +182,6 @@ async def root():
 async def health():
     return response({"status": "ok", "version": VERSION})
 
-# =========================================
-# PREFLIGHT CORS
-# =========================================
 @app.options("/enterprise")
 def preflight_enterprise():
     return Response(
@@ -238,28 +204,19 @@ def preflight_leads():
         },
     )
 
-# =========================================
-# ENDPOINT PRINCIPAL
-# =========================================
 @app.post("/enterprise")
 @limiter.limit("10/minute")
 async def enterprise(data: dict, request: Request):
-
     logging.info(f"DATA RECIBIDA: {data}")
-
     try:
         if not isinstance(data, dict):
             return JSONResponse(status_code=400, content={"error": "Payload invalido"})
-
         data = normalize_input(data)
-
         nombre = (data.get("nombre") or "").strip() or "Sin nombre"
         email = (data.get("email") or "").strip()
         telefono = (data.get("telefono") or "").strip() or "Sin telefono"
         giro = (data.get("giro") or "").strip()
-
         logging.warning(f"LEAD FINAL -> {nombre} | {email} | {telefono} | {giro}")
-
         resultado = {}
         if sistema_enterprise:
             try:
@@ -272,14 +229,8 @@ async def enterprise(data: dict, request: Request):
                     "impacto": {"impacto_min": 0, "impacto_max": 0},
                     "soluciones": []
                 }
-
         if not email:
-            return response({
-                "ok": True,
-                "modo": "anonimo",
-                "resultado": resultado
-            })
-
+            return response({"ok": True, "modo": "anonimo", "resultado": resultado})
         lead_id = str(uuid.uuid4())
         lead_data = {
             "id": lead_id,
@@ -293,7 +244,6 @@ async def enterprise(data: dict, request: Request):
             "estatus": "nuevo",
             "fecha": datetime.now().isoformat()
         }
-
         try:
             db = SessionLocal()
             nuevo_lead = Lead(**lead_data)
@@ -303,7 +253,6 @@ async def enterprise(data: dict, request: Request):
             logging.info(f"Lead guardado en DB: {email}")
         except Exception:
             logging.error(f"Error guardando lead: {traceback.format_exc()}")
-
         def procesos_async():
             try:
                 if enviar_notificacion_lead:
@@ -315,8 +264,6 @@ async def enterprise(data: dict, request: Request):
                         clasificacion=lead_data["clasificacion"],
                         soluciones=resultado.get("soluciones", [])
                     )
-                    logging.info("notificacion enviada OK")
-
                 if generar_diagnostico_pdf and enviar_reporte_pdf:
                     pdf_bytes = generar_diagnostico_pdf(
                         nombre=nombre,
@@ -329,27 +276,14 @@ async def enterprise(data: dict, request: Request):
                         impacto_max=lead_data["impacto_max"]
                     )
                     enviar_reporte_pdf(email, nombre, pdf_bytes)
-                    logging.info("PDF enviado OK")
-
             except Exception:
                 logging.error(f"ERROR procesos_async: {traceback.format_exc()}")
-
         threading.Thread(target=procesos_async, daemon=True).start()
-
-        return response({
-            "ok": True,
-            "modo": "lead_guardado",
-            "resultado": resultado,
-            "lead_id": lead_id
-        })
-
+        return response({"ok": True, "modo": "lead_guardado", "resultado": resultado, "lead_id": lead_id})
     except Exception:
         logging.error(f"ERROR CRITICO /enterprise: {traceback.format_exc()}")
         return response({"error": "Error interno"}, 500)
 
-# =========================================
-# PRO DIAGNOSTICO
-# =========================================
 @app.post("/pro/diagnostico-financiero")
 async def pro_diagnostico(data: dict):
     if not evaluar_servicio:
@@ -363,9 +297,6 @@ async def pro_diagnostico(data: dict):
         logging.error(traceback.format_exc())
         return response({"error": "Error en motor financiero"}, 500)
 
-# =========================================
-# LEADS PROTEGIDO
-# =========================================
 @app.get("/leads")
 async def obtener_leads(api_key: str = Header(None, alias="api-key")):
     if not api_key or api_key != os.environ.get("MESAN_API_KEY"):
@@ -379,9 +310,6 @@ async def obtener_leads(api_key: str = Header(None, alias="api-key")):
         logging.error(traceback.format_exc())
         return response({"error": "Error obteniendo leads"}, 500)
 
-# =========================================
-# LEAD INDIVIDUAL
-# =========================================
 @app.get("/lead/{lead_id}")
 async def obtener_lead(lead_id: str, api_key: str = Header(None, alias="api-key")):
     if not api_key or api_key != os.environ.get("MESAN_API_KEY"):
@@ -397,9 +325,6 @@ async def obtener_lead(lead_id: str, api_key: str = Header(None, alias="api-key"
         logging.error(traceback.format_exc())
         return response({"error": "Error obteniendo lead"}, 500)
 
-# =========================================
-# ACTUALIZAR LEAD
-# =========================================
 @app.put("/lead/{lead_id}")
 async def actualizar_lead(lead_id: str, data: dict):
     try:
@@ -416,9 +341,6 @@ async def actualizar_lead(lead_id: str, data: dict):
         logging.error(traceback.format_exc())
         return response({"error": "Error actualizando lead"}, 500)
 
-# =========================================
-# ERROR GLOBAL
-# =========================================
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logging.error(f"ERROR GLOBAL: {traceback.format_exc()}")
