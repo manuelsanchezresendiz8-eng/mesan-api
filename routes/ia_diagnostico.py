@@ -1,94 +1,92 @@
-import os
-import httpx
 from fastapi import APIRouter
+from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(prefix="/ai", tags=["AI"])
 
-@router.post("/ai/diagnostico")
-async def ai_diagnostico(data: dict):
+class InputAI(BaseModel):
+    texto: str
 
-    texto = data.get("texto", "")
-    if not texto:
-        return {"error": "Se requiere texto del caso"}
+@router.post("/diagnostico")
+async def ai_diagnostico(data: InputAI):
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    texto = data.texto.lower()
 
-    prompt = f"""Eres auditor fiscal y laboral experto en México (IMSS, SAT, REPSE, CFDI).
-
-Analiza este caso empresarial:
-{texto}
-
-Responde EXACTAMENTE con este formato:
-
-RIESGO: (CRÍTICO / ALTO / MEDIO / BAJO)
-CAUSAS: (lista las causas principales con detalle técnico)
-IMPACTO: (monto estimado en pesos MXN con justificación)
-PROBABILIDAD DE AUDITORÍA: (ALTA / MEDIA / BAJA con razón)
-PLAN 30 DÍAS:
-  Semana 1: (acción concreta)
-  Semana 2: (acción concreta)
-  Semana 3: (acción concreta)
-  Semana 4: (acción concreta)
-RECOMENDACIÓN FINAL: (una línea directa y ejecutiva)
-CIERRE: (mensaje corto invitando a contratar MESAN Ω)"""
-
-    try:
-        response = httpx.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={
-                "x-api-key": api_key,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json"
-            },
-            json={
-                "model": "claude-sonnet-4-6",
-                "max_tokens": 1024,
-                "messages": [{"role": "user", "content": prompt}]
-            },
-            timeout=30
-        )
-        result = response.json()
-        respuesta = result["content"][0]["text"]
-        return {"ok": True, "respuesta": respuesta}
-
-    except Exception as e:
-        return {"ok": False, "respuesta": _fallback(texto), "error": str(e)}
-
-
-def _fallback(texto: str) -> str:
-    t = texto.lower()
     impacto = 0
-    problemas = []
+    causas = []
+    riesgo = "MEDIO"
+    prob = "MEDIA"
 
-    if "incapacidad" in t:
-        problemas.append("Trabajador incapacitado laborando — fraude al IMSS")
+    # --- REGLAS DE DETECCIÓN ---
+    if "incapacitado" in texto or "incapacidad" in texto:
+        causas.append("Trabajador incapacitado laborando — fraude al IMSS y riesgo de Capital Constitutivo")
         impacto += 250000
-    if "imss" in t:
-        problemas.append("Incumplimiento IMSS — capitales constitutivos")
+
+    if "imss" in texto:
+        causas.append("Incumplimiento IMSS — exposición a capitales constitutivos y multas")
         impacto += 80000
-    if "cfdi" in t or "factura" in t:
-        problemas.append("Inconsistencias fiscales CFDI")
+
+    if "cfdi" in texto or "factura" in texto:
+        causas.append("Inconsistencias en CFDI — riesgo de auditoría SAT")
         impacto += 120000
-    if "repse" in t:
-        problemas.append("REPSE vencido o inexistente")
+
+    if "repse" in texto:
+        causas.append("REPSE vencido — responsabilidad solidaria activa")
         impacto += 150000
-    if "contrato" in t:
-        problemas.append("Sin contratos laborales")
+
+    if "contrato" in texto:
+        causas.append("Ausencia de contratos laborales — vulnerabilidad legal")
         impacto += 50000
-    if "clausura" in t or "cofepris" in t:
-        problemas.append("Bloqueo operativo por autoridad")
+
+    if "clausura" in texto or "cofepris" in texto:
+        causas.append("Bloqueo operativo — pérdida inmediata de flujo")
         impacto += 300000
 
-    nivel = "CRÍTICO" if impacto > 200000 else "ALTO" if impacto > 80000 else "MEDIO"
+    if "sat" in texto or "auditoria" in texto or "auditoría" in texto:
+        causas.append("Auditoría SAT activa — riesgo de embargo")
+        impacto += 200000
 
-    return f"""RIESGO: {nivel}
-CAUSAS: {", ".join(problemas) or "Requiere análisis detallado"}
-IMPACTO: ${impacto:,} MXN estimado
-PROBABILIDAD DE AUDITORÍA: {"ALTA" if nivel == "CRÍTICO" else "MEDIA"}
+    # --- CLASIFICACIÓN ---
+    if impacto > 300000:
+        riesgo = "CRÍTICO"
+        prob = "ALTA"
+    elif impacto > 100000:
+        riesgo = "ALTO"
+        prob = "ALTA"
+    elif impacto > 50000:
+        riesgo = "MEDIO"
+        prob = "MEDIA"
+    else:
+        riesgo = "BAJO"
+        prob = "BAJA"
+
+    if not causas:
+        causas = ["Requiere análisis más detallado"]
+
+    # --- RESPUESTA ---
+    respuesta = f"""RIESGO: {riesgo}
+
+CAUSAS DETECTADAS:
+{chr(10).join(f"• {c}" for c in causas)}
+
+IMPACTO ECONÓMICO ESTIMADO: ${impacto:,} MXN
+
+PROBABILIDAD DE AUDITORÍA: {prob}
+
 PLAN 30 DÍAS:
-  Semana 1: Auditoría interna urgente
-  Semana 2: Corrección legal y laboral
-  Semana 3: Ajuste fiscal y CFDI
-  Semana 4: Blindaje operativo MESAN Ω
-RECOMENDACIÓN FINAL: Regularización inmediata antes de que escale
+Semana 1: Auditoría interna urgente
+Semana 2: Corrección legal y laboral
+Semana 3: Ajuste fiscal y CFDI
+Semana 4: Blindaje operativo MESAN Ω
+
+RECOMENDACIÓN FINAL: Actuar de inmediato para evitar escalamiento
+
 CIERRE: Podemos corregir esto en 30 días. ¿Agendamos llamada hoy?"""
+
+    return {
+        "ok": True,
+        "riesgo": riesgo,
+        "impacto": impacto,
+        "probabilidad": prob,
+        "causas": causas,
+        "respuesta": respuesta
+    }
