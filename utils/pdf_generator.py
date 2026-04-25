@@ -1,117 +1,109 @@
 from fpdf import FPDF
+from datetime import datetime
 
-class PDF(FPDF):
-
-    def portada(self, nombre):
-        self.add_page()
-        self.set_font("Arial", "B", 28)
-        self.cell(0, 40, "", ln=True)
-        self.cell(0, 15, "MESAN Omega", ln=True, align="C")
-        self.set_font("Arial", "", 12)
-        self.cell(0, 10, "Inteligencia Financiera y Fiscal", ln=True, align="C")
-        self.ln(30)
-        self.set_font("Arial", "B", 18)
-        self.multi_cell(0, 10, "Reporte Ejecutivo de Diagnostico Empresarial", align="C")
-        self.ln(20)
-        self.set_font("Arial", "", 11)
-        self.cell(0, 8, f"Cliente: {nombre}", ln=True, align="C")
-        self.ln(40)
-        self.set_font("Arial", "I", 9)
-        self.cell(0, 6, "Confidencial", align="C")
+class PDFDiagnostico(FPDF):
 
     def header(self):
-        if self.page_no() > 1:
-            self.set_font("Arial", "B", 10)
-            self.cell(0, 6, "MESAN Omega", ln=True)
-            self.ln(2)
+        self.set_font("Arial", "B", 12)
+        self.cell(0, 10, "MESAN Ω — Diagnóstico Estratégico", 0, 1, "R")
+        self.ln(5)
 
     def footer(self):
         self.set_y(-15)
         self.set_font("Arial", "I", 8)
-        self.cell(0, 5, f"Pagina {self.page_no()} | mesanomega.com", align="C")
+        self.cell(0, 10, f"Página {self.page_no()}", 0, 0, "C")
 
 
 def generar_diagnostico_pdf(
-    nombre, email, telefono,
-    score, clasificacion,
-    soluciones,
-    impacto_min, impacto_max,
-    finanzas=None,
-    precio_sugerido=None
+    nombre,
+    empresa,
+    riesgo,
+    impacto_min,
+    impacto_max,
+    causas,
+    contexto,
+    respuestas_usuario=None
 ):
-    pdf = PDF()
 
-    pdf.portada(nombre)
-
+    pdf = PDFDiagnostico()
     pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 8, "Resumen Ejecutivo", ln=True)
-    pdf.ln(4)
-    pdf.set_font("Arial", "", 11)
-    pdf.multi_cell(
-        0, 6,
-        "El presente analisis evalua la situacion operativa, fiscal y financiera de la empresa, "
-        "identificando riesgos potenciales y oportunidades de optimizacion.\n\n"
-        "El objetivo es proporcionar claridad en la toma de decisiones y proteger la rentabilidad."
-    )
-    pdf.ln(6)
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 6, "Indicadores Clave", ln=True)
-    pdf.set_font("Arial", "", 11)
-    pdf.cell(0, 6, f"Score de riesgo: {score}", ln=True)
-    pdf.cell(0, 6, f"Clasificacion: {clasificacion}", ln=True)
-    pdf.cell(0, 6, f"Exposicion economica estimada: ${impacto_min:,} - ${impacto_max:,} MXN", ln=True)
 
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 8, "Hallazgos y Riesgos Detectados", ln=True)
-    pdf.ln(4)
-    pdf.set_font("Arial", "", 11)
-    for s in soluciones:
-        texto = s if isinstance(s, str) else f"{s.get('area','')} - {s.get('accion','')}"
-        pdf.multi_cell(0, 6, f"- {texto}")
-        pdf.ln(1)
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, "DIAGNÓSTICO EMPRESARIAL", 0, 1)
 
-    if finanzas:
-        pdf.add_page()
-        pdf.set_font("Arial", "B", 14)
-        pdf.cell(0, 8, "Impacto Financiero", ln=True)
-        pdf.ln(4)
-        pdf.set_font("Arial", "", 11)
-        pdf.cell(0, 6, f"Costo real por empleado: ${finanzas['costo_empleado']:,}", ln=True)
-        pdf.cell(0, 6, f"Costo total operativo: ${finanzas['costo_total']:,}", ln=True)
-        pdf.cell(0, 6, f"Ingreso actual: ${finanzas['ingreso']:,}", ln=True)
-        pdf.cell(0, 6, f"Utilidad estimada: ${finanzas['utilidad']:,}", ln=True)
-        pdf.cell(0, 6, f"Margen operativo: {round(finanzas['margen']*100,1)}%", ln=True)
-
-    if precio_sugerido:
-        pdf.add_page()
-        pdf.set_font("Arial", "B", 14)
-        pdf.cell(0, 8, "Recomendacion Estrategica", ln=True)
-        pdf.ln(4)
-        pdf.set_font("Arial", "", 11)
-        pdf.multi_cell(
-            0, 6,
-            f"Se recomienda ajustar el precio por elemento a aproximadamente "
-            f"${precio_sugerido:,} MXN.\n\n"
-            "Este ajuste permite mantener un margen operativo saludable, "
-            "proteger la rentabilidad y evitar presion competitiva basada en precio."
-        )
-
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 8, "Conclusion y Siguiente Paso", ln=True)
-    pdf.ln(4)
-    pdf.set_font("Arial", "", 11)
-    pdf.multi_cell(
-        0, 6,
-        "El analisis confirma la existencia de riesgos operativos y financieros que requieren atencion.\n\n"
-        "La implementacion de las recomendaciones propuestas permite optimizar costos, "
-        "reducir exposicion y mejorar la rentabilidad del negocio.\n\n"
-        "MESAN Omega ofrece acompanamiento en la ejecucion de estas estrategias."
-    )
+    pdf.set_font("Arial", "", 12)
+    pdf.cell(0, 8, f"Empresa: {empresa}", 0, 1)
+    pdf.cell(0, 8, f"Responsable: {nombre}", 0, 1)
+    pdf.cell(0, 8, f"Fecha: {datetime.now().strftime('%d/%m/%Y')}", 0, 1)
     pdf.ln(10)
-    pdf.set_font("Arial", "B", 12)
-    pdf.multi_cell(0, 6, "Agenda una sesion estrategica:\nWhatsApp: +52 686 162 9643")
 
-    return bytes(pdf.output())
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 10, "Resumen Ejecutivo", 0, 1)
+    pdf.set_font("Arial", "", 11)
+    pdf.multi_cell(0, 7,
+        f"Se detecta un nivel de riesgo {riesgo} en la operación actual. "
+        f"El impacto económico estimado oscila entre ${impacto_min:,} y ${impacto_max:,} MXN."
+    )
+    pdf.ln(5)
+
+    pdf.set_font("Arial", "B", 13)
+    pdf.cell(0, 8, "Contexto Detectado", 0, 1)
+    pdf.set_font("Arial", "", 11)
+    pdf.multi_cell(0, 7, contexto)
+    pdf.ln(5)
+
+    pdf.set_font("Arial", "B", 13)
+    pdf.cell(0, 8, "Hallazgos Clave", 0, 1)
+    pdf.set_font("Arial", "", 11)
+    for c in causas:
+        pdf.multi_cell(0, 6, f"- {c}")
+    pdf.ln(5)
+
+    pdf.set_font("Arial", "B", 13)
+    pdf.cell(0, 8, "Impacto Económico", 0, 1)
+    pdf.set_font("Arial", "", 11)
+    pdf.multi_cell(0, 7,
+        f"Escenario conservador: ${impacto_min:,} MXN\n"
+        f"Escenario probable: ${(impacto_min + impacto_max)//2:,} MXN\n"
+        f"Escenario crítico: ${impacto_max:,} MXN"
+    )
+    pdf.ln(5)
+
+    pdf.set_font("Arial", "B", 13)
+    pdf.cell(0, 8, "Plan de Acción (30 Días)", 0, 1)
+    pdf.set_font("Arial", "", 11)
+    pdf.multi_cell(0, 7,
+        "Fase 1: Contención inmediata\n"
+        "Fase 2: Regularización operativa\n"
+        "Fase 3: Ajuste fiscal\n"
+        "Fase 4: Implementación de controles"
+    )
+    pdf.ln(5)
+
+    if respuestas_usuario:
+        pdf.set_font("Arial", "B", 13)
+        pdf.cell(0, 8, "Información Proporcionada", 0, 1)
+        pdf.set_font("Arial", "", 11)
+        for r in respuestas_usuario:
+            pdf.multi_cell(0, 6, f"- {r}")
+        pdf.ln(5)
+
+    pdf.set_font("Arial", "B", 13)
+    pdf.cell(0, 8, "Implementación Recomendada", 0, 1)
+    pdf.set_font("Arial", "", 11)
+    pdf.multi_cell(0, 7,
+        "MESAN Ω puede ejecutar el proceso de regularización completo en 30 días.\n"
+        "Incluye regularización técnica, corrección documental y estrategia fiscal."
+    )
+    pdf.ln(8)
+
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 8, "Siguiente Paso", 0, 1)
+    pdf.set_font("Arial", "", 11)
+    pdf.multi_cell(0, 7,
+        "Para implementar la solución completa, agende una sesión estratégica con MESAN Ω."
+    )
+
+    return pdf.output(dest="S").encode("latin-1")
+
+    
