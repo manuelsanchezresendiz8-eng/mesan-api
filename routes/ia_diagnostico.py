@@ -1,32 +1,40 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
+import unicodedata
 
 router = APIRouter(prefix="/ai", tags=["AI"])
+
 
 class InputAI(BaseModel):
     texto: str
 
+
+def normalizar(texto: str) -> str:
+    texto = texto.lower()
+    texto = unicodedata.normalize("NFD", texto)
+    texto = texto.encode("ascii", "ignore").decode("utf-8")
+    return texto
+
+
 @router.post("/diagnostico")
 async def ai_diagnostico(data: InputAI):
 
-    texto = data.texto.lower()
+    texto = normalizar(data.texto)
 
     impacto = 0
     causas = []
-    riesgo = "MEDIO"
-    prob = "MEDIA"
 
-    # --- REGLAS DE DETECCIÓN ---
+    # --- MOTOR DE DETECCIÓN ---
     if "incapacitado" in texto or "incapacidad" in texto:
-        causas.append("Trabajador incapacitado laborando — fraude al IMSS y riesgo de Capital Constitutivo")
+        causas.append("Trabajador incapacitado laborando — fraude IMSS y Capital Constitutivo")
         impacto += 250000
 
     if "imss" in texto:
-        causas.append("Incumplimiento IMSS — exposición a capitales constitutivos y multas")
+        causas.append("Incumplimiento IMSS — multas y capitales constitutivos")
         impacto += 80000
 
     if "cfdi" in texto or "factura" in texto:
-        causas.append("Inconsistencias en CFDI — riesgo de auditoría SAT")
+        causas.append("Inconsistencias CFDI — riesgo de auditoría SAT")
         impacto += 120000
 
     if "repse" in texto:
@@ -34,14 +42,14 @@ async def ai_diagnostico(data: InputAI):
         impacto += 150000
 
     if "contrato" in texto:
-        causas.append("Ausencia de contratos laborales — vulnerabilidad legal")
+        causas.append("Sin contratos laborales — vulnerabilidad legal")
         impacto += 50000
 
     if "clausura" in texto or "cofepris" in texto:
         causas.append("Bloqueo operativo — pérdida inmediata de flujo")
         impacto += 300000
 
-    if "sat" in texto or "auditoria" in texto or "auditoría" in texto:
+    if "sat" in texto or "auditoria" in texto:
         causas.append("Auditoría SAT activa — riesgo de embargo")
         impacto += 200000
 
@@ -62,31 +70,19 @@ async def ai_diagnostico(data: InputAI):
     if not causas:
         causas = ["Requiere análisis más detallado"]
 
-    # --- RESPUESTA ---
-    respuesta = f"""RIESGO: {riesgo}
-
-CAUSAS DETECTADAS:
-{chr(10).join(f"• {c}" for c in causas)}
-
-IMPACTO ECONÓMICO ESTIMADO: ${impacto:,} MXN
-
-PROBABILIDAD DE AUDITORÍA: {prob}
-
-PLAN 30 DÍAS:
-Semana 1: Auditoría interna urgente
-Semana 2: Corrección legal y laboral
-Semana 3: Ajuste fiscal y CFDI
-Semana 4: Blindaje operativo MESAN Ω
-
-RECOMENDACIÓN FINAL: Actuar de inmediato para evitar escalamiento
-
-CIERRE: Podemos corregir esto en 30 días. ¿Agendamos llamada hoy?"""
-
+    # --- RESPUESTA ESTRUCTURADA ---
     return {
         "ok": True,
         "riesgo": riesgo,
         "impacto": impacto,
         "probabilidad": prob,
         "causas": causas,
-        "respuesta": respuesta
+        "plan_30_dias": [
+            "Semana 1: Auditoría interna urgente",
+            "Semana 2: Corrección legal y laboral",
+            "Semana 3: Ajuste fiscal y CFDI",
+            "Semana 4: Blindaje operativo MESAN Ω"
+        ],
+        "mensaje": f"Riesgo {riesgo} con impacto estimado de ${impacto:,} MXN",
+        "cierre": "Podemos corregir esto en 30 días. ¿Agendamos llamada hoy?"
     }
