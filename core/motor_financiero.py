@@ -1,3 +1,53 @@
+# =============================================
+# FUNCIÓN LEGACY — requerida por panel_pro
+# =============================================
+def evaluar_servicio(precio_cliente, empleados, zona="general"):
+    smg = 278.80 if zona == "frontera" else 248.93
+    salario_base = smg * 30
+    imss = salario_base * 0.2497
+    infonavit = salario_base * 0.05
+    costo_empleado = salario_base + imss + infonavit
+    costo_total = costo_empleado * empleados
+    utilidad = precio_cliente - costo_total
+    margen = round((utilidad / precio_cliente * 100), 2) if precio_cliente else 0
+    reserva = round(costo_total * 0.08, 2)
+
+    if margen > 30:
+        clasificacion = "RENTABLE"
+        decision = {"decision": "ACEPTAR", "mensaje": "Margen saludable — operación viable"}
+    elif margen > 10:
+        clasificacion = "AJUSTADO"
+        decision = {"decision": "REVISAR", "mensaje": "Margen bajo — evaluar optimización"}
+    else:
+        clasificacion = "EN RIESGO"
+        decision = {"decision": "RECHAZAR", "mensaje": "Margen insuficiente — pérdida probable"}
+
+    precio_minimo = round(costo_total * 1.05, 2)
+    precio_cierre = round(costo_total * 1.15, 2)
+    precio_objetivo = round(costo_total * 1.35, 2)
+
+    return {
+        "clasificacion": clasificacion,
+        "decision": decision,
+        "financiero": {
+            "ingreso": precio_cliente,
+            "costo_total": round(costo_total, 2),
+            "utilidad": round(utilidad, 2),
+            "margen": margen,
+            "reserva": reserva,
+            "salario": round(salario_base, 2)
+        },
+        "precios": {
+            "precio_minimo": precio_minimo,
+            "precio_cierre": precio_cierre,
+            "precio_objetivo": precio_objetivo
+        }
+    }
+
+
+# =============================================
+# MOTOR FINANCIERO PRINCIPAL
+# =============================================
 class MotorFinanciero:
 
     def __init__(self, data):
