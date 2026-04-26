@@ -13,7 +13,7 @@
     --accent: #00C8FF;
     --border: #0A2035;
     --border2: #123050;
-    --text: #EAF4FF;
+    --text: #BFE9FF;
     --dim: #4A7A9B;
     --dim2: #2A5A7B;
     --alert: #FF3B30;
@@ -21,367 +21,118 @@
     --ok: #00D09E;
 }
 
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; }
-body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
 
 /* NAV */
-.nav { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:0 40px; height:64px; background:rgba(2,7,9,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); z-index:100; }
-.nav-logo { font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--accent); letter-spacing:3px; text-decoration:none; }
-.nav-back { font-size:12px; color:var(--dim); text-decoration:none; letter-spacing:1px; transition:0.3s; display:flex; align-items:center; gap:6px; }
-.nav-back:hover { color:var(--text); }
+.nav{position:fixed;top:0;width:100%;display:flex;justify-content:space-between;align-items:center;padding:0 40px;height:64px;background:rgba(2,7,9,0.7);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
+.nav-logo{font-family:'Syne';font-weight:800;color:var(--accent);letter-spacing:3px;text-decoration:none;}
+.nav-back{font-size:12px;color:var(--dim);text-decoration:none;}
 
 /* CONTAINER */
-.container { max-width:620px; margin:0 auto; padding:88px 24px 60px; }
+.container{max-width:620px;margin:0 auto;padding:88px 24px 60px;}
 
 /* HEADER */
-.page-tag { font-size:10px; letter-spacing:4px; color:var(--dim); text-transform:uppercase; margin-bottom:12px; }
-.page-title { font-family:'Syne',sans-serif; font-size:clamp(28px,5vw,42px); font-weight:800; color:var(--text); letter-spacing:-1px; line-height:1.1; margin-bottom:12px; }
-.page-title span { color:var(--accent); }
-.page-sub { font-size:14px; color:var(--dim); line-height:1.7; margin-bottom:36px; font-weight:300; }
-
-/* SECTION HEADER */
-.sec-header { font-family:'Syne',sans-serif; font-size:9px; font-weight:700; letter-spacing:4px; color:var(--accent); text-transform:uppercase; border-bottom:1px solid var(--border); padding-bottom:10px; margin:28px 0 18px; opacity:0.8; }
+.page-title{
+    font-family:'Syne';
+    font-size:clamp(28px,5vw,42px);
+    font-weight:800;
+    color:var(--accent);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    text-shadow:0 0 10px rgba(0,200,255,0.4),0 0 20px rgba(0,200,255,0.2);
+    margin-bottom:12px;
+}
+.page-title span{color:var(--accent);opacity:0.85;}
+.page-sub{font-size:14px;color:var(--dim);margin-bottom:36px;}
 
 /* FORM */
-.form-group { margin-bottom:16px; }
-.form-label { display:block; font-size:9px; letter-spacing:2px; color:var(--dim); text-transform:uppercase; margin-bottom:7px; }
-.form-input { width:100%; padding:13px 16px; background:var(--panel); border:1px solid var(--border2); color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; border-radius:8px; outline:none; transition:0.3s; }
-.form-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,200,255,0.08); }
-.form-select { width:100%; padding:13px 16px; background:var(--panel); border:1px solid var(--border2); color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; border-radius:8px; outline:none; transition:0.3s; cursor:pointer; appearance:none; }
-.form-select:focus { border-color:var(--accent); }
-.form-select option { background:var(--panel); }
+.form-group{margin-bottom:16px;}
+.form-label{font-size:9px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:7px;display:block;}
 
-/* TIPO CARDS */
-.tipo-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 22px; cursor:pointer; margin-bottom:10px; transition:0.3s; display:block; text-align:left; width:100%; }
-.tipo-card:hover { border-color:var(--border2); transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
-.tipo-card.selected { border-color:var(--accent); background:rgba(0,200,255,0.04); box-shadow:0 0 0 1px var(--accent); }
-.tipo-title { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; color:var(--accent); letter-spacing:2px; margin-bottom:5px; }
-.tipo-desc { font-size:12px; color:var(--dim); line-height:1.5; font-weight:300; }
+.form-input,.form-select{
+    width:100%;
+    padding:13px 16px;
+    background:rgba(7,21,32,0.7);
+    border:1px solid rgba(18,48,80,0.6);
+    border-radius:8px;
+    color:var(--text);
+    outline:none;
+}
+.form-input:focus,.form-select:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 12px rgba(0,200,255,0.2);
+}
 
-/* CUESTIONARIO */
-.cuestionario { display:none; animation:fadeIn 0.3s ease; }
-.cuestionario.visible { display:block; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+/* CARDS */
+.tipo-card{
+    background:rgba(4,13,20,0.7);
+    border:1px solid rgba(10,32,53,0.6);
+    border-radius:12px;
+    padding:20px;
+    cursor:pointer;
+    margin-bottom:10px;
+}
+.tipo-card.selected{
+    border-color:var(--accent);
+    box-shadow:0 0 20px rgba(0,200,255,0.2);
+}
 
 /* BTN */
-.btn-ejecutar { width:100%; padding:16px; background:var(--accent); color:var(--bg); border:none; border-radius:10px; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px; cursor:pointer; transition:0.3s; margin-top:8px; }
-.btn-ejecutar:hover { background:#00AADD; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,200,255,0.25); }
-.btn-ejecutar:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+.btn-ejecutar{
+    width:100%;
+    padding:16px;
+    background:transparent;
+    border:1px solid var(--accent);
+    color:var(--accent);
+    border-radius:10px;
+    cursor:pointer;
+}
+.btn-ejecutar:hover{
+    background:rgba(0,200,255,0.08);
+}
 
-/* RESULTADO */
-.resultado-box { display:none; margin-top:32px; animation:fadeIn 0.4s ease; }
-.resultado-box.show { display:block; }
-
-.score-card { background:var(--surface); border:1px solid var(--border2); border-radius:14px; padding:32px; text-align:center; margin-bottom:16px; }
-.score-num { font-family:'Syne',sans-serif; font-size:72px; font-weight:800; color:var(--accent); line-height:1; display:block; }
-.score-label { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; letter-spacing:4px; margin-top:8px; }
-.score-label.critico { color:var(--alert); }
-.score-label.alto { color:var(--warn); }
-.score-label.medio { color:var(--accent); }
-.score-label.bajo { color:var(--ok); }
-
-.impacto-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
-.impacto-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; }
-.impacto-val { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--alert); display:block; margin-bottom:4px; }
-.impacto-lbl { font-size:9px; letter-spacing:2px; color:var(--dim); text-transform:uppercase; }
-
-.soluciones-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:16px; }
-.soluciones-title { font-family:'Syne',sans-serif; font-size:9px; font-weight:700; letter-spacing:3px; color:var(--dim); text-transform:uppercase; margin-bottom:14px; }
-.solucion-item { padding:10px 0; border-bottom:1px solid var(--border); font-size:13px; color:var(--dim); display:flex; align-items:flex-start; gap:8px; line-height:1.5; }
-.solucion-item:last-child { border-bottom:none; }
-.solucion-item::before { content:'→'; color:var(--accent); font-size:11px; flex-shrink:0; margin-top:2px; }
-
-.btn-agenda { display:block; text-align:center; padding:16px; background:var(--accent); color:var(--bg); font-family:'Syne',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px; border-radius:10px; text-decoration:none; transition:0.3s; margin-bottom:10px; }
-.btn-agenda:hover { background:#00AADD; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,200,255,0.25); }
-
-.btn-wa-link { display:block; text-align:center; padding:14px; background:transparent; border:1px solid var(--border2); color:var(--dim); font-size:12px; border-radius:10px; text-decoration:none; transition:0.3s; }
-.btn-wa-link:hover { border-color:var(--accent); color:var(--accent); }
-
-/* ANUAL */
-.anual-box { background:rgba(255,59,48,0.06); border:1px solid rgba(255,59,48,0.2); border-radius:10px; padding:16px 20px; margin-bottom:16px; text-align:center; }
-.anual-val { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:var(--alert); }
-.anual-lbl { font-size:10px; color:var(--dim); letter-spacing:2px; margin-top:4px; text-transform:uppercase; }
-
-/* LEGAL */
-.legal { margin-top:48px; font-size:10px; color:var(--dim); text-align:center; line-height:1.8; opacity:0.5; }
-.footer-brand { font-family:'Syne',sans-serif; font-size:9px; color:var(--dim2); letter-spacing:4px; text-align:center; margin-top:32px; opacity:0.4; }
-
-/* WA FLOAT */
-.wa-float { position:fixed; bottom:24px; right:24px; display:flex; align-items:center; gap:8px; padding:10px 20px; background:var(--surface); border:1px solid var(--border2); border-radius:24px; color:var(--text); font-size:12px; text-decoration:none; z-index:200; transition:0.3s; box-shadow:0 4px 20px rgba(0,0,0,0.4); }
-.wa-float:hover { border-color:var(--accent); color:var(--accent); }
-
-@media (max-width:600px) {
-    .nav { padding:0 20px; }
-    .container { padding:80px 16px 60px; }
-    .impacto-grid { grid-template-columns:1fr; }
+/* RESULT */
+.score-num{
+    color:var(--accent);
+    text-shadow:0 0 20px rgba(0,200,255,0.3);
 }
 </style>
 </head>
 <body>
 
 <nav class="nav">
-    <a href="/" class="nav-logo">MESAN Ω</a>
-    <a href="/" class="nav-back">← INICIO</a>
+<a href="/" class="nav-logo">MESAN Ω</a>
+<a href="/" class="nav-back">← INICIO</a>
 </nav>
 
 <div class="container">
 
-    <div class="page-tag">// Sistema de Inteligencia Empresarial</div>
-    <h1 class="page-title">MESAN <span>Omega</span></h1>
-    <p class="page-sub">Responde 8 preguntas y te digo exactamente dónde está perdiendo dinero tu empresa.</p>
+<h1 class="page-title">MESAN <span>Omega</span></h1>
+<p class="page-sub">Responde y detecta tu riesgo empresarial.</p>
 
-    <!-- CONTACTO -->
-    <div class="sec-header">01 — Datos de Contacto</div>
-    <div class="form-group">
-        <label class="form-label">Nombre de tu empresa</label>
-        <input class="form-input" type="text" id="nombre" placeholder="Constructora ABC">
-    </div>
-    <div class="form-group">
-        <label class="form-label">Email</label>
-        <input class="form-input" type="email" id="email" placeholder="tu@empresa.com">
-    </div>
-    <div class="form-group">
-        <label class="form-label">Teléfono WhatsApp</label>
-        <input class="form-input" type="tel" id="tel" placeholder="686 123 4567">
-    </div>
+<div class="form-group">
+<label class="form-label">Empresa</label>
+<input class="form-input">
+</div>
 
-    <!-- TIPO -->
-    <div class="sec-header">02 — Tipo de Empresa</div>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:16px;font-weight:300;">¿Tu empresa subcontrata servicios o los presta?</p>
+<div class="form-group">
+<label class="form-label">Email</label>
+<input class="form-input">
+</div>
 
-    <button class="tipo-card" id="btn-repse" onclick="seleccionarTipo('repse')">
-        <div class="tipo-title">PRESTO SERVICIOS</div>
-        <div class="tipo-desc">Limpieza, seguridad, mantenimiento, outsourcing, REPSE</div>
-    </button>
-    <button class="tipo-card" id="btn-subcontrata" onclick="seleccionarTipo('subcontrata')">
-        <div class="tipo-title">SUBCONTRATO SERVICIOS</div>
-        <div class="tipo-desc">Soy empresa que contrata proveedores externos</div>
-    </button>
-    <button class="tipo-card" id="btn-nuevo" onclick="seleccionarTipo('nuevo')">
-        <div class="tipo-title">QUIERO CREAR UNA EMPRESA</div>
-        <div class="tipo-desc">Tengo un proyecto y quiero saber si es viable</div>
-    </button>
+<div class="form-group">
+<label class="form-label">Teléfono</label>
+<input class="form-input">
+</div>
 
-    <!-- REPSE -->
-    <div id="paso-repse" class="cuestionario">
-        <div class="sec-header">03 — Diagnóstico REPSE</div>
-        <div class="form-group">
-            <label class="form-label">Giro de tu empresa</label>
-            <select class="form-select" id="giro">
-                <option value="">Selecciona tu giro</option>
-                <option value="limpieza">Limpieza</option>
-                <option value="seguridad">Seguridad privada</option>
-                <option value="mantenimiento">Mantenimiento industrial</option>
-                <option value="jardineria">Jardinería</option>
-                <option value="comedores">Comedores industriales</option>
-                <option value="transporte">Transporte de personal</option>
-                <option value="vigilancia">Vigilancia patrimonial</option>
-                <option value="construccion">Construcción</option>
-                <option value="otro">Otro</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Precio mensual de tu servicio ($)</label>
-            <input class="form-input" type="number" id="precio_servicio" placeholder="Ej: 27,000">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Número de empleados asignados</label>
-            <input class="form-input" type="number" id="num_empleados" placeholder="Ej: 5" value="1">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Zona de operación</label>
-            <select class="form-select" id="zona">
-                <option value="general">Interior de la República</option>
-                <option value="frontera">Zona Frontera (BC, Son, Chih)</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Situación Fiscal</label>
-            <select class="form-select" id="factura">
-                <option value="al_corriente">Facturación en regla</option>
-                <option value="irregular">Facturas irregulares</option>
-                <option value="sin_facturar">No facturo</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Registro IMSS</label>
-            <select class="form-select" id="imss">
-                <option value="completo">Plantilla 100% registrada</option>
-                <option value="parcial">Algunos sin registro</option>
-                <option value="ninguno">Sin registro</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Contratos Laborales</label>
-            <select class="form-select" id="contratos">
-                <option value="todos">Todos formalizados</option>
-                <option value="algunos">Algunos sin contrato</option>
-                <option value="ninguno">Sin contratos</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Procesos Documentados</label>
-            <select class="form-select" id="procesos">
-                <option value="si">Sí tengo procesos</option>
-                <option value="no">No tengo procesos</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Ante una Inspección te Sientes</label>
-            <select class="form-select" id="inspeccion">
-                <option value="preparado">Preparado</option>
-                <option value="dudoso">Con dudas</option>
-                <option value="preocupado">Preocupado</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Historial de Multas</label>
-            <select class="form-select" id="historial">
-                <option value="no">Sin historial</option>
-                <option value="si">Sí tengo historial</option>
-            </select>
-        </div>
-        <button class="btn-ejecutar" onclick="ejecutar('repse')">EJECUTAR DIAGNÓSTICO REPSE →</button>
-    </div>
+<div class="tipo-card">PRESTO SERVICIOS</div>
+<div class="tipo-card">SUBCONTRATO</div>
+<div class="tipo-card">NUEVA EMPRESA</div>
 
-    <!-- SUBCONTRATA -->
-    <div id="paso-subcontrata" class="cuestionario">
-        <div class="sec-header">03 — Diagnóstico Proveedor</div>
-        <div class="form-group">
-            <label class="form-label">¿Cuántos proveedores de servicios tienes?</label>
-            <input class="form-input" type="number" id="num_proveedores" placeholder="Ej: 3" value="1">
-        </div>
-        <div class="form-group">
-            <label class="form-label">¿Tus proveedores tienen REPSE vigente?</label>
-            <select class="form-select" id="repse_proveedor">
-                <option value="si">Sí, todos tienen REPSE</option>
-                <option value="algunos">Algunos tienen REPSE</option>
-                <option value="no">No sé / No tienen</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">¿Tienes contratos firmados con tus proveedores?</label>
-            <select class="form-select" id="contratos_proveedor">
-                <option value="todos">Sí, todos firmados</option>
-                <option value="algunos">Algunos sin contrato</option>
-                <option value="ninguno">Sin contratos</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">¿Verificas que paguen IMSS a sus trabajadores?</label>
-            <select class="form-select" id="verifica_imss">
-                <option value="si">Sí verifico</option>
-                <option value="no">No verifico</option>
-            </select>
-        </div>
-        <button class="btn-ejecutar" onclick="ejecutar('subcontrata')">EJECUTAR DIAGNÓSTICO →</button>
-    </div>
-
-    <!-- NUEVO -->
-    <div id="paso-nuevo" class="cuestionario">
-        <div class="sec-header">03 — Análisis de Viabilidad</div>
-        <div class="form-group">
-            <label class="form-label">¿Qué tipo de empresa quieres crear?</label>
-            <select class="form-select" id="giro_nuevo">
-                <option value="limpieza">Limpieza</option>
-                <option value="seguridad">Seguridad privada</option>
-                <option value="mantenimiento">Mantenimiento</option>
-                <option value="jardineria">Jardinería</option>
-                <option value="otro">Otro</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">¿Cuántos empleados planeas tener?</label>
-            <input class="form-input" type="number" id="empleados_nuevo" placeholder="Ej: 10" value="5">
-        </div>
-        <div class="form-group">
-            <label class="form-label">¿Cuánto planeas cobrar por mes? ($)</label>
-            <input class="form-input" type="number" id="precio_nuevo" placeholder="Ej: 30,000">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Zona de operación</label>
-            <select class="form-select" id="zona_nuevo">
-                <option value="general">Interior de la República</option>
-                <option value="frontera">Zona Frontera</option>
-            </select>
-        </div>
-        <button class="btn-ejecutar" onclick="ejecutar('nuevo')">ANALIZAR VIABILIDAD →</button>
-    </div>
-
-    <!-- RESULTADO -->
-    <div class="resultado-box" id="resultado">
-
-        <div class="score-card">
-            <span class="score-num" id="score">--</span>
-            <div class="score-label" id="clasificacion">--</div>
-        </div>
-
-        <div class="impacto-grid">
-            <div class="impacto-card">
-                <span class="impacto-val" id="impacto-min">$--</span>
-                <div class="impacto-lbl">Exposición mínima</div>
-            </div>
-            <div class="impacto-card">
-                <span class="impacto-val" id="impacto-max">$--</span>
-                <div class="impacto-lbl">Exposición máxima</div>
-            </div>
-        </div>
-
-        <div class="anual-box" id="anual-box" style="display:none;">
-            <div class="anual-val" id="anual-line"></div>
-            <div class="anual-lbl">Riesgo anual estimado</div>
-        </div>
-
-        <div class="soluciones-box">
-            <div class="soluciones-title">Áreas de riesgo detectadas</div>
-            <div id="soluciones"></div>
-        </div>
-
-        <a href="#" class="btn-agenda" id="btn-agenda" target="_blank">
-            AGENDA TU LLAMADA GRATUITA DE 15 MIN
-        </a>
-        <a href="#" class="btn-wa-link" id="btn-wa" target="_blank">
-            💬 Contactar por WhatsApp
-        </a>
-
-    </div>
-
-    <div class="legal">
-        MESAN Ω utiliza modelos propietarios de análisis empresarial.<br>
-        Los resultados son indicadores orientativos para toma de decisiones.<br>
-        Su uso externo puede generar conclusiones inexactas.
-    </div>
-
-    <div class="footer-brand">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL</div>
+<button class="btn-ejecutar">EJECUTAR DIAGNÓSTICO</button>
 
 </div>
 
-<a href="https://wa.me/526861629643" target="_blank" class="wa-float">💬 WhatsApp</a>
-
-<script>
-let tipoEmpresa = "";
-
-function seleccionarTipo(tipo) {
-    tipoEmpresa = tipo;
-    document.querySelectorAll(".tipo-card").forEach(b => b.classList.remove("selected"));
-    document.getElementById("btn-" + tipo).classList.add("selected");
-    ["paso-repse","paso-subcontrata","paso-nuevo"].forEach(id => {
-        document.getElementById(id).classList.remove("visible");
-    });
-    const pasoId = tipo === "repse" ? "paso-repse" : tipo === "subcontrata" ? "paso-subcontrata" : "paso-nuevo";
-    document.getElementById(pasoId).classList.add("visible");
-    setTimeout(() => {
-        document.getElementById(pasoId).scrollIntoView({ behavior:"smooth", block:"start" });
-    }, 100);
-}
-
-function getVal(id) {
-    const el = document.getElementById(id);
-    return el ? el.value : "";
-}
-
-async function ejecutar(tipo) {
-    const nombre = getVal("nombre").trim();
-    const em
-    
+</body>
+</html>
