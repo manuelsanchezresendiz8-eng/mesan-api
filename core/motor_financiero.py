@@ -1,68 +1,56 @@
-# MESAN Ω — Motor Financiero Nacional v4
+class MotorFinanciero:
 
-from core.control_decision import evaluar_decision
-from core.precio_inteligente import calcular_precio_cierre
+    def __init__(self, data):
+        self.data = data
+        self.nomina = data.get("nomina", 0)
+        self.empleados = data.get("empleados", 1)
+        self.costo_hora_base = ((self.nomina / 30) / 8) if self.nomina else 0
 
-SALARIO_MIN_FRONTERA = 13409.80
-SALARIO_MIN_GENERAL = 7467.00
-
-
-def salario_por_zona(zona: str) -> float:
-    return SALARIO_MIN_FRONTERA if zona == "frontera" else SALARIO_MIN_GENERAL
-
-
-def calcular_costo_empleado(salario: float) -> float:
-    return round(salario * 1.63, 2)
-
-
-def calcular_reserva(utilidad: float, porcentaje: float = 0.10) -> float:
-    return round(utilidad * porcentaje, 2) if utilidad > 0 else 0
-
-
-def evaluar_servicio(precio_cliente: float, empleados: int, salario=None, zona="general"):
-
-    salario_base = salario if salario else salario_por_zona(zona)
-
-    costo_unitario = calcular_costo_empleado(salario_base)
-    costo_total = round(costo_unitario * empleados, 2)
-
-    utilidad = round(precio_cliente - costo_total, 2)
-    margen = round((utilidad / precio_cliente) * 100, 2) if precio_cliente else 0
-
-    reserva = calcular_reserva(utilidad)
-    precios = calcular_precio_cierre(costo_total)
-
-    if utilidad < 0:
-        clasificacion = "CRITICO"
-        mensaje = "Operación en pérdida"
-    elif margen < 10:
-        clasificacion = "ALTO"
-        mensaje = "Margen insuficiente"
-    elif margen < 20:
-        clasificacion = "MEDIO"
-        mensaje = "Margen vulnerable"
-    else:
-        clasificacion = "BAJO"
-        mensaje = "Operación rentable"
-
-    decision = evaluar_decision({
-        "utilidad": utilidad,
-        "margen": margen,
-        "precio_minimo": precios["precio_minimo"]
-    })
-
-    return {
-        "clasificacion": clasificacion,
-        "mensaje": mensaje,
-        "decision": decision,
-        "precios": precios,
-        "financiero": {
-            "ingreso": precio_cliente,
-            "costo_total": costo_total,
-            "utilidad": utilidad,
-            "margen": margen,
-            "reserva": reserva,
-            "salario": salario_base,
-            "zona": zona
+    def calcular_nearshoring(self):
+        horas = self.data.get("horas_semanales", 40)
+        exceso = max(0, horas - 40)
+        horas_extra_mes = exceso * 4 * self.empleados
+        sobrecosto = horas_extra_mes * (self.costo_hora_base * 2)
+        if exceso > 8:
+            riesgo = "CRÍTICO"
+            impacto_score = 25
+        elif exceso > 4:
+            riesgo = "ALTO"
+            impacto_score = 15
+        else:
+            riesgo = "MEDIO"
+            impacto_score = 5
+        return {
+            "horas_extra_mes": horas_extra_mes,
+            "sobrecosto": round(sobrecosto, 2),
+            "riesgo": riesgo,
+            "impacto_score": impacto_score
         }
-    }
+
+    def calcular_rotacion(self):
+        bajas = self.data.get("bajas", 0)
+        salario = self.data.get("salario_promedio", 0)
+        reclutamiento = self.data.get("costo_reclutamiento", 0)
+        impacto = bajas * (salario * 3.5 + reclutamiento)
+        return {
+            "bajas": bajas,
+            "impacto_mensual": round(impacto, 2),
+            "impacto_anual": round(impacto * 12, 2),
+            "riesgo": "ALTO" if bajas > 3 else "MEDIO",
+            "impacto_score": 20 if impacto > 50000 else 10
+        }
+
+    def ejecutar(self):
+        near = self.calcular_nearshoring()
+        rot = self.calcular_rotacion()
+        score = 100
+        score -= near["impacto_score"]
+        score -= rot["impacto_score"]
+        impacto_total = near["sobrecosto"] + rot["impacto_mensual"]
+        return {
+            "engine": "MESAN Ω v4",
+            "score": max(round(score, 2), 0),
+            "impacto_total_mensual": round(impacto_total, 2),
+            "nearshoring": near,
+            "rotacion": rot
+        }
