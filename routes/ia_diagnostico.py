@@ -15,6 +15,64 @@ class InputAI(BaseModel):
     texto: str
     respuestas: dict = {}
 
+# ═══ CONTEXTO REGULATORIO POR INDUSTRIA ═══
+CONTEXTO_REGULATORIO = {
+    "SALUD": """Marco regulatorio en México:
+- COFEPRIS (Comisión Federal para la Protección contra Riesgos Sanitarios) — ente rector
+- Aviso de funcionamiento obligatorio ante COFEPRIS
+- NOM-004-SSA3 (expediente clínico), NOM-005-SSA3 y demás NOM aplicables
+- Licencia sanitaria para establecimientos de salud
+- IMSS obligatorio para todo el personal
+- Responsabilidad penal del director técnico ante irregularidades""",
+
+    "SEGURIDAD": """Marco regulatorio en México:
+- Ley Federal de Seguridad Privada — marco rector (NO la CNBV, esa regula bancos)
+- SSPC (Secretaría de Seguridad y Protección Ciudadana) — Permiso Federal de operación
+- DGSP (Dirección General de Seguridad Privada) — registro federal obligatorio
+- Secretarías de Seguridad estatales — registro y autorización local
+- CUIP (Clave Única de Identificación Policial) para cada elemento operativo
+- SEDENA — si hay portación de armamento (permiso específico)
+- Fianza de garantía y seguro de responsabilidad civil obligatorios
+- Sin estos registros: operación ilegal, nulidad de contratos y responsabilidad patrimonial personal""",
+
+    "CONSTRUCCION": """Marco regulatorio en México:
+- IMSS — registro obligatorio de TODOS los trabajadores en obra
+- REPSE (Registro de Prestadoras de Servicios Especializados) — obligatorio si subcontrata
+- STPS — normativa de seguridad e higiene en obra
+- Licencias de construcción municipales
+- Capital constitutivo IMSS ante accidentes de trabajadores no registrados
+- Responsabilidad solidaria ante el contratante si hay incumplimiento""",
+
+    "ALIMENTOS": """Marco regulatorio en México:
+- COFEPRIS — licencia sanitaria obligatoria para establecimientos de alimentos
+- NOM-251-SSA1 (buenas prácticas de higiene) — obligatoria
+- Aviso de funcionamiento ante COFEPRIS
+- Certificación en manipulación de alimentos para todo el personal
+- IMSS para todo el personal
+- Verificación periódica de COFEPRIS y riesgo de clausura inmediata""",
+
+    "MANUFACTURA": """Marco regulatorio en México:
+- STPS — seguridad e higiene industrial obligatoria
+- IMSS — registro de todos los trabajadores de planta
+- SEMARNAT — si hay procesos con impacto ambiental
+- NOM aplicables según giro (NOM-001-STPS, NOM-002-STPS, etc.)
+- Responsabilidad civil ante accidentes laborales sin cobertura IMSS""",
+
+    "RETAIL": """Marco regulatorio en México:
+- LFT (Ley Federal del Trabajo) — contratos laborales obligatorios
+- IMSS — registro de todo el personal
+- SAT — facturación CFDI correcta y declaraciones fiscales
+- PROFECO — derechos del consumidor
+- Licencia de funcionamiento municipal""",
+
+    "GENERAL": """Marco regulatorio en México:
+- SAT — obligaciones fiscales, CFDI y declaraciones
+- IMSS — seguridad social de todos los trabajadores
+- LFT — contratos laborales y condiciones de trabajo
+- STPS — condiciones de seguridad e higiene
+- Licencias municipales de funcionamiento"""
+}
+
 def normalizar(texto: str) -> str:
     texto = texto.lower()
     texto = unicodedata.normalize("NFD", texto)
@@ -25,6 +83,8 @@ def detectar_industria(texto: str) -> str:
     t = texto.lower()
     if any(p in t for p in ["consultorio", "consultario", "medico", "clinica", "cofepris", "cofepreis", "farmacia", "hospital", "salud", "doctor"]):
         return "SALUD"
+    if any(p in t for p in ["seguridad", "vigilancia", "guardia", "custodia", "proteccion", "sspc", "dgsp", "rnsp"]):
+        return "SEGURIDAD"
     if any(p in t for p in ["tienda", "ropa", "retail", "mostrador", "comercio"]):
         return "RETAIL"
     if any(p in t for p in ["obra", "construccion", "albanil", "contratista", "edificio"]):
@@ -56,24 +116,26 @@ def analizar_fallback(texto: str, respuestas: dict, industria: str):
             causas.append("Sin expediente sanitario — sin defensa técnica ante inspección")
             impacto += 60000
 
+    elif industria == "SEGURIDAD":
+        causas.append("Ausencia de Permiso Federal SSPC — operación ilegal bajo Ley Federal de Seguridad Privada")
+        impacto += 150000
+        if any(p in texto for p in ["nueva", "crear", "abrir", "iniciar", "poner"]):
+            causas.append("Empresa en etapa de constitución — sin arquitectura regulatoria")
+            impacto += 80000
+        if respuestas.get("permiso") == "No":
+            causas.append("Sin registro ante DGSP — nulidad de contratos comerciales")
+            impacto += 100000
+
     elif industria == "CONSTRUCCION":
         if "obra" in texto:
-            causas.append("Riesgo IMSS en obra — capitales constitutivos")
+            causas.append("Riesgo IMSS en obra — capitales constitutivos ante accidente")
             impacto += 150000
         if respuestas.get("imss_obra") == "Ninguno":
-            causas.append("Trabajadores sin IMSS en obra")
+            causas.append("Trabajadores sin IMSS en obra — responsabilidad total del contratista")
             impacto += 100000
         if respuestas.get("repse") in ["Vencido", "No tengo"]:
-            causas.append("REPSE vencido o inexistente")
+            causas.append("REPSE vencido o inexistente — responsabilidad solidaria activa")
             impacto += 80000
-
-    elif industria == "RETAIL":
-        if "rotacion" in texto or "empleados" in texto:
-            causas.append("Alta rotación laboral — riesgo de demandas")
-            impacto += 60000
-        if respuestas.get("contratos") == "No":
-            causas.append("Sin contratos laborales firmados")
-            impacto += 40000
 
     elif industria == "ALIMENTOS":
         if any(p in texto for p in ["cofepris", "inspeccion"]):
@@ -88,7 +150,7 @@ def analizar_fallback(texto: str, respuestas: dict, industria: str):
             causas.append("Falla en línea de producción — pérdida de capacidad operativa")
             impacto += 180000
         if respuestas.get("tiempo_paro") == "Más de 3 días":
-            causas.append("Paro prolongado — incumplimiento de pedidos")
+            causas.append("Paro prolongado — incumplimiento de pedidos inminente")
             impacto += 100000
 
     else:
@@ -112,8 +174,9 @@ async def llamar_anthropic(texto: str, industria: str, impacto: int, riesgo: str
     if not api_key:
         return ""
 
-    causas_str = "\n".join(f"- {c}" for c in causas)
-    resp_str = "\n".join(f"- {k}: {v}" for k, v in respuestas.items()) if respuestas else "Sin respuestas adicionales"
+    causas_str = "\n".join(f"- {c}" for c in causas) if causas else "- Análisis inicial — sin causas específicas detectadas aún"
+    resp_str = "\n".join(f"- {k}: {v}" for k, v in respuestas.items()) if respuestas else "Sin respuestas adicionales del cliente"
+    ctx_regulatorio = CONTEXTO_REGULATORIO.get(industria, CONTEXTO_REGULATORIO["GENERAL"])
 
     prompt = f"""Actúa como consultor senior de una firma Big4 (Deloitte/PwC) especializado en riesgo empresarial en México.
 
@@ -128,33 +191,36 @@ Causas identificadas:
 Respuestas del cliente:
 {resp_str}
 
+MARCO REGULATORIO APLICABLE (usa ÚNICAMENTE estas autoridades — no inventes otras):
+{ctx_regulatorio}
+
 Responde en este formato EXACTO:
 
 1. Hallazgo Crítico:
-Describe el problema central de forma directa y específica.
+Describe el problema central de forma directa y específica. Menciona la autoridad reguladora correcta del sector.
 
 2. Implicación Operativa:
-Explica cómo afecta la operación real de la empresa hoy.
+Explica cómo afecta la operación real de la empresa hoy. Sé concreto.
 
 3. Riesgo Financiero:
-Relaciona el problema con pérdida económica concreta en pesos mexicanos.
+Relaciona el problema con pérdida económica concreta en pesos mexicanos. Incluye multas reales del sector.
 
 4. Escenario a 30 días:
-Qué ocurrirá específicamente si no se actúa en los próximos 30 días.
+Qué ocurrirá específicamente si no se actúa. Sé preciso con los plazos y consecuencias.
 
 5. Recomendación Estratégica:
-Acción clara, priorizada y ejecutable inmediatamente.
+Acción clara, priorizada y ejecutable inmediatamente. Incluye los pasos específicos del sector.
 
 Reglas:
 - Lenguaje ejecutivo, no genérico
-- No repetir ideas entre secciones
+- NO repetir ideas entre secciones
+- Citar SOLO las autoridades del marco regulatorio provisto — nunca inventar otras
 - Conectar todo con dinero o riesgo real
-- Evitar explicaciones básicas
 - Sonar como consultor real de alto nivel, no como chatbot
-- Máximo 3 oraciones por sección"""
+- Máximo 3-4 oraciones por sección"""
 
     try:
-        async with httpx.AsyncClient(timeout=25.0) as client:
+        async with httpx.AsyncClient(timeout=45.0) as client:
             response = await client.post(
                 "https://api.anthropic.com/v1/messages",
                 headers={
@@ -164,7 +230,7 @@ Reglas:
                 },
                 json={
                     "model": "claude-haiku-4-5-20251001",
-                    "max_tokens": 800,
+                    "max_tokens": 900,
                     "messages": [{"role": "user", "content": prompt}]
                 }
             )
@@ -202,8 +268,10 @@ async def ai_diagnostico(data: InputAI):
     impacto_min = impacto
     impacto_max = int(impacto * 3)
 
-    # Llamar Anthropic para análisis ejecutivo
-    analisis_ai = await llamar_anthropic(texto, industria, impacto, riesgo, causas, respuestas)
+    # Anthropic solo cuando hay respuestas
+    analisis_ai = ""
+    if respuestas:
+        analisis_ai = await llamar_anthropic(texto, industria, impacto, riesgo, causas, respuestas)
 
     preguntas = generar_preguntas(industria, texto, riesgo)
 
@@ -217,6 +285,17 @@ async def ai_diagnostico(data: InputAI):
             f"${impacto_min:,} – ${impacto_max:,} MXN\n\n"
             f"¿Ya te dejaron observaciones específicas en el acta?\n\n"
             f"Te explico hoy mismo cómo evitar la sanción."
+        )
+    elif industria == "SEGURIDAD":
+        whatsapp = (
+            f"MESAN Ω — ALERTA DE CUMPLIMIENTO\n\n"
+            f"Detectamos una brecha crítica en tu empresa de seguridad.\n\n"
+            f"Riesgo: Operación fuera de la Ley Federal de Seguridad Privada.\n"
+            f"Impacto: Multas federales y nulidad de contratos comerciales.\n\n"
+            f"Impacto estimado:\n"
+            f"${impacto_min:,} – ${impacto_max:,} MXN\n\n"
+            f"¿Ya iniciaste el trámite ante la SSPC o estás operando con aviso estatal?\n\n"
+            f"Si quieres, revisamos hoy la ruta de regularización para blindar tu patrimonio en 30 días."
         )
     else:
         causa_principal = causas[0] if causas else ""
@@ -232,6 +311,7 @@ async def ai_diagnostico(data: InputAI):
 
     consecuencias = {
         "SALUD": ["Suspensión temporal del establecimiento", "Multas sanitarias acumulativas", "Clausura parcial o total"],
+        "SEGURIDAD": ["Clausura por operación ilegal", "Nulidad de todos los contratos comerciales", "Responsabilidad patrimonial personal del dueño"],
         "RETAIL": ["Demandas laborales sin defensa", "Multas IMSS", "Inspección laboral"],
         "CONSTRUCCION": ["Capital constitutivo millonario", "Responsabilidad solidaria", "Paro de obra"],
         "ALIMENTOS": ["Clausura por incumplimiento NOM", "Multas sanitarias", "Pérdida de licencia"],
