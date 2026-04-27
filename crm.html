@@ -932,4 +932,195 @@ body {
 }
 
 @keyframes modalIn {
-    from { opacity:0; tr
+    <div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+        <div class="login-logo">
+            <div class="login-logo-mark">Ω</div>
+            <div><div class="login-logo-text">MESAN Ω</div><div class="login-logo-sub">COMMAND CENTER</div></div>
+        </div>
+        <div class="login-title">ACCESO AL SISTEMA</div>
+        <div class="login-desc">Ingresa tu API key para acceder al centro de comando.</div>
+        <label class="login-label">API Key</label>
+        <input class="login-input" type="password" id="apiKeyInput" placeholder="••••••••••••••••">
+        <button class="login-btn" id="loginBtn">INICIAR SESIÓN →</button>
+    </div>
+</div>
+<div class="app" id="app">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-mark">Ω</div>
+            <div><div class="logo-name">MESAN Ω</div><div class="logo-version">v2.5.0</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">Principal</div>
+            <div class="nav-item active" id="nav-pipeline" onclick="showTab('pipeline',this)"><div class="nav-icon">⬡</div>Pipeline<span class="nav-badge" id="badge-criticos"></span></div>
+            <div class="nav-item" id="nav-lista" onclick="showTab('lista',this)"><div class="nav-icon">≡</div>Lista de Leads</div>
+            <div class="nav-section">Herramientas</div>
+            <div class="nav-item" onclick="window.open('/admin.html','_blank')"><div class="nav-icon">🧠</div>Consultor IA</div>
+            <div class="nav-item" onclick="window.open('/diagnostico.html','_blank')"><div class="nav-icon">⚡</div>Diagnóstico</div>
+            <div class="nav-item" onclick="window.open('/','_blank')"><div class="nav-icon">🌐</div>Landing</div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">M</div>
+                <div><div class="user-name">Manuel S.</div><div class="user-role">Admin</div></div>
+                <button class="btn-logout" onclick="logout()">⏻</button>
+            </div>
+        </div>
+    </aside>
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-left" style="display:flex;align-items:center;gap:16px;"><div class="page-title" id="pageTitle">Pipeline</div></div>
+            <div class="topbar-right">
+                <div class="timer-pill" id="timerPill">↻ 30s</div>
+                <button class="btn-icon" onclick="cargarLeads()">↻</button>
+            </div>
+        </div>
+        <div class="content">
+            <div class="alert-bar" id="alertBar">
+                <div class="alert-dot"></div>
+                <div class="alert-text" id="alertText"></div>
+                <button class="alert-close" onclick="document.getElementById('alertBar').style.display='none'">✕</button>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Total Leads</div><div>👥</div></div><div class="kpi-value" id="kpi-total" style="color:var(--accent)">0</div><div class="kpi-sub">Leads en sistema</div></div>
+                <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Críticos</div><div>🚨</div></div><div class="kpi-value" id="kpi-criticos" style="color:var(--red)">0</div><div class="kpi-sub">Atención inmediata</div></div>
+                <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Impacto Total</div><div>💰</div></div><div class="kpi-value" id="kpi-impacto" style="color:var(--amber)">$0</div><div class="kpi-sub">Pipeline MXN</div></div>
+                <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Cerrados</div><div>✓</div></div><div class="kpi-value" id="kpi-cerrados" style="color:var(--green)">0</div><div class="kpi-sub">Deals completados</div></div>
+            </div>
+            <div class="tabs-bar">
+                <button class="tab-btn active" id="tab-pipeline" onclick="showTab('pipeline',this)">Pipeline</button>
+                <button class="tab-btn" id="tab-lista" onclick="showTab('lista',this)">Lista</button>
+            </div>
+            <div class="tab-panel active" id="panel-pipeline">
+                <div class="pipeline">
+                    <div class="pipe-col" id="col-nuevo" data-status="nuevo"><div class="pipe-header"><div class="pipe-title"><div class="pipe-dot" style="background:#00E5FF"></div>Nuevo</div><div class="pipe-count" id="cnt-nuevo">0</div></div><div class="pipe-body" id="body-nuevo"></div></div>
+                    <div class="pipe-col" id="col-contactado" data-status="contactado"><div class="pipe-header"><div class="pipe-title"><div class="pipe-dot" style="background:#00B8CC"></div>Contactado</div><div class="pipe-count" id="cnt-contactado">0</div></div><div class="pipe-body" id="body-contactado"></div></div>
+                    <div class="pipe-col" id="col-calificado" data-status="calificado"><div class="pipe-header"><div class="pipe-title"><div class="pipe-dot" style="background:#F59E0B"></div>Calificado</div><div class="pipe-count" id="cnt-calificado">0</div></div><div class="pipe-body" id="body-calificado"></div></div>
+                    <div class="pipe-col" id="col-cerrado" data-status="cerrado"><div class="pipe-header"><div class="pipe-title"><div class="pipe-dot" style="background:#10B981"></div>Cerrado</div><div class="pipe-count" id="cnt-cerrado">0</div></div><div class="pipe-body" id="body-cerrado"></div></div>
+                </div>
+            </div>
+            <div class="tab-panel" id="panel-lista">
+                <div class="list-toolbar">
+                    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="searchInput" placeholder="Buscar empresa, email, giro..." oninput="filtrarLeads()"></div>
+                    <div class="filter-group">
+                        <button class="filter-pill active" onclick="setFiltro('todos',this)">Todos</button>
+                        <button class="filter-pill" onclick="setFiltro('alto',this)">Alto riesgo</button>
+                        <button class="filter-pill" onclick="setFiltro('medio',this)">Medio</button>
+                        <button class="filter-pill" onclick="setFiltro('nuevo',this)">Nuevos</button>
+                    </div>
+                </div>
+                <div class="list-table">
+                    <div class="list-header">
+                        <div class="list-th">Empresa</div><div class="list-th">Impacto</div><div class="list-th">Riesgo</div><div class="list-th">Prioridad</div><div class="list-th">Fecha</div><div class="list-th" style="text-align:right">Acciones</div>
+                    </div>
+                    <div id="lista-body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div><div class="modal-title" id="m-title">—</div><div class="modal-sub" id="m-sub">—</div></div>
+            <button class="modal-close" onclick="cerrarModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-section"><div class="modal-section-label">Clasificación · Score · Prioridad</div><div class="modal-section-value" id="m-clasif">—</div></div>
+            <div class="modal-section"><div class="modal-section-label">Impacto Estimado</div><div class="modal-section-value" id="m-impacto">—</div></div>
+            <div class="modal-section"><div class="modal-section-label">Contacto</div><div class="modal-section-value" id="m-contacto">—</div></div>
+            <div class="modal-section" id="m-ctx-section" style="display:none"><div class="modal-section-label">Contexto</div><div class="modal-diag" id="m-ctx">—</div></div>
+            <div class="modal-section" id="m-diag-section" style="display:none"><div class="modal-section-label">Diagnóstico IA</div><div class="modal-diag" id="m-diag">—</div></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal wa" id="m-wa-btn">📲 WhatsApp</button>
+            <button class="btn-modal" onclick="moverLead(modalLeadId,'contactado')">→ Contactado</button>
+            <button class="btn-modal" onclick="moverLead(modalLeadId,'calificado')">✓ Calificado</button>
+            <button class="btn-modal danger" onclick="moverLead(modalLeadId,'cerrado')">✔ Cerrar</button>
+        </div>
+    </div>
+</div>
+    <script>
+const API="https://mesan-api.onrender.com";
+let API_KEY=localStorage.getItem("mesan_key")||"";
+let leadsCache=[],filtroActivo="todos",modalLeadId=null,countdown=30,draggedId=null;
+
+document.getElementById("loginBtn").onclick=()=>{
+    const key=document.getElementById("apiKeyInput").value.trim();
+    if(!key){alert("Ingresa tu API key");return;}
+    localStorage.setItem("mesan_key",key);API_KEY=key;iniciar();
+};
+document.getElementById("apiKeyInput").addEventListener("keypress",e=>{if(e.key==="Enter")document.getElementById("loginBtn").click();});
+if(API_KEY)iniciar();
+
+function iniciar(){
+    document.getElementById("loginOverlay").style.display="none";
+    document.getElementById("app").style.display="flex";
+    cargarLeads();
+    setInterval(()=>{countdown--;document.getElementById("timerPill").innerText=`↻ ${countdown}s`;if(countdown<=0){cargarLeads(true);countdown=30;}},1000);
+}
+function logout(){localStorage.removeItem("mesan_key");location.reload();}
+function showTab(tab,el){
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));
+    document.getElementById("panel-"+tab).classList.add("active");
+    document.getElementById("tab-"+tab)?.classList.add("active");
+    document.getElementById("nav-"+tab)?.classList.add("active");
+    document.getElementById("pageTitle").innerText=tab==="pipeline"?"Pipeline":"Lista de Leads";
+}
+function calcularPrioridad(lead){
+    let s=0;
+    const t=((lead.contexto||"")+(lead.diagnostico||"")).toLowerCase();
+    if(t.includes("clausura"))s+=100;if(t.includes("acta"))s+=90;if(t.includes("cofepris"))s+=80;
+    if(t.includes("embargo"))s+=80;if(t.includes("auditoria"))s+=70;if(t.includes("imss"))s+=60;
+    const c=(lead.clasificacion||"").toUpperCase();
+    if(["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO"].includes(c))s+=50;
+    else if(c==="MEDIO")s+=30;else s+=10;
+    if(lead.impacto_max)s+=Math.min(lead.impacto_max/1000,100);
+    return Math.round(s);
+}
+function clasePrioridad(p){if(p>150)return"p-critica";if(p>90)return"p-alta";if(p>50)return"p-media";return"";}
+function colorPrioridad(p){if(p>150)return"var(--red)";if(p>90)return"var(--amber)";if(p>50)return"var(--accent)";return"var(--text-3)";}
+function badgeCls(c){if(["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO"].includes(c))return"badge badge-alto";if(c==="MEDIO")return"badge badge-medio";return"badge badge-bajo";}
+
+async function cargarLeads(silent=false){
+    try{
+        const res=await fetch(API+"/leads",{headers:{"api-key":API_KEY}});
+        if(res.status===403){alert("API Key inválida");logout();return;}
+        const data=await res.json();
+        leadsCache=(data.leads||[]).map(l=>({...l,prioridad:calcularPrioridad(l)}));
+        leadsCache.sort((a,b)=>b.prioridad-a.prioridad);
+        renderKPIs(leadsCache);renderPipeline(leadsCache);renderLista(leadsCache);detectarAlertas(leadsCache);countdown=30;
+    }catch(e){console.error(e);}
+}
+function detectarAlertas(leads){
+    const criticos=leads.filter(l=>l.prioridad>150&&l.estatus!=="cerrado");
+    const badge=document.getElementById("badge-criticos");
+    if(criticos.length>0){
+        document.getElementById("alertBar").style.display="flex";
+        document.getElementById("alertText").innerText=`${criticos.length} lead${criticos.length>1?"s":""} crítico${criticos.length>1?"s":""} requiere${criticos.length>1?"n":""} atención inmediata`;
+        badge.innerText=criticos.length;badge.style.display="block";
+    }
+}
+function renderKPIs(leads){
+    document.getElementById("kpi-total").innerText=leads.length;
+    document.getElementById("kpi-criticos").innerText=leads.filter(l=>["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO"].includes(l.clasificacion)).length;
+    document.getElementById("kpi-cerrados").innerText=leads.filter(l=>l.estatus==="cerrado").length;
+    const total=leads.reduce((s,l)=>s+(l.impacto_max||0),0);
+    document.getElementById("kpi-impacto").innerText=total>=1000000?"$"+(total/1000000).toFixed(1)+"M":"$"+(total/1000).toFixed(0)+"K";
+}
+function renderPipeline(leads){
+    ["nuevo","contactado","calificado","cerrado"].forEach(s=>{document.getElementById("body-"+s).innerHTML="";document.getElementById("cnt-"+s).innerText=0;});
+    leads.forEach(l=>{
+        const est=l.estatus||"nuevo";const body=document.getElementById("body-"+est);if(!body)return;
+        document.getElementById("cnt-"+est).innerText=parseInt(document.getElementById("cnt-"+est).innerText)+1;
+        const pct=Math.min((l.prioridad/200)*100,100);const tel=(l.telefono||"").replace(/\D/g,"");
+        const card=document.createElement("div");
+        card.className="lead-card "+clasePrioridad(l.prioridad);card.draggable=true;card.dataset.id=l.id;
+        card.innerHTML=`<div class="lead-top"><div><div class="lead-nombre">${l.nombre||"Sin nombre"}</div>${l.giro?`<div class="lead-giro">${l.giro}</div>`:""}</div><span class="${badgeCls(l.clasificacion)}">${l.clasificacion||"N/A"}</span></div><div class="lead-impacto">$${(l.impacto_max||0).toLocaleString()} <span>MXN</span></div><div class="pbar"><div class="pbar-fill" style="width:${pct}%;background:${colorPrioridad(l.prioridad)}"></div></div><div class="lead-meta"><div class="lead-date">${formatFecha(l.fecha)}</div><div style="font-family:var(--mono);font-size:10px;color:${colorPrioridad(l.prioridad)}">🔥 ${l.prioridad}</div></div><div class="lead-actions">${tel?`<button class="action-btn wa" onclick="event.stopPropagation();abrirWA('${tel}','${(l.nombre||"").replace(/'/g,"")}','${encodeURIComponent(l.whatsapp||"")}')">📲 WA</button>`:""}<button class="action-btn" onclick="event.stopPropagation();moverLead('${l.id}','contactado')">→</button><button class="action-btn" onclick="event.stopPropagation();moverLead('$
+    
+  
+
+   
