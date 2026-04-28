@@ -3,384 +3,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω — Command Center</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>MESAN Ω — CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#05070A;--bg1:#080E15;--bg2:#0A1520;--bg3:#0D1C2E;--accent:#00E5FF;--accent-light:#00C8FF;--accent-glow:rgba(0,229,255,0.12);--cyan:#00B8CC;--cyan-glow:rgba(0,184,204,0.12);--red:#EF4444;--red-glow:rgba(239,68,68,0.12);--amber:#F59E0B;--amber-glow:rgba(245,158,11,0.12);--green:#10B981;--green-glow:rgba(16,185,129,0.12);--border:rgba(0,229,255,0.08);--border-hover:rgba(0,229,255,0.18);--text:#B0FBFF;--text-2:#008B99;--text-3:#005F6B;--font:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;}
+:root{--bg:#05070A;--p:#080E15;--p2:#0A1520;--p3:#0D1C2E;--a:#00E5FF;--ag:rgba(0,229,255,0.1);--r:#EF4444;--am:#F59E0B;--g:#10B981;--b:rgba(0,229,255,0.08);--t:#B0FBFF;--t2:#008B99;--t3:#005F6B;--f:'Plus Jakarta Sans',sans-serif;--m:'JetBrains Mono',monospace;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;-webkit-font-smoothing:antialiased;}
-.login-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
-.login-card{width:400px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:48px 40px;box-shadow:0 0 40px rgba(0,229,255,0.06);}
-.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px;}
-.login-logo-mark{width:36px;height:36px;border:1px solid var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--accent);font-family:var(--mono);}
-.login-logo-text{font-size:18px;font-weight:700;color:var(--accent);}
-.login-logo-sub{font-size:10px;color:var(--text-3);letter-spacing:2px;}
-.login-title{font-size:20px;font-weight:700;color:var(--accent);margin-bottom:6px;}
-.login-desc{font-size:13px;color:var(--text-2);margin-bottom:28px;line-height:1.5;}
-.login-label{font-size:11px;font-weight:600;color:var(--text-2);margin-bottom:6px;display:block;letter-spacing:1px;text-transform:uppercase;}
-.login-input{width:100%;padding:12px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--accent);font-family:var(--mono);font-size:13px;outline:none;margin-bottom:16px;letter-spacing:2px;}
-.login-input:focus{border-color:var(--accent);}
-.login-btn{width:100%;padding:13px;background:transparent;border:1px solid var(--accent);border-radius:4px;color:var(--accent);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;letter-spacing:1px;text-transform:uppercase;}
-.login-btn:hover{background:rgba(0,229,255,0.08);}
-.app{display:none;min-height:100vh;}
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:240px;background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
-.sidebar-header{padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
-.logo-mark{width:32px;height:32px;border:1px solid var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--accent);font-family:var(--mono);}
-.logo-name{font-size:14px;font-weight:700;color:var(--accent);}
-.logo-version{font-size:10px;color:var(--text-3);font-family:var(--mono);}
-.sidebar-nav{flex:1;padding:12px 10px;}
-.nav-section{font-size:10px;font-weight:600;color:var(--text-3);letter-spacing:2px;text-transform:uppercase;padding:12px 10px 6px;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:4px;cursor:pointer;color:var(--text-2);font-size:13px;font-weight:500;margin-bottom:2px;}
-.nav-item:hover{background:rgba(0,229,255,0.06);color:var(--accent);}
-.nav-item.active{background:rgba(0,229,255,0.08);color:var(--accent);border-left:2px solid var(--accent);}
-.nav-icon{width:18px;text-align:center;font-size:14px;}
-.nav-badge{margin-left:auto;background:var(--red);color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px;font-family:var(--mono);display:none;}
-.sidebar-footer{padding:16px;border-top:1px solid var(--border);}
-.user-card{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg3);border-radius:4px;}
-.user-avatar{width:32px;height:32px;border:1px solid var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--accent);font-family:var(--mono);}
-.user-name{font-size:12px;font-weight:600;color:var(--accent);}
-.user-role{font-size:10px;color:var(--text-3);}
-.btn-logout{background:none;border:none;color:var(--text-3);cursor:pointer;margin-left:auto;font-size:14px;}
-.btn-logout:hover{color:var(--red);}
-.main{margin-left:240px;min-height:100vh;display:flex;flex-direction:column;}
-.topbar{height:56px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:50;}
-.page-title{font-size:15px;font-weight:700;color:var(--accent);}
-.topbar-right{display:flex;align-items:center;gap:10px;}
-.btn-icon{width:34px;height:34px;background:transparent;border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--text-2);}
-.btn-icon:hover{border-color:var(--accent);color:var(--accent);}
-.timer-pill{padding:4px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:2px;font-family:var(--mono);font-size:11px;color:var(--text-3);}
-.content{flex:1;padding:24px;}
-.alert-bar{display:none;align-items:center;gap:12px;padding:12px 16px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:4px;margin-bottom:20px;}
-.alert-dot{width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.alert-text{font-size:13px;color:var(--red);flex:1;}
-.alert-close{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:16px;}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
-.kpi-card{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:20px;transition:0.2s;}
-.kpi-card:hover{border-color:var(--accent);}
-.kpi-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.kpi-label{font-size:11px;font-weight:500;color:var(--text-2);letter-spacing:1px;text-transform:uppercase;}
-.kpi-value{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:6px;font-family:var(--mono);}
-.kpi-sub{font-size:11px;color:var(--text-3);}
-.tabs-bar{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:4px;margin-bottom:20px;width:fit-content;}
-.tab-btn{padding:7px 16px;background:transparent;border:none;border-radius:3px;color:var(--text-2);font-family:var(--font);font-size:13px;cursor:pointer;}
-.tab-btn.active{background:var(--bg3);color:var(--accent);font-weight:600;}
-.tab-panel{display:none;}
-.tab-panel.active{display:block;}
-.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-.pipe-col{background:var(--bg2);border:1px solid var(--border);border-radius:4px;min-height:500px;}
-.pipe-col.drag-over{border-color:var(--accent);}
-.pipe-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
-.pipe-title{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-2);}
-.pipe-dot{width:6px;height:6px;border-radius:50%;}
-.pipe-count{font-family:var(--mono);font-size:11px;color:var(--text-3);background:var(--bg3);padding:2px 8px;border-radius:2px;}
-.pipe-body{padding:12px;display:flex;flex-direction:column;gap:8px;}
-.lead-card{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:4px;padding:14px;cursor:pointer;transition:0.15s;}
-.lead-card.p-critica{border-left-color:var(--red);}
-.lead-card.p-alta{border-left-color:var(--amber);}
-.lead-card.p-media{border-left-color:var(--accent);}
-.lead-card:hover{border-color:var(--accent);}
-.lead-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
-.lead-nombre{font-size:12px;font-weight:700;color:var(--accent);}
-.lead-giro{font-size:10px;color:var(--text-3);margin-top:2px;}
-.badge{padding:3px 8px;border-radius:2px;font-size:9px;font-weight:700;font-family:var(--mono);}
-.badge-alto{background:var(--red-glow);color:var(--red);}
-.badge-medio{background:var(--amber-glow);color:var(--amber);}
-.badge-bajo{background:var(--green-glow);color:var(--green);}
-.lead-impacto{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;}
-.lead-impacto span{font-size:10px;color:var(--text-3);}
-.pbar{height:2px;background:var(--border);border-radius:2px;margin-bottom:10px;overflow:hidden;}
-.pbar-fill{height:100%;border-radius:2px;}
-.lead-meta{display:flex;align-items:center;justify-content:space-between;}
-.lead-date{font-family:var(--mono);font-size:10px;color:var(--text-3);}
-.lead-actions{display:flex;gap:4px;padding:8px 0 0;border-top:1px solid var(--border);margin-top:8px;}
-.action-btn{flex:1;padding:5px;background:transparent;border:1px solid var(--border);border-radius:3px;color:var(--text-3);font-size:11px;cursor:pointer;text-align:center;}
-.action-btn:hover{border-color:var(--accent);color:var(--accent);}
-.action-btn.wa{color:var(--cyan);}
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--text-3);gap:8px;}
-.empty-icon{font-size:24px;opacity:0.3;}
-.empty-text{font-size:11px;letter-spacing:1px;text-transform:uppercase;}
-.list-toolbar{display:flex;gap:10px;margin-bottom:16px;}
-.search-wrap{flex:1;position:relative;}
-.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:14px;pointer-events:none;}
-.search-input{width:100%;padding:9px 12px 9px 36px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;color:var(--accent);font-family:var(--font);font-size:13px;outline:none;}
-.search-input:focus{border-color:var(--accent);}
-.filter-group{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:3px;}
-.filter-pill{padding:5px 12px;background:transparent;border:none;border-radius:3px;color:var(--text-2);font-size:12px;cursor:pointer;}
-.filter-pill.active{background:var(--bg3);color:var(--accent);font-weight:600;}
-.list-table{background:var(--bg2);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
-.list-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 120px;padding:10px 20px;border-bottom:1px solid var(--border);background:var(--bg3);}
-.list-th{font-size:10px;font-weight:600;color:var(--text-3);letter-spacing:1px;text-transform:uppercase;}
-.list-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 120px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;position:relative;}
-.list-row:last-child{border-bottom:none;}
-.list-row:hover{background:var(--bg3);}
-.list-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
-.list-row.c::before{background:var(--red);}
-.list-row.a::before{background:var(--amber);}
-.list-row.m::before{background:var(--accent);}
-.row-name{font-size:13px;font-weight:600;color:var(--accent);}
-.row-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
-.row-mono{font-family:var(--mono);font-size:12px;}
-.row-actions{display:flex;gap:6px;justify-content:flex-end;}
-.btn-row{padding:5px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;color:var(--text-2);font-size:11px;cursor:pointer;}
-.btn-row:hover{border-color:var(--accent);color:var(--accent);}
-.btn-row.wa{color:var(--cyan);}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:4px;width:100%;max-width:560px;max-height:85vh;overflow:hidden;box-shadow:0 0 40px rgba(0,229,255,0.08);display:flex;flex-direction:column;}
-.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.modal-title{font-size:15px;font-weight:700;color:var(--accent);}
-.modal-sub{font-size:12px;color:var(--text-2);margin-top:2px;}
-.modal-close{width:32px;height:32px;background:transparent;border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--text-2);}
-.modal-close:hover{border-color:var(--red);color:var(--red);}
-.modal-body{padding:20px 24px;overflow-y:auto;flex:1;}
-.modal-section{margin-bottom:16px;}
-.modal-section-label{font-size:10px;font-weight:600;color:var(--text-3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
-.modal-section-value{font-size:13px;color:var(--text);background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:10px 14px;line-height:1.5;}
-.modal-diag{font-size:11px;color:var(--text-2);background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:12px 14px;max-height:160px;overflow-y:auto;white-space:pre-wrap;font-family:var(--mono);}
-.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;}
-.btn-modal{padding:8px 16px;background:transparent;border:1px solid var(--border);border-radius:4px;color:var(--text-2);font-family:var(--font);font-size:12px;cursor:pointer;}
-.btn-modal:hover{border-color:var(--accent);color:var(--accent);}
-.btn-modal.primary{border-color:var(--accent);color:var(--accent);}
-.btn-modal.danger{border-color:var(--red);color:var(--red);}
-.btn-modal.wa{border-color:var(--cyan);color:var(--cyan);}
+body{background:var(--bg);color:var(--t);font-family:var(--f);min-height:100vh;}
+#L{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;}
+.lc{width:380px;background:var(--p2);border:1px solid var(--b);border-radius:4px;padding:40px;}
+.lt{font-size:28px;font-weight:800;color:var(--a);font-family:var(--m);margin-bottom:4px;}
+.ls{font-size:10px;color:var(--t3);letter-spacing:3px;margin-bottom:28px;}
+.ll{font-size:11px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;display:block;}
+.li{width:100%;padding:11px 14px;background:var(--p3);border:1px solid var(--b);border-radius:4px;color:var(--a);font-family:var(--m);font-size:13px;outline:none;margin-bottom:14px;}
+.li:focus{border-color:var(--a);}
+.lb{width:100%;padding:12px;background:transparent;border:1px solid var(--a);border-radius:4px;color:var(--a);font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;}
+.lb:hover{background:var(--ag);}
+#A{display:none;}
+.sb{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--p);border-right:1px solid var(--b);display:flex;flex-direction:column;z-index:100;}
+.sh{padding:18px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:10px;}
+.sm{width:30px;height:30px;border:1px solid var(--a);border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--a);font-family:var(--m);}
+.sn{font-size:13px;font-weight:700;color:var(--a);}
+.sv{font-size:10px;color:var(--t3);font-family:var(--m);}
+.nav{flex:1;padding:10px;}
+.ns{font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;padding:12px 8px 6px;}
+.ni{display:flex;align-items:center;gap:8px;padding:8px;border-radius:4px;cursor:pointer;color:var(--t2);font-size:12px;margin-bottom:2px;}
+.ni:hover,.ni.on{background:var(--ag);color:var(--a);}
+.ni.on{border-left:2px solid var(--a);}
+.sf{padding:14px;border-top:1px solid var(--b);}
+.uc{display:flex;align-items:center;gap:8px;padding:8px;background:var(--p3);border-radius:4px;}
+.ua{width:28px;height:28px;border:1px solid var(--a);border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--a);font-family:var(--m);font-size:12px;}
+.un{font-size:11px;font-weight:600;color:var(--a);}
+.ur{font-size:9px;color:var(--t3);}
+.ux{background:none;border:none;color:var(--t3);cursor:pointer;margin-left:auto;font-size:13px;}
+.mn{margin-left:220px;min-height:100vh;display:flex;flex-direction:column;}
+.tb{height:52px;background:var(--p);border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:50;}
+.tt{font-size:14px;font-weight:700;color:var(--a);}
+.tr{display:flex;align-items:center;gap:8px;}
+.tp{padding:3px 8px;background:var(--p3);border:1px solid var(--b);border-radius:2px;font-family:var(--m);font-size:10px;color:var(--t3);}
+.bi{width:30px;height:30px;background:transparent;border:1px solid var(--b);border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--t2);}
+.bi:hover{border-color:var(--a);color:var(--a);}
+.ct{flex:1;padding:20px;}
+.ab{display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:4px;margin-bottom:16px;}
+.ad{width:7px;height:7px;background:var(--r);border-radius:50%;animation:pu 2s infinite;}
+@keyframes pu{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.at{font-size:12px;color:var(--r);flex:1;}
+.ac{background:none;border:none;color:var(--t3);cursor:pointer;}
+.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.kc{background:var(--p2);border:1px solid var(--b);border-radius:4px;padding:16px;transition:0.2s;}
+.kc:hover{border-color:var(--a);}
+.kh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.kl{font-size:10px;font-weight:600;color:var(--t2);letter-spacing:1px;text-transform:uppercase;}
+.kv{font-size:24px;font-weight:800;line-height:1;font-family:var(--m);margin-bottom:4px;}
+.ks{font-size:10px;color:var(--t3);}
+.tbr{display:flex;gap:3px;background:var(--p2);border:1px solid var(--b);border-radius:4px;padding:3px;margin-bottom:16px;width:fit-content;}
+.tbb{padding:6px 14px;background:transparent;border:none;border-radius:3px;color:var(--t2);font-family:var(--f);font-size:12px;cursor:pointer;}
+.tbb.on{background:var(--p3);color:var(--a);font-weight:600;}
+.tp2{display:none;}.tp2.on{display:block;}
+.pp{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.pc{background:var(--p2);border:1px solid var(--b);border-radius:4px;min-height:460px;}
+.pc.dv{border-color:var(--a);}
+.ph{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b);}
+.pt{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t2);}
+.pd{width:5px;height:5px;border-radius:50%;}
+.pn{font-family:var(--m);font-size:10px;color:var(--t3);background:var(--p3);padding:2px 7px;border-radius:2px;}
+.pb{padding:10px;display:flex;flex-direction:column;gap:7px;}
+.lc2{background:var(--p3);border:1px solid var(--b);border-left:3px solid var(--b);border-radius:4px;padding:12px;cursor:pointer;transition:0.15s;}
+.lc2.pc2{border-left-color:var(--r);}
+.lc2.pa{border-left-color:var(--am);}
+.lc2.pm{border-left-color:var(--a);}
+.lc2:hover{border-color:var(--a);}
+.ln{font-size:11px;font-weight:700;color:var(--a);margin-bottom:2px;}
+.lg{font-size:9px;color:var(--t3);margin-bottom:7px;}
+.li2{font-family:var(--m);font-size:14px;font-weight:700;color:var(--t);margin-bottom:6px;}
+.bx{display:flex;justify-content:space-between;margin-bottom:6px;}
+.bd{padding:2px 6px;border-radius:2px;font-size:8px;font-weight:700;font-family:var(--m);}
+.ba{background:rgba(239,68,68,0.12);color:var(--r);}
+.bm{background:rgba(245,158,11,0.12);color:var(--am);}
+.bb{background:rgba(16,185,129,0.12);color:var(--g);}
+.pr{height:2px;background:var(--b);border-radius:2px;margin-bottom:7px;overflow:hidden;}
+.pf{height:100%;border-radius:2px;}
+.lmt{display:flex;justify-content:space-between;}
+.ld{font-family:var(--m);font-size:9px;color:var(--t3);}
+.lp{font-family:var(--m);font-size:9px;}
+.la{display:flex;gap:3px;padding:7px 0 0;border-top:1px solid var(--b);margin-top:7px;}
+.ab2{flex:1;padding:4px;background:transparent;border:1px solid var(--b);border-radius:3px;color:var(--t3);font-size:10px;cursor:pointer;text-align:center;}
+.ab2:hover{border-color:var(--a);color:var(--a);}
+.ab2.wa{color:var(--t2);}
+.es{display:flex;flex-direction:column;align-items:center;padding:30px 10px;color:var(--t3);gap:6px;}
+.ei{font-size:20px;opacity:0.3;}
+.et{font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+.lt2{display:flex;gap:8px;margin-bottom:14px;}
+.sw{flex:1;position:relative;}
+.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:12px;pointer-events:none;}
+.sx{width:100%;padding:8px 10px 8px 30px;background:var(--p2);border:1px solid var(--b);border-radius:4px;color:var(--a);font-family:var(--f);font-size:12px;outline:none;}
+.sx:focus{border-color:var(--a);}
+.fg{display:flex;gap:3px;background:var(--p2);border:1px solid var(--b);border-radius:4px;padding:2px;}
+.fp{padding:4px 10px;background:transparent;border:none;border-radius:3px;color:var(--t2);font-size:11px;cursor:pointer;}
+.fp.on{background:var(--p3);color:var(--a);font-weight:600;}
+.tbl{background:var(--p2);border:1px solid var(--b);border-radius:4px;overflow:hidden;}
+.th{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 100px;padding:8px 16px;border-bottom:1px solid var(--b);background:var(--p3);}
+.thh{font-size:9px;font-weight:600;color:var(--t3);letter-spacing:1px;text-transform:uppercase;}
+.tr2{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 100px;padding:12px 16px;border-bottom:1px solid var(--b);align-items:center;cursor:pointer;position:relative;}
+.tr2:last-child{border-bottom:none;}
+.tr2:hover{background:var(--p3);}
+.tr2::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+.tr2.c::before{background:var(--r);}
+.tr2.a::before{background:var(--am);}
+.tr2.m::before{background:var(--a);}
+.rn{font-size:12px;font-weight:600;color:var(--a);}
+.rs{font-size:10px;color:var(--t3);margin-top:1px;}
+.rm{font-family:var(--m);font-size:11px;}
+.ra{display:flex;gap:5px;justify-content:flex-end;}
+.rb{padding:4px 8px;background:var(--p3);border:1px solid var(--b);border-radius:3px;color:var(--t2);font-size:10px;cursor:pointer;}
+.rb:hover{border-color:var(--a);color:var(--a);}
+.rb.wa{color:var(--t2);}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.mb{background:var(--p2);border:1px solid var(--b);border-radius:4px;width:100%;max-width:520px;max-height:82vh;overflow:hidden;display:flex;flex-direction:column;}
+.mh{padding:18px 22px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;}
+.mt{font-size:14px;font-weight:700;color:var(--a);}
+.ms{font-size:11px;color:var(--t2);margin-top:2px;}
+.mx{width:28px;height:28px;background:transparent;border:1px solid var(--b);border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--t2);}
+.mx:hover{border-color:var(--r);color:var(--r);}
+.md{padding:18px 22px;overflow-y:auto;flex:1;}
+.ml{font-size:9px;font-weight:600;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.mv{font-size:12px;color:var(--t);background:var(--p3);border:1px solid var(--b);border-radius:4px;padding:9px 12px;margin-bottom:12px;line-height:1.5;}
+.mdi{font-size:11px;color:var(--t2);background:var(--p3);border:1px solid var(--b);border-radius:4px;padding:10px 12px;max-height:140px;overflow-y:auto;white-space:pre-wrap;font-family:var(--m);margin-bottom:12px;}
+.mf{padding:14px 22px;border-top:1px solid var(--b);display:flex;gap:7px;flex-wrap:wrap;}
+.mbtn{padding:7px 14px;background:transparent;border:1px solid var(--b);border-radius:4px;color:var(--t2);font-family:var(--f);font-size:11px;cursor:pointer;}
+.mbtn:hover{border-color:var(--a);color:var(--a);}
+.mbtn.pr2{border-color:var(--a);color:var(--a);}
+.mbtn.dn{border-color:var(--r);color:var(--r);}
+.mbtn.wa2{border-color:var(--t2);color:var(--t2);}
 </style>
 </head>
 <body>
-<div class="login-overlay" id="loginOverlay">
-    <div class="login-card">
-        <div class="login-logo">
-            <div class="login-logo-mark">Ω</div>
-            <div><div class="login-logo-text">MESAN Ω</div><div class="login-logo-sub">COMMAND CENTER</div></div>
-        </div>
-        <div class="login-title">ACCESO AL SISTEMA</div>
-        <div class="login-desc">Ingresa tu API key para acceder al centro de comando.</div>
-        <label class="login-label">API Key</label>
-        <input class="login-input" type="password" id="apiKeyInput" placeholder="••••••••••••••••">
-        <button class="login-btn" id="loginBtn">INICIAR SESIÓN →</button>
-    </div>
+<div id="L">
+<div class="lc">
+<div class="lt">MESAN Ω</div>
+<div class="ls">COMMAND CENTER</div>
+<label class="ll">API Key</label>
+<input class="li" type="password" id="ki" placeholder="••••••••••••">
+<button class="lb" id="kb">INICIAR SESIÓN →</button>
 </div>
-<div class="app" id="app">
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-mark">Ω</div>
-            <div><div class="logo-name">MESAN Ω</div><div class="logo-version">v2.5.0</div></div>
-        </div>
-        <nav class="sidebar-nav">
-            <div class="nav-section">Principal</div>
-            <div class="nav-item active" id="nav-pipeline" onclick="showTab('pipeline',this)"><div class="nav-icon">⬡</div>Pipeline<span class="nav-badge" id="badge-criticos"></span></div>
-            <div class="nav-item" id="nav-lista" onclick="showTab('lista',this)"><div class="nav-icon">≡</div>Lista de Leads</div>
-            <div class="nav-section">Herramientas</div>
-            <div class="nav-item" onclick="window.open('/admin.html','_blank')"><div class="nav-icon">🧠</div>Consultor IA</div>
-            <div class="nav-item" onclick="window.open('/diagnostico.html','_blank')"><div class="nav-icon">⚡</div>Diagnóstico</div>
-            <div class="nav-item" onclick="window.open('/','_blank')"><div class="nav-icon">🌐</div>Landing</div>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar">M</div>
-                <div><div class="user-name">Manuel S.</div><div class="user-role">Admin</div></div>
-                <button class="btn-logout" onclick="logout()">⏻</button>
-            </div>
-        </div>
-    </aside>
-    <div class="main">
-        <div class="topbar">
-            <div style="display:flex;align-items:center;gap:16px;"><div class="page-title" id="pageTitle">Pipeline</div></div>
-            <div class="topbar-right">
-                <div class="timer-pill" id="timerPill">↻ 30s</div>
-                <button class="btn-icon" onclick="cargarLeads()">↻</button>
-            </div>
-        </div>
-        <div class="content">
-            <div class="alert-bar" id="alertBar">
-                <div class="alert-dot"></div>
-                <div class="alert-text" id="alertText"></div>
-                <button class="alert-close" onclick="document.getElementById('alertBar').style.display='none'">✕</button>
-            </div>
-            <div class="kpi-grid">
-                <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Total Leads</div><div>👥</div></div><div class="kpi-value" id="kpi-total" style="color:var(--accent)">0</div><div class="kpi-sub">Leads en sistema</div></div>
-                <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Críticos</div><div>🚨</div></div><div class="kpi-value" id="kpi-criticos" style="color:var(--red)">0</div><div class="kpi-sub">Atención inmediata</div></div>
-                <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Impacto Total</div><div>💰</div></div><div class="kpi-value" id="kpi-impacto" style="color:var(--amber)">$0</div><div class="kpi-sub">Pipeline MXN</div></div>
-                <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Cerrados</div><div>✓</div></div><div class="kpi-value" id="kpi-cerrados" style="color:var(--green)">0</div><div class="kpi-sub">Deals completados</div></div>
-            </div>
-            <div class="tabs-bar">
-                <button class="tab-btn active" id="tab-pipeline" onclick="showTab('pipeline',this)">Pipeline</button>
-                <button class="tab-btn" id="tab-lista" onclick="showTab('lista',this)">Lista</button>
-            </div>
-            <div class="tab-panel active" id="panel-pipeline">
-                <div class="pipeline">
-                    <div class="pipe-col" id="col-nuevo" data-status="nuevo"><div class="pipe-header"><div class="pipe-title"><div class="pipe-dot" style="background:#00E5FF"></div>Nuevo</div><div class="pipe-count" id="cnt-nuevo">0</div></div><div class="pipe-body" id="body-nuevo"></div></div>
-                    <div class="pipe-col" id="col-contactado" data-status="contactado"><div class="pipe-header"><div class="pipe-title"><div class="pipe-dot" style="background:#00B8CC"></div>Contactado</div><div class="pipe-count" id="cnt-contactado">0</div></div><div class="pipe-body" id="body-contactado"></div></div>
-                    <div class="pipe-col" id="col-calificado" data-status="calificado"><div class="pipe-header"><div class="pipe-title"><div class="pipe-dot" style="background:#F59E0B"></div>Calificado</div><div class="pipe-count" id="cnt-calificado">0</div></div><div class="pipe-body" id="body-calificado"></div></div>
-                    <div class="pipe-col" id="col-cerrado" data-status="cerrado"><div class="pipe-header"><div class="pipe-title"><div class="pipe-dot" style="background:#10B981"></div>Cerrado</div><div class="pipe-count" id="cnt-cerrado">0</div></div><div class="pipe-body" id="body-cerrado"></div></div>
-                </div>
-            </div>
-            <div class="tab-panel" id="panel-lista">
-                <div class="list-toolbar">
-                    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="searchInput" placeholder="Buscar empresa, email, giro..." oninput="filtrarLeads()"></div>
-                    <div class="filter-group">
-                        <button class="filter-pill active" onclick="setFiltro('todos',this)">Todos</button>
-                        <button class="filter-pill" onclick="setFiltro('alto',this)">Alto riesgo</button>
-                        <button class="filter-pill" onclick="setFiltro('medio',this)">Medio</button>
-                        <button class="filter-pill" onclick="setFiltro('nuevo',this)">Nuevos</button>
-                    </div>
-                </div>
-                <div class="list-table">
-                    <div class="list-header">
-                        <div class="list-th">Empresa</div><div class="list-th">Impacto</div><div class="list-th">Riesgo</div><div class="list-th">Prioridad</div><div class="list-th">Fecha</div><div class="list-th" style="text-align:right">Acciones</div>
-                    </div>
-                    <div id="lista-body"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
-    <div class="modal" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <div><div class="modal-title" id="m-title">—</div><div class="modal-sub" id="m-sub">—</div></div>
-            <button class="modal-close" onclick="cerrarModal()">✕</button>
-        </div>
-        <div class="modal-body">
-            <div class="modal-section"><div class="modal-section-label">Clasificación · Score · Prioridad</div><div class="modal-section-value" id="m-clasif">—</div></div>
-            <div class="modal-section"><div class="modal-section-label">Impacto Estimado</div><div class="modal-section-value" id="m-impacto">—</div></div>
-            <div class="modal-section"><div class="modal-section-label">Contacto</div><div class="modal-section-value" id="m-contacto">—</div></div>
-            <div class="modal-section" id="m-ctx-section" style="display:none"><div class="modal-section-label">Contexto</div><div class="modal-diag" id="m-ctx">—</div></div>
-            <div class="modal-section" id="m-diag-section" style="display:none"><div class="modal-section-label">Diagnóstico IA</div><div class="modal-diag" id="m-diag">—</div></div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-modal wa" id="m-wa-btn">📲 WhatsApp</button>
-            <button class="btn-modal" onclick="moverLead(modalLeadId,'contactado')">→ Contactado</button>
-            <button class="btn-modal" onclick="moverLead(modalLeadId,'calificado')">✓ Calificado</button>
-            <button class="btn-modal danger" onclick="moverLead(modalLeadId,'cerrado')">✔ Cerrar</button>
-        </div>
-    </div>
+<div id="A">
+<aside class="sb">
+<div class="sh"><div class="sm">Ω</div><div><div class="sn">MESAN Ω</div><div class="sv">v2.5.0</div></div></div>
+<nav class="nav">
+<div class="ns">Principal</div>
+<div class="ni on" id="nv-pipeline" onclick="tab('pipeline',this)"><span>⬡</span>Pipeline<span class="pn" id="bc" style="display:none;background:var(--r);color:#fff;margin-left:auto;"></span></div>
+<div class="ni" id="nv-lista" onclick="tab('lista',this)"><span>≡</span>Lista</div>
+<div class="ns">Herramientas</div>
+<div class="ni" onclick="window.open('/admin.html','_blank')"><span>🧠</span>Consultor IA</div>
+<div class="ni" onclick="window.open('/diagnostico.html','_blank')"><span>⚡</span>Diagnóstico</div>
+<div class="ni" onclick="window.open('/','_blank')"><span>🌐</span>Landing</div>
+</nav>
+<div class="sf"><div class="uc"><div class="ua">M</div><div><div class="un">Manuel S.</div><div class="ur">Admin</div></div><button class="ux" onclick="logout()">⏻</button></div></div>
+</aside>
+<div class="mn">
+<div class="tb"><div class="tt" id="pt">Pipeline</div><div class="tr"><div class="tp" id="tp">↻ 30s</div><button class="bi" onclick="load()">↻</button></div></div>
+<div class="ct">
+<div class="ab" id="ab"><div class="ad"></div><div class="at" id="at"></div><button class="ac" onclick="document.getElementById('ab').style.display='none'">✕</button></div>
+<div class="kg">
+<div class="kc"><div class="kh"><div class="kl">Total</div><div>👥</div></div><div class="kv" id="k1" style="color:var(--a)">0</div><div class="ks">Leads</div></div>
+<div class="kc"><div class="kh"><div class="kl">Críticos</div><div>🚨</div></div><div class="kv" id="k2" style="color:var(--r)">0</div><div class="ks">Atención</div></div>
+<div class="kc"><div class="kh"><div class="kl">Pipeline</div><div>💰</div></div><div class="kv" id="k3" style="color:var(--am)">$0</div><div class="ks">MXN</div></div>
+<div class="kc"><div class="kh"><div class="kl">Cerrados</div><div>✓</div></div><div class="kv" id="k4" style="color:var(--g)">0</div><div class="ks">Deals</div></div>
+</div>
+<div class="tbr">
+<button class="tbb on" id="tb-pipeline" onclick="tab('pipeline',this)">Pipeline</button>
+<button class="tbb" id="tb-lista" onclick="tab('lista',this)">Lista</button>
+</div>
+<div class="tp2 on" id="tp-pipeline">
+<div class="pp">
+<div class="pc" id="col-nuevo" data-s="nuevo"><div class="ph"><div class="pt"><div class="pd" style="background:#00E5FF"></div>Nuevo</div><div class="pn" id="cn-nuevo">0</div></div><div class="pb" id="b-nuevo"></div></div>
+<div class="pc" id="col-contactado" data-s="contactado"><div class="ph"><div class="pt"><div class="pd" style="background:#00B8CC"></div>Contactado</div><div class="pn" id="cn-contactado">0</div></div><div class="pb" id="b-contactado"></div></div>
+<div class="pc" id="col-calificado" data-s="calificado"><div class="ph"><div class="pt"><div class="pd" style="background:#F59E0B"></div>Calificado</div><div class="pn" id="cn-calificado">0</div></div><div class="pb" id="b-calificado"></div></div>
+<div class="pc" id="col-cerrado" data-s="cerrado"><div class="ph"><div class="pt"><div class="pd" style="background:#10B981"></div>Cerrado</div><div class="pn" id="cn-cerrado">0</div></div><div class="pb" id="b-cerrado"></div></div>
+</div>
+</div>
+<div class="tp2" id="tp-lista">
+<div class="lt2">
+<div class="sw"><span class="si">🔍</span><input class="sx" id="si2" placeholder="Buscar..." oninput="filtrar()"></div>
+<div class="fg">
+<button class="fp on" onclick="setF('todos',this)">Todos</button>
+<button class="fp" onclick="setF('alto',this)">Alto</button>
+<button class="fp" onclick="setF('medio',this)">Medio</button>
+<button class="fp" onclick="setF('nuevo',this)">Nuevos</button>
+</div>
+</div>
+<div class="tbl">
+<div class="th"><div class="thh">Empresa</div><div class="thh">Impacto</div><div class="thh">Riesgo</div><div class="thh">Prioridad</div><div class="thh">Fecha</div><div class="thh" style="text-align:right">Acc.</div></div>
+<div id="lb"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mo" id="mo" onclick="cM(event)">
+<div class="mb" onclick="event.stopPropagation()">
+<div class="mh"><div><div class="mt" id="m-t">—</div><div class="ms" id="m-s">—</div></div><button class="mx" onclick="cM()">✕</button></div>
+<div class="md">
+<div class="ml">Clasificación · Score · Prioridad</div><div class="mv" id="m-c">—</div>
+<div class="ml">Impacto</div><div class="mv" id="m-i">—</div>
+<div class="ml">Contacto</div><div class="mv" id="m-k">—</div>
+<div id="m-ctx-s" style="display:none"><div class="ml">Contexto</div><div class="mdi" id="m-ctx">—</div></div>
+<div id="m-dg-s" style="display:none"><div class="ml">Diagnóstico IA</div><div class="mdi" id="m-dg">—</div></div>
+</div>
+<div class="mf">
+<button class="mbtn wa2" id="m-wa">📲 WhatsApp</button>
+<button class="mbtn" onclick="mv(mL,'contactado')">→ Contactado</button>
+<button class="mbtn" onclick="mv(mL,'calificado')">✓ Calificado</button>
+<button class="mbtn dn" onclick="mv(mL,'cerrado')">✔ Cerrar</button>
+</div>
+</div>
 </div>
 <script>
 const API="https://mesan-api.onrender.com";
-let API_KEY=localStorage.getItem("mesan_key")||"";
-let leadsCache=[],filtroActivo="todos",modalLeadId=null,countdown=30,draggedId=null;
-
-document.getElementById("loginBtn").onclick=()=>{
-    const key=document.getElementById("apiKeyInput").value.trim();
-    if(!key){alert("Ingresa tu API key");return;}
-    localStorage.setItem("mesan_key",key);API_KEY=key;iniciar();
-};
-document.getElementById("apiKeyInput").addEventListener("keypress",e=>{if(e.key==="Enter")document.getElementById("loginBtn").click();});
-if(API_KEY)iniciar();
-
-function iniciar(){
-    document.getElementById("loginOverlay").style.display="none";
-    document.getElementById("app").style.display="flex";
-    cargarLeads();
-    setInterval(()=>{countdown--;document.getElementById("timerPill").innerText=`↻ ${countdown}s`;if(countdown<=0){cargarLeads(true);countdown=30;}},1000);
-}
+let K=localStorage.getItem("mesan_key")||"",lC=[],fA="todos",mL=null,cd=30,dI=null;
+document.getElementById("kb").onclick=()=>{const k=document.getElementById("ki").value.trim();if(!k){alert("Ingresa tu API key");return;}localStorage.setItem("mesan_key",k);K=k;ini();};
+document.getElementById("ki").addEventListener("keypress",e=>{if(e.key==="Enter")document.getElementById("kb").click();});
+if(K)ini();
+function ini(){document.getElementById("L").style.display="none";document.getElementById("A").style.display="block";load();setInterval(()=>{cd--;document.getElementById("tp").innerText=`↻ ${cd}s`;if(cd<=0){load(true);cd=30;}},1000);}
 function logout(){localStorage.removeItem("mesan_key");location.reload();}
-function showTab(tab,el){
-    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
-    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-    document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));
-    document.getElementById("panel-"+tab).classList.add("active");
-    document.getElementById("tab-"+tab)?.classList.add("active");
-    document.getElementById("nav-"+tab)?.classList.add("active");
-    document.getElementById("pageTitle").innerText=tab==="pipeline"?"Pipeline":"Lista de Leads";
-}
-function calcularPrioridad(lead){
-    let s=0;
-    const t=((lead.contexto||"")+(lead.diagnostico||"")).toLowerCase();
-    if(t.includes("clausura"))s+=100;if(t.includes("acta"))s+=90;if(t.includes("cofepris"))s+=80;
-    if(t.includes("embargo"))s+=80;if(t.includes("auditoria"))s+=70;if(t.includes("imss"))s+=60;
-    const c=(lead.clasificacion||"").toUpperCase();
-    if(["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO"].includes(c))s+=50;
-    else if(c==="MEDIO")s+=30;else s+=10;
-    if(lead.impacto_max)s+=Math.min(lead.impacto_max/1000,100);
-    return Math.round(s);
-}
-function clasePrioridad(p){if(p>150)return"p-critica";if(p>90)return"p-alta";if(p>50)return"p-media";return"";}
-function colorPrioridad(p){if(p>150)return"var(--red)";if(p>90)return"var(--amber)";if(p>50)return"var(--accent)";return"var(--text-3)";}
-function badgeCls(c){if(["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO"].includes(c))return"badge badge-alto";if(c==="MEDIO")return"badge badge-medio";return"badge badge-bajo";}
-
-async function cargarLeads(silent=false){
-    try{
-        const res=await fetch(API+"/leads",{headers:{"api-key":API_KEY}});
-        if(res.status===403){alert("API Key inválida");logout();return;}
-        const data=await res.json();
-        leadsCache=(data.leads||[]).map(l=>({...l,prioridad:calcularPrioridad(l)}));
-        leadsCache.sort((a,b)=>b.prioridad-a.prioridad);
-        renderKPIs(leadsCache);renderPipeline(leadsCache);renderLista(leadsCache);detectarAlertas(leadsCache);countdown=30;
-    }catch(e){console.error(e);}
-}
-function detectarAlertas(leads){
-    const criticos=leads.filter(l=>l.prioridad>150&&l.estatus!=="cerrado");
-    const badge=document.getElementById("badge-criticos");
-    if(criticos.length>0){
-        document.getElementById("alertBar").style.display="flex";
-        document.getElementById("alertText").innerText=`${criticos.length} lead${criticos.length>1?"s":""} crítico${criticos.length>1?"s":""} requiere${criticos.length>1?"n":""} atención inmediata`;
-        badge.innerText=criticos.length;badge.style.display="block";
-    }
-}
-function renderKPIs(leads){
-    document.getElementById("kpi-total").innerText=leads.length;
-    document.getElementById("kpi-criticos").innerText=leads.filter(l=>["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO"].includes(l.clasificacion)).length;
-    document.getElementById("kpi-cerrados").innerText=leads.filter(l=>l.estatus==="cerrado").length;
-    const total=leads.reduce((s,l)=>s+(l.impacto_max||0),0);
-    document.getElementById("kpi-impacto").innerText=total>=1000000?"$"+(total/1000000).toFixed(1)+"M":"$"+(total/1000).toFixed(0)+"K";
-}
-function renderPipeline(leads){
-    ["nuevo","contactado","calificado","cerrado"].forEach(s=>{document.getElementById("body-"+s).innerHTML="";document.getElementById("cnt-"+s).innerText=0;});
-    leads.forEach(l=>{
-        const est=l.estatus||"nuevo";const body=document.getElementById("body-"+est);if(!body)return;
-        document.getElementById("cnt-"+est).innerText=parseInt(document.getElementById("cnt-"+est).innerText)+1;
-        const pct=Math.min((l.prioridad/200)*100,100);const tel=(l.telefono||"").replace(/\D/g,"");
-        const card=document.createElement("div");
-        card.className="lead-card "+clasePrioridad(l.prioridad);card.draggable=true;card.dataset.id=l.id;
-        card.innerHTML=`<div class="lead-top"><div><div class="lead-nombre">${l.nombre||"Sin nombre"}</div>${l.giro?`<div class="lead-giro">${l.giro}</div>`:""}</div><span class="${badgeCls(l.clasificacion)}">${l.clasificacion||"N/A"}</span></div><div class="lead-impacto">$${(l.impacto_max||0).toLocaleString()} <span>MXN</span></div><div class="pbar"><div class="pbar-fill" style="width:${pct}%;background:${colorPrioridad(l.prioridad)}"></div></div><div class="lead-meta"><div class="lead-date">${formatFecha(l.fecha)}</div><div style="font-family:var(--mono);font-size:10px;color:${colorPrioridad(l.prioridad)}">🔥 ${l.prioridad}</div></div><div class="lead-actions">${tel?`<button class="action-btn wa" onclick="event.stopPropagation();abrirWA('${tel}','${(l.nombre||"").replace(/'/g,"")}','${encodeURIComponent(l.whatsapp||"")}')">📲 WA</button>`:""}<button class="action-btn" onclick="event.stopPropagation();moverLead('${l.id}','contactado')">→</button><button class="action-btn" onclick="event.stopPropagation();moverLead('${l.id}','calificado')">✓</button><button class="action-btn" onclick="event.stopPropagation();moverLead('${l.id}','cerrado')">✔</button></div>`;
-        card.onclick=()=>abrirModal(l.id);
-        card.ondragstart=()=>{draggedId=l.id;card.style.opacity="0.4";};
-        card.ondragend=()=>{card.style.opacity="1";draggedId=null;};
-        body.appendChild(card);
-    });
-    ["nuevo","contactado","calificado","cerrado"].forEach(s=>{
-        const body=document.getElementById("body-"+s);const col=document.getElementById("col-"+s);
-        if(!body.children.length){body.innerHTML=`<div class="empty-state"><div class="empty-icon">○</div><div class="empty-text">Sin leads</div></div>`;}
-        col.ondragover=e=>{e.preventDefault();col.classList.add("drag-over");};
-        col.ondragleave=()=>col.classList.remove("drag-over");
-        col.ondrop=async()=>{col.classList.remove("drag-over");if(!draggedId)return;await moverLead(draggedId,col.dataset.status);};
-    });
-}
-function renderLista(leads){
-    let f=leads;
-    const q=(document.getElementById("searchInput")?.value||"").toLowerCase();
-    if(q)f=f.filter(l=>(l.nombre||"").toLowerCase().includes(q)||(l.email||"").toLowerCase().includes(q)||(l.giro||"").toLowerCase().includes(q));
-    if(filtroActivo==="alto")f=f.filter(l=>l.clasificacion==="ALTO");
-    if(filtroActivo==="medio")f=f.filter(l=>l.clasificacion==="MEDIO");
-    if(filtroActivo==="nuevo")f=f.filter(l=>l.estatus==="nuevo");
-    const body=document.getElementById("lista-body");
-    if(!f.length){body.innerHTML=`<div class="empty-state" style="padding:40px"><div class="empty-icon">○</div><div class="empty-text">Sin resultados</div></div>`;return;}
-    const clsMap={"ALTO":"c","CRISIS FINANCIERA":"c","RIESGO OPERATIVO":"c","MEDIO":"a"};
-    body.innerHTML=f.map(l=>{
-        const tel=(l.telefono||"").replace(/\D/g,"");
-        return`<div class="list-row ${clsMap[l.clasificacion]||"m"}" onclick="abrirModal('${l.id}')"><div><div class="row-name">${l.nombre||"Sin nombre"}</div><div class="row-sub">${l.giro||"—"} · ${l.email||"—"}</div></div><div class="row-mono" style="color:var(--red)">$${(l.impacto_max||0).toLocaleString()}</div><div><span class="${badgeCls(l.clasificacion)}">${l.clasificacion||"N/A"}</span></div><div class="row-mono" style="color:${colorPrioridad(l.prioridad)}">🔥 ${l.prioridad}</div><div class="row-mono" style="color:var(--text-3)">${formatFecha(l.fecha)}</div><div class="row-actions" onclick="event.stopPropagation()">${tel?`<button class="btn-row wa" onclick="abrirWA('${tel}','${(l.nombre||"").replace(/'/g,"")}','')">📲</button>`:""}<button class="btn-row" onclick="moverLead('${l.id}','contactado')">→</button><button class="btn-row" onclick="moverLead('${l.id}','cerrado')">✔</button></div></div>`;
-    }).join("");
-}
-function filtrarLeads(){renderLista(leadsCache);}
-function setFiltro(f,btn){filtroActivo=f;document.querySelectorAll(".filter-pill").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderLista(leadsCache);}
-function abrirModal(id){
-    const l=leadsCache.find(x=>x.id===id);if(!l)return;modalLeadId=id;
-    document.getElementById("m-title").innerText=l.nombre||"Sin nombre";
-    document.getElementById("m-sub").innerText=`${l.giro||"—"} · ${l.estatus||"nuevo"}`;
-    document.getElementById("m-clasif").innerText=`${l.clasificacion||"N/A"} · Score: ${l.score||0} · Prioridad: ${l.prioridad}`;
-    document.getElementById("m-impacto").innerText=`$${(l.impacto_min||0).toLocaleString()} – $${(l.impacto_max||0).toLocaleString()} MXN`;
-    document.getElementById("m-contacto").innerText=`${l.email||"—"} · ${l.telefono||"—"}`;
-    if(l.contexto){document.getElementById("m-ctx-section").style.display="block";document.getElementById("m-ctx").innerText=l.contexto;}
-    else document.getElementById("m-ctx-section").style.display="none";
-    if(l.diagnostico){document.getElementById("m-diag-section").style.display="block";document.getElementById("m-diag").innerText=l.diagnostico;}
-    else document.getElementById("m-diag-section").style.display="none";
-    document.getElementById("m-wa-btn").onclick=()=>{
-        const tel=(l.telefono||"").replace(/\D/g,"");if(!tel)return;
-        const msg=encodeURIComponent(l.whatsapp||`MESAN Ω ALERTA:\n\nDetectamos riesgo ${l.clasificacion}.\nImpacto: $${(l.impacto_max||0).toLocaleString()} MXN.\n\n¿Agendamos hoy?`);
-        window.open(`https://wa.me/52${tel}?text=${msg}`,"_blank");
-    };
-    document.getElementById("modalOverlay").style.display="flex";
-}
-function cerrarModal(e){if(!e||e.target===document.getElementById("modalOverlay")){document.getElementById("modalOverlay").style.display="none";modalLeadId=null;}}
-async
+function tab(t,el){document.querySelectorAll(".tp2").forEach(p=>p.classList.remove("on"));document.querySelectorAll(".tbb,.ni").forEach(b=>b.classList.remove("on"));document.getElementById("tp-"+t).classList.add("on");document.getElementById("tb-"+t)?.classList.add("on");document.getElementById("nv-"+t)?.classList.add("on");document.getElementById("pt").innerText=t==="pipeline"?"Pipeline":"Lista";}
+function pr(l){let s=0;const t=((l.contexto||"")+(l.diagnostico||"")).toLowerCase();if(t.includes("clausura"))s+=100;if(t.includes("acta"))s+=90;if(t.includes("cofepris"))s+=80;if(t.includes("embargo"))s+=80;if(t.includes("imss"))s+=60;const c=(l.clasificacion||"").toUpperCase();if(["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO"].includes(c))s+=50;else if(c==="MEDIO")s+=30;else s+=10;if(l.impacto_max)s+=Math.min(l.impacto_max/1000,100);return Math.round(s);}
+function cp(p){if(p>150)return"pc2";if(p>90)return"pa";if(p>50)return"pm";return"";}
+function cc(p){if(p>150)return"var(--r)";if(p>90)return"var(--am)";if(p>50)return"var(--a)";return"var(--t3)";}
+function bc(c){if(["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO"].includes(c))return"bd ba";if(c==="MEDIO")return"bd bm";return"bd bb";}
+async function load(s=false){try{const r=await fetch(API+"/leads",{headers:{"api-key":K}});if(r.status===403){alert("API Key inválida");logout();return;}const d=await r.json();lC=(d.leads||[]).map(l=>({...l,_p:pr(l)}));lC.sort((a,b)=>b._p-a._p);kpi();pip();lst();alr();cd=30;}catch(e){console.error(e);}}
+function alr(){const c=lC.filter(l=>l._p>150&&l.estatus!=="cerrado");const b=document.getElementById("bc");if(c.length>0){document.getElementById("ab").style.display="flex";document.getElementById("at").innerText=`${c.length} lead${c.length>1?"s":""} crítico${c.length>1?"s":""} requiere${c.length>1?"n":""} atención`;b.innerText=c.length;b.style.display="block";}}
+function kpi(){document.getElementById("k1").innerText=lC.length;document.getElementById("k2").innerText=lC.filter(l=>["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO"].includes(l.clasificacion)).length;document.getElementById("k4").innerText=lC.filter(l=>l.estatus==="cerrado").length;const t=lC.reduce((s,l)=>s+(l.impacto_max||0),0);document.getElementById("k3").innerText=t>=1000000?"$"+(t/1000000).toFixed(1)+"M":"$"+(t/1000).toFixed(0)+"K";}
+function pip(){["nuevo","contactado","calificado","cerrado"].forEach(s=>{document.getElementById("b-"+s).innerHTML="";document.getElementById("cn-"+s).innerText=0;});lC.forEach(l=>{const e=l.estatus||"nuevo";const b=document.getElementById("b-"+e);if(!b)return;document.getElementById("cn-"+e).innerText=parseInt(document.getElementById("cn-"+e).innerText)+1;const p=Math.min((l._p/200)*100,100);const tel=(l.telefono||"").replace(/\D/g,"");const c=docum
