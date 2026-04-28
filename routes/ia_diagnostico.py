@@ -137,6 +137,23 @@ def analizar_fallback(texto: str, respuestas: dict, industria: str):
             causas.append("REPSE vencido o inexistente — responsabilidad solidaria activa")
             impacto += 80000
 
+    elif industria == "RETAIL":
+        if any(p in texto for p in ["perdida", "inventario", "merma", "faltante", "robo", "hurto", "sustraccion"]):
+            causas.append("Pérdidas en inventario — riesgo de robo interno o error operativo")
+            impacto += 120000
+        if any(p in texto for p in ["sucursal", "polanco", "punto de venta"]):
+            causas.append("Incidencia en punto de venta — exposición patrimonial sin control")
+            impacto += 60000
+        if any(p in texto for p in ["rotacion", "empleados"]):
+            causas.append("Alta rotación laboral — riesgo de demandas e inspecciones STPS")
+            impacto += 60000
+        if respuestas.get("contratos") == "No":
+            causas.append("Sin contratos laborales firmados — vulnerabilidad legal total")
+            impacto += 40000
+        if respuestas.get("rotacion") == "Alta":
+            causas.append("Alta rotación confirmada — posible patrón de sustracción sistemática")
+            impacto += 50000
+
     elif industria == "ALIMENTOS":
         if any(p in texto for p in ["cofepris", "inspeccion"]):
             causas.append("Inspección sanitaria activa — riesgo de clausura")
