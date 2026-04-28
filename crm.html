@@ -235,3 +235,6 @@ async function load(s=false){try{const r=await fetch(API+"/leads",{headers:{"api
 function alr(){const c=lC.filter(l=>l._p>150&&l.estatus!=="cerrado");const b=document.getElementById("bc");if(c.length>0){document.getElementById("ab").style.display="flex";document.getElementById("at").innerText=`${c.length} lead${c.length>1?"s":""} crítico${c.length>1?"s":""} requiere${c.length>1?"n":""} atención`;b.innerText=c.length;b.style.display="block";}}
 function kpi(){document.getElementById("k1").innerText=lC.length;document.getElementById("k2").innerText=lC.filter(l=>["ALTO","CRISIS FINANCIERA","RIESGO OPERATIVO"].includes(l.clasificacion)).length;document.getElementById("k4").innerText=lC.filter(l=>l.estatus==="cerrado").length;const t=lC.reduce((s,l)=>s+(l.impacto_max||0),0);document.getElementById("k3").innerText=t>=1000000?"$"+(t/1000000).toFixed(1)+"M":"$"+(t/1000).toFixed(0)+"K";}
 function pip(){["nuevo","contactado","calificado","cerrado"].forEach(s=>{document.getElementById("b-"+s).innerHTML="";document.getElementById("cn-"+s).innerText=0;});lC.forEach(l=>{const e=l.estatus||"nuevo";const b=document.getElementById("b-"+e);if(!b)return;document.getElementById("cn-"+e).innerText=parseInt(document.getElementById("cn-"+e).innerText)+1;const p=Math.min((l._p/200)*100,100);const tel=(l.telefono||"").replace(/\D/g,"");const c=docum
+</script>
+</body>
+</html>
