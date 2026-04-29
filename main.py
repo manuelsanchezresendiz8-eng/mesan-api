@@ -83,28 +83,6 @@ except Exception as e:
     motor_total = None
 
 try:
-    from core.mesan_engine import MesanOmegaEngine
-    logging.info("mesan_engine OK")
-except Exception as e:
-    logging.error(f"ERROR mesan_engine: {e}")
-    MesanOmegaEngine = None
-
-try:
-    from core.industria import detectar_industria, calcular_impacto_mesan
-    logging.info("industria OK")
-except Exception as e:
-    logging.error(f"ERROR industria: {e}")
-    detectar_industria = None
-    calcular_impacto_mesan = None
-
-try:
-    from routes.analisis import router as analisis_router
-    logging.info("analisis OK")
-except Exception as e:
-    logging.error(f"ERROR analisis: {e}")
-    analisis_router = None
-
-try:
     from routes.chat_ai import router as chat_router
     logging.info("chat_ai OK")
 except Exception as e:
@@ -175,9 +153,6 @@ app.include_router(diagnostico_router, prefix="/pro")
 
 if chat_router:
     app.include_router(chat_router)
-
-if analisis_router:
-    app.include_router(analisis_router)
 
 # =========================================
 # HELPERS
@@ -320,39 +295,12 @@ async def dashboard(api_key: str = Header(None, alias="api-key")):
         return response({"error": "Error en dashboard"}, 500)
 
 # =========================================
-# ENDPOINT PRINCIPAL (CORREGIDO)
+# ENDPOINT PRINCIPAL
 # =========================================
-def procesos_async(nombre, email, telefono, lead_data, resultado):
-    try:
-        if enviar_notificacion_lead:
-            enviar_notificacion_lead(
-                nombre=nombre,
-                email_cliente=email,
-                telefono=telefono,
-                score=lead_data["score"],
-                clasificacion=lead_data["clasificacion"],
-                soluciones=resultado.get("soluciones", [])
-            )
-            logging.info("notificacion enviada OK")
-        if generar_diagnostico_pdf and enviar_reporte_pdf:
-            pdf_bytes = generar_diagnostico_pdf(
-                nombre=nombre,
-                email=email,
-                telefono=telefono,
-                score=lead_data["score"],
-                clasificacion=lead_data["clasificacion"],
-                soluciones=resultado.get("soluciones", []),
-                impacto_min=lead_data["impacto_min"],
-                impacto_max=lead_data["impacto_max"]
-            )
-            enviar_reporte_pdf(email, nombre, pdf_bytes)
-            logging.info("PDF enviado OK")
-    except Exception:
-        logging.error(f"ERROR procesos_async: {traceback.format_exc()}")
-
 @app.post("/enterprise")
 @limiter.limit("10/minute")
 async def enterprise(data: dict, request: Request):
+
     logging.info(f"DATA RECIBIDA: {data}")
 
     try:
@@ -361,40 +309,29 @@ async def enterprise(data: dict, request: Request):
 
         data = normalize_input(data)
 
-        # 1. Extracción de contexto para el motor de industria
-        contexto_usuario = data.get("contexto", "") or data.get("giro", "")
         nombre   = (data.get("nombre") or "").strip() or "Sin nombre"
         email    = (data.get("email") or "").strip()
         telefono = (data.get("telefono") or "").strip() or "Sin telefono"
+        giro     = (data.get("giro") or "").strip()
 
-        # 2. MOTOR DE INDUSTRIA SCIAN
-        giro_detectado = "GENERAL"
-        impacto_data = {}
+        logging.warning(f"LEAD FINAL -> {nombre} | {email} | {telefono} | {giro}")
 
-        if detectar_industria:
-            giro_detectado = detectar_industria(contexto_usuario)
-            logging.info(f"INDUSTRIA DETECTADA: {giro_detectado}")
-
-            if calcular_impacto_mesan and any(p in contexto_usuario.lower() for p in ["perdida", "merma", "faltante"]):
-                ventas_est = data.get("ventas_mensuales", 100000)
-                impacto_data = calcular_impacto_mesan(giro_detectado, ventas_est, 5)
-
-        # 3. Motor Enterprise
         resultado = {}
         if sistema_enterprise:
             try:
-                data["giro_scian"] = giro_detectado
                 resultado = sistema_enterprise(data) or {}
-                if impacto_data.get("nivel_alerta") == "CRITICO":
-                    resultado["clasificacion"] = "RIESGO OPERATIVO"
             except Exception:
                 logging.error(f"ERROR motor: {traceback.format_exc()}")
-                resultado = {"clasificacion": "MEDIO", "soluciones": []}
+                resultado = {
+                    "clasificacion": "MEDIO",
+                    "diagnostico": {"score": 0},
+                    "impacto": {"impacto_min": 0, "impacto_max": 0},
+                    "soluciones": []
+                }
 
         if not email:
-            return response({"ok": True, "modo": "anonimo", "resultado": resultado, "giro": giro_detectado})
+            return response({"ok": True, "modo": "anonimo", "resultado": resultado})
 
-        # 4. Lead con prioridad
         lead_id = str(uuid.uuid4())
         lead_data = {
             "id":            lead_id,
@@ -403,35 +340,59 @@ async def enterprise(data: dict, request: Request):
             "telefono":      telefono,
             "score":         resultado.get("diagnostico", {}).get("score") or 0,
             "clasificacion": normalizar_clasificacion(resultado.get("clasificacion")),
-            "impacto_min":   impacto_data.get("perdida_mensual_neta", 0),
-            "impacto_max":   impacto_data.get("proyeccion_anual_real", 0),
+            "impacto_min":   resultado.get("impacto", {}).get("impacto_min") or 0,
+            "impacto_max":   resultado.get("impacto", {}).get("impacto_max") or 0,
             "estatus":       "nuevo",
             "fecha":         datetime.now().isoformat(),
-            "giro":          giro_detectado,
-            "contexto":      contexto_usuario
+            "giro":          giro,
         }
 
         try:
-            with SessionLocal() as db:
-                nuevo_lead = Lead(**lead_data)
-                db.add(nuevo_lead)
-                db.commit()
-            logging.info(f"Lead guardado: {email}")
+            db = SessionLocal()
+            nuevo_lead = Lead(**lead_data)
+            db.add(nuevo_lead)
+            db.commit()
+            db.close()
+            logging.info(f"Lead guardado en DB: {email}")
         except Exception:
             logging.error(f"Error guardando lead: {traceback.format_exc()}")
 
-        threading.Thread(
-            target=procesos_async,
-            args=(nombre, email, telefono, lead_data, resultado),
-            daemon=True
-        ).start()
+        def procesos_async():
+            try:
+                if enviar_notificacion_lead:
+                    enviar_notificacion_lead(
+                        nombre=nombre,
+                        email_cliente=email,
+                        telefono=telefono,
+                        score=lead_data["score"],
+                        clasificacion=lead_data["clasificacion"],
+                        soluciones=resultado.get("soluciones", [])
+                    )
+                    logging.info("notificacion enviada OK")
+
+                if generar_diagnostico_pdf and enviar_reporte_pdf:
+                    pdf_bytes = generar_diagnostico_pdf(
+                        nombre=nombre,
+                        email=email,
+                        telefono=telefono,
+                        score=lead_data["score"],
+                        clasificacion=lead_data["clasificacion"],
+                        soluciones=resultado.get("soluciones", []),
+                        impacto_min=lead_data["impacto_min"],
+                        impacto_max=lead_data["impacto_max"]
+                    )
+                    enviar_reporte_pdf(email, nombre, pdf_bytes)
+                    logging.info("PDF enviado OK")
+
+            except Exception:
+                logging.error(f"ERROR procesos_async: {traceback.format_exc()}")
+
+        threading.Thread(target=procesos_async, daemon=True).start()
 
         return response({
             "ok": True,
             "modo": "lead_guardado",
             "resultado": resultado,
-            "giro_detectado": giro_detectado,
-            "impacto_anual_estimado": lead_data["impacto_max"],
             "lead_id": lead_id
         })
 
