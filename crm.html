@@ -1,228 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MESAN — CRM Sistema</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C; --dark: #1A1A18; --mid: #242420; --panel: #2A2A26;
+      --line: #3A3A34; --text: #F0EDE6; --muted: #7A7870;
+      --green: #4CAF7D; --red: #E05C5C; --blue: #5B9BD5; --orange: #E09B5C;
+    }
+    body { background: var(--dark); color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; display: flex; height: 100vh; overflow: hidden; }
+    .sidebar { width: 210px; background: var(--mid); border-right: 1px solid var(--line); display: flex; flex-direction: column; flex-shrink: 0; }
+    .logo { padding: 22px 18px 18px; border-bottom: 1px solid var(--line); }
+    .logo h1 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; color: var(--gold); letter-spacing: .1em; }
+    .logo span { font-size: 9px; color: var(--muted); letter-spacing: .22em; text-transform: uppercase; display: block; margin-top: 3px; }
+    nav { padding: 14px 0; flex: 1; }
+    .ni { display: flex; align-items: center; gap: 9px; padding: 10px 18px; cursor: pointer; color: var(--muted); font-size: 11px; letter-spacing: .06em; border-left: 2px solid transparent; transition: all .15s; }
+    .ni:hover { color: var(--text); background: rgba(201,168,76,.05); }
+    .ni.on { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,.08); }
+    .ni svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .sf { padding: 14px 18px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 9px; }
+    .av { width: 30px; height: 30px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: var(--dark); flex-shrink: 0; }
+    .av-info p { font-size: 11px; color: var(--text); }
+    .av-info small { font-size: 10px; color: var(--muted); }
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar { padding: 15px 24px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; background: var(--mid); }
+    .tb-left { display: flex; align-items: center; gap: 16px; }
+    .tb-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 300; color: var(--gold); letter-spacing: .07em; }
+    .tab { font-size: 11px; color: var(--muted); cursor: pointer; padding: 4px 10px; border-radius: 3px; letter-spacing: .05em; }
+    .tab.on { background: rgba(201,168,76,.12); color: var(--gold); }
+    .tb-right { display: flex; gap: 10px; align-items: center; }
+    input.search { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 12px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 11px; width: 190px; outline: none; }
+    input.search::placeholder { color: var(--muted); }
+    .btn { background: var(--gold); color: var(--dark); border: none; padding: 7px 15px; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: .08em; cursor: pointer; border-radius: 3px; }
+    .btn:hover { opacity: .9; }
+    .body { flex: 1; overflow: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+    .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; }
+    .kl { font-size: 9px; color: var(--muted); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 7px; }
+    .kv { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 300; color: var(--text); line-height: 1; }
+    .kd { font-size: 10px; margin-top: 5px; }
+    .up { color: var(--green); } .dn { color: var(--red); }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr 300px; gap: 16px; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+    .ph { padding: 12px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+    .ph h3 { font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); }
+    .ph a { font-size: 10px; color: var(--gold); cursor: pointer; }
+    .pipe { padding: 14px 16px; }
+    .st { margin-bottom: 11px; }
+    .str { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .stn { font-size: 11px; color: var(--muted); } .sta { font-size: 11px; color: var(--text); }
+    .bg { background: var(--line); border-radius: 2px; height: 4px; }
+    .bf { border-radius: 2px; height: 4px; }
+    .ctbl { width: 100%; border-collapse: collapse; }
+    .ctbl th { font-size: 9px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; padding: 10px 16px 8px; text-align: left; border-bottom: 1px solid var(--line); }
+    .ctbl td { padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 11px; color: var(--text); }
+    .ctbl tr:last-child td{border-bottom:none} .ctbl tr:hover td{background:rgba(201,168,76,.04)}
+    .ci { display: flex; align-items: center; gap: 9px; }
+    .dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+    .cn { font-size: 12px; color: var(--text); } .cc { font-size: 10px; color: var(--muted); }
+    .bdg { padding: 2px 8px; border-radius: 3px; font-size: 10px; letter-spacing: .04em; }
+    .bdg.hot{background:rgba(224,92,92,.14);color:var(--red)} .bdg.warm{background:rgba(201,168,76,.14);color:var(--gold)} .bdg.cold{background:rgba(91,155,213,.14);color:var(--blue)}
+    .bdg.won{background:rgba(76,175,125,.14);color:var(--green)} .bdg.neg{background:rgba(224,155,92,.14);color:var(--orange)}
+    .act{padding:14px 16px}
+    .ai{display:flex;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line)} .ai:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .adot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+    .at{font-size:11px;color:var(--muted);line-height:1.6} .at strong{color:var(--text)} .atm{font-size:10px;color:var(--line);margin-top:2px}
+    .row3{display:grid;grid-template-columns:2fr 1fr;gap:16px} .opps{width:100%;border-collapse:collapse}
+    .opps th { font-size: 9px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; padding: 10px 16px 8px; text-align: left; border-bottom: 1px solid var(--line); }
+    .opps td { padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 11px; }
+    .opps tr:last-child td{border-bottom:none} .opps tr:hover td{background:rgba(201,168,76,.04)}
+    .prog{height:3px;background:var(--line);border-radius:2px;margin-top:4px} .pf{height:3px;border-radius:2px}
+    .tsk{padding:12px 16px}
+    .ti { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+    .ti:last-child{border-bottom:none}
+    .tck { width: 14px; height: 14px; border: 1px solid var(--line); border-radius: 3px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .tck.done{background:var(--green);border-color:var(--green)} .tt{font-size:11px;flex:1} .td{font-size:10px;color:var(--muted)} .tt.done{color:var(--muted);text-decoration:line-through}
+  </style>
+</head>
+<body>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
---m-gold:#C9A84C;--m-dark:#1A1A18;--m-mid:#2E2E2A;--m-line:#3E3E38;
---m-text:#F0EDE6;--m-muted:#8A8880;--m-green:#4CAF7D;--m-red:#E05C5C;--m-blue:#5B9BD5;
-}
-body{background:var(--m-dark);color:var(--m-text);font-family:'DM Mono',monospace;font-size:13px}
-.app{display:grid;grid-template-columns:200px 1fr;height:100vh;min-height:600px}
-.sidebar{background:var(--m-mid);border-right:1px solid var(--m-line);padding:0;display:flex;flex-direction:column}
-.logo{padding:20px 16px 16px;border-bottom:1px solid var(--m-line)}
-.logo h1{font-family:'Fraunces',serif;font-size:20px;font-weight:300;color:var(--m-gold);letter-spacing:0.08em}
-.logo span{font-size:9px;color:var(--m-muted);letter-spacing:0.2em;text-transform:uppercase;display:block;margin-top:2px}
-.nav{padding:12px 0;flex:1}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;color:var(--m-muted);font-size:12px;letter-spacing:0.05em;border-left:2px solid transparent;transition:all 0.15s}
-.nav-item:hover{color:var(--m-text);background:rgba(201,168,76,0.05)}
-.nav-item.active{color:var(--m-gold);border-left-color:var(--m-gold);background:rgba(201,168,76,0.08)}
-.nav-icon{width:14px;height:14px;opacity:0.7}
-.sidebar-footer{padding:12px 16px;border-top:1px solid var(--m-line)}
-.avatar{display:flex;align-items:center;gap:8px}
-.avatar-dot{width:28px;height:28px;border-radius:50%;background:var(--m-gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--m-dark)}
-.avatar-info p{font-size:11px;color:var(--m-text)}
-.avatar-info span{font-size:10px;color:var(--m-muted)}
-.main{overflow:auto;background:var(--m-dark)}
-.topbar{padding:16px 24px;border-bottom:1px solid var(--m-line);display:flex;justify-content:space-between;align-items:center}
-.topbar-title{font-family:'Fraunces',serif;font-size:16px;font-weight:300;color:var(--m-gold);letter-spacing:0.06em}
-.search{background:var(--m-mid);border:1px solid var(--m-line);border-radius:4px;padding:6px 12px;color:var(--m-text);font-family:'DM Mono',monospace;font-size:12px;width:200px;outline:none}
-.search::placeholder{color:var(--m-muted)}
-.btn{background:var(--m-gold);color:var(--m-dark);border:none;padding:7px 14px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;cursor:pointer;border-radius:3px}
-.btn:hover{opacity:0.9}
-.content{padding:20px 24px}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.kpi{background:var(--m-mid);border:1px solid var(--m-line);border-radius:6px;padding:14px 16px}
-.kpi-label{font-size:10px;color:var(--m-muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px}
-.kpi-val{font-family:'Fraunces',serif;font-size:22px;font-weight:300;color:var(--m-text)}
-.kpi-delta{font-size:10px;margin-top:4px}
-.kpi-delta.up{color:var(--m-green)}
-.kpi-delta.dn{color:var(--m-red)}
-.two-col{display:grid;grid-template-columns:1fr 320px;gap:16px}
-.panel{background:var(--m-mid);border:1px solid var(--m-line);border-radius:6px}
-.panel-head{padding:12px 16px;border-bottom:1px solid var(--m-line);display:flex;justify-content:space-between;align-items:center}
-.panel-head h3{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--m-muted)}
-.pipeline{padding:12px}
-.stage{margin-bottom:10px}
-.stage-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.stage-name{font-size:11px;color:var(--m-muted)}
-.stage-amt{font-size:11px;color:var(--m-text)}
-.bar-bg{background:var(--m-line);border-radius:2px;height:5px}
-.bar-fill{border-radius:2px;height:5px;transition:width 0.4s}
-.contacts-list{padding:0}
-.contact-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--m-line);cursor:pointer;transition:background 0.1s}
-.contact-row:last-child{border-bottom:none}
-.contact-row:hover{background:rgba(201,168,76,0.05)}
-.c-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
-.c-info{flex:1;min-width:0}
-.c-name{font-size:12px;color:var(--m-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.c-company{font-size:10px;color:var(--m-muted)}
-.badge{padding:2px 7px;border-radius:3px;font-size:10px;letter-spacing:0.05em}
-.badge.hot{background:rgba(224,92,92,0.15);color:var(--m-red)}
-.badge.warm{background:rgba(201,168,76,0.15);color:var(--m-gold)}
-.badge.cold{background:rgba(91,155,213,0.15);color:var(--m-blue)}
-.badge.won{background:rgba(76,175,125,0.15);color:var(--m-green)}
-.activity{padding:12px 16px}
-.act-item{display:flex;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--m-line)}
-.act-item:last-child{border-bottom:none;margin-bottom:0}
-.act-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
-.act-text{font-size:11px;color:var(--m-muted);line-height:1.5}
-.act-text strong{color:var(--m-text)}
-.act-time{font-size:10px;color:var(--m-line);margin-top:2px}
-</style>
-
-<div class="app">
-<div class="sidebar">
+<!-- ── SIDEBAR ────────────────────────────────────────────── -->
+<aside class="sidebar">
   <div class="logo">
     <h1>MESAN</h1>
     <span>CRM Sistema</span>
   </div>
-  <nav class="nav">
-    <div class="nav-item active">
-      <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
-      Dashboard
-    </div>
-    <div class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 13c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      Contactos
-    </div>
-    <div class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><path d="M2 11L5 8l3 2 4-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Pipeline
-    </div>
-    <div class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h4M5 9h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M5 5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      Oportunidades
-    </div>
-    <div class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><path d="M7 2v3M7 9v3M2 7h3M9 7h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1.2"/></svg>
-      Reportes
-    </div>
-    <div class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M7 5v2.5l1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      Seguimientos
-    </div>
+  <nav>
+    <div class="ni on"><svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>Dashboard</div>
+    <div class="ni"><svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.8" stroke="currentColor" stroke-width="1.3"/><path d="M1 13c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Contactos</div>
+    <div class="ni"><svg viewBox="0 0 14 14" fill="none"><path d="M2 11L5 8l3 2 4-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Pipeline</div>
+    <div class="ni"><svg viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 5h4M5 7.5h4M5 10h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Oportunidades</div>
+    <div class="ni"><svg viewBox="0 0 14 14" fill="none"><path d="M2 3h10M2 7h7M2 11h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Reportes</div>
+    <div class="ni"><svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M7 4.5v3l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Seguimientos</div>
+    <div class="ni"><svg viewBox="0 0 14 14" fill="none"><path d="M12 9.5a1 1 0 01-1 1H3l-2 2V3a1 1 0 011-1h9a1 1 0 011 1v6.5z" stroke="currentColor" stroke-width="1.3"/></svg>Mensajes</div>
+    <div class="ni"><svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.9 2.9l1.4 1.4M9.7 9.7l1.4 1.4M2.9 11.1l1.4-1.4M9.7 4.3l1.4-1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Configuración</div>
   </nav>
-  <div class="sidebar-footer">
-    <div class="avatar">
-      <div class="avatar-dot">AG</div>
-      <div class="avatar-info">
-        <p>A. González</p>
-        <span>Ejecutivo</span>
-      </div>
-    </div>
+  <div class="sf">
+    <div class="av">AG</div>
+    <div class="av-info"><p>A. González</p><small>Ejecutivo ventas</small></div>
   </div>
-</div>
+</aside>
 
+<!-- ── MAIN ───────────────────────────────────────────────── -->
 <div class="main">
   <div class="topbar">
-    <span class="topbar-title">Dashboard</span>
-    <div style="display:flex;gap:10px;align-items:center">
-      <input class="search" placeholder="Buscar contacto...">
-      <button class="btn">+ Nuevo</button>
+    <div class="tb-left">
+      <span class="tb-title">Dashboard</span>
+      <span class="tab on">Resumen</span>
+      <span class="tab">Ventas</span>
+      <span class="tab">Clientes</span>
+    </div>
+    <div class="tb-right">
+      <input class="search" placeholder="Buscar contacto, empresa...">
+      <button class="btn">+ Nuevo contacto</button>
     </div>
   </div>
-
-  <div class="content">
-    <div class="kpi-grid">
-      <div class="kpi">
-        <div class="kpi-label">Ingresos mes</div>
-        <div class="kpi-val">$4.2M</div>
-        <div class="kpi-delta up">↑ 12% vs anterior</div>
+  <div class="body">
+    <div class="kpis" id="kpis"></div>
+    <div class="row2">
+      <div class="panel">
+        <div class="ph"><h3>Pipeline por etapa</h3><span style="font-size:10px;color:var(--muted)">Abril 2026</span></div>
+        <div class="pipe" id="pipe"></div>
       </div>
-      <div class="kpi">
-        <div class="kpi-label">Oportunidades</div>
-        <div class="kpi-val">38</div>
-        <div class="kpi-delta up">↑ 5 nuevas</div>
+      <div class="panel" style="overflow:auto">
+        <div class="ph"><h3>Contactos recientes</h3><a>Ver todos →</a></div>
+        <table class="ctbl" id="ctbl"></table>
       </div>
-      <div class="kpi">
-        <div class="kpi-label">Tasa de cierre</div>
-        <div class="kpi-val">64%</div>
-        <div class="kpi-delta dn">↓ 3pts</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Valor pipeline</div>
-        <div class="kpi-val">$18.5M</div>
-        <div class="kpi-delta up">↑ 8%</div>
+      <div class="panel">
+        <div class="ph"><h3>Actividad reciente</h3></div>
+        <div class="act" id="act"></div>
       </div>
     </div>
-
-    <div class="two-col">
-      <div style="display:flex;flex-direction:column;gap:16px">
-        <div class="panel">
-          <div class="panel-head">
-            <h3>Pipeline por etapa</h3>
-            <span style="font-size:10px;color:var(--m-muted)">Abr 2026</span>
-          </div>
-          <div class="pipeline" id="pipeline"></div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-head">
-            <h3>Contactos recientes</h3>
-            <span style="font-size:10px;color:var(--m-gold);cursor:pointer">Ver todos</span>
-          </div>
-          <div class="contacts-list" id="contacts"></div>
-        </div>
+    <div class="row3">
+      <div class="panel">
+        <div class="ph"><h3>Oportunidades activas</h3><a>Ver todas →</a></div>
+        <table class="opps" id="opps"></table>
       </div>
-
-      <div class="panel" style="height:fit-content">
-        <div class="panel-head">
-          <h3>Actividad reciente</h3>
-        </div>
-        <div class="activity" id="activity"></div>
+      <div class="panel">
+        <div class="ph"><h3>Tareas pendientes</h3><a>+ Nueva</a></div>
+        <div class="tsk" id="tsk"></div>
       </div>
     </div>
   </div>
 </div>
-</div>
 
+<!-- ── SCRIPT DE DATOS ────────────────────────────────────── -->
 <script>
-const stages=[
-  {name:'Prospección',amt:'$6.2M',pct:84,color:'#5B9BD5'},
-  {name:'Propuesta enviada',amt:'$4.8M',pct:65,color:'#C9A84C'},
-  {name:'Negociación',amt:'$3.1M',pct:42,color:'#E09B5C'},
-  {name:'Cierre',amt:'$1.8M',pct:24,color:'#4CAF7D'},
-  {name:'Ganado',amt:'$2.6M',pct:35,color:'#4CAF7D'},
-];
-const pl=document.getElementById('pipeline');
-stages.forEach(s=>{
-  pl.innerHTML+=`<div class="stage">
-    <div class="stage-row"><span class="stage-name">${s.name}</span><span class="stage-amt">${s.amt}</span></div>
-    <div class="bar-bg"><div class="bar-fill" style="width:${s.pct}%;background:${s.color}"></div></div>
-  </div>`;
-});
+  /* ── KPIs ─────────────────────────────── */
+  const K = [
+    { l: 'Ingresos mes',     v: '$4.2M',  d: '↑ 12%',     t: 'up' },
+    { l: 'Oportunidades',    v: '38',     d: '↑ 5 nuevas', t: 'up' },
+    { l: 'Tasa de cierre',   v: '64%',    d: '↓ 3pts',     t: 'dn' },
+    { l: 'Pipeline total',   v: '$18.5M', d: '↑ 8%',       t: 'up' },
+    { l: 'Clientes activos', v: '127',    d: '↑ 4',        t: 'up' },
+  ];
+  document.getElementById('kpis').innerHTML = K.map(k =>
+    `<div class="kpi">
+       <div class="kl">${k.l}</div>
+       <div class="kv">${k.v}</div>
+       <div class="kd ${k.t}">${k.d} vs anterior</div>
+     </div>`
+  ).join('');
 
-const contacts=[
-  {initials:'RL',color:'#5B9BD5',bg:'rgba(91,155,213,0.15)',name:'Ricardo López',company:'Grupo Alfa S.A.',badge:'hot',label:'Caliente'},
-  {initials:'MC',color:'#C9A84C',bg:'rgba(201,168,76,0.15)',name:'María Castro',company:'Inmobiliaria Del Valle',badge:'warm',label:'Tibio'},
-  {initials:'JM',color:'#4CAF7D',bg:'rgba(76,175,125,0.15)',name:'Jorge Mendoza',company:'TechSol MX',badge:'won',label:'Cerrado'},
-  {initials:'AV',color:'#E05C5C',bg:'rgba(224,92,92,0.15)',name:'Andrea Vásquez',company:'Distribuidora Norte',badge:'hot',label:'Caliente'},
-  {initials:'CB',color:'#5B9BD5',bg:'rgba(91,155,213,0.15)',name:'Carlos Becerra',company:'Logística Rápida',badge:'cold',label:'Frío'},
-];
-const ct=document.getElementById('contacts');
-contacts.forEach(c=>{
-  ct.innerHTML+=`<div class="contact-row">
-    <div class="c-avatar" style="background:${c.bg};color:${c.color}">${c.initials}</div>
-    <div class="c-info">
-      <div class="c-name">${c.name}</div>
-      <div class="c-company">${c.company}</div>
-    </div>
-    <span class="badge ${c.badge}">${c.label}</span>
-  </div>`;
-});
+  /* ── Pipeline ─────────────────────────── */
+  const S = [
+    { n: 'Prospección',       a: '$6.2M', p: 84, c: '#5B9BD5' },
+    { n: 'Propuesta enviada', a: '$4.8M', p: 65, c: '#C9A84C' },
+    { n: 'Negociación',       a: '$3.1M', p: 42, c: '#E09B5C' },
+    { n: 'Revisión legal',    a: '$2.0M', p: 27, c: '#E05C5C' },
+    { n: 'Cierre ganado',     a: '$2.4M', p: 32, c: '#4CAF7D' },
+  ];
+  document.getElementById('pipe').innerHTML = S.map(s =>
+    `<div class="st">
+       <div class="str">
+         <span class="stn">${s.n}</span>
+         <span class="sta">${s.a}</span>
+       </div>
+       <div class="bg"><div class="bf" style="width:${s.p}%;background:${s.c}"></div></div>
+     </div>`
+  ).join('');
 
-const acts=[
-  {color:'#4CAF7D',text:'<strong>Ricardo López</strong> aceptó propuesta de $480K',time:'hace 20 min'},
-  {color:'#C9A84C',text:'Llamada programada con <strong>María Castro</strong> mañana 10am',time:'hace 1h'},
-  {color:'#5B9BD5',text:'Nuevo contacto: <strong>Carlos Becerra</strong> de Logística Rápida',time:'hace 2h'},
-  {color:'#E05C5C',text:'<strong>Andrea Vásquez</strong> solicitó revisión de contrato',time:'hace 3h'},
-  {color:'#4CAF7D',text:'Trato cerrado con <strong>Jorge Mendoza</strong> por $1.2M',time:'ayer'},
-];
-const ac=document.getElementById('activity');
-acts.forEach(a=>{
-  ac.innerHTML+=`<div class="act-item">
-    <div class="act-dot" style="background:${a.color}"></div>
-    <div><div class="act-text">${a.text}</div><div class="act-time">${a.time}</div></div>
-  </div>`;
-});
+  const C = [
+    { i:'RL', bg:'rgba(91,155,213,.14)',  fc:'#5B9BD5', n:'Ricardo López',  co:'Grupo Alfa S.A.',      st:'hot',  sl:'Caliente', v:'$480K' },
+    { i:'MC', bg:'rgba(201,168,76,.14)',  fc:'#C9A84C', n:'María Castro',   co:'Del Valle Inmuebles',  st:'warm', sl:'Tibio',    v:'$220K' },
+    { i:'JM', bg:'rgba(76,175,125,.14)',  fc:'#4CAF7D', n:'Jorge Mendoza',  co:'TechSol MX',           st:'won',  sl:'Cerrado',  v:'$1.2M' },
+    { i:'AV', bg:'rgba(224,92,92,.14)',   fc:'#E05C5C', n:'Andrea Vásquez', co:'Distribuidora Norte',  st:'hot',  sl:'Caliente', v:'$310K' },
+    { i:'CB', bg:'rgba(91,155,213,.14)',  fc:'#5B9BD5', n:'Carlos Becerra', co:'Logística Rápida',     st:'cold', sl:'Frío',     v:'$90K'  },
+  ];
+  /* ── Contactos ────────────────────────── */
+  document.getElementById('ctbl').innerHTML =
+    '<thead><tr><th>Contacto</th><th>Estado</th><th>Valor</th></tr></thead><tbody>' +
+    C.map(c =>
+      `<tr>
+         <td><div class="ci"><div class="dot" style="background:${c.bg};color:${c.fc}">${c.i}</div>
+         <div><div class="cn">${c.n}</div><div class="cc">${c.co}</div></div></div></td>
+         <td><span class="bdg ${c.st}">${c.sl}</span></td>
+         <td style="color:var(--gold)">${c.v}</td>
+       </tr>`
+    ).join('') + '</tbody>';
+
+  const A = [
+    { c:'#4CAF7D', t:'<strong>Ricardo López</strong> aceptó propuesta por $480K',        m:'hace 20 min' },
+    { c:'#C9A84C', t:'Llamada agendada con <strong>María Castro</strong> — mañana 10am', m:'hace 1h'     },
+    { c:'#5B9BD5', t:'Nuevo lead: <strong>Carlos Becerra</strong> de Logística Rápida',  m:'hace 2h'     },
+    { c:'#E05C5C', t:'<strong>Andrea Vásquez</strong> solicitó revisión de contrato',    m:'hace 3h'     },
+    { c:'#4CAF7D', t:'Trato cerrado con <strong>Jorge Mendoza</strong> — $1.2M',         m:'ayer 4pm'    },
+  ];
+  document.getElementById('act').innerHTML = A.map(a =>
+    `<div class="ai">
+       <div class="adot" style="background:${a.c}"></div>
+       <div>
+         <div class="at">${a.t}</div>
+         <div class="atm">${a.m}</div>
+       </div>
+     </div>`
+  ).join('');
+
+  const O = [
+    { n:'Proyecto Torre Norte',   co:'Grupo Alfa',          v:'$480K', e:'Negociación', p:72, c:'#E09B5C' },
+    { n:'Sistema ERP Fase 2',     co:'TechSol MX',          v:'$220K', e:'Propuesta',   p:45, c:'#C9A84C' },
+    { n:'Flota vehicular Q2',     co:'Logística Rápida',    v:'$90K',  e:'Prospección', p:18, c:'#5B9BD5' },
+    { n:'Ampliación planta',      co:'Distribuidora Norte', v:'$310K', e:'Rev. legal',  p:60, c:'#E05C5C' },
+    { n:'Consultoría anual',      co:'Del Valle Inmuebles', v:'$120K', e:'Cierre',      p:88, c:'#4CAF7D' },
+  ];
+  document.getElementById('opps').innerHTML =
+    '<thead><tr><th>Oportunidad</th><th>Empresa</th><th>Valor</th><th>Etapa</th></tr></thead><tbody>' +
+    O.map(o => `<tr><td style="color:var(--text)">${o.n}<div class="prog"><div class="pf" style="width:${o.p}%;background:${o.c}"></div></div></td><td style="color:var(--muted)">${o.co}</td><td style="color:var(--gold)">${o.v}</td><td><span class="bdg neg">${o.e}</span></td></tr>`
+    ).join('') + '</tbody>';
+
+  const T = [
+    { t:'Enviar propuesta a Grupo Alfa',       d:'Hoy 5pm',  done:false },
+    { t:'Llamar a María Castro — seguimiento', d:'Hoy 10am', done:true  },
+    { t:'Revisar contrato Vásquez',            d:'Mañana',   done:false },
+    { t:'Demo producto TechSol',               d:'Vie 3pm',  done:false },
+    { t:'Informe semanal de pipeline',         d:'Vie 6pm',  done:false },
+  ];
+  document.getElementById('tsk').innerHTML = T.map(t =>
+    `<div class="ti"><div class="tck${t.done?' done':''}"><svg width="9" height="9" viewBox="0 0 9 9" fill="none">${t.done?'<path d="M1.5 4.5l2.5 2.5 4-4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>':''}</svg></div><div style="flex:1"><div class="tt${t.done?' done':''}">${t.t}</div><div class="td">${t.d}</div></div></div>`
+  ).join('');
+  /* ── fin ────────────────────────────── */
 </script>
+</body>
+</html>
