@@ -15,6 +15,76 @@ def detectar_industria(texto: str) -> str:
         if unicodedata.category(c) != 'Mn'
     )
 
+    # ═══════════════════════════════════════
+    # SISTEMA DE SCORING — evita falsos positivos
+    # ═══════════════════════════════════════
+    scores = {
+        "SERVICIOS_APOYO": 0,
+        "CONSTRUCCION_INMOBILIARIA": 0,
+        "SALUD": 0,
+        "RETAIL": 0,
+        "MANUFACTURA": 0,
+        "ALIMENTOS": 0,
+        "LOGISTICA": 0,
+        "FINANCIERO": 0,
+        "EDUCACION": 0,
+        "ENTRETENIMIENTO": 0,
+    }
+
+    # Limpieza / Servicios Apoyo
+    for k in ["limpieza", "aseo", "intendencia", "conserje", "sanitizacion",
+              "fumigacion", "jardineria", "outsourcing", "staffing",
+              "seguridad privada", "vigilancia", "guardia", "custodia"]:
+        if k in t: scores["SERVICIOS_APOYO"] += 2
+
+    # Construcción
+    for k in ["obra", "construccion", "edificacion", "albanil", "contratista",
+              "concreto", "cemento", "vivienda", "fraccionamiento", "albanileria"]:
+        if k in t: scores["CONSTRUCCION_INMOBILIARIA"] += 2
+
+    # Salud
+    for k in ["clinica", "hospital", "cofepris", "medico", "doctor",
+              "farmacia", "consultorio", "enfermera", "salud"]:
+        if k in t: scores["SALUD"] += 2
+
+    # Retail
+    for k in ["tienda", "retail", "inventario", "merma", "pos",
+              "comercio", "mostrador", "supermercado"]:
+        if k in t: scores["RETAIL"] += 2
+
+    # Manufactura
+    for k in ["fabrica", "manufactura", "maquila", "planta", "ensamble",
+              "produccion", "maquinaria", "automotriz"]:
+        if k in t: scores["MANUFACTURA"] += 2
+
+    # Alimentos
+    for k in ["restaurante", "cocina", "comida", "taqueria", "cafeteria",
+              "panaderia", "hotel", "hospedaje", "banquetes"]:
+        if k in t: scores["ALIMENTOS"] += 2
+
+    # Logística
+    for k in ["transporte", "logistica", "almacen", "bodega", "flete",
+              "paqueteria", "trailer", "chofer"]:
+        if k in t: scores["LOGISTICA"] += 2
+
+    # Financiero
+    for k in ["banco", "credito", "financiera", "sofom", "aseguradora",
+              "casa de bolsa", "fintech"]:
+        if k in t: scores["FINANCIERO"] += 2
+
+    # Educación
+    for k in ["escuela", "colegio", "universidad", "capacitacion", "curso"]:
+        if k in t: scores["EDUCACION"] += 2
+
+    # Entretenimiento
+    for k in ["gimnasio", "spa", "estetica", "bar", "antro", "casino"]:
+        if k in t: scores["ENTRETENIMIENTO"] += 2
+
+    # Si hay sector dominante con score > 0 → retornarlo
+    mejor = max(scores, key=scores.get)
+    if scores[mejor] > 0:
+        return mejor
+
     # SECTOR 11 — AGROPECUARIO Y PESCA
     if any(p in t for p in [
         "campo", "agricultura", "agricola", "cultivo", "siembra", "cosecha",
@@ -32,11 +102,23 @@ def detectar_industria(texto: str) -> str:
     ]):
         return "ENERGIA_MINERIA"
 
+    # SECTOR 56 — SERVICIOS DE APOYO (LIMPIEZA, SEGURIDAD, OUTSOURCING)
+    # IMPORTANTE: va ANTES de construcción para evitar falsos positivos
+    if any(p in t for p in [
+        "limpieza", "aseo", "limpiador", "servicio de limpieza",
+        "fumigacion", "control de plagas", "jardineria",
+        "outsourcing", "subcontratacion", "terciarizacion", "staffing",
+        "seguridad privada", "vigilancia", "guardia", "custodia", "escolta",
+        "proteccion", "sspc", "dgsp", "rnsp", "monitoreo alarmas",
+        "mantenimiento de edificios", "conserje", "intendencia"
+    ]):
+        return "SERVICIOS_APOYO"
+
     # SECTOR 23 — CONSTRUCCIÓN E INMOBILIARIA
     if any(p in t for p in [
         "construccion", "obra", "edificio", "vivienda", "fraccionamiento",
         "arquitecto", "ingenieria civil", "inmobiliaria", "bienes raices",
-        "remodelacion", "pintura", "impermeabilizacion", "concreto", "cemento",
+        "remodelacion", "impermeabilizacion", "concreto", "cemento",
         "lote", "terreno", "desarrolladora", "repse", "albanil"
     ]):
         return "CONSTRUCCION_INMOBILIARIA"
