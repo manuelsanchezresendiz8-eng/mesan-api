@@ -451,3 +451,13 @@ async def ai_diagnostico(data: InputAI):
         "consecuencias": consecuencias,
         "preguntas": preguntas,
         "analisis
+        "analisis_ai": analisis_ai,
+        "plan_30_dias": [
+            f"Semana 1: Auditoría especializada sector {industria} — identificación de incumplimientos",
+            "Semana 2: Regularización inmediata — corrección documental y operativa",
+            "Semana 3: Blindaje legal y fiscal — prevención de sanciones",
+            "Semana 4: Estabilización operativa — reducción de riesgo a nivel controlado"
+        ],
+        "whatsapp": whatsapp,
+        "cierre": f"Este caso requiere atención especializada en {industria}. MESAN Ω puede resolverlo en 30 días. ¿Agendamos hoy?"
+    }
