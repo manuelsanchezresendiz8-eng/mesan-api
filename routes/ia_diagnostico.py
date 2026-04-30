@@ -450,8 +450,7 @@ async def ai_diagnostico(data: InputAI):
         "causas": causas,
         "consecuencias": consecuencias,
         "preguntas": preguntas,
-        "analisis
-        _ai": analisis_ai,
+         _ai": analisis_ai,
         "plan_30_dias": [
             f"Semana 1: Auditoría especializada sector {industria} — identificación de incumplimientos",
             "Semana 2: Regularización inmediata — corrección documental y operativa",
