@@ -206,7 +206,22 @@ def detectar_industria(texto: str, sector_declarado: str = "") -> str:
                       "flete", "trailer", "chofer"],
         "FINANCIERO": ["banco", "credito", "financiera", "sofom",
                        "aseguradora", "casa de bolsa"],
-        "EDUCACION": ["escuela", "colegio", "universidad", "capacitacion"]
+        "EDUCACION": ["escuela", "colegio", "universidad", "capacitacion",
+                      "instituto", "academia", "cbtis", "preparatoria", "alumno", "plantel"],
+        "CALL_CENTER": ["call center", "contact center", "agentes telefonicos",
+                        "campana de cobranza", "telemarketing", "30 agentes",
+                        "precio por agente", "cobranza telefonica",
+                        "operadores telefonicos", "marcador predictivo"],
+        "LOGISTICA": ["transporte", "logistica", "almacen", "bodega",
+                      "flete", "trailer", "chofer", "paqueteria", "carta porte"],
+        "FINANCIERO": ["banco", "credito", "financiera", "sofom",
+                       "aseguradora", "fintech", "cnbv", "prestamos", "wallet"],
+        "CONSULTORIA": ["consultoria", "despacho", "asesor", "cotizar",
+                        "cuanto cobrar", "tarifa", "honorarios", "propuesta comercial"],
+        "INMOBILIARIA": ["inmobiliaria", "bienes raices", "renta",
+                         "arrendamiento", "terreno", "fraccionamiento"],
+        "AGRICULTURA": ["campo", "agricultura", "ganaderia", "rancho",
+                        "cosecha", "agroindustria", "cultivo"]
     }
 
     for sector, palabras in kw.items():
