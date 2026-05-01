@@ -1,462 +1,482 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
-import sys
-import os
-import httpx
-import unicodedata
-import logging
-import traceback
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from core.preguntas import generar_preguntas
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω — Predictive Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
 
-router = APIRouter()
-
-class InputAI(BaseModel):
-    texto: str
-    respuestas: dict = {}
-    sector: str = "" # sector declarado desde frontend
-
-# ═══ CONTEXTO REGULATORIO POR INDUSTRIA ═══
-CONTEXTO_REGULATORIO = {
-    "SALUD": """Marco regulatorio en México:
-- COFEPRIS (Comisión Federal para la Protección contra Riesgos Sanitarios) — ente rector
-- Aviso de funcionamiento obligatorio ante COFEPRIS
-- NOM-004-SSA3 (expediente clínico), NOM-005-SSA3 y demás NOM aplicables
-- Licencia sanitaria para establecimientos de salud
-- IMSS obligatorio para todo el personal
-- Responsabilidad penal del director técnico ante irregularidades""",
-
-    "SEGURIDAD": """Marco regulatorio en México:
-- Ley Federal de Seguridad Privada — marco rector (NO la CNBV, esa regula bancos)
-- SSPC (Secretaría de Seguridad y Protección Ciudadana) — Permiso Federal obligatorio
-- DGSP (Dirección General de Seguridad Privada) — registro federal obligatorio
-- CUIP (Clave Única de Identificación Policial) para CADA elemento — sin esto no puede operar
-- SEDENA — portación de armamento requiere permiso específico
-- Fianza y seguro de responsabilidad civil obligatorios
-- Sin registros: operación ilegal + nulidad de contratos + responsabilidad patrimonial personal
-
-IMPACTO EN CASCADA (calcular siempre en este orden):
-1. Pérdida de contratos corporativos (hospital, plazas): $300K-$900K MXN
-2. Embargo IMSS por trabajadores no registrados o accidentes: $120K-$250K MXN  
-3. Multas SSPC por operación ilegal: $100K-$500K MXN
-4. Demandas laborales por accidentes sin cobertura: $80K-$300K MXN
-5. Clausura + pérdida total de operación: impacto indefinido
-TOTAL REAL: siempre superior a $500K MXN en casos con clientes corporativos""",
-
-    "CONSTRUCCION": """Marco regulatorio en México:
-- IMSS — registro obligatorio de TODOS los trabajadores en obra
-- REPSE (Registro de Prestadoras de Servicios Especializados) — obligatorio si subcontrata
-- STPS — normativa de seguridad e higiene en obra
-- Licencias de construcción municipales
-- Capital constitutivo IMSS ante accidentes de trabajadores no registrados
-- Responsabilidad solidaria ante el contratante si hay incumplimiento""",
-
-    "ALIMENTOS": """Marco regulatorio en México:
-- COFEPRIS — licencia sanitaria obligatoria para establecimientos de alimentos
-- NOM-251-SSA1 (buenas prácticas de higiene) — obligatoria
-- Aviso de funcionamiento ante COFEPRIS
-- Certificación en manipulación de alimentos para todo el personal
-- IMSS para todo el personal
-- Verificación periódica de COFEPRIS y riesgo de clausura inmediata""",
-
-    "MANUFACTURA": """Marco regulatorio en México:
-- STPS — seguridad e higiene industrial obligatoria
-- IMSS — registro de todos los trabajadores de planta
-- SEMARNAT — si hay procesos con impacto ambiental
-- NOM aplicables según giro (NOM-001-STPS, NOM-002-STPS, etc.)
-- Responsabilidad civil ante accidentes laborales sin cobertura IMSS""",
-
-    "SERVICIOS_APOYO": """Marco regulatorio en México:
-- REPSE (Registro de Prestadoras de Servicios Especializados) — obligatorio para limpieza, mantenimiento y outsourcing
-- IMSS — registro obligatorio de TODOS los trabajadores
-- STPS — condiciones de trabajo y seguridad
-- LFT — contratos laborales firmados obligatorios
-- Responsabilidad solidaria del contratante si hay incumplimiento IMSS/REPSE
-- Sin REPSE: cliente puede rescindir contrato sin indemnización""",
-
-    "RETAIL": """Marco regulatorio en México:
-- LFT (Ley Federal del Trabajo) — contratos laborales obligatorios
-- IMSS — registro de todo el personal
-- SAT — facturación CFDI correcta y declaraciones fiscales
-- PROFECO — derechos del consumidor
-- Licencia de funcionamiento municipal""",
-
-    "GENERAL": """Marco regulatorio en México:
-- SAT — obligaciones fiscales, CFDI y declaraciones
-- IMSS — seguridad social de todos los trabajadores
-- LFT — contratos laborales y condiciones de trabajo
-- STPS — condiciones de seguridad e higiene
-- Licencias municipales de funcionamiento"""
+body {
+    background: #020617;
+    color: #ffffff;
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    position: relative;
 }
 
-def normalizar(texto: str) -> str:
-    texto = texto.lower()
-    texto = unicodedata.normalize("NFD", texto)
-    texto = texto.encode("ascii", "ignore").decode("utf-8")
-    return texto
+/* ESTRELLAS */
+.stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star { position: absolute; background: rgba(255,255,255,0.6); border-radius: 50%; animation: twinkle var(--d) infinite; }
+@keyframes twinkle { 0%,100%{opacity:0.15;transform:scale(1);} 50%{opacity:0.8;transform:scale(1.4);} }
 
-# Mapa de sectores válidos desde frontend
-SECTORES_VALIDOS = {
-    "salud": "SALUD",
-    "tecnologia": "TECNOLOGIA",
-    "saas": "TECNOLOGIA",
-    "software": "TECNOLOGIA",
-    "retail": "RETAIL",
-    "comercio": "RETAIL",
-    "construccion": "CONSTRUCCION",
-    "inmobiliaria": "CONSTRUCCION",
-    "manufactura": "MANUFACTURA",
-    "industria": "MANUFACTURA",
-    "alimentos": "ALIMENTOS",
-    "restaurante": "ALIMENTOS",
-    "servicios": "SERVICIOS_APOYO",
-    "limpieza": "SERVICIOS_APOYO",
-    "seguridad": "SEGURIDAD",
-    "logistica": "LOGISTICA",
-    "transporte": "LOGISTICA",
-    "financiero": "FINANCIERO",
-    "educacion": "EDUCACION",
-    "general": "GENERAL"
+/* GLOW SUPERIOR */
+.glow-top { position: fixed; top: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(59,130,246,0.8), transparent); box-shadow: 0 0 20px 2px rgba(59,130,246,0.8); z-index: 101; }
+
+/* NAVBAR */
+.navbar {
+    position: fixed;
+    top: 0; width: 100%;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: rgba(2,6,23,0.8);
+    backdrop-filter: blur(12px);
 }
 
-def detectar_industria(texto: str, sector_declarado: str = "") -> str:
-    # 1. Si viene sector declarado desde el frontend → respetar
-    if sector_declarado:
-        s = sector_declarado.lower().strip()
-        if s in SECTORES_VALIDOS:
-            return SECTORES_VALIDOS[s]
+.nav-logo { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 4px; color: #fff; }
+.nav-logo span { color: #3B82F6; }
+.nav-tag { font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.3); }
+.nav-dots { display: flex; gap: 5px; }
+.dot { width: 5px; height: 5px; background: #60A5FA; border-radius: 50%; opacity: 0.7; }
 
-    # 2. Scoring por keywords — evita falsos positivos
-    import unicodedata
-    t = "".join(c for c in unicodedata.normalize('NFD', texto.lower()) if unicodedata.category(c) != 'Mn')
+/* HERO SECTION */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 100px 24px 60px;
+    position: relative;
+    z-index: 1;
+}
 
-    scores = {
-        "TECNOLOGIA": 0, "SALUD": 0, "SERVICIOS_APOYO": 0,
-        "CONSTRUCCION": 0, "MANUFACTURA": 0, "RETAIL": 0,
-        "ALIMENTOS": 0, "SEGURIDAD": 0, "LOGISTICA": 0,
-        "FINANCIERO": 0, "EDUCACION": 0
-    }
+.glow-center {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(30,80,180,0.2) 0%, transparent 70%);
+    pointer-events: none;
+}
 
-    kw = {
-        "TECNOLOGIA": ["saas", "software", "startup", "app", "plataforma digital",
-                       "mrr", "churn", "sla", "aws", "infraestructura", "tech",
-                       "desarrollador", "dev", "ingeniero", "suscripcion", "api"],
-        "SALUD": ["clinica", "hospital", "cofepris", "medico", "doctor",
-                  "farmacia", "consultorio", "enfermera", "salud", "nom-004"],
-        "SERVICIOS_APOYO": ["limpieza", "aseo", "intendencia", "conserje",
-                            "fumigacion", "jardineria", "outsourcing", "staffing"],
-        "SEGURIDAD": ["seguridad privada", "vigilancia", "guardia", "custodia",
-                      "sspc", "dgsp", "escolta"],
-        "CONSTRUCCION": ["construccion", "obra", "edificio", "albanil",
-                         "concreto", "cemento", "vivienda", "repse"],
-        "MANUFACTURA": ["fabrica", "manufactura", "maquila", "planta",
-                        "produccion", "maquinaria", "automotriz", "plastico"],
-        "RETAIL": ["tienda", "inventario", "merma", "pos", "supermercado",
-                   "comercio", "mostrador"],
-        "ALIMENTOS": ["restaurante", "cocina", "comida", "taqueria",
-                      "hotel", "hospedaje", "catering"],
-        "LOGISTICA": ["transporte", "logistica", "almacen", "bodega",
-                      "flete", "trailer", "chofer"],
-        "FINANCIERO": ["banco", "credito", "financiera", "sofom",
-                       "aseguradora", "casa de bolsa"],
-        "EDUCACION": ["escuela", "colegio", "universidad", "capacitacion"]
-    }
+.hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(38px, 8vw, 56px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+}
 
-    for sector, palabras in kw.items():
-        for p in palabras:
-            if p in t:
-                scores[sector] += 2
+.hero h1 span { color: #22D3EE; }
 
-    mejor = max(scores, key=scores.get)
-    if scores[mejor] > 0:
-        return mejor
+.hero p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.45);
+    font-weight: 300;
+    max-width: 540px;
+    margin: 0 auto 48px;
+}
 
-    return "GENERAL"
+/* BOTÓN PRINCIPAL */
+.btn-primary {
+    position: relative;
+    padding: 16px 48px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(6,182,212,0.5);
+    color: #22D3EE;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    backdrop-filter: blur(8px);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
 
-def analizar_fallback(texto: str, respuestas: dict, industria: str):
-    causas = []
-    impacto = 0
+.btn-primary:hover { background: rgba(6,182,212,0.1); color: #fff; box-shadow: 0 0 30px rgba(6,182,212,0.2); }
+.btn-primary::before { content:''; position:absolute; top:-1px; left:-1px; width:8px; height:8px; border-top:1px solid #22D3EE; border-left:1px solid #22D3EE; }
+.btn-primary::after { content:''; position:absolute; bottom:-1px; right:-1px; width:8px; height:8px; border-bottom:1px solid #22D3EE; border-right:1px solid #22D3EE; }
 
-    if industria == "SALUD":
-        if any(p in texto for p in ["cofepris", "cofepreis", "inspeccion", "revision", "visita"]):
-            causas.append("Revisión activa COFEPRIS — riesgo de clausura sanitaria")
-            impacto += 90000
-        if any(p in texto for p in ["consultorio", "medico", "clinica"]):
-            causas.append("Operación médica bajo inspección — validación NOM obligatoria")
-            impacto += 40000
-        if respuestas.get("acta") == "Acta levantada":
-            causas.append("Acta de inspección levantada — proceso sancionador iniciado")
-            impacto += 70000
-        if respuestas.get("aviso") == "No":
-            causas.append("Sin aviso de funcionamiento — operación irregular ante COFEPRIS")
-            impacto += 50000
-        if respuestas.get("expediente") == "No":
-            causas.append("Sin expediente sanitario — sin defensa técnica ante inspección")
-            impacto += 60000
+/* COUNTER */
+.counter-box {
+    margin-top: 48px;
+    padding: 24px 40px;
+    background: rgba(8,18,42,0.7);
+    border-left: 3px solid #22D3EE;
+    backdrop-filter: blur(8px);
+    text-align: left;
+    min-width: 320px;
+}
 
-    elif industria == "SEGURIDAD":
-        # Operación ilegal — base crítica
-        causas.append("Operación sin Permiso Federal SSPC — ilegalidad total bajo Ley Federal de Seguridad Privada")
-        impacto += 300000
+.counter-label { font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 8px; }
+.counter-value { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 700; color: #22D3EE; }
+.counter-alert { margin-top: 8px; font-size: 12px; color: #EF4444; min-height: 18px; }
 
-        # Sin CUIP
-        if any(p in texto for p in ["cuip", "sin cuip", "sin identificacion"]):
-            causas.append("Personal sin CUIP — nulidad de contratos con clientes corporativos")
-            impacto += 200000
+/* SECCIÓN ACCIONES */
+.section {
+    position: relative;
+    z-index: 1;
+    padding: 60px 24px;
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-        # Clientes corporativos en riesgo
-        if any(p in texto for p in ["hospital", "plaza", "corporativo", "cliente grande", "contrato"]):
-            causas.append("Contratos con clientes corporativos en riesgo de rescisión inmediata")
-            impacto += 400000
+.section-label { font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 32px; text-align: center; }
 
-        # IMSS vencido
-        if any(p in texto for p in ["imss", "seguro", "accidente", "lesion"]):
-            causas.append("IMSS vencido con accidentes laborales — responsabilidad patrimonial ilimitada")
-            impacto += 250000
+/* CARDS DE ACCESO */
+.cards-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
 
-        # Inspección activa
-        if any(p in texto for p in ["inspeccion", "notificacion", "aviso", "clausura"]):
-            causas.append("Inspección activa — plazo de ejecución corriendo")
-            impacto += 200000
+.access-card {
+    padding: 22px 24px;
+    background: rgba(8,18,42,0.6);
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
 
-        # Sin DGSP
-        if any(p in texto for p in ["dgsp", "registro", "sin registro", "nunca"]):
-            causas.append("Sin registro ante DGSP — nulidad de todos los contratos comerciales")
-            impacto += 150000
+.access-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:rgba(6,182,212,0.3); transition:0.3s; }
+.access-card:hover { border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05); }
+.access-card:hover::before { background: #22D3EE; }
 
-        if respuestas.get("permiso") == "No":
-            causas.append("Sin Permiso Federal confirmado — cierre operativo inminente")
-            impacto += 200000
+.card-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; color: #22D3EE; margin-bottom: 6px; text-transform: uppercase; }
+.card-desc { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; font-weight: 300; }
 
-    elif industria == "CONSTRUCCION":
-        if "obra" in texto:
-            causas.append("Riesgo IMSS en obra — capitales constitutivos ante accidente")
-            impacto += 150000
-        if respuestas.get("imss_obra") == "Ninguno":
-            causas.append("Trabajadores sin IMSS en obra — responsabilidad total del contratista")
-            impacto += 100000
-        if respuestas.get("repse") in ["Vencido", "No tengo"]:
-            causas.append("REPSE vencido o inexistente — responsabilidad solidaria activa")
-            impacto += 80000
+/* RESULTADO */
+.result-box {
+    display: none;
+    margin-top: 32px;
+    padding: 24px;
+    background: rgba(8,18,42,0.8);
+    border: 1px solid rgba(6,182,212,0.2);
+    animation: fadeIn 0.4s ease;
+}
 
-    elif industria == "RETAIL":
-        if any(p in texto for p in ["perdida", "inventario", "merma", "faltante", "robo", "hurto", "sustraccion"]):
-            causas.append("Pérdidas en inventario — riesgo de robo interno o error operativo")
-            impacto += 120000
-        if any(p in texto for p in ["sucursal", "polanco", "punto de venta"]):
-            causas.append("Incidencia en punto de venta — exposición patrimonial sin control")
-            impacto += 60000
-        if any(p in texto for p in ["rotacion", "empleados"]):
-            causas.append("Alta rotación laboral — riesgo de demandas e inspecciones STPS")
-            impacto += 60000
-        if respuestas.get("contratos") == "No":
-            causas.append("Sin contratos laborales firmados — vulnerabilidad legal total")
-            impacto += 40000
-        if respuestas.get("rotacion") == "Alta":
-            causas.append("Alta rotación confirmada — posible patrón de sustracción sistemática")
-            impacto += 50000
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
 
-    elif industria == "ALIMENTOS":
-        if any(p in texto for p in ["cofepris", "inspeccion"]):
-            causas.append("Inspección sanitaria activa — riesgo de clausura")
-            impacto += 100000
-        if respuestas.get("licencia") in ["Vencida", "No"]:
-            causas.append("Licencia sanitaria vencida o inexistente")
-            impacto += 80000
+.result-content { font-size: 13px; line-height: 1.8; color: rgba(255,255,255,0.6); margin-bottom: 20px; }
+.result-content b { color: #fff; }
+.result-content .impacto { color: #EF4444; font-family: 'Syne', sans-serif; font-size: 18px; }
 
-    elif industria == "MANUFACTURA":
-        if any(p in texto for p in ["produccion", "maquinaria", "linea"]):
-            causas.append("Falla en línea de producción — pérdida de capacidad operativa")
-            impacto += 180000
-        if respuestas.get("tiempo_paro") == "Más de 3 días":
-            causas.append("Paro prolongado — incumplimiento de pedidos inminente")
-            impacto += 100000
+.btn-pago {
+    width: 100%;
+    padding: 14px;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: #EF4444;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+}
 
-    else:
-        if "imss" in texto:
-            causas.append("Incumplimiento IMSS — multas y capitales constitutivos")
-            impacto += 80000
-        if "sat" in texto or "auditoria" in texto:
-            causas.append("Auditoría SAT activa — riesgo de embargo")
-            impacto += 200000
-        if "cfdi" in texto or "factura" in texto:
-            causas.append("Inconsistencias CFDI — riesgo fiscal")
-            impacto += 120000
+.btn-pago:hover { background: rgba(239,68,68,0.2); }
 
-    if impacto == 0:
-        impacto = 25000
+/* PLANES */
+.planes-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 16px;
+}
 
-    return causas, impacto
+.plan-card {
+    padding: 24px;
+    background: rgba(8,18,42,0.6);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all 0.3s;
+}
 
-async def llamar_anthropic(texto: str, industria: str, impacto: int, riesgo: str, causas: list, respuestas: dict) -> str:
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        return ""
+.plan-card.featured { border-color: rgba(6,182,212,0.4); background: rgba(6,182,212,0.04); }
+.plan-card:hover { border-color: rgba(6,182,212,0.3); }
 
-    causas_str = "\n".join(f"- {c}" for c in causas) if causas else "- Análisis inicial — sin causas específicas detectadas aún"
-    resp_str = "\n".join(f"- {k}: {v}" for k, v in respuestas.items()) if respuestas else "Sin respuestas adicionales del cliente"
-    ctx_regulatorio = CONTEXTO_REGULATORIO.get(industria, CONTEXTO_REGULATORIO["GENERAL"])
+.plan-name { font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 10px; }
+.plan-price { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.plan-period { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 20px; }
 
-    prompt = f"""Actúa como consultor senior de una firma Big4 (Deloitte/PwC) especializado en riesgo empresarial en México.
+.plan-features { list-style: none; margin-bottom: 24px; }
+.plan-features li { font-size: 12px; color: rgba(255,255,255,0.5); padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 8px; }
+.plan-features li::before { content: '→'; color: #22D3EE; font-size: 10px; }
 
-Analiza el siguiente caso con enfoque ejecutivo:
+.btn-plan {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.6);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+}
 
-Sector: {industria}
-Situación descrita: {texto}
-Riesgo detectado: {riesgo}
-Impacto mensual estimado: ${impacto:,} MXN
-Causas identificadas:
-{causas_str}
-Respuestas del cliente:
-{resp_str}
+.btn-plan:hover { border-color: #22D3EE; color: #22D3EE; }
+.plan-card.featured .btn-plan { border-color: #22D3EE; color: #22D3EE; }
 
-MARCO REGULATORIO APLICABLE (usa ÚNICAMENTE estas autoridades — no inventes otras):
-{ctx_regulatorio}
+/* DISCLAIMER */
+.disclaimer {
+    padding: 32px 24px;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
 
-Responde en este formato EXACTO:
+.terms-label { font-size: 11px; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.terms-label input { accent-color: #22D3EE; }
+.terms-label a { color: #22D3EE; text-decoration: none; }
 
-1. Hallazgo Crítico:
-Describe el problema central de forma directa y específica. Menciona la autoridad reguladora correcta del sector.
+.legal { font-size: 10px; color: rgba(255,255,255,0.2); line-height: 1.8; }
 
-2. Implicación Operativa:
-Explica cómo afecta la operación real de la empresa hoy. Sé concreto.
+/* FOOTER */
+.footer {
+    padding: 24px;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.15);
+    text-transform: uppercase;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    position: relative;
+    z-index: 1;
+}
 
-3. Riesgo Financiero:
-Relaciona el problema con pérdida económica concreta en pesos mexicanos. Incluye multas reales del sector.
+/* WA FLOAT */
+.wa-float {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    padding: 10px 20px;
+    background: rgba(8,18,42,0.9);
+    border: 1px solid rgba(6,182,212,0.3);
+    color: #22D3EE;
+    font-size: 12px;
+    text-decoration: none;
+    z-index: 200;
+    transition: all 0.3s;
+    backdrop-filter: blur(8px);
+}
 
-4. Escenario a 30 días:
-Qué ocurrirá específicamente si no se actúa. Sé preciso con los plazos y consecuencias.
+.wa-float:hover { background: rgba(6,182,212,0.1); }
+</style>
+</head>
+<body>
 
-5. Recomendación Estratégica:
-Acción clara, priorizada y ejecutable inmediatamente. Incluye los pasos específicos del sector.
+<div class="glow-top"></div>
+<div class="stars" id="stars"></div>
 
-Reglas:
-- Lenguaje ejecutivo, no genérico
-- NO repetir ideas entre secciones
-- Citar SOLO las autoridades del marco regulatorio provisto — nunca inventar otras
-- Conectar todo con dinero o riesgo real
-- Sonar como consultor real de alto nivel, no como chatbot
-- Máximo 3-4 oraciones por sección"""
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-logo">MESAN <span>Ω</span></div>
+    <div class="nav-tag">PREDICTIVE ANALYTICS</div>
+    <div class="nav-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+</nav>
 
-    try:
-        async with httpx.AsyncClient(timeout=45.0) as client:
-            response = await client.post(
-                "https://api.anthropic.com/v1/messages",
-                headers={
-                    "x-api-key": api_key,
-                    "anthropic-version": "2023-06-01",
-                    "content-type": "application/json"
-                },
-                json={
-                    "model": "claude-haiku-4-5-20251001",
-                    "max_tokens": 900,
-                    "messages": [{"role": "user", "content": prompt}]
-                }
-            )
-            if response.status_code == 200:
-                data = response.json()
-                return data["content"][0]["text"]
-            else:
-                logging.error(f"Anthropic error {response.status_code}: {response.text}")
-                return ""
-    except Exception:
-        logging.error(f"Anthropic exception: {traceback.format_exc()}")
-        return ""
+<!-- HERO -->
+<section class="hero">
+    <div class="glow-center"></div>
 
-@router.post("/ai/diagnostico")
-async def ai_diagnostico(data: InputAI):
-    texto = normalizar(data.texto)
-    respuestas = data.respuestas or {}
-    industria = detectar_industria(texto, data.sector or "")
+    <h1>Arquitectura y<br><span>Soberanía</span><br>Empresarial</h1>
 
-    causas, impacto = analizar_fallback(texto, respuestas, industria)
+    <p>Modelos matemáticos avanzados diseñados para detectar vulnerabilidades fiscales y laborales antes de que se conviertan en pasivos críticos.</p>
 
-    if impacto > 300000:
-        riesgo = "CRÍTICO"
-        tendencia = "CRÍTICO — acción inmediata requerida"
-    elif impacto > 100000:
-        riesgo = "ALTO"
-        tendencia = "ALTO — con riesgo de escalar a CRÍTICO"
-    elif impacto > 50000:
-        riesgo = "MEDIO"
-        tendencia = "MEDIO → con tendencia a ALTO"
-    else:
-        riesgo = "BAJO"
-        tendencia = "ESTABLE — monitoreo preventivo recomendado"
+    <button class="btn-primary" onclick="document.getElementById('acciones').scrollIntoView({behavior:'smooth'})">
+        INICIAR DIAGNÓSTICO
+    </button>
 
-    impacto_min = impacto
-    impacto_max = int(impacto * 3)
+    <div class="counter-box">
+        <div class="counter-label">Scanner de riesgo — Estado actual</div>
+        <div class="counter-value" id="counter">$0 MXN</div>
+        <div class="counter-alert" id="alerta">SISTEMA INACTIVO // ESPERANDO DIAGNÓSTICO</div>
+    </div>
+</section>
 
-    # Anthropic solo cuando hay respuestas
-    analisis_ai = ""
-    if respuestas:
-        analisis_ai = await llamar_anthropic(texto, industria, impacto, riesgo, causas, respuestas)
+<!-- ACCIONES -->
+<section class="section" id="acciones">
+    <div class="section-label">02 — Selecciona tu acceso</div>
+    <div class="cards-grid">
 
-    preguntas = generar_preguntas(industria, texto, riesgo)
+        <div class="access-card" onclick="irDiagnostico()">
+            <div class="card-title">INICIAR DIAGNÓSTICO ESTRATÉGICO</div>
+            <div class="card-desc">Detecta riesgos fiscales, laborales y operativos en minutos. Motor IRP v4 con análisis IA real.</div>
+        </div>
 
-    # WhatsApp dinámico
-    if respuestas.get("acta") == "Acta levantada":
-        whatsapp = (
-            f"MESAN Ω — ALERTA CRÍTICA\n\n"
-            f"Ya existe una inspección activa en tu operación.\n\n"
-            f"Esto ya no es preventivo — estás en fase de posible sanción.\n\n"
-            f"Impacto estimado:\n"
-            f"${impacto_min:,} – ${impacto_max:,} MXN\n\n"
-            f"¿Ya te dejaron observaciones específicas en el acta?\n\n"
-            f"Te explico hoy mismo cómo evitar la sanción."
-        )
-    elif industria == "SEGURIDAD":
-        whatsapp = (
-            f"MESAN Ω — ALERTA CRÍTICA SEGURIDAD\n\n"
-            f"Ya existe intervención regulatoria activa en tu operación.\n\n"
-            f"Esto ya no es preventivo:\n"
-            f"SSPC + IMSS + clientes corporativos pueden detener tu empresa en menos de 30 días.\n\n"
-            f"Impacto real estimado:\n"
-            f"${impacto_min:,} – ${impacto_max:,} MXN + posible cierre operativo\n\n"
-            f"¿Ya te notificaron formalmente o solo fue visita?\n\n"
-            f"Si quieres lo vemos hoy y te digo exactamente cómo frenar la clausura antes de que escale."
-        )
-    else:
-        causa_principal = causas[0] if causas else ""
-        whatsapp = (
-            f"MESAN Ω — ALERTA {industria}\n\n"
-            f"Detectamos riesgo {riesgo} en tu operación.\n\n"
-            f"{causa_principal}\n\n"
-            f"Impacto estimado:\n"
-            f"${impacto_min:,} – ${impacto_max:,} MXN\n\n"
-            f"¿Ya te levantaron acta o apenas es la visita?\n\n"
-            f"Si quieres lo vemos hoy y te digo exactamente cómo corregirlo en 30 días."
-        )
+        <div class="access-card" onclick="window.location.href='/diagnostico.html'">
+            <div class="card-title">MESAN ENTERPRISE</div>
+            <div class="card-desc">Diagnóstico completo con impacto económico, plan de acción y análisis ejecutivo Big4.</div>
+        </div>
 
-    consecuencias = {
-        "SALUD": ["Suspensión temporal del establecimiento", "Multas sanitarias acumulativas", "Clausura parcial o total"],
-        "SEGURIDAD": ["Clausura por operación ilegal", "Nulidad de todos los contratos comerciales", "Responsabilidad patrimonial personal del dueño"],
-        "RETAIL": ["Demandas laborales sin defensa", "Multas IMSS", "Inspección laboral"],
-        "CONSTRUCCION": ["Capital constitutivo millonario", "Responsabilidad solidaria", "Paro de obra"],
-        "ALIMENTOS": ["Clausura por incumplimiento NOM", "Multas sanitarias", "Pérdida de licencia"],
-        "MANUFACTURA": ["Incumplimiento de pedidos", "Penalizaciones contractuales", "Pérdida de clientes"],
-        "GENERAL": ["Multas y embargo preventivo", "Demandas laborales", "Auditoría sorpresa"]
-    }.get(industria, ["Escalamiento del riesgo", "Sanciones acumuladas", "Pérdida operativa"])
+        <div class="access-card" onclick="window.location.href='/admin.html'">
+            <div class="card-title">CONSULTOR ESTRATÉGICO IA</div>
+            <div class="card-desc">Análisis por industria con segunda capa de validación y recomendaciones ejecutivas.</div>
+        </div>
 
-    return {
-        "ok": True,
-        "industria": industria,
-        "riesgo": riesgo,
-        "tendencia": tendencia,
-        "impacto": impacto,
-        "impacto_min": impacto_min,
-        "impacto_max": impacto_max,
-        "probabilidad": "ALTA" if riesgo in ["CRÍTICO", "ALTO"] else "MEDIA",
-        "causas": causas,
-        "consecuencias": consecuencias,
-        "preguntas": preguntas,
-         "analisis_ai": analisis_ai,
-        "plan_30_dias": [
-            f"Semana 1: Auditoría especializada sector {industria} — identificación de incumplimientos",
-            "Semana 2: Regularización inmediata — corrección documental y operativa",
-            "Semana 3: Blindaje legal y fiscal — prevención de sanciones",
-            "Semana 4: Estabilización operativa — reducción de riesgo a nivel controlado"
-        ],
-        "whatsapp": whatsapp,
-        "cierre": f"Este caso requiere atención especializada en {industria}. MESAN Ω puede resolverlo en 30 días. ¿Agendamos hoy?"
-    }
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="result-box" id="result">
+        <div class="result-content" id="result-text"></div>
+        <button class="btn-pago" onclick="pago()">DESBLOQUEAR DIAGNÓSTICO COMPLETO — $299 MXN</button>
+    </div>
+</section>
+
+<!-- PLANES -->
+<section class="section" id="planes">
+    <div class="section-label">03 — Planes de acceso</div>
+    <div class="planes-grid">
+
+        <div class="plan-card">
+            <div class="plan-name">Diagnóstico</div>
+            <div class="plan-price">$299</div>
+            <div class="plan-period">pago único</div>
+            <ul class="plan-features">
+                <li>Diagnóstico completo IA</li>
+                <li>Reporte PDF ejecutivo</li>
+                <li>Plan de acción 30 días</li>
+                <li>Mensaje WhatsApp CEO</li>
+            </ul>
+            <button class="btn-plan" onclick="pago()">OBTENER DIAGNÓSTICO</button>
+        </div>
+
+        <div class="plan-card featured">
+            <div class="plan-name">Monitoreo Mensual</div>
+            <div class="plan-price">$970</div>
+            <div class="plan-period">por mes</div>
+            <ul class="plan-features">
+                <li>Todo en Diagnóstico</li>
+                <li>Monitoreo continuo</li>
+                <li>Alertas automáticas</li>
+                <li>Score dinámico mensual</li>
+                <li>Soporte prioritario</li>
+            </ul>
+            <button class="btn-plan" onclick="pagoMensual()">ACTIVAR MONITOREO</button>
+        </div>
+
+        <div class="plan-card">
+            <div class="plan-name">Enterprise</div>
+            <div class="plan-price">$2,999</div>
+            <div class="plan-period">por mes</div>
+            <ul class="plan-features">
+                <li>Todo en Monitoreo</li>
+                <li>Hasta 10 empresas</li>
+                <li>Dashboard corporativo</li>
+                <li>Consultor asignado</li>
+            </ul>
+            <button class="btn-plan" onclick="window.open('https://wa.me/526861629643','_blank')">CONTACTAR</button>
+        </div>
+
+    </div>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+    <label class="terms-label">
+        <input type="checkbox" id="terminos">
+        Acepto <a href="/terminos.html">Términos</a> y <a href="/privacidad.html">Privacidad</a>
+    </label>
+    <div class="legal">
+        Los resultados generados por MESAN Ω son análisis automatizados basados en modelos propietarios de evaluación empresarial.<br>
+        Deben interpretarse como apoyo a la toma de decisiones y pueden requerir validación profesional según el contexto.<br>
+        Su uso fuera del sistema puede no reflejar el alcance completo de los factores considerados en el análisis.
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL // MEXICALI, BC</div>
+
+<a href="https://wa.me/526861629643" target="_blank" class="wa-float">💬 WhatsApp</a>
+
+<script>
+const API = "https://mesan-api.onrender.com";
+
+// ESTRELLAS
+const container = document.getElementById("stars");
+for (let i = 0; i < 150; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+    const size = Math.random() * 2 + 0.5;
+    star.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${Math.random()*4+2}s;animation-delay:${Math.random()*4}s;`;
+    container.appendChild(star);
+}
+
+// COUNTER
+window.onload = () => {
+    const valueDisplay = document.getElementById("counter");
+    const alertaDisplay = document.getElementById("alerta");
+    let current = 0;
+    const target = 142850;
+    const interval = setInterval(() => {
+        current += Math.floor(Math.random() * 8500);
+        if (current >= target) {
+            valueDisplay.innerText = `$${target.toLocaleString()} MXN`;
+            valueDisplay.style.color = "#EF4444";
+            alertaDisplay.innerText = "⚠ ALERTA: EXPOSICIÓN DE PASIVOS DETECTADA";
+            clearInterval(interval);
+        } else {
+            valueDisplay.innerText = `$${current.toLocaleString()} MXN`;
+        }
+    }, 50);
+};
+
+function irDiagnostico() {
+    window.location.href = "/diagnostico.html";
+}
+function irDiagnosticoViejo() {
+    const check = document.getElementById("terminos");
+    document.getElementById("result").style.display = "block";
+    document.getElementById("result-text").innerHTML = "⏳ Analizando estructura empresarial...";
+    setTimeout(() => {
+        document.getElementById("result-text").innerHTML = `
+        🚨 <b>EXPOSICIÓN DETECTADA</b><br><br>
+        — Riesgo fiscal SAT<br>
+        — Irregularidades IMSS<br>
+        — Incumplimiento operativo<br><br>
+        Impacto estimado:<br>
+        <span class="impacto">$120,000 - $450,000 MXN anuales</span>`;
+        document.getElementById("result").scrollIntoView({behavior:'smooth'});
+    }, 1800);
+}
+
+async async function pago() {
+    const check = document.getElementById("terminos");
+    if (!check.checked) { alert("Acepta los Términos para continuar."); return; }
+    try {
+        const res = await fetch(API + "/crear-sesion-omega", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ cliente_id: "cliente_" + Date.now(), sector: "PRIVADO", monto: 299, indice: 75 })
+        });
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+        else alert("Error generando pago. Contacta por WhatsApp.");
+    } catch(e) { alert("Error de conexión"); }
+}
+
+async function pagoMensual() {
+    window.open("https://wa.me/526861629643?text=Quiero%20activar%20el%20plan%20de%20Monitoreo%20Mensual%20MESAN%20Ω", "_blank");
+}
+</script>
+
+</body>
+</html>
