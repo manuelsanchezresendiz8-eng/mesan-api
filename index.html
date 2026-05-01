@@ -396,9 +396,9 @@ body {
         Acepto <a href="/terminos.html">Términos</a> y <a href="/privacidad.html">Privacidad</a>
     </label>
     <div class="legal">
-        MESAN Ω utiliza modelos propietarios de análisis empresarial.<br>
-        Los resultados son interpretables únicamente dentro del ecosistema MESAN.<br>
-        Su uso externo puede generar conclusiones inexactas.
+        Los resultados generados por MESAN Ω son análisis automatizados basados en modelos propietarios de evaluación empresarial.<br>
+        Deben interpretarse como apoyo a la toma de decisiones y pueden requerir validación profesional según el contexto.<br>
+        Su uso fuera del sistema puede no reflejar el alcance completo de los factores considerados en el análisis.
     </div>
 </div>
 
@@ -440,6 +440,9 @@ window.onload = () => {
 };
 
 function irDiagnostico() {
+    window.location.href = "/diagnostico.html";
+}
+function irDiagnosticoViejo() {
     const check = document.getElementById("terminos");
     document.getElementById("result").style.display = "block";
     document.getElementById("result-text").innerHTML = "⏳ Analizando estructura empresarial...";
@@ -455,7 +458,7 @@ function irDiagnostico() {
     }, 1800);
 }
 
-async function pago() {
+async async function pago() {
     const check = document.getElementById("terminos");
     if (!check.checked) { alert("Acepta los Términos para continuar."); return; }
     try {
