@@ -14,7 +14,7 @@ router = APIRouter()
 class InputAI(BaseModel):
     texto: str
     respuestas: dict = {}
-    sector: str = ""  # sector declarado desde frontend
+    sector: str = "" # sector declarado desde frontend
 
 # ═══ CONTEXTO REGULATORIO POR INDUSTRIA ═══
 CONTEXTO_REGULATORIO = {
@@ -192,7 +192,8 @@ def detectar_industria(texto: str, sector_declarado: str = "") -> str:
                             "condiciones economicas", "presupuestal", "contrato de servicio",
                             "carta de agradecimiento", "terminacion de contrato"],
         "SEGURIDAD": ["seguridad privada", "vigilancia", "guardia", "custodia",
-                      "sspc", "dgsp", "escolta"],
+                      "sspc", "dgsp", "escolta", "cuip", "rondines",
+                      "permiso federal", "empresa de seguridad", "guardias"],
         "CONSTRUCCION": ["construccion", "obra", "edificio", "albanil",
                          "concreto", "cemento", "vivienda", "repse"],
         "MANUFACTURA": ["fabrica", "manufactura", "maquila", "planta",
@@ -211,7 +212,13 @@ def detectar_industria(texto: str, sector_declarado: str = "") -> str:
     for sector, palabras in kw.items():
         for p in palabras:
             if p in t:
-                scores[sector] += 2
+                # SEGURIDAD y ALIMENTOS tienen peso extra
+                if sector == "SEGURIDAD":
+                    scores[sector] += 4
+                elif sector == "ALIMENTOS":
+                    scores[sector] += 3
+                else:
+                    scores[sector] += 2
 
     mejor = max(scores, key=scores.get)
     if scores[mejor] > 0:
@@ -452,26 +459,23 @@ async def ai_diagnostico(data: InputAI):
     preguntas = generar_preguntas(industria, texto, riesgo)
 
     # WhatsApp dinámico
-    if respuestas.get("acta") == "Acta levantada":
+    if respuestas.get("acta") ==
+"Acta levantada":
         whatsapp = (
             f"MESAN Ω — ALERTA CRÍTICA\n\n"
             f"Ya existe una inspección activa en tu operación.\n\n"
-            f"Esto ya no es preventivo — estás en fase de posible sanción.\n\n"
             f"Impacto estimado:\n"
             f"${impacto_min:,} – ${impacto_max:,} MXN\n\n"
-            f"¿Ya te dejaron observaciones específicas en el acta?\n\n"
+            f"¿Ya te dejaron observaciones en el acta?\n\n"
             f"Te explico hoy mismo cómo evitar la sanción."
         )
     elif industria == "SEGURIDAD":
         whatsapp = (
             f"MESAN Ω — ALERTA CRÍTICA SEGURIDAD\n\n"
-            f"Ya existe intervención regulatoria activa en tu operación.\n\n"
-            f"Esto ya no es preventivo:\n"
             f"SSPC + IMSS + clientes corporativos pueden detener tu empresa en menos de 30 días.\n\n"
             f"Impacto real estimado:\n"
             f"${impacto_min:,} – ${impacto_max:,} MXN + posible cierre operativo\n\n"
-            f"¿Ya te notificaron formalmente o solo fue visita?\n\n"
-            f"Si quieres lo vemos hoy y te digo exactamente cómo frenar la clausura antes de que escale."
+            f"¿Ya te notificaron formalmente o solo fue visita?"
         )
     else:
         causa_principal = causas[0] if causas else ""
@@ -481,19 +485,8 @@ async def ai_diagnostico(data: InputAI):
             f"{causa_principal}\n\n"
             f"Impacto estimado:\n"
             f"${impacto_min:,} – ${impacto_max:,} MXN\n\n"
-            f"¿Ya te levantaron acta o apenas es la visita?\n\n"
             f"Si quieres lo vemos hoy y te digo exactamente cómo corregirlo en 30 días."
         )
-
-    consecuencias = {
-        "SALUD": ["Suspensión temporal del establecimiento", "Multas sanitarias acumulativas", "Clausura parcial o total"],
-        "SEGURIDAD": ["Clausura por operación ilegal", "Nulidad de todos los contratos comerciales", "Responsabilidad patrimonial personal del dueño"],
-        "RETAIL": ["Demandas laborales sin defensa", "Multas IMSS", "Inspección laboral"],
-        "CONSTRUCCION": ["Capital constitutivo millonario", "Responsabilidad solidaria", "Paro de obra"],
-        "ALIMENTOS": ["Clausura por incumplimiento NOM", "Multas sanitarias", "Pérdida de licencia"],
-        "MANUFACTURA": ["Incumplimiento de pedidos", "Penalizaciones contractuales", "Pérdida de clientes"],
-        "GENERAL": ["Multas y embargo preventivo", "Demandas laborales", "Auditoría sorpresa"]
-    }.get(industria, ["Escalamiento del riesgo", "Sanciones acumuladas", "Pérdida operativa"])
 
     return {
         "ok": True,
@@ -509,11 +502,11 @@ async def ai_diagnostico(data: InputAI):
         "preguntas": preguntas,
         "analisis_ai": analisis_ai,
         "plan_30_dias": [
-            f"Semana 1: Auditoría especializada sector {industria} — identificación de incumplimientos",
-            "Semana 2: Regularización inmediata — corrección documental y operativa",
+            f"Semana 1: Auditoría especializada sector {industria}",
+            "Semana 2: Regularización inmediata — corrección documental",
             "Semana 3: Blindaje legal y fiscal — prevención de sanciones",
-            "Semana 4: Estabilización operativa — reducción de riesgo a nivel controlado"
+            "Semana 4: Estabilización operativa — reducción de riesgo"
         ],
         "whatsapp": whatsapp,
-        "cierre": f"Este caso requiere atención especializada en {industria}. MESAN Ω puede resolverlo en 30 días. ¿Agendamos hoy?"
+        "cierre": f"Este caso requiere atención especializada en {industria}. MESAN Ω puede resolverlo en 30 días."
     }
