@@ -459,7 +459,7 @@ async def ai_diagnostico(data: InputAI):
     preguntas = generar_preguntas(industria, texto, riesgo)
 
     # WhatsApp dinámico
-    if respuestas.get("acta") ==
+    if respuestas.get("acta") == "Acta levantada":
 "Acta levantada":
         whatsapp = (
             f"MESAN Ω — ALERTA CRÍTICA\n\n"
