@@ -565,5 +565,5 @@ async def ai_diagnostico(data: InputAI):
             "Semana 4: Estabilización operativa — reducción de riesgo a nivel controlado"
         ],
         "whatsapp": whatsapp,
-        "cierre": f"Este caso requiere atención especializada en {industria}. MESAN Ω puede resolverlo en 30 días. ¿Agendamos hoy?"ndamos hoy?"
+        ""cierre": f"Este caso requiere atención especializada en {industria}. MESAN Ω puede resolverlo en 30 días. ¿Agendamos hoy?"
     }
