@@ -168,9 +168,24 @@ def detectar_industria(texto: str, sector_declarado: str = "") -> str:
         if s in SECTORES_VALIDOS:
             return SECTORES_VALIDOS[s]
 
-    # 2. Scoring por keywords — evita falsos positivos
     import unicodedata
     t = "".join(c for c in unicodedata.normalize('NFD', texto.lower()) if unicodedata.category(c) != 'Mn')
+
+    # 2. HARD RULES — prioridad máxima, no scoring
+    if "call center" in t or "contact center" in t:
+        return "CALL_CENTER"
+    if any(p in t for p in ["seguridad privada", "guardia", "sspc", "dgsp", "cuip", "guardias"]):
+        return "SEGURIDAD"
+    if any(p in t for p in ["cbtis", "preparatoria", "comite ceap", "plantel"]):
+        return "EDUCACION"
+    if any(p in t for p in ["cofepris", "clinica", "hospital", "medico", "farmacia"]):
+        return "SALUD"
+    if any(p in t for p in ["limpieza", "aseo", "intendencia"]):
+        return "SERVICIOS_APOYO"
+    if any(p in t for p in ["saas", "mrr", "churn", "aws", "sla"]):
+        return "TECNOLOGIA"
+
+    # 3. Scoring por keywords — evita falsos positivos
 
     scores = {
         "TECNOLOGIA": 0, "SALUD": 0, "SERVICIOS_APOYO": 0,
@@ -230,10 +245,12 @@ def detectar_industria(texto: str, sector_declarado: str = "") -> str:
                 # Sectores con peso extra
                 if sector == "SEGURIDAD":
                     scores[sector] += 4
+                elif sector == "CALL_CENTER":
+                    scores[sector] += 5
                 elif sector == "ALIMENTOS":
                     scores[sector] += 3
-                elif sector == "CALL_CENTER":
-                    scores[sector] += 4
+                elif sector == "CONSTRUCCION":
+                    scores[sector] += 1
                 else:
                     scores[sector] += 2
 
@@ -352,6 +369,15 @@ def analizar_fallback(texto: str, respuestas: dict, industria: str):
         if "cfdi" in texto or "factura" in texto:
             causas.append("Inconsistencias CFDI — riesgo fiscal")
             impacto += 120000
+        # Crisis financiera implícita
+        if any(p in texto for p in ["utilidades", "no puedo pagar", "sin recursos",
+                                     "adeudo", "nomina", "calendario de pago",
+                                     "provision contable", "ajuste presupuestal"]):
+            causas.append("Crisis financiera — incapacidad de cubrir obligaciones laborales y fiscales")
+            impacto += 180000
+        if any(p in texto for p in ["empleados", "trabajadores", "personal"]):
+            causas.append("Riesgo laboral — exposición ante IMSS, STPS y Junta de Conciliación")
+            impacto += 100000
 
     if impacto == 0:
         impacto = 25000
@@ -540,4 +566,3 @@ async def ai_diagnostico(data: InputAI):
         ],
         "whatsapp": whatsapp,
         "cierre": f"Este caso requiere atención especializada en {industria}. MESAN Ω puede resolverlo en 30 días. ¿Agendamos hoy?"
-    }
