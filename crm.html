@@ -1,195 +1,125 @@
-var API = "https://mesan-api.onrender.com";
-var K = "";
-var leads = [];
-var retryCount = 0;
-
-/* =========================
-   INIT SEGURO
-========================= */
-console.log("MESAN INIT LOADED");
-
-window.onerror = function(msg, src, line){
-  console.log("JS ERROR:", msg, "LINE:", line);
-};
-
-function boot(){
-  const saved = localStorage.getItem("mk");
-  if(saved){
-    K = saved;
-    console.log("AUTO LOGIN OK");
-    start();
-  } else {
-    console.log("WAIT LOGIN");
-  }
-}
-
-/* =========================
-   LOGIN
-========================= */
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Omega CRM</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#04060A;color:#C8F0FF;font-family:sans-serif;}
+#L{position:fixed;inset:0;background:#04060A;display:flex;align-items:center;justify-content:center;}
+.box{background:#060C14;border:1px solid rgba(0,229,255,0.1);padding:40px;width:360px;}
+.box h1{color:#00E5FF;margin-bottom:20px;font-size:22px;}
+.box input{width:100%;padding:11px;background:#08121E;border:1px solid rgba(0,229,255,0.1);color:#00E5FF;margin-bottom:12px;outline:none;}
+.box button{width:100%;padding:12px;border:1px solid #00E5FF;background:transparent;color:#00E5FF;cursor:pointer;}
+#A{display:none;padding:20px;}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.kc{background:#060C14;border:1px solid rgba(0,229,255,0.1);padding:16px;}
+.kl{font-size:9px;color:#1E4A5F;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.kv{font-size:22px;color:#00E5FF;font-family:monospace;}
+#leads{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.lc{background:#060C14;border:1px solid rgba(0,229,255,0.1);border-left:3px solid #00E5FF;padding:14px;cursor:pointer;}
+.lc.alto{border-left-color:#FF3B3B;}
+.lc.medio{border-left-color:#FF9500;}
+.ln{font-size:13px;font-weight:600;color:#00E5FF;margin-bottom:4px;}
+.li{font-family:monospace;font-size:14px;margin-bottom:6px;}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.top h2{color:#00E5FF;}
+.rbtn{padding:8px 14px;border:1px solid rgba(0,229,255,0.2);background:transparent;color:#4A8FA8;cursor:pointer;margin-left:6px;}
+.rbtn:hover{border-color:#00E5FF;color:#00E5FF;}
+</style>
+</head>
+<body>
+<div id="L">
+<div class="box">
+<h1>MESAN Omega</h1>
+<input type="password" id="ki" placeholder="API Key">
+<button onclick="entrar()">ENTRAR</button>
+</div>
+</div>
+<div id="A">
+<div class="top">
+<h2>CRM PIPELINE</h2>
+<div>
+<button class="rbtn" onclick="cargar()">Actualizar</button>
+<button class="rbtn" onclick="window.open('/admin.html')">Consultor IA</button>
+<button class="rbtn" onclick="salir()">Salir</button>
+</div>
+</div>
+<div class="kpis">
+<div class="kc"><div class="kl">Leads</div><div class="kv" id="k1">0</div></div>
+<div class="kc"><div class="kl">Criticos</div><div class="kv" id="k2" style="color:#FF3B3B">0</div></div>
+<div class="kc"><div class="kl">Pipeline</div><div class="kv" id="k3" style="color:#FF9500">$0</div></div>
+<div class="kc"><div class="kl">Cerrados</div><div class="kv" id="k4" style="color:#00D09E">0</div></div>
+</div>
+<div id="leads"></div>
+</div>
+<script>
+console.log("CRM CARGADO OK");
+window.onerror=function(msg,url,line){alert("JS ERROR linea "+line+": "+msg);};
+var API="https://mesan-api.onrender.com",K="",leads=[];
+var saved=localStorage.getItem("mk");
+console.log("KEY GUARDADA:",saved?"si":"no");
+if(saved){K=saved;ini();}
 function entrar(){
-  console.log("LOGIN CLICKED");
-
-  K = document.getElementById("ki").value.trim();
-
-  if(!K){
-    alert("Ingresa API key");
-    return;
-  }
-
-  localStorage.setItem("mk", K);
-  start();
+  console.log("BOTON ENTRAR CLICK");
+  K=document.getElementById("ki").value.trim();
+  console.log("KEY INGRESADA:",K?"si":"no");
+  if(!K){alert("Ingresa tu API key");return;}
+  localStorage.setItem("mk",K);
+  ini();
 }
-
-/* =========================
-   START APP
-========================= */
-function start(){
-  console.log("APP START");
-
-  document.getElementById("L").style.display = "none";
-  document.getElementById("A").style.display = "block";
-
-  load();
-
-  setInterval(() => {
-    load();
-  }, 30000);
+function ini(){
+  console.log("INICIANDO APP");
+  document.getElementById("L").style.display="none";
+  document.getElementById("A").style.display="block";
+  cargar();
 }
-
-/* =========================
-   FETCH ROBUSTO
-========================= */
-async function safeFetch(url, options){
+function salir(){localStorage.removeItem("mk");location.reload();}
+async function cargar(){
   try{
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-
-    const res = await fetch(url, {
-      ...options,
-      signal: controller.signal
-    });
-
-    clearTimeout(timeout);
-
-    if(!res.ok){
-      throw new Error("HTTP " + res.status);
-    }
-
-    return await res.json();
-
-  }catch(err){
-    console.log("FETCH ERROR:", err.message);
-
-    if(retryCount < 2){
-      retryCount++;
-      console.log("RETRY:", retryCount);
-      return await load();
-    }
-
-    showError("Error de conexión con API");
-    throw err;
-  }
+    var r=await fetch(API+"/leads",{headers:{"api-key":K}});
+    if(r.status===403){alert("API Key invalida");salir();return;}
+    var d=await r.json();
+    leads=d.leads||[];
+    leads.sort(function(a,b){return(b.impacto_max||0)-(a.impacto_max||0);});
+    kpi();render();
+  }catch(e){console.error(e);}
 }
-
-/* =========================
-   LOAD DATA
-========================= */
-async function load(){
-  try{
-    console.log("LOADING DATA...");
-
-    const d = await safeFetch(API + "/leads", {
-      headers: {
-        "api-key": K || ""
-      }
-    });
-
-    retryCount = 0;
-
-    if(!d || !Array.isArray(d.leads)){
-      console.log("BAD RESPONSE:", d);
-      leads = [];
-      return;
-    }
-
-    leads = d.leads;
-
-    leads.sort((a,b) =>
-      (b.impacto_max || 0) - (a.impacto_max || 0)
-    );
-
-    console.log("LEADS:", leads.length);
-
-    kpi();
-    render();
-
-  }catch(e){
-    console.log("LOAD FAIL");
-  }
-}
-
-/* =========================
-   KPI SAFE
-========================= */
 function kpi(){
-  document.getElementById("k1").innerText = leads.length;
-
-  document.getElementById("k2").innerText =
-    leads.filter(l => (l.clasificacion||"").toUpperCase()==="ALTO").length;
-
-  document.getElementById("k4").innerText =
-    leads.filter(l => l.estatus==="cerrado").length;
-
-  const total = leads.reduce((s,l)=>s+(l.impacto_max||0),0);
-
-  document.getElementById("k3").innerText =
-    total >= 1000000
-      ? "$"+(total/1000000).toFixed(1)+"M"
-      : "$"+(total/1000).toFixed(0)+"K";
+  document.getElementById("k1").innerText=leads.length;
+  document.getElementById("k2").innerText=leads.filter(function(l){return(l.clasificacion||"").toUpperCase()==="ALTO";}).length;
+  document.getElementById("k4").innerText=leads.filter(function(l){return l.estatus==="cerrado";}).length;
+  var t=leads.reduce(function(s,l){return s+(l.impacto_max||0);},0);
+  document.getElementById("k3").innerText=t>=1000000?"$"+(t/1000000).toFixed(1)+"M":"$"+(t/1000).toFixed(0)+"K";
 }
-
-/* =========================
-   RENDER SAFE
-========================= */
 function render(){
-  const c = document.getElementById("leads");
-  c.innerHTML = "";
-
-  if(!leads.length){
-    c.innerHTML = "<p style='color:#4A8FA8'>Sin datos</p>";
-    return;
-  }
-
-  leads.forEach(l => {
-    const div = document.createElement("div");
-    div.className = "lc";
-
-    div.innerHTML = `
-      <div class="ln">${l.nombre || "Sin nombre"}</div>
-      <div style="font-size:10px;color:#4A8FA8">${l.giro || "—"}</div>
-      <div style="font-family:monospace">$${(l.impacto_max||0).toLocaleString()}</div>
-      <div style="font-size:10px">${l.clasificacion || "N/A"}</div>
-    `;
-
-    c.appendChild(div);
+  var c=document.getElementById("leads");
+  c.innerHTML="";
+  leads.forEach(function(l){
+    var cls=(l.clasificacion||"").toUpperCase()==="ALTO"?"alto":(l.clasificacion||"").toUpperCase()==="MEDIO"?"medio":"";
+    var tel=(l.telefono||"").replace(/\D/g,"");
+    var el=document.createElement("div");
+    el.className="lc "+cls;
+    el.innerHTML="<div class='ln'>"+(l.nombre||"Sin nombre")+"</div>"
+      +"<div style='font-size:9px;color:#1E4A5F;margin-bottom:6px'>"+(l.giro||"—")+"</div>"
+      +"<div class='li'>$"+(l.impacto_max||0).toLocaleString()+" MXN</div>"
+      +"<div style='font-size:10px;color:#4A8FA8;margin-bottom:8px'>"+(l.clasificacion||"N/A")+" | "+(l.estatus||"nuevo")+"</div>"
+      +(tel?"<button onclick='wa(\""+tel+"\")' style='padding:4px 8px;border:1px solid #4A8FA8;background:transparent;color:#4A8FA8;cursor:pointer;margin-right:4px;font-size:10px'>WA</button>":"")
+      +"<button onclick='mover(\""+l.id+"\",\"contactado\")' style='padding:4px 8px;border:1px solid rgba(0,229,255,0.2);background:transparent;color:#4A8FA8;cursor:pointer;margin-right:4px;font-size:10px'>-></button>"
+      +"<button onclick='mover(\""+l.id+"\",\"cerrado\")' style='padding:4px 8px;border:1px solid rgba(0,229,255,0.2);background:transparent;color:#4A8FA8;cursor:pointer;font-size:10px'>OK</button>";
+    c.appendChild(el);
   });
+  if(!leads.length)c.innerHTML="<p style='color:#1E4A5F;padding:20px'>Sin leads</p>";
 }
-
-/* =========================
-   ERROR UI
-========================= */
-function showError(msg){
-  console.log("UI ERROR:", msg);
-  alert(msg);
+function wa(tel){window.open("https://wa.me/52"+tel);}
+async function mover(id,est){
+  try{
+    await fetch(API+"/lead/"+id,{method:"PUT",headers:{"Content-Type":"application/json","api-key":K},body:JSON.stringify({estatus:est})});
+    cargar();
+  }catch(e){console.error(e);}
 }
-
-/* =========================
-   LOGOUT
-========================= */
-function salir(){
-  localStorage.removeItem("mk");
-  location.reload();
-}
-
-/* START SYSTEM */
-boot();
+document.getElementById("ki").onkeypress=function(e){if(e.key==="Enter")entrar();};
+</script>
+</body>
+</html>
