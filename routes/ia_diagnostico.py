@@ -545,7 +545,7 @@ async def ai_diagnostico(data: InputAI):
         "GENERAL": ["Multas y embargo preventivo", "Demandas laborales", "Auditoría sorpresa"]
     }.get(industria, ["Escalamiento del riesgo", "Sanciones acumuladas", "Pérdida operativa"])
 
-    return {
+    return {}
         "ok": True,
         "industria": industria,
         "riesgo": riesgo,
@@ -565,4 +565,5 @@ async def ai_diagnostico(data: InputAI):
             "Semana 4: Estabilización operativa — reducción de riesgo a nivel controlado"
         ],
         "whatsapp": whatsapp,
-        "cierre": f"Este caso requiere atención especializada en {industria}. MESAN Ω puede resolverlo en 30 días. ¿Agendamos hoy?"
+        "cierre": f"Este caso requiere atención especializada en {industria}. MESAN Ω puede resolverlo en 30 días. ¿Agendamos hoy?"ndamos hoy?"
+    }
