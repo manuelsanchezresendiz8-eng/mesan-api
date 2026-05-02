@@ -545,7 +545,7 @@ async def ai_diagnostico(data: InputAI):
         "GENERAL": ["Multas y embargo preventivo", "Demandas laborales", "Auditoría sorpresa"]
     }.get(industria, ["Escalamiento del riesgo", "Sanciones acumuladas", "Pérdida operativa"])
 
-    return {}
+    return {
         "ok": True,
         "industria": industria,
         "riesgo": riesgo,
