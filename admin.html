@@ -177,7 +177,12 @@ async function ejecutarDictamen() {
 }
 
 async function enviarRespuestas() {
+    const btn = event.target;
+    btn.innerText = "ANALIZANDO...";
+    btn.disabled = true;
     await llamarAPI(textoOriginal, respuestas);
+    btn.innerText = "REFINAR DIAGNOSTICO";
+    btn.disabled = false;
 }
 
 async function llamarAPI(texto, resp) {
