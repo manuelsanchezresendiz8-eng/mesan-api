@@ -2,145 +2,135 @@
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
-import os
-import httpx
 import unicodedata
 import logging
+import os
+import httpx
 import traceback
 
 from core.preguntas import generar_preguntas
 
 router = APIRouter()
 
-# =========================
-# INPUT MODEL
-# =========================
 class InputAI(BaseModel):
     texto: str
     respuestas: dict = Field(default_factory=dict)
 
-# =========================
-# NORMALIZAR TEXTO
-# =========================
 def normalizar(texto: str) -> str:
     texto = texto.lower()
     texto = unicodedata.normalize("NFD", texto)
-    texto = texto.encode("ascii", "ignore").decode("utf-8")
-    return texto
+    return texto.encode("ascii", "ignore").decode("utf-8")
 
-# =========================
-# DETECTAR INDUSTRIA
-# =========================
 def detectar_industria(texto: str) -> str:
-    if any(p in texto for p in ["clinica", "hospital", "medico", "cofepris"]):
-        return "SALUD"
-    if any(p in texto for p in ["seguridad", "guardia", "vigilancia"]):
+    if any(p in texto for p in ["call center", "contact center", "agentes telefonicos"]):
+        return "CALL_CENTER"
+    if any(p in texto for p in ["seguridad privada", "guardia", "sspc", "dgsp", "cuip", "guardias"]):
         return "SEGURIDAD"
+    if any(p in texto for p in ["hospital", "clinica", "medico", "cofepris"]):
+        return "SALUD"
+    if any(p in texto for p in ["cbtis", "preparatoria", "escuela", "universidad"]):
+        return "EDUCACION"
+    if any(p in texto for p in ["limpieza", "aseo", "intendencia"]):
+        return "SERVICIOS_APOYO"
+    if any(p in texto for p in ["saas", "mrr", "churn", "aws", "sla"]):
+        return "TECNOLOGIA"
     if any(p in texto for p in ["obra", "construccion", "albanil"]):
         return "CONSTRUCCION"
     if any(p in texto for p in ["restaurante", "comida", "cocina"]):
         return "ALIMENTOS"
-    if any(p in texto for p in ["fabrica", "produccion"]):
+    if any(p in texto for p in ["fabrica", "produccion", "maquila"]):
         return "MANUFACTURA"
-    if any(p in texto for p in ["tienda", "retail", "comercio"]):
+    if any(p in texto for p in ["tienda", "retail", "inventario"]):
         return "RETAIL"
-    if any(p in texto for p in ["banco", "credito", "financiera"]):
+    if any(p in texto for p in ["banco", "credito", "financiera", "fintech"]):
         return "FINANCIERO"
-    if any(p in texto for p in ["logistica", "transporte", "almacen"]):
+    if any(p in texto for p in ["transporte", "logistica", "almacen"]):
         return "LOGISTICA"
-    if any(p in texto for p in ["software", "app", "saas"]):
-        return "TECNOLOGIA"
-    if any(p in texto for p in ["servicio", "outsourcing"]):
-        return "SERVICIOS"
     return "GENERAL"
 
-# =========================
-# ANALISIS BASE
-# =========================
-def analizar_fallback(texto: str, respuestas: dict, industria: str):
+def analizar_fallback(texto, respuestas, industria):
     causas = []
     impacto = 0
 
     if "imss" in texto:
-        causas.append("Incumplimiento IMSS")
+        causas.append("Incumplimiento IMSS - multas y capitales constitutivos")
         impacto += 80000
 
-    if "sat" in texto or "embargo" in texto:
-        causas.append("Riesgo fiscal SAT")
+    if "sat" in texto or "auditoria" in texto:
+        causas.append("Riesgo fiscal SAT - posible embargo")
         impacto += 200000
 
     if "bloqueo" in texto or "cuenta" in texto:
         causas.append("Bloqueo de cuentas bancarias")
         impacto += 150000
 
+    if "nomina" in texto or "sueldo" in texto:
+        causas.append("Riesgo de incumplimiento laboral")
+        impacto += 100000
+
     if industria == "SEGURIDAD":
-        causas.append("Falta de permisos regulatorios")
-        impacto += 150000
+        causas.append("Operacion sin permisos federales SSPC")
+        impacto += 300000
+        if any(p in texto for p in ["hospital", "plaza", "corporativo"]):
+            causas.append("Clientes corporativos en riesgo de rescision")
+            impacto += 400000
+
+    elif industria == "SALUD":
+        causas.append("Riesgo de clausura sanitaria COFEPRIS")
+        impacto += 200000
+
+    elif industria == "SERVICIOS_APOYO":
+        causas.append("REPSE vencido - responsabilidad solidaria activa")
+        impacto += 180000
 
     if impacto == 0:
         impacto = 25000
 
     return causas, impacto
 
-# =========================
-# ANTHROPIC
-# =========================
-async def llamar_anthropic(texto, industria, impacto, riesgo, causas, respuestas):
+def ajustar_por_respuestas(causas, impacto, respuestas, industria):
+    if respuestas.get("acta") == "Acta levantada":
+        causas.append("Proceso sancionador activo")
+        impacto += 120000
+    if respuestas.get("empleados") == "Mas de 20":
+        causas.append("Alto volumen de empleados expuestos")
+        impacto += 100000
+    return causas, impacto
+
+async def llamar_anthropic(texto, industria, impacto, riesgo, causas):
     api_key = os.getenv("ANTHROPIC_API_KEY")
-    if not api_key:
+    if not api_key or not causas:
         return ""
-
-    prompt = f"""
-Analiza como consultor experto en Mexico:
-
+    prompt = f"""Actua como consultor Big4 en Mexico.
 Industria: {industria}
 Problema: {texto}
 Riesgo: {riesgo}
-Impacto: {impacto}
-Causas: {causas}
-"""
+Impacto: ${impacto:,} MXN
+Causas: {', '.join(causas)}
 
+Responde en 5 secciones: 1.Hallazgo critico 2.Implicacion operativa 3.Riesgo financiero 4.Escenario 30 dias 5.Recomendacion estrategica. Max 3 lineas por seccion. Lenguaje ejecutivo."""
     try:
-        async with httpx.AsyncClient(timeout=20) as client:
+        async with httpx.AsyncClient(timeout=30) as client:
             r = await client.post(
                 "https://api.anthropic.com/v1/messages",
-                headers={
-                    "x-api-key": api_key,
-                    "anthropic-version": "2023-06-01",
-                    "content-type": "application/json"
-                },
-                json={
-                    "model": "claude-3-haiku-20240307",
-                    "max_tokens": 500,
-                    "messages": [{"role": "user", "content": prompt}]
-                }
+                headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+                json={"model": "claude-haiku-4-5-20251001", "max_tokens": 600, "messages": [{"role": "user", "content": prompt}]}
             )
-
             if r.status_code == 200:
                 return r.json()["content"][0]["text"]
-
-            logging.error(f"Anthropic error {r.status_code}: {r.text}")
-
     except Exception:
         logging.error(traceback.format_exc())
-
     return ""
 
-# =========================
-# ENDPOINT
-# =========================
 @router.post("/ai/diagnostico")
 async def ai_diagnostico(data: InputAI):
-
     texto = normalizar(data.texto)
     respuestas = data.respuestas
 
     industria = detectar_industria(texto)
     causas, impacto = analizar_fallback(texto, respuestas, industria)
+    causas, impacto = ajustar_por_respuestas(causas, impacto, respuestas, industria)
 
-    # =========================
-    # RIESGO
-    # =========================
     if impacto > 300000:
         riesgo = "CRITICO"
     elif impacto > 100000:
@@ -153,36 +143,24 @@ async def ai_diagnostico(data: InputAI):
     impacto_min = impacto
     impacto_max = int(impacto * 2.5)
 
-    # =========================
-    # IA
-    # =========================
-    analisis_ai = await llamar_anthropic(
-        texto, industria, impacto, riesgo, causas, respuestas
-    )
+    analisis_ai = await llamar_anthropic(texto, industria, impacto, riesgo, causas)
 
-    # =========================
-    # PREGUNTAS
-    # =========================
     preguntas = generar_preguntas(industria, texto, riesgo)
 
-    # =========================
-    # WHATSAPP
-    # =========================
+    consecuencias = {
+        "SALUD": ["Clausura sanitaria", "Multas COFEPRIS", "Suspension de operaciones"],
+        "SEGURIDAD": ["Clausura por operacion ilegal", "Nulidad de contratos", "Responsabilidad patrimonial"],
+        "CONSTRUCCION": ["Capital constitutivo IMSS", "Responsabilidad solidaria", "Paro de obra"],
+        "GENERAL": ["Multas y embargo", "Demandas laborales", "Auditoria SAT"]
+    }.get(industria, ["Escalamiento del riesgo", "Sanciones acumuladas", "Perdida operativa"])
+
     whatsapp = (
         f"MESAN Omega - ALERTA {riesgo}\n\n"
         f"Detectamos riesgo en tu operacion.\n"
         f"Impacto estimado: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
-        f"Responde SI y te digo como resolverlo en 30 dias."
+        f"Respondeme SI y te digo como resolverlo en 30 dias."
     )
 
-    # =========================
-    # LOGGING
-    # =========================
-    logging.info(f"Diagnostico | {industria} | {riesgo} | ${impacto}")
-
-    # =========================
-    # RESPONSE FINAL
-    # =========================
     return {
         "ok": True,
         "industria": industria,
@@ -191,16 +169,15 @@ async def ai_diagnostico(data: InputAI):
         "impacto_min": impacto_min,
         "impacto_max": impacto_max,
         "causas": causas,
+        "consecuencias": consecuencias,
         "preguntas": preguntas,
         "analisis_ai": analisis_ai,
-
-        "decision": {
-            "accion_inmediata": causas[0] if causas else "Revision inmediata",
-            "prioridad": "URGENTE" if riesgo in ["CRITICO", "ALTO"] else "MEDIA",
-            "ventana_dias": 7 if riesgo == "CRITICO" else 15 if riesgo == "ALTO" else 30
-        },
-
+        "plan_30_dias": [
+            f"Semana 1: Auditoria especializada sector {industria}",
+            "Semana 2: Regularizacion inmediata",
+            "Semana 3: Blindaje legal y fiscal",
+            "Semana 4: Estabilizacion operativa"
+        ],
         "whatsapp": whatsapp,
-
-        "cierre": f"Atencion especializada requerida en {industria}. Podemos ayudarte a resolverlo en 30 dias."
+        "cierre": f"Atencion especializada requerida en {industria}. Podemos resolverlo en 30 dias."
     }
