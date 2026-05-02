@@ -3,208 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω CRM Unified</title>
+<title>MESAN Ω — Command Center</title>
 
 <style>
-body{margin:0;background:#04060A;color:#C8F0FF;font-family:Arial}
-#login,#app{padding:20px}
-#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#04060A}
-.box{width:340px;background:#060C14;padding:30px;border:1px solid rgba(0,229,255,0.15)}
-input{width:100%;padding:10px;margin-bottom:10px;background:#08121E;border:1px solid rgba(0,229,255,0.2);color:#00E5FF;outline:none}
-button{padding:10px;border:1px solid #00E5FF;background:transparent;color:#00E5FF;cursor:pointer;width:100%}
+:root{
+  --bg:#04060A;
+  --panel:#08121E;
+  --border:rgba(0,229,255,0.15);
+  --a:#00E5FF;
+  --r:#FF3B3B;
+  --w:#FF9500;
+  --g:#00D09E;
+}
 
-#app{display:none}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-.kc{background:#060C14;padding:12px;border:1px solid rgba(0,229,255,0.1)}
-.kv{font-size:20px;color:#00E5FF;font-family:monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);
+  color:#C8F0FF;
+  font-family:Arial;
+  overflow:hidden;
+}
 
-.leads{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.card{background:#060C14;padding:12px;border:1px solid rgba(0,229,255,0.1);border-left:3px solid #00E5FF}
-.card.alto{border-left-color:#FF3B3B}
-.card.medio{border-left-color:#FF9500}
+/* LAYOUT */
+.wrap{
+  display:grid;
+  grid-template-columns:260px 1fr 260px;
+  height:100vh;
+}
 
-small{color:#4A8FA8}
-.btn{margin-top:6px;font-size:11px;padding:6px;border:1px solid rgba(0,229,255,0.2);background:transparent;color:#4A8FA8;cursor:pointer}
-.btn:hover{border-color:#00E5FF;color:#00E5FF}
+/* SIDE PANELS */
+.panel{
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.panel.right{
+  border-right:none;
+  border-left:1px solid var(--border);
+}
+
+.title{
+  font-size:12px;
+  color:var(--a);
+  letter-spacing:2px;
+}
+
+/* CENTER */
+.center{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* CORE */
+.core{
+  width:260px;
+  height:260px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.core::before{
+  content:'';
+  position:absolute;
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  border:1px solid var(--a);
+  opacity:0.2;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1);opacity:0.3}
+  100%{transform:scale(1.4);opacity:0}
+}
+
+.eye{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:radial-gradient(circle,#00E5FF,transparent);
+}
+
+/* NODES */
+.node{
+  position:absolute;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--a);
+  box-shadow:0 0 10px var(--a);
+}
+
+/* KPI */
+.kpi{
+  background:#060C14;
+  padding:10px;
+  border:1px solid var(--border);
+}
+
+.kv{font-size:18px;color:var(--a)}
+
+/* ALERT */
+.alert{
+  padding:8px;
+  border:1px solid rgba(255,59,59,0.3);
+  color:var(--r);
+  font-size:11px;
+}
+
+/* SEARCH */
+.search{
+  padding:8px;
+  background:#060C14;
+  border:1px solid var(--border);
+  color:#00E5FF;
+  outline:none;
+}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="login">
-  <div class="box">
-    <h3 style="color:#00E5FF">MESAN Ω CRM</h3>
-    <input id="key" placeholder="API KEY">
-    <button onclick="login()">ENTRAR</button>
+<div class="wrap">
+
+  <!-- LEFT -->
+  <div class="panel">
+    <div class="title">SEGMENTACIÓN</div>
+    <div class="kpi">Grupo Norte <div class="kv">35%</div></div>
+    <div class="kpi">Retail <div class="kv">22%</div></div>
+
+    <div class="title">HISTORIAL</div>
+    <div class="kpi">Empresas nuevas: 18</div>
+    <div class="kpi">Alertas: 6</div>
   </div>
-</div>
 
-<!-- APP -->
-<div id="app">
+  <!-- CENTER -->
+  <div class="center">
 
-  <div class="top">
-    <h2 style="color:#00E5FF">PIPELINE UNIFICADO</h2>
-    <div>
-      <button onclick="load()">Actualizar</button>
-      <button onclick="logout()">Salir</button>
+    <div class="core">
+      <div class="eye"></div>
     </div>
+
+    <!-- NODOS -->
+    <div class="node" style="top:20%;left:40%"></div>
+    <div class="node" style="top:60%;left:70%"></div>
+    <div class="node" style="top:40%;left:20%"></div>
+
   </div>
 
-  <div class="kpis">
-    <div class="kc">Leads <div class="kv" id="k1">0</div></div>
-    <div class="kc">Críticos <div class="kv" id="k2">0</div></div>
-    <div class="kc">Pipeline <div class="kv" id="k3">$0</div></div>
-    <div class="kc">Cerrados <div class="kv" id="k4">0</div></div>
+  <!-- RIGHT -->
+  <div class="panel right">
+    <div class="title">INTELIGENCIA</div>
+    <div class="kpi">Procesadas <div class="kv">1.4M/día</div></div>
+    <div class="kpi">Eventos <div class="kv">8K/hr</div></div>
+
+    <div class="title">ALERTAS</div>
+    <div class="alert">Riesgo crítico detectado</div>
+
+    <div class="title">BUSCAR</div>
+    <input class="search" placeholder="RFC / Empresa">
   </div>
 
-  <div class="leads" id="leads"></div>
 </div>
-
-<script>
-const API="https://mesan-api.onrender.com";
-let KEY="";
-let leads=[];
-
-/* ================= LOGIN ================= */
-function login(){
-  KEY=document.getElementById("key").value.trim();
-  if(!KEY) return alert("API KEY requerida");
-
-  localStorage.setItem("mk",KEY);
-  start();
-}
-
-function start(){
-  document.getElementById("login").style.display="none";
-  document.getElementById("app").style.display="block";
-  load();
-}
-
-/* auto login */
-let saved=localStorage.getItem("mk");
-if(saved){KEY=saved;start();}
-
-/* ================= LOAD ================= */
-async function load(){
-  try{
-    console.log("🔄 cargando leads...");
-
-    const r=await fetch(API+"/leads",{
-      headers:{"api-key":KEY}
-    });
-
-    if(r.status===403){
-      alert("API KEY inválida");
-      logout();
-      return;
-    }
-
-    const d=await r.json();
-    leads=d.leads||[];
-
-    console.log("✔ leads:",leads);
-
-    render();
-    kpi();
-
-  }catch(e){
-    console.error("❌ ERROR LOAD:",e);
-    alert("Error de conexión con API");
-  }
-}
-
-/* ================= KPI ================= */
-function kpi(){
-  document.getElementById("k1").innerText=leads.length;
-
-  document.getElementById("k2").innerText=
-    leads.filter(l=>l.clasificacion==="ALTO").length;
-
-  document.getElementById("k4").innerText=
-    leads.filter(l=>l.estatus==="cerrado").length;
-
-  let total=leads.reduce((a,b)=>a+(b.impacto_max||0),0);
-
-  document.getElementById("k3").innerText=
-    total>=1000000
-      ? "$"+(total/1000000).toFixed(1)+"M"
-      : "$"+(total/1000).toFixed(0)+"K";
-}
-
-/* ================= RENDER ================= */
-function render(){
-  const c=document.getElementById("leads");
-  c.innerHTML="";
-
-  if(!leads.length){
-    c.innerHTML="<p style='color:#4A8FA8'>Sin leads</p>";
-    return;
-  }
-
-  leads.forEach(l=>{
-
-    const cls=
-      l.clasificacion==="ALTO"?"alto":
-      l.clasificacion==="MEDIO"?"medio":"";
-
-    const tel=(l.telefono||"").replace(/\D/g,"");
-
-    const div=document.createElement("div");
-    div.className="card "+cls;
-
-    div.innerHTML=`
-      <b>${l.nombre||"Sin nombre"}</b><br>
-      <small>${l.giro||"—"}</small><br>
-      <div>$${l.impacto_max||0}</div>
-      <small>${l.clasificacion||"N/A"} | ${l.estatus||"nuevo"}</small><br>
-
-      ${tel?`<button class="btn" onclick="wa('${tel}')">WA</button>`:""}
-      <button class="btn" onclick="mover('${l.id}','contactado')">Contactado</button>
-      <button class="btn" onclick="mover('${l.id}','cerrado')">Cerrar</button>
-    `;
-
-    c.appendChild(div);
-  });
-}
-
-/* ================= ACTIONS ================= */
-function wa(t){
-  if(!t) return;
-  window.open("https://wa.me/52"+t);
-}
-
-async function mover(id,estado){
-  try{
-    console.log("moviendo:",id,estado);
-
-    await fetch(API+"/lead/"+id,{
-      method:"PUT",
-      headers:{
-        "Content-Type":"application/json",
-        "api-key":KEY
-      },
-      body:JSON.stringify({estatus:estado})
-    });
-
-    load();
-
-  }catch(e){
-    console.error("ERROR mover:",e);
-  }
-}
-
-/* ================= SESSION ================= */
-function logout(){
-  localStorage.removeItem("mk");
-  location.reload();
-}
-
-document.getElementById("key")?.addEventListener("keypress",e=>{
-  if(e.key==="Enter") login();
-});
-</script>
 
 </body>
 </html>
