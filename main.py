@@ -522,34 +522,3 @@ async def global_exception_handler(request: Request, exc: Exception):
 # SECCIÓN: MOTOR DE COTIZACIÓN - MESAN SERVICIOS
 # ==========================================================
 
-class DatosCotizacion(BaseModel):
-    empresa: str
-    giro: str
-    metros_cuadrados: float
-    turnos: int
-    criticidad: str
-    correo: str
-    telefono: str
-
-@app.post("/cotizar-servicios")
-async def calcular_propuesta_servicios(data: DatosCotizacion):
-    try:
-        # Lógica de cálculo MESAN Ω
-        base_m2 = 18.50 
-        factor_giro = 1.35 if data.giro.lower() == "alimenticio" else 1.10
-        factor_turnos = 1.0 + (data.turnos * 0.12)
-        factor_riesgo = 1.25 if data.criticidad.lower() == "alta" else 1.0
-        
-        total = (data.metros_cuadrados * base_m2) * factor_giro * factor_turnos * factor_riesgo
-        
-        return {
-            "folio": "MS-2026-INT",
-            "resultado": {
-                "monto_mensual_estimado": round(total, 2),
-                "moneda": "MXN",
-                "auditoria": "SISTEMA MESAN Ω"
-            },
-            "mensaje": f"Propuesta técnica lista para {data.empresa}. REPSE/STPS Validado."
-        }
-    except Exception as e:
-        return {"error": "Error en el cálculo del motor MESAN", "detalle": str(e)}
