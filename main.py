@@ -518,7 +518,3 @@ async def actualizar_lead(lead_id: str, data: dict):
 async def global_exception_handler(request: Request, exc: Exception):
     logging.error(f"ERROR GLOBAL: {traceback.format_exc()}")
     return response({"error": "Error interno"}, 500)
-    # ==========================================================
-# SECCIÓN: MOTOR DE COTIZACIÓN - MESAN SERVICIOS
-# ==========================================================
-
