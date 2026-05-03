@@ -480,3 +480,35 @@ async function pagoMensual() {
 
 </body>
 </html>
+<script>
+async function enviarCotizacion() {
+    // Capturamos los datos del formulario (ajusta los IDs según tu HTML)
+    const datos = {
+        empresa: document.getElementById('nombre_empresa').value,
+        giro: document.getElementById('giro_empresa').value,
+        metros_cuadrados: parseFloat(document.getElementById('m2').value),
+        turnos: parseInt(document.getElementById('turnos').value),
+        criticidad: document.getElementById('criticidad').value,
+        correo: document.getElementById('email').value,
+        telefono: document.getElementById('tel').value
+    };
+
+    try {
+        const respuesta = await fetch('https://TU-URL-DE-RENDER.onrender.com/cotizar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+
+        const resultado = await respuesta.json();
+
+        if (resultado.propuesta_economica) {
+            alert(`MESAN Ω ha calculado su propuesta: $${resultado.propuesta_economica} MXN mensualmente.`);
+            // Aquí podrías redirigir a una página de "Gracias" o mostrar el botón de descarga del PDF
+        }
+    } catch (error) {
+        console.error("Error en la conexión con MESAN Ω:", error);
+        alert("Hubo un error al procesar la cotización. Intente de nuevo.");
+    }
+}
+</script>
