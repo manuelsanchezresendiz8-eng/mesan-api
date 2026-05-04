@@ -247,7 +247,8 @@ async def ai_diagnostico(data: InputAI):
         causas, impacto = ajustar_laboral(causas, impacto, respuestas)
 
     if industria == "LABORAL":
-        if impacto > 3000000:
+        t_check = texto.lower()
+        if any(p in t_check for p in ["huelga", "paro", "emplazamiento", "sindicato"]):
             riesgo = "CRITICO"
         elif impacto > 1000000:
             riesgo = "ALTO"
@@ -268,6 +269,16 @@ async def ai_diagnostico(data: InputAI):
     impacto_min = impacto
     impacto_max = int(impacto * 2.5)
 
+    # Indice de riesgo alineado
+    if riesgo == "CRITICO":
+        indice_riesgo = min(95, 85 + min(int(impacto / 1000000), 10))
+    elif riesgo == "ALTO":
+        indice_riesgo = min(80, 60 + min(int(impacto / 200000), 20))
+    elif riesgo == "MEDIO":
+        indice_riesgo = min(60, 40 + min(int(impacto / 100000), 20))
+    else:
+        indice_riesgo = 20
+
     analisis_ai = await llamar_anthropic(texto, industria, impacto, riesgo, causas)
 
     preguntas = generar_preguntas(industria, texto, riesgo)
@@ -285,9 +296,9 @@ async def ai_diagnostico(data: InputAI):
     mensajes_wa = {
         "SEGURIDAD": f"MESAN Omega - ALERTA CRITICA\n\nOperacion sin permisos SSPC + IMSS vencido = cierre inminente.\n\nImpacto: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI para plan de accion inmediato.",
         "LABORAL": (
-            f"MESAN Omega - ALERTA CRITICA\n\nHuelga activa confirmada.\nOperacion detenida.\n\nImpacto estimado: ${impacto_min:,} - ${impacto_max:,} MXN\n\nCada dia incrementa la perdida real.\nResponde SI para plan inmediato."
-            if respuestas.get("huelga") == "Si" else
-            f"MESAN Omega - ALERTA LABORAL\n\nConflicto laboral activo detectado.\n\nImpacto estimado: ${impacto_min:,} - ${impacto_max:,} MXN\n\nCada dia sin accion aumenta la exposicion.\n\nResponde SI y te digo como resolverlo hoy."
+            f"MESAN Omega - ALERTA CRITICA\n\nHuelga en proceso de activacion.\nOperacion en riesgo de paralizacion total.\n\nImpacto estimado: ${impacto_min:,} - ${impacto_max:,} MXN\n\nTienes menos de 96 horas antes de bloqueo operativo.\n\nResponde SI. Te digo como contener esto hoy."
+            if riesgo == "CRITICO" else
+            f"MESAN Omega - ALERTA LABORAL\n\nConflicto laboral activo.\n\nImpacto estimado: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te digo como resolverlo hoy."
         ),
         "MANUFACTURA": f"MESAN Omega - ALERTA MANUFACTURA\n\nParo de produccion activo - perdidas acumulando por dia.\n\nImpacto estimado: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI para plan de contencion inmediato.",
         "SERVICIOS_APOYO": f"MESAN Omega - ALERTA CRITICA\n\nIncumplimiento REPSE e IMSS detectado.\nClientes corporativos en riesgo de rescision.\n\nImpacto: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI para frenarlo hoy.",
@@ -317,6 +328,7 @@ async def ai_diagnostico(data: InputAI):
             "Semana 3: Blindaje legal y fiscal - prevencion de sanciones",
             "Semana 4: Estabilizacion operativa - reduccion de riesgo"
         ],
+        "indice_riesgo": indice_riesgo,
         "whatsapp": whatsapp,
         "cierre": f"Atencion especializada requerida en {industria}. Podemos resolverlo en 30 dias."
     }
