@@ -395,8 +395,8 @@ function getVal(id) { const el = document.getElementById(id); return el ? el.val
 
 async function ejecutar(tipo) {
     const nombre = getVal("nombre").trim();
-    const email = getVal("email").trim();
-    const tel = getVal("tel").trim();
+    const email  = getVal("email").trim();
+    const tel    = getVal("tel").trim();
     if (!nombre || !tel) { alert("Por favor completa nombre y teléfono."); return; }
 
     let payload = { nombre: nombre.replace("Ω","Omega"), email, telefono: tel, tipo_empresa: tipo };
@@ -438,29 +438,10 @@ async function ejecutar(tipo) {
         const resultado = data.resultado || data;
         const cl = data.clasificacion || resultado?.clasificacion || "N/A";
         const score = resultado?.diagnostico?.score ?? resultado?.score ?? 0;
-        const impMin = resultado?.impacto?.impacto_min ?? 0;
-        const impMax = resultado?.impacto?.impacto_max ?? 0;
+        const impMin = resultado?.impacto?.impacto_min ?? resultado?.impacto_min ?? 0;
+        const impMax = resultado?.impacto?.impacto_max ?? resultado?.impacto_max ?? 0;
         const soluciones = resultado?.soluciones ?? [];
 
         document.getElementById("resultado").classList.add("show");
         document.getElementById("score").innerText = score;
-        document.getElementById("clasificacion").innerText = cl;
-        document.getElementById("impacto-min").in
-        nerText = `$${data.impacto_min.toLocaleString()}`;
-    document.getElementById("impacto-max").innerText = `$${data.impacto_max.toLocaleString()}`;
-    document.getElementById("riesgo-nivel").innerText = data.riesgo;
-    document.getElementById("analisis-texto").innerText = data.analisis_ai || data.causas?.join("\n") || "";
-    document.getElementById("whatsapp-msg").href = `https://wa.me/52${data.telefono || ""}?text=${encodeURIComponent(data.whatsapp || "")}`;
-    document.getElementById("resultado-section").classList.add("visible");
-    document.getElementById("resultado-section").scrollIntoView({behavior:"smooth"});
-  } catch(e) {
-    console.error(e);
-    alert("Error en el diagnóstico. Intenta de nuevo.");
-  } finally {
-    btn.disabled = false;
-    btn.innerText = "ANALIZAR →";
-  }
-}
-</script>
-</body>
-</html>
+        document.getElementById("clasificacion").innerText = c
