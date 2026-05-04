@@ -446,3 +446,26 @@ async function ejecutar(tipo) {
         document.getElementById("score").innerText = score;
         document.getElementById("clasificacion").innerText = cl;
         document.getElementById("impacto-min").in
+        document.getElementById("impacto-min").innerText = "$" + impMin.toLocaleString();
+        document.getElementById("impacto-max").innerText = "$" + impMax.toLocaleString();
+        document.getElementById("anual-line").innerText = impMax > 0 ? "Riesgo anual estimado: $" + (impMax * 12).toLocaleString() + " MXN" : "";
+
+        const solEl = document.getElementById("soluciones");
+        solEl.innerHTML = soluciones.length > 0
+            ? soluciones.map(s => `<li>${s.descripcion || s.accion || s}</li>`).join("")
+            : "<li>Regularización y blindaje operativo recomendado</li>";
+
+        const waMsg = encodeURIComponent(`Hola, hice el diagnóstico MESAN Ω.\n\nEmpresa: ${nombre}\nScore: ${score} — ${cl}\nImpacto: $${impMax.toLocaleString()} MXN\n\n¿Podemos hablar?`);
+        document.getElementById("btn-agenda").href = `https://wa.me/526861629643?text=${waMsg}`;
+        document.getElementById("btn-wa").href = `https://wa.me/526861629643?text=${waMsg}`;
+        document.getElementById("resultado").scrollIntoView({ behavior:"smooth" });
+    } catch(e) {
+        alert("Error de conexión. Intenta nuevamente.");
+    } finally {
+        btn.disabled = false;
+        btn.querySelector("span").textContent = tipo === "repse" ? "EJECUTAR DIAGNÓSTICO REPSE" : tipo === "subcontrata" ? "EJECUTAR DIAGNÓSTICO" : "ANALIZAR VIABILIDAD";
+    }
+}
+</script>
+</body>
+</html>
