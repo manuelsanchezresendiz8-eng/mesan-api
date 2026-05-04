@@ -161,6 +161,22 @@ def analizar_fallback(texto, respuestas, industria):
 
     return causas, impacto
 
+def ajustar_laboral(causas, impacto, respuestas):
+    if respuestas.get("huelga") == "Si":
+        causas.append("Huelga activa confirmada - paralizacion total de operaciones")
+        impacto = int(impacto * 1.8)
+    elif respuestas.get("huelga") == "En negociacion":
+        causas.append("Conflicto en fase critica de negociacion sindical")
+        impacto = int(impacto * 1.3)
+
+    if respuestas.get("demanda_laboral") == "Si":
+        causas.append("Demanda formal presentada ante JLCA")
+        impacto += 800000
+    elif respuestas.get("demanda_laboral") == "No se":
+        impacto += 300000
+
+    return causas, impacto
+
 def ajustar_por_respuestas(causas, impacto, respuestas, industria):
     if respuestas.get("acta") == "Acta levantada":
         causas.append("Proceso sancionador activo")
@@ -227,14 +243,27 @@ async def ai_diagnostico(data: InputAI):
     causas, impacto = analizar_fallback(texto, respuestas, industria)
     causas, impacto = ajustar_por_respuestas(causas, impacto, respuestas, industria)
 
-    if impacto > 500000:
-        riesgo = "CRITICO"
-    elif impacto > 200000:
-        riesgo = "ALTO"
-    elif impacto > 80000:
-        riesgo = "MEDIO"
+    if industria == "LABORAL":
+        causas, impacto = ajustar_laboral(causas, impacto, respuestas)
+
+    if industria == "LABORAL":
+        if impacto > 3000000:
+            riesgo = "CRITICO"
+        elif impacto > 1000000:
+            riesgo = "ALTO"
+        elif impacto > 300000:
+            riesgo = "MEDIO"
+        else:
+            riesgo = "BAJO"
     else:
-        riesgo = "BAJO"
+        if impacto > 500000:
+            riesgo = "CRITICO"
+        elif impacto > 200000:
+            riesgo = "ALTO"
+        elif impacto > 80000:
+            riesgo = "MEDIO"
+        else:
+            riesgo = "BAJO"
 
     impacto_min = impacto
     impacto_max = int(impacto * 2.5)
@@ -255,7 +284,11 @@ async def ai_diagnostico(data: InputAI):
 
     mensajes_wa = {
         "SEGURIDAD": f"MESAN Omega - ALERTA CRITICA\n\nOperacion sin permisos SSPC + IMSS vencido = cierre inminente.\n\nImpacto: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI para plan de accion inmediato.",
-        "LABORAL": f"MESAN Omega - ALERTA LABORAL\n\nConflicto laboral activo detectado.\n\nImpacto estimado: ${impacto_min:,} - ${impacto_max:,} MXN\n\nCada dia sin accion aumenta la exposicion.\n\nResponde SI y te digo como resolverlo hoy.",
+        "LABORAL": (
+            f"MESAN Omega - ALERTA CRITICA\n\nHuelga activa confirmada.\nOperacion detenida.\n\nImpacto estimado: ${impacto_min:,} - ${impacto_max:,} MXN\n\nCada dia incrementa la perdida real.\nResponde SI para plan inmediato."
+            if respuestas.get("huelga") == "Si" else
+            f"MESAN Omega - ALERTA LABORAL\n\nConflicto laboral activo detectado.\n\nImpacto estimado: ${impacto_min:,} - ${impacto_max:,} MXN\n\nCada dia sin accion aumenta la exposicion.\n\nResponde SI y te digo como resolverlo hoy."
+        ),
         "MANUFACTURA": f"MESAN Omega - ALERTA MANUFACTURA\n\nParo de produccion activo - perdidas acumulando por dia.\n\nImpacto estimado: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI para plan de contencion inmediato.",
         "SERVICIOS_APOYO": f"MESAN Omega - ALERTA CRITICA\n\nIncumplimiento REPSE e IMSS detectado.\nClientes corporativos en riesgo de rescision.\n\nImpacto: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI para frenarlo hoy.",
         "SALUD": f"MESAN Omega - ALERTA COFEPRIS\n\nRiesgo de clausura sanitaria activo.\n\nImpacto: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te digo como evitarlo.",
