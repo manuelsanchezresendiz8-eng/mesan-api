@@ -1,95 +1,60 @@
-def generar_preguntas(industria: str, texto: str, riesgo: str):
+# core/preguntas.py
 
-    preguntas = []
+def generar_preguntas(industria, texto, riesgo):
+    t = texto.lower()
 
+    # LABORAL - huelga/sindicato
+    if any(p in t for p in ["sindicato", "huelga", "paro", "demanda laboral", "jlca", "emplazamiento"]):
+        return [
+            {"pregunta": "El sindicato ya inicio paro o huelga?", "name": "huelga", "opciones": ["Si", "No", "En negociacion"]},
+            {"pregunta": "Existe demanda formal ante la JLCA?", "name": "demanda", "opciones": ["Si", "No", "No se"]}
+        ]
+
+    # LABORAL - accidente
+    if any(p in t for p in ["accidente", "incapacidad", "herido", "lesion", "obra determinada"]):
+        return [
+            {"pregunta": "El trabajador tiene IMSS activo?", "name": "imss_activo", "opciones": ["Si", "No", "No se"]},
+            {"pregunta": "Ya hay demanda laboral presentada?", "name": "demanda", "opciones": ["Si", "No", "En proceso"]}
+        ]
+
+    # SEGURIDAD
+    if industria == "SEGURIDAD":
+        return [
+            {"pregunta": "Tienes permiso federal SSPC vigente?", "name": "sspc", "opciones": ["Si", "No", "En tramite"]},
+            {"pregunta": "Los guardias tienen CUIP actualizado?", "name": "cuip", "opciones": ["Si", "No", "Parcial"]}
+        ]
+
+    # SERVICIOS_APOYO
+    if industria == "SERVICIOS_APOYO":
+        return [
+            {"pregunta": "Tu REPSE esta vigente?", "name": "repse", "opciones": ["Si", "No", "Vencido"]},
+            {"pregunta": "Todos los trabajadores estan dados de alta en IMSS?", "name": "imss", "opciones": ["Si", "No", "Parcial"]}
+        ]
+
+    # SALUD
     if industria == "SALUD":
-        preguntas.append({
-            "id": "acta",
-            "pregunta": "¿Ya te levantaron acta de inspección o solo fue visita?",
-            "tipo": "opcion",
-            "opciones": ["Acta levantada", "Solo visita", "No estoy seguro"]
-        })
-        preguntas.append({
-            "id": "aviso",
-            "pregunta": "¿Cuentas con aviso de funcionamiento vigente?",
-            "tipo": "opcion",
-            "opciones": ["Sí", "No", "No sé"]
-        })
-        preguntas.append({
-            "id": "expediente",
-            "pregunta": "¿Tienes expediente sanitario documentado y actualizado?",
-            "tipo": "opcion",
-            "opciones": ["Sí completo", "Parcial", "No"]
-        })
+        return [
+            {"pregunta": "Ya te levantaron acta de inspeccion?", "name": "acta", "opciones": ["Acta levantada", "Solo visita", "No estoy seguro"]},
+            {"pregunta": "Cuentas con aviso de funcionamiento vigente?", "name": "aviso", "opciones": ["Si", "No", "No se"]},
+            {"pregunta": "Tienes expediente sanitario documentado?", "name": "expediente", "opciones": ["Si completo", "Parcial", "No"]}
+        ]
 
-    elif industria == "RETAIL":
-        preguntas.append({
-            "id": "contratos",
-            "pregunta": "¿Todos tus empleados tienen contrato firmado?",
-            "tipo": "opcion",
-            "opciones": ["Sí", "Algunos", "No"]
-        })
-        preguntas.append({
-            "id": "rotacion",
-            "pregunta": "¿Tienes alta rotación de personal?",
-            "tipo": "opcion",
-            "opciones": ["Alta", "Media", "Baja"]
-        })
+    # MANUFACTURA
+    if industria == "MANUFACTURA":
+        return [
+            {"pregunta": "Cuanto tiempo lleva detenida la produccion?", "name": "dias_paro", "opciones": ["Menos de 24hrs", "1-3 dias", "Mas de 3 dias"]},
+            {"pregunta": "Tienes proveedor alterno de refacciones?", "name": "proveedor", "opciones": ["Si", "No", "En proceso"]}
+        ]
 
-    elif industria == "CONSTRUCCION":
-        preguntas.append({
-            "id": "imss_obra",
-            "pregunta": "¿Tus trabajadores de obra están registrados en IMSS?",
-            "tipo": "opcion",
-            "opciones": ["Todos", "Algunos", "Ninguno"]
-        })
-        preguntas.append({
-            "id": "repse",
-            "pregunta": "¿Tienes REPSE vigente?",
-            "tipo": "opcion",
-            "opciones": ["Sí vigente", "Vencido", "No tengo"]
-        })
+    # FISCAL - SAT/IMSS
+    if any(p in t for p in ["sat", "imss", "auditoria", "embargo"]):
+        return [
+            {"pregunta": "Recibiste notificacion formal del SAT o IMSS?", "name": "acta", "opciones": ["Si", "No", "No se"]},
+            {"pregunta": "Cuantos empleados tiene la empresa?", "name": "empleados", "opciones": ["1-5", "6-20", "Mas de 20"]}
+        ]
 
-    elif industria == "ALIMENTOS":
-        preguntas.append({
-            "id": "licencia",
-            "pregunta": "¿Tienes licencia sanitaria y manejo de alimentos vigente?",
-            "tipo": "opcion",
-            "opciones": ["Sí", "Vencida", "No"]
-        })
-        preguntas.append({
-            "id": "inspeccion",
-            "pregunta": "¿Han tenido inspección sanitaria este año?",
-            "tipo": "opcion",
-            "opciones": ["Sí sin problemas", "Sí con observaciones", "No"]
-        })
-
-    elif industria == "MANUFACTURA":
-        preguntas.append({
-            "id": "tiempo_paro",
-            "pregunta": "¿Cuánto tiempo lleva detenida la producción?",
-            "tipo": "opcion",
-            "opciones": ["Menos de 24hrs", "1-3 días", "Más de 3 días"]
-        })
-        preguntas.append({
-            "id": "proveedor",
-            "pregunta": "¿Tienes proveedor alterno de refacciones?",
-            "tipo": "opcion",
-            "opciones": ["Sí", "No", "En proceso"]
-        })
-
-    else:
-        preguntas.append({
-            "id": "auditoria",
-            "pregunta": "¿Has recibido alguna notificación del SAT o IMSS?",
-            "tipo": "opcion",
-            "opciones": ["Sí", "No", "No sé"]
-        })
-        preguntas.append({
-            "id": "empleados",
-            "pregunta": "¿Cuántos empleados tiene la empresa?",
-            "tipo": "opcion",
-            "opciones": ["1-5", "6-20", "Más de 20"]
-        })
-
-    return preguntas
+    # DEFAULT
+    return [
+        {"pregunta": "Has recibido alguna notificacion del SAT o IMSS?", "name": "acta", "opciones": ["Si", "No", "No se"]},
+        {"pregunta": "Cuantos empleados tiene la empresa?", "name": "empleados", "opciones": ["1-5", "6-20", "Mas de 20"]}
+    ]
