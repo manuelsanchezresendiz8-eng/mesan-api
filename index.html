@@ -3,127 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Omega — Inteligencia Empresarial</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>MESAN Ω</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#020617;color:#fff;font-family:'DM Sans',sans-serif;}
-.nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;position:fixed;width:100%;background:rgba(2,6,23,.8);backdrop-filter:blur(10px);z-index:100;}
-.logo{font-family:'Syne';font-weight:700;letter-spacing:2px;}
-.logo span{color:#22D3EE;}
-.menu{display:flex;gap:20px;font-size:13px;opacity:.7;align-items:center;}
-.btn-login{border:1px solid #22D3EE;padding:8px 16px;border-radius:20px;color:#22D3EE;cursor:pointer;}
-.hero{text-align:center;padding-top:140px;padding-bottom:80px;padding-left:20px;padding-right:20px;}
-.hero h1{font-family:'Syne';font-size:clamp(32px,5vw,48px);line-height:1.2;}
-.hero span{color:#22D3EE;}
-.hero p{margin-top:16px;opacity:.6;}
-.input-box{margin:40px auto;max-width:600px;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px;text-align:left;}
-textarea{width:100%;background:none;border:none;color:#fff;outline:none;resize:none;font-family:'DM Sans';font-size:14px;}
-.btn-main{margin-top:20px;background:linear-gradient(90deg,#22D3EE,#3B82F6);border:none;padding:14px 30px;border-radius:10px;color:#fff;font-weight:600;cursor:pointer;font-size:14px;}
-.cards{display:flex;gap:20px;justify-content:center;margin-top:40px;flex-wrap:wrap;}
-.card{background:#0B1220;padding:30px;border-radius:16px;width:200px;text-align:center;}
-.big{font-size:28px;font-weight:700;}
-.red{color:#EF4444;}
-.result-box{display:none;margin:30px auto;max-width:600px;background:#0B1220;border:1px solid rgba(34,211,238,0.2);border-radius:12px;padding:20px;text-align:left;}
-.causa-item{padding:8px 12px;margin:4px 0;background:rgba(239,68,68,0.05);border-left:3px solid #EF4444;font-size:13px;}
-.pregunta-block{margin:12px 0;}
-.pregunta-text{font-size:13px;margin-bottom:8px;color:rgba(255,255,255,0.8);}
-.btn-op{padding:7px 14px;margin:3px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:6px;cursor:pointer;font-size:12px;}
-.btn-op.sel{border-color:#22D3EE;color:#22D3EE;background:rgba(34,211,238,0.1);}
-.btn-refinar{margin-top:12px;border:1px solid #22D3EE;background:transparent;color:#22D3EE;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:12px;}
-.btn-wa{margin-top:12px;background:#22C55E;border:none;padding:12px 20px;border-radius:8px;color:#fff;font-weight:600;cursor:pointer;font-size:13px;width:100%;}
-.solutions{text-align:center;margin-top:60px;}
-.solutions-grid{display:flex;justify-content:center;gap:40px;margin-top:20px;flex-wrap:wrap;opacity:.7;font-size:14px;}
-.cta{margin:60px auto;max-width:800px;background:#0B1220;padding:30px;border-radius:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
-.cta button{background:#22C55E;border:none;padding:12px 20px;border-radius:8px;color:#fff;cursor:pointer;font-weight:600;}
-.footer{text-align:center;padding:20px;font-size:10px;opacity:.2;letter-spacing:2px;}
+body{
+    margin:0;
+    background:#020617;
+    color:white;
+    font-family:'DM Sans',sans-serif;
+}
+
+/* HERO */
+.hero{
+    text-align:center;
+    padding:120px 20px;
+}
+
+h1{
+    font-family:'Syne';
+    font-size:48px;
+}
+
+h1 span{color:#22D3EE;}
+
+p{opacity:.6;}
+
+/* INPUT */
+.input{
+    margin:40px auto;
+    max-width:600px;
+    border:1px solid rgba(255,255,255,.1);
+    padding:20px;
+    border-radius:12px;
+}
+
+/* BUTTON */
+.btn{
+    background:linear-gradient(90deg,#22D3EE,#3B82F6);
+    padding:14px 30px;
+    border:none;
+    border-radius:10px;
+    color:white;
+    cursor:pointer;
+}
+
+/* CARDS */
+.cards{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    margin-top:60px;
+}
+
+.card{
+    background:#0B1220;
+    padding:30px;
+    border-radius:16px;
+    width:240px;
+}
+
+.card .num{
+    font-size:30px;
+    color:#EF4444;
+}
+
+/* ICONS GRID */
+.icons{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    margin-top:60px;
+}
+
+.icon{
+    text-align:center;
+    opacity:.7;
+}
+
+/* METRICS */
+.metrics{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    margin-top:60px;
+}
+
+.metric{
+    text-align:center;
+}
+
+.metric .big{
+    font-size:22px;
+    font-weight:bold;
+}
+
+/* CTA */
+.cta{
+    margin:60px auto;
+    max-width:800px;
+    background:#0B1220;
+    padding:30px;
+    border-radius:16px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.cta button{
+    background:#22C55E;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    color:white;
+}
+
 </style>
 </head>
+
 <body>
-<div class="nav">
-    <div class="logo">MESAN <span>Omega</span></div>
-    <div class="menu">
-        <div>Soluciones</div>
-        <div>Como funciona</div>
-        <div class="btn-login" onclick="window.location.href='/admin.html'">Consultor IA</div>
-    </div>
-</div>
+
 <section class="hero">
-    <h1>Detectamos riesgos<br>antes de que te cuesten <span>millones.</span></h1>
-    <p>IA estrategica para CEOs que toman decisiones.</p>
-    <div class="input-box">
-        <textarea id="input" rows="3" placeholder="Describe el problema de tu empresa..."></textarea>
-    </div>
-    <button class="btn-main" onclick="analizar()" id="btn-analizar">ANALIZAR CON IA</button>
-    <div class="cards">
-        <div class="card"><div class="big red" id="c-riesgo">--</div><p>Riesgo detectado</p></div>
-        <div class="card"><div class="big red" id="c-impacto">$0</div><p>Impacto economico</p></div>
-        <div class="card"><div class="big red" id="c-sector">--</div><p>Sector afectado</p></div>
-    </div>
-    <div class="result-box" id="result-box">
-        <div style="font-size:11px;color:#22D3EE;letter-spacing:2px;margin-bottom:12px;">CAUSAS DETECTADAS</div>
-        <div id="causas-box"></div>
-        <div id="preguntas-box" style="margin-top:16px;"></div>
-        <div id="wa-box" style="margin-top:16px;"></div>
-    </div>
-    <div class="solutions">
-        <h3>Nuestras soluciones</h3>
-        <div class="solutions-grid">
-            <div>Blindaje Fiscal</div>
-            <div>Blindaje Laboral</div>
-            <div>Inteligencia Financiera</div>
-            <div>Soberania de Datos</div>
-        </div>
-    </div>
-    <div class="cta">
-        <div><b>Habla con un especialista</b><br><span style="opacity:.6;font-size:13px">Diagnostico personalizado por WhatsApp</span></div>
-        <button onclick="window.open('https://wa.me/526861629643?text=Hola, quiero un diagnostico MESAN Omega','_blank')">Escribir por WhatsApp</button>
-    </div>
+
+<h1>Detectamos riesgos antes de que te cuesten <span>millones.</span></h1>
+<p>IA estratégica para CEOs que toman decisiones.</p>
+
+<div class="input">Cuéntanos tu problema empresarial...</div>
+
+<button class="btn">ANALIZAR CON IA</button>
+
+<!-- RESULTADOS -->
+<div class="cards">
+<div class="card">
+<div class="num">87%</div>
+<p>Riesgo detectado</p>
+</div>
+
+<div class="card">
+<div class="num">$241,956</div>
+<p>Impacto económico</p>
+</div>
+
+<div class="card">
+<div class="num">!</div>
+<p>Estado vulnerable</p>
+</div>
+</div>
+
+<!-- ICONOS -->
+<div class="icons">
+<div class="icon">🛡️<br>Blindaje Fiscal</div>
+<div class="icon">⚖️<br>Blindaje Laboral</div>
+<div class="icon">📈<br>Inteligencia Financiera</div>
+<div class="icon">☁️<br>Soberanía de Datos</div>
+<div class="icon">⚡<br>Respuesta Estratégica</div>
+</div>
+
+<!-- METRICAS -->
+<div class="metrics">
+<div class="metric"><div class="big">100+</div>Empresas</div>
+<div class="metric"><div class="big">98%</div>Precisión</div>
+<div class="metric"><div class="big">15 min</div>Diagnóstico</div>
+<div class="metric"><div class="big">100%</div>Confidencialidad</div>
+</div>
+
+<!-- CTA -->
+<div class="cta">
+<div>
+<b>Habla con un especialista</b><br>
+Diagnóstico por WhatsApp
+</div>
+<button>Escribir por WhatsApp</button>
+</div>
+
 </section>
-<div class="footer">MESAN Omega © 2026 — SOBERANIA EMPRESARIAL</div>
-<script>
-const API="https://mesan-api.onrender.com";
-let respuestas={};
-let textoGuardado="";
 
-async function analizar(){
-    const texto=document.getElementById("input").value.trim();
-    if(!texto){alert("Describe la situacion de tu empresa");return;}
-    textoGuardado=texto;
-    const btn=document.getElementById("btn-analizar");
-    btn.innerText="ANALIZANDO...";btn.disabled=true;
-    try{
-        const res=await fetch(API+"/ai/diagnostico",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({texto:texto,respuestas:respuestas})});
-        const d=await res.json();
-        document.getElementById("c-riesgo").innerText=d.riesgo||"--";
-        document.getElementById("c-impacto").innerText="$"+(d.impacto_min||0).toLocaleString();
-        document.getElementById("c-sector").innerText=d.industria||"--";
-        document.getElementById("causas-box").innerHTML=(d.causas||[]).map(c=>'<div class="causa-item">'+c+'</div>').join("");
-        if(d.preguntas&&d.preguntas.length>0){
-            let html='<div style="font-size:11px;color:#22D3EE;letter-spacing:2px;margin-bottom:12px;">AFINA TU DIAGNOSTICO</div>';
-            d.preguntas.forEach(p=>{
-                html+='<div class="pregunta-block"><div class="pregunta-text">'+p.pregunta+'</div>';
-                (p.opciones||[]).forEach(o=>{
-                    html+='<button class="btn-op" onclick="seleccionar(''+p.name+'',''+o+'',this)">'+o+'</button>';
-                });
-                html+='</div>';
-            });
-            html+='<button class="btn-refinar" onclick="analizar()">REFINAR DIAGNOSTICO →</button>';
-            document.getElementById("preguntas-box").innerHTML=html;
-        }
-        const waMsg=encodeURIComponent(d.whatsapp||"Hola, acabo de hacer el diagnostico MESAN Omega. Impacto estimado: $"+(d.impacto_max||0).toLocaleString()+" MXN. Quiero resolverlo.");
-        document.getElementById("wa-box").innerHTML='<button class="btn-wa" onclick="window.open('https://wa.me/526861629643?text='+waMsg+'','_blank')">Resolver por WhatsApp</button>';
-        document.getElementById("result-box").style.display="block";
-        document.getElementById("result-box").scrollIntoView({behavior:"smooth"});
-    }catch(e){alert("Error de conexion. Intenta de nuevo.");}
-    finally{btn.innerText="ANALIZAR CON IA";btn.disabled=false;}
-}
-
-function seleccionar(name,valor,btn){
-    respuestas[name]=valor;
-    btn.parentElement.querySelectorAll(".btn-op").forEach(b=>b.classList.remove("sel"));
-    btn.classList.add("sel");
-}
-</script>
 </body>
 </html>
