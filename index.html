@@ -18,8 +18,6 @@
         text-align:center; padding:20px;
         background-image: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
     }
-    
-    /* Navbar estilo 'ceo_premier' */
     .nav-top { 
         display: flex; justify-content: space-between; align-items: center;
         max-width: 1000px; margin: 0 auto 60px auto; padding: 20px 0;
@@ -27,7 +25,6 @@
     .brand { font-family:'Syne'; font-size: 22px; letter-spacing: 2px; }
     .tagline-top { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; opacity: 0.6; color: var(--cyan); }
 
-    /* Hero Section - IGUAL A TU FOTO */
     h1 { font-family:'Syne'; font-size: clamp(34px, 6vw, 56px); line-height: 1.1; margin-bottom: 25px; }
     h1 span { color: var(--cyan); }
     .hero-desc { 
@@ -35,11 +32,9 @@
         line-height: 1.6; opacity: 0.8; font-weight: 300;
     }
 
-    /* Input & Box */
     .main-box { 
         max-width: 650px; margin: 0 auto; background: var(--card-bg);
         padding: 40px; border-radius: 16px; border: 1px solid var(--border);
-        box-shadow: 0 0 60px rgba(34, 211, 238, 0.05);
     }
     textarea { 
         width: 100%; box-sizing: border-box; height: 130px; padding: 20px; 
@@ -47,30 +42,34 @@
         color: #fff; border-radius: 10px; font-size: 15px; resize: none; margin-bottom: 25px;
         font-family: 'DM Sans';
     }
-    
-    /* Botón de Acción */
     .btn-action { 
         width: 100%; padding: 20px; border-radius: 50px; font-weight: 700; 
         cursor: pointer; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;
-        transition: 0.3s; border: 1px solid var(--cyan);
-        background: var(--cyan); color: #000;
+        transition: 0.3s; border: 1px solid var(--cyan); background: var(--cyan); color: #000;
     }
-    .btn-action:hover { background: #fff; border-color: #fff; transform: translateY(-2px); }
 
-    /* AVISO DE PRIVACIDAD - AGREGADO */
+    /* AVISO DE PRIVACIDAD INTEGRADO */
     .privacy-notice { 
         margin-top: 20px; font-size: 12px; opacity: 0.6; display: flex; 
         align-items: center; justify-content: center; gap: 10px; 
     }
-    .privacy-notice a { color: var(--cyan); text-decoration: none; font-weight: 500; }
+    .privacy-notice a { color: var(--cyan); text-decoration: none; }
 
-    /* Despliegue de Soluciones Inferiores */
+    /* DASHBOARD DE RESULTADOS */
+    .dash { display:none; max-width:1000px; margin:40px auto; }
+    .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+    .kpi { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:30px; text-align:left; }
+    .kpi-lbl { font-size:11px; text-transform:uppercase; letter-spacing:2px; opacity:0.5; margin-bottom:10px; }
+    .kpi-val { font-family:'Syne'; font-size:36px; font-weight:700; color:var(--red); }
+
+    /* SECCIÓN DE ICONOS - SOLUCIONES */
     .solutions-grid { 
         display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
         gap: 30px; max-width: 1000px; margin: 100px auto; text-align: left;
     }
-    .sol-card h3 { color: var(--cyan); font-size: 15px; margin-bottom: 12px; font-family: 'Syne'; }
-    .sol-card p { font-size: 13px; opacity: 0.6; line-height: 1.6; }
+    .sol-card i { color: var(--cyan); font-style: normal; font-size: 24px; display: block; margin-bottom: 10px; }
+    .sol-card h3 { color: var(--cyan); font-size: 15px; margin-bottom: 12px; font-family: 'Syne'; margin:0; }
+    .sol-card p { font-size: 13px; opacity: 0.6; line-height: 1.6; margin-top:5px; }
 
     .footer { margin-top: 120px; font-size: 11px; opacity: 0.3; letter-spacing: 5px; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.05); }
 </style>
@@ -90,56 +89,72 @@
 </p>
 
 <div class="main-box">
-    <textarea id="input" placeholder="Describa su situación empresarial actual..."></textarea>
-    
+    <textarea id="input" placeholder="Describe tu situación empresarial actual..."></textarea>
     <button class="btn-action" onclick="analizar()" id="mainBtn">Iniciar Diagnóstico Matemático</button>
     
     <div class="privacy-notice">
-        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
-        Tu información está protegida. <a href="#">Aviso de Privacidad</a>
+        <span>🔒 Tu información está protegida.</span>
+        <a href="privacidad.html">Aviso de Privacidad</a>
+    </div>
+</div>
+
+<div class="dash" id="dash">
+    <div class="kpis">
+        <div class="kpi">
+            <div class="kpi-lbl">Riesgo Detectado</div>
+            <div class="kpi-val" id="v-riesgo">87%</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-lbl">Impacto Económico</div>
+            <div class="kpi-val" style="color:#fff" id="v-impacto">$0</div>
+        </div>
     </div>
 </div>
 
 <div class="solutions-grid">
     <div class="sol-card">
+        <i>🛡️</i>
         <h3>Blindaje Fiscal</h3>
-        <p>Protección estratégica ante SAT, IMSS y auditorías fiscales mediante análisis de datos.</p>
+        <p>Protección ante SAT, IMSS e INFONAVIT mediante análisis de datos.</p>
     </div>
     <div class="sol-card">
+        <i>⚖️</i>
         <h3>Blindaje Laboral</h3>
-        <p>Cumplimiento REPSE, STPS, contratos colectivos y blindaje ante sindicatos.</p>
+        <p>Cumplimiento REPSE, STPS, contratos colectivos y blindaje sindical.</p>
     </div>
     <div class="sol-card">
+        <i>📈</i>
         <h3>Inteligencia Financiera</h3>
-        <p>Flujos de efectivo, liquidez y detección de riesgo de quiebra.</p>
+        <p>Modelado de flujos de efectivo y detección de riesgo de quiebra.</p>
     </div>
     <div class="sol-card">
+        <i>🔐</i>
         <h3>Soberanía de Datos</h3>
-        <p>Protección de activos intelectuales y cumplimiento legal INAI.</p>
+        <p>Infraestructura privada para protección de activos intelectuales e INAI.</p>
     </div>
 </div>
 
 <div class="footer">MESAN OMEGA © 2026 — SOBERANÍA EMPRESARIAL</div>
 
 <script>
+    const API = "https://mesan-api.onrender.com";
     async function analizar() {
-        const input = document.getElementById("input").value.trim();
-        if(!input) {
-            alert("Por favor, describa la situación para iniciar el modelo matemático.");
-            return;
-        }
-        const btn = document.getElementById("mainBtn");
-        btn.innerText = "PROCESANDO MODELO...";
-        btn.disabled = true;
-        
-        // Simulación o llamada a API aquí
-        setTimeout(() => {
-            alert("Diagnóstico procesado con éxito.");
-            btn.innerText = "Iniciar Diagnóstico Matemático";
-            btn.disabled = false;
-        }, 2000);
+        const t = document.getElementById("input").value.trim();
+        if(!t) return;
+        const b = document.getElementById("mainBtn");
+        b.innerText = "ANALIZANDO...";
+        try {
+            const r = await fetch(API + "/ai/diagnostico", {
+                method: "POST", headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({texto: t})
+            });
+            const d = await r.json();
+            document.getElementById("dash").style.display = "block";
+            document.getElementById("v-riesgo").innerText = (d.riesgo_pct || 87) + "%";
+            document.getElementById("v-impacto").innerText = "$" + (d.impacto_min || 0).toLocaleString();
+        } catch(e) { console.error(e); }
+        finally { b.innerText = "Iniciar Diagnóstico Matemático"; }
     }
 </script>
-
 </body>
 </html>
