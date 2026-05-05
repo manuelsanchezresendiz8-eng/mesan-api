@@ -18,60 +18,69 @@
         text-align:center; padding:20px;
         background-image: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
     }
+
+    /* Navbar */
     .nav-top { 
         display: flex; justify-content: space-between; align-items: center;
         max-width: 1000px; margin: 0 auto 60px auto; padding: 20px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .brand { font-family:'Syne'; font-size: 22px; letter-spacing: 2px; }
     .tagline-top { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; opacity: 0.6; color: var(--cyan); }
 
-    h1 { font-family:'Syne'; font-size: clamp(34px, 6vw, 56px); line-height: 1.1; margin-bottom: 25px; }
+    /* Hero - Narrativa de Foto 5 */
+    h1 { font-family:'Syne'; font-size: clamp(34px, 6vw, 54px); line-height: 1.1; margin-bottom: 20px; }
     h1 span { color: var(--cyan); }
     .hero-desc { 
-        max-width: 650px; margin: 0 auto 45px auto; font-size: 17px; 
-        line-height: 1.6; opacity: 0.8; font-weight: 300;
+        max-width: 600px; margin: 0 auto 40px auto; font-size: 16px; 
+        line-height: 1.6; opacity: 0.7; font-weight: 300;
     }
 
+    /* Caja de Input Principal */
     .main-box { 
         max-width: 650px; margin: 0 auto; background: var(--card-bg);
-        padding: 40px; border-radius: 16px; border: 1px solid var(--border);
+        padding: 30px; border-radius: 16px; border: 1px solid var(--border);
+        box-shadow: 0 0 50px rgba(34, 211, 238, 0.05);
     }
     textarea { 
-        width: 100%; box-sizing: border-box; height: 130px; padding: 20px; 
-        background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); 
-        color: #fff; border-radius: 10px; font-size: 15px; resize: none; margin-bottom: 25px;
+        width: 100%; box-sizing: border-box; height: 120px; padding: 15px; 
+        background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); 
+        color: #fff; border-radius: 8px; font-size: 15px; resize: none; margin-bottom: 20px;
         font-family: 'DM Sans';
     }
+    
+    /* Botón de Acción Cian */
     .btn-action { 
-        width: 100%; padding: 20px; border-radius: 50px; font-weight: 700; 
+        width: 100%; padding: 18px; border-radius: 50px; font-weight: 700; 
         cursor: pointer; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;
         transition: 0.3s; border: 1px solid var(--cyan); background: var(--cyan); color: #000;
     }
+    .btn-action:hover { background: #fff; border-color: #fff; }
 
-    /* AVISO DE PRIVACIDAD INTEGRADO */
+    /* Aviso de Privacidad */
     .privacy-notice { 
-        margin-top: 20px; font-size: 12px; opacity: 0.6; display: flex; 
-        align-items: center; justify-content: center; gap: 10px; 
+        margin-top: 15px; font-size: 11px; opacity: 0.5; display: flex; 
+        align-items: center; justify-content: center; gap: 8px; 
     }
     .privacy-notice a { color: var(--cyan); text-decoration: none; }
 
-    /* DASHBOARD DE RESULTADOS */
+    /* Dashboard de Resultados (Inicia oculto) */
     .dash { display:none; max-width:1000px; margin:40px auto; }
     .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
     .kpi { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:30px; text-align:left; }
     .kpi-lbl { font-size:11px; text-transform:uppercase; letter-spacing:2px; opacity:0.5; margin-bottom:10px; }
     .kpi-val { font-family:'Syne'; font-size:36px; font-weight:700; color:var(--red); }
 
-    /* SECCIÓN DE ICONOS - SOLUCIONES */
+    /* Soluciones con Iconos - Estilo Foto 3 */
     .solutions-grid { 
         display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-        gap: 30px; max-width: 1000px; margin: 100px auto; text-align: left;
+        gap: 30px; max-width: 1000px; margin: 80px auto; text-align: left;
     }
     .sol-card i { color: var(--cyan); font-style: normal; font-size: 24px; display: block; margin-bottom: 10px; }
-    .sol-card h3 { color: var(--cyan); font-size: 15px; margin-bottom: 12px; font-family: 'Syne'; margin:0; }
-    .sol-card p { font-size: 13px; opacity: 0.6; line-height: 1.6; margin-top:5px; }
+    .sol-card h3 { color: var(--cyan); font-size: 14px; margin-bottom: 10px; font-family: 'Syne'; }
+    .sol-card p { font-size: 13px; opacity: 0.6; line-height: 1.5; }
 
-    .footer { margin-top: 120px; font-size: 11px; opacity: 0.3; letter-spacing: 5px; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+    .footer { margin-top: 100px; font-size: 10px; opacity: 0.3; letter-spacing: 4px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
 </style>
 </head>
 <body>
@@ -93,7 +102,7 @@
     <button class="btn-action" onclick="analizar()" id="mainBtn">Iniciar Diagnóstico Matemático</button>
     
     <div class="privacy-notice">
-        <span>🔒 Tu información está protegida.</span>
+        <span>🔒 Tu información está protegida por encriptación de grado militar.</span>
         <a href="privacidad.html">Aviso de Privacidad</a>
     </div>
 </div>
@@ -115,22 +124,22 @@
     <div class="sol-card">
         <i>🛡️</i>
         <h3>Blindaje Fiscal</h3>
-        <p>Protección ante SAT, IMSS e INFONAVIT mediante análisis de datos.</p>
+        <p>Protección estratégica ante SAT, IMSS y auditorías fiscales mediante análisis de datos.</p>
     </div>
     <div class="sol-card">
         <i>⚖️</i>
         <h3>Blindaje Laboral</h3>
-        <p>Cumplimiento REPSE, STPS, contratos colectivos y blindaje sindical.</p>
+        <p>Gestión de cumplimiento REPSE, STPS, contratos colectivos y blindaje ante sindicatos.</p>
     </div>
     <div class="sol-card">
-        <i>📈</i>
+        <i>📊</i>
         <h3>Inteligencia Financiera</h3>
-        <p>Modelado de flujos de efectivo y detección de riesgo de quiebra.</p>
+        <p>Modelado de flujos de efectivo, optimización de liquidez y detección de riesgo de quiebra.</p>
     </div>
     <div class="sol-card">
         <i>🔐</i>
         <h3>Soberanía de Datos</h3>
-        <p>Infraestructura privada para protección de activos intelectuales e INAI.</p>
+        <p>Infraestructura privada para la protección de activos intelectuales y cumplimiento INAI.</p>
     </div>
 </div>
 
@@ -139,21 +148,22 @@
 <script>
     const API = "https://mesan-api.onrender.com";
     async function analizar() {
-        const t = document.getElementById("input").value.trim();
-        if(!t) return;
-        const b = document.getElementById("mainBtn");
-        b.innerText = "ANALIZANDO...";
+        const text = document.getElementById("input").value.trim();
+        if(!text) return;
+        const btn = document.getElementById("mainBtn");
+        btn.innerText = "ANALIZANDO...";
         try {
-            const r = await fetch(API + "/ai/diagnostico", {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({texto: t})
+            const res = await fetch(API + "/ai/diagnostico", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({texto: text})
             });
-            const d = await r.json();
+            const data = await res.json();
             document.getElementById("dash").style.display = "block";
-            document.getElementById("v-riesgo").innerText = (d.riesgo_pct || 87) + "%";
-            document.getElementById("v-impacto").innerText = "$" + (d.impacto_min || 0).toLocaleString();
+            document.getElementById("v-riesgo").innerText = (data.riesgo_pct || 87) + "%";
+            document.getElementById("v-impacto").innerText = "$" + (data.impacto_min || 0).toLocaleString();
         } catch(e) { console.error(e); }
-        finally { b.innerText = "Iniciar Diagnóstico Matemático"; }
+        finally { btn.innerText = "Iniciar Diagnóstico Matemático"; }
     }
 </script>
 </body>
