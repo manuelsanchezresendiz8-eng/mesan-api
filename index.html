@@ -3,512 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω — Predictive Analytics</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>MESAN Omega</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
-
-body {
-    background: #020617;
-    color: #ffffff;
-    font-family: 'DM Sans', sans-serif;
-    overflow-x: hidden;
-    position: relative;
-}
-
-/* ESTRELLAS */
-.stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-.star { position: absolute; background: rgba(255,255,255,0.6); border-radius: 50%; animation: twinkle var(--d) infinite; }
-@keyframes twinkle { 0%,100%{opacity:0.15;transform:scale(1);} 50%{opacity:0.8;transform:scale(1.4);} }
-
-/* GLOW SUPERIOR */
-.glow-top { position: fixed; top: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(59,130,246,0.8), transparent); box-shadow: 0 0 20px 2px rgba(59,130,246,0.8); z-index: 101; }
-
-/* NAVBAR */
-.navbar {
-    position: fixed;
-    top: 0; width: 100%;
-    padding: 20px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 100;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    background: rgba(2,6,23,0.8);
-    backdrop-filter: blur(12px);
-}
-
-.nav-logo { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 4px; color: #fff; }
-.nav-logo span { color: #3B82F6; }
-.nav-tag { font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.3); }
-.nav-dots { display: flex; gap: 5px; }
-.dot { width: 5px; height: 5px; background: #60A5FA; border-radius: 50%; opacity: 0.7; }
-
-/* HERO SECTION */
-.hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 100px 24px 60px;
-    position: relative;
-    z-index: 1;
-}
-
-.glow-center {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 600px;
-    height: 400px;
-    background: radial-gradient(ellipse, rgba(30,80,180,0.2) 0%, transparent 70%);
-    pointer-events: none;
-}
-
-.hero h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(38px, 8vw, 56px);
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -1px;
-    margin-bottom: 24px;
-}
-
-.hero h1 span { color: #22D3EE; }
-
-.hero p {
-    font-size: 16px;
-    line-height: 1.7;
-    color: rgba(255,255,255,0.45);
-    font-weight: 300;
-    max-width: 540px;
-    margin: 0 auto 48px;
-}
-
-/* BOTÓN PRINCIPAL */
-.btn-primary {
-    position: relative;
-    padding: 16px 48px;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(6,182,212,0.5);
-    color: #22D3EE;
-    font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 4px;
-    cursor: pointer;
-    transition: all 0.3s;
-    backdrop-filter: blur(8px);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-}
-
-.btn-primary:hover { background: rgba(6,182,212,0.1); color: #fff; box-shadow: 0 0 30px rgba(6,182,212,0.2); }
-.btn-primary::before { content:''; position:absolute; top:-1px; left:-1px; width:8px; height:8px; border-top:1px solid #22D3EE; border-left:1px solid #22D3EE; }
-.btn-primary::after { content:''; position:absolute; bottom:-1px; right:-1px; width:8px; height:8px; border-bottom:1px solid #22D3EE; border-right:1px solid #22D3EE; }
-
-/* COUNTER */
-.counter-box {
-    margin-top: 48px;
-    padding: 24px 40px;
-    background: rgba(8,18,42,0.7);
-    border-left: 3px solid #22D3EE;
-    backdrop-filter: blur(8px);
-    text-align: left;
-    min-width: 320px;
-}
-
-.counter-label { font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 8px; }
-.counter-value { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 700; color: #22D3EE; }
-.counter-alert { margin-top: 8px; font-size: 12px; color: #EF4444; min-height: 18px; }
-
-/* SECCIÓN ACCIONES */
-.section {
-    position: relative;
-    z-index: 1;
-    padding: 60px 24px;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.section-label { font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 32px; text-align: center; }
-
-/* CARDS DE ACCESO */
-.cards-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
-
-.access-card {
-    padding: 22px 24px;
-    background: rgba(8,18,42,0.6);
-    border: 1px solid rgba(255,255,255,0.06);
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-}
-
-.access-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:rgba(6,182,212,0.3); transition:0.3s; }
-.access-card:hover { border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05); }
-.access-card:hover::before { background: #22D3EE; }
-
-.card-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; color: #22D3EE; margin-bottom: 6px; text-transform: uppercase; }
-.card-desc { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; font-weight: 300; }
-
-/* RESULTADO */
-.result-box {
-    display: none;
-    margin-top: 32px;
-    padding: 24px;
-    background: rgba(8,18,42,0.8);
-    border: 1px solid rgba(6,182,212,0.2);
-    animation: fadeIn 0.4s ease;
-}
-
-@keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
-
-.result-content { font-size: 13px; line-height: 1.8; color: rgba(255,255,255,0.6); margin-bottom: 20px; }
-.result-content b { color: #fff; }
-.result-content .impacto { color: #EF4444; font-family: 'Syne', sans-serif; font-size: 18px; }
-
-.btn-pago {
-    width: 100%;
-    padding: 14px;
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.4);
-    color: #EF4444;
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-}
-
-.btn-pago:hover { background: rgba(239,68,68,0.2); }
-
-/* PLANES */
-.planes-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 14px;
-    margin-top: 16px;
-}
-
-.plan-card {
-    padding: 24px;
-    background: rgba(8,18,42,0.6);
-    border: 1px solid rgba(255,255,255,0.06);
-    transition: all 0.3s;
-}
-
-.plan-card.featured { border-color: rgba(6,182,212,0.4); background: rgba(6,182,212,0.04); }
-.plan-card:hover { border-color: rgba(6,182,212,0.3); }
-
-.plan-name { font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 10px; }
-.plan-price { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 4px; }
-.plan-period { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 20px; }
-
-.plan-features { list-style: none; margin-bottom: 24px; }
-.plan-features li { font-size: 12px; color: rgba(255,255,255,0.5); padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 8px; }
-.plan-features li::before { content: '→'; color: #22D3EE; font-size: 10px; }
-
-.btn-plan {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.6);
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-}
-
-.btn-plan:hover { border-color: #22D3EE; color: #22D3EE; }
-.plan-card.featured .btn-plan { border-color: #22D3EE; color: #22D3EE; }
-
-/* DISCLAIMER */
-.disclaimer {
-    padding: 32px 24px;
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
-}
-
-.terms-label { font-size: 11px; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-.terms-label input { accent-color: #22D3EE; }
-.terms-label a { color: #22D3EE; text-decoration: none; }
-
-.legal { font-size: 10px; color: rgba(255,255,255,0.2); line-height: 1.8; }
-
-/* FOOTER */
-.footer {
-    padding: 24px;
-    text-align: center;
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: rgba(255,255,255,0.15);
-    text-transform: uppercase;
-    border-top: 1px solid rgba(255,255,255,0.04);
-    position: relative;
-    z-index: 1;
-}
-
-/* WA FLOAT */
-.wa-float {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    padding: 10px 20px;
-    background: rgba(8,18,42,0.9);
-    border: 1px solid rgba(6,182,212,0.3);
-    color: #22D3EE;
-    font-size: 12px;
-    text-decoration: none;
-    z-index: 200;
-    transition: all 0.3s;
-    backdrop-filter: blur(8px);
-}
-
-.wa-float:hover { background: rgba(6,182,212,0.1); }
+body{margin:0;background:#05070d;color:white;font-family:'Inter',sans-serif;}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:20px;}
+.hero h1{font-family:'Syne';font-size:clamp(32px,6vw,48px);line-height:1.1;}
+.hero span{color:#00d4ff;}
+.hero p{margin-top:15px;opacity:0.7;max-width:500px;}
+textarea{margin-top:30px;width:100%;max-width:500px;height:100px;background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:15px;color:white;font-family:'Inter';font-size:13px;resize:none;}
+button{margin-top:20px;background:linear-gradient(90deg,#00ff88,#00d4ff);border:none;padding:14px 30px;border-radius:10px;cursor:pointer;font-weight:bold;font-size:14px;}
+.result{margin-top:40px;text-align:center;max-width:600px;width:100%;}
+.metric{font-size:36px;margin:10px 0;}
+.red{color:#ff4d4d;}
+.impacto{font-size:18px;opacity:0.8;margin:8px 0;}
+.causa{font-size:13px;opacity:0.6;margin-top:10px;line-height:1.6;}
+.wa-btn{margin-top:20px;background:#25d366;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;color:white;font-weight:bold;font-size:13px;}
+.loading{opacity:0.5;font-size:12px;margin-top:8px;}
+.footer{text-align:center;padding:20px;font-size:10px;opacity:0.2;letter-spacing:2px;}
 </style>
 </head>
 <body>
-
-<div class="glow-top"></div>
-<div class="stars" id="stars"></div>
-
-<!-- NAVBAR -->
-<nav class="navbar">
-    <div class="nav-logo">MESAN <span>Ω</span></div>
-    <div class="nav-tag">PREDICTIVE ANALYTICS</div>
-    <div class="nav-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-    <div class="glow-center"></div>
-
-    <h1>Arquitectura y<br><span>Soberanía</span><br>Empresarial</h1>
-
-    <p>Modelos matemáticos avanzados diseñados para detectar vulnerabilidades fiscales y laborales antes de que se conviertan en pasivos críticos.</p>
-
-    <button class="btn-primary" onclick="document.getElementById('acciones').scrollIntoView({behavior:'smooth'})">
-        INICIAR DIAGNÓSTICO
-    </button>
-
-    <div class="counter-box">
-        <div class="counter-label">Scanner de riesgo — Estado actual</div>
-        <div class="counter-value" id="counter">$0 MXN</div>
-        <div class="counter-alert" id="alerta">SISTEMA INACTIVO // ESPERANDO DIAGNÓSTICO</div>
-    </div>
-</section>
-
-<!-- ACCIONES -->
-<section class="section" id="acciones">
-    <div class="section-label">02 — Selecciona tu acceso</div>
-    <div class="cards-grid">
-
-        <div class="access-card" onclick="irDiagnostico()">
-            <div class="card-title">INICIAR DIAGNÓSTICO ESTRATÉGICO</div>
-            <div class="card-desc">Detecta riesgos fiscales, laborales y operativos en minutos. Motor IRP v4 con análisis IA real.</div>
-        </div>
-
-        <div class="access-card" onclick="window.location.href='/diagnostico.html'">
-            <div class="card-title">MESAN ENTERPRISE</div>
-            <div class="card-desc">Diagnóstico completo con impacto económico, plan de acción y análisis ejecutivo Big4.</div>
-        </div>
-
-        <div class="access-card" onclick="window.location.href='/admin.html'">
-            <div class="card-title">CONSULTOR ESTRATÉGICO IA</div>
-            <div class="card-desc">Análisis por industria con segunda capa de validación y recomendaciones ejecutivas.</div>
-        </div>
-
-    </div>
-
-    <!-- RESULTADO -->
-    <div class="result-box" id="result">
-        <div class="result-content" id="result-text"></div>
-        <button class="btn-pago" onclick="pago()">DESBLOQUEAR DIAGNÓSTICO COMPLETO — $299 MXN</button>
-    </div>
-</section>
-
-<!-- PLANES -->
-<section class="section" id="planes">
-    <div class="section-label">03 — Planes de acceso</div>
-    <div class="planes-grid">
-
-        <div class="plan-card">
-            <div class="plan-name">Diagnóstico</div>
-            <div class="plan-price">$299</div>
-            <div class="plan-period">pago único</div>
-            <ul class="plan-features">
-                <li>Diagnóstico completo IA</li>
-                <li>Reporte PDF ejecutivo</li>
-                <li>Plan de acción 30 días</li>
-                <li>Mensaje WhatsApp CEO</li>
-            </ul>
-            <button class="btn-plan" onclick="pago()">OBTENER DIAGNÓSTICO</button>
-        </div>
-
-        <div class="plan-card featured">
-            <div class="plan-name">Monitoreo Mensual</div>
-            <div class="plan-price">$970</div>
-            <div class="plan-period">por mes</div>
-            <ul class="plan-features">
-                <li>Todo en Diagnóstico</li>
-                <li>Monitoreo continuo</li>
-                <li>Alertas automáticas</li>
-                <li>Score dinámico mensual</li>
-                <li>Soporte prioritario</li>
-            </ul>
-            <button class="btn-plan" onclick="pagoMensual()">ACTIVAR MONITOREO</button>
-        </div>
-
-        <div class="plan-card">
-            <div class="plan-name">Enterprise</div>
-            <div class="plan-price">$2,999</div>
-            <div class="plan-period">por mes</div>
-            <ul class="plan-features">
-                <li>Todo en Monitoreo</li>
-                <li>Hasta 10 empresas</li>
-                <li>Dashboard corporativo</li>
-                <li>Consultor asignado</li>
-            </ul>
-            <button class="btn-plan" onclick="window.open('https://wa.me/526861629643','_blank')">CONTACTAR</button>
-        </div>
-
-    </div>
-</section>
-
-<!-- DISCLAIMER -->
-<div class="disclaimer">
-    <label class="terms-label">
-        <input type="checkbox" id="terminos">
-        Acepto <a href="/terminos.html">Términos</a> y <a href="/privacidad.html">Privacidad</a>
-    </label>
-    <div class="legal">
-        Los resultados generados por MESAN Ω son análisis automatizados basados en modelos propietarios de evaluación empresarial.<br>
-        Deben interpretarse como apoyo a la toma de decisiones y pueden requerir validación profesional según el contexto.<br>
-        Su uso fuera del sistema puede no reflejar el alcance completo de los factores considerados en el análisis.
-    </div>
+<div class="hero">
+    <h1>Detecta riesgos antes de <span>perder dinero</span></h1>
+    <p>IA estrategica para CEOs — diagnostico en 15 minutos</p>
+    <textarea id="texto" placeholder="Ej: El IMSS bloqueo mis cuentas y no puedo pagar nomina..."></textarea>
+    <button onclick="analizar()" id="btn">Analizar ahora</button>
+    <div class="loading" id="loading" style="display:none">Analizando... puede tardar unos segundos</div>
+    <div class="result" id="resultado"></div>
 </div>
-
-<!-- FOOTER -->
-<div class="footer">MESAN Ω © 2026 — SOBERANÍA EMPRESARIAL // MEXICALI, BC</div>
-
-<a href="https://wa.me/526861629643" target="_blank" class="wa-float">💬 WhatsApp</a>
-
+<div class="footer">MESAN Omega © 2026 — SOBERANIA EMPRESARIAL</div>
 <script>
-const API = "https://mesan-api.onrender.com";
-
-// ESTRELLAS
-const container = document.getElementById("stars");
-for (let i = 0; i < 150; i++) {
-    const star = document.createElement("div");
-    star.className = "star";
-    const size = Math.random() * 2 + 0.5;
-    star.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${Math.random()*4+2}s;animation-delay:${Math.random()*4}s;`;
-    container.appendChild(star);
-}
-
-// COUNTER
-window.onload = () => {
-    const valueDisplay = document.getElementById("counter");
-    const alertaDisplay = document.getElementById("alerta");
-    let current = 0;
-    const target = 142850;
-    const interval = setInterval(() => {
-        current += Math.floor(Math.random() * 8500);
-        if (current >= target) {
-            valueDisplay.innerText = `$${target.toLocaleString()} MXN`;
-            valueDisplay.style.color = "#EF4444";
-            alertaDisplay.innerText = "⚠ ALERTA: EXPOSICIÓN DE PASIVOS DETECTADA";
-            clearInterval(interval);
-        } else {
-            valueDisplay.innerText = `$${current.toLocaleString()} MXN`;
-        }
-    }, 50);
-};
-
-function irDiagnostico() {
-    window.location.href = "/diagnostico.html";
-}
-function irDiagnosticoViejo() {
-    const check = document.getElementById("terminos");
-    document.getElementById("result").style.display = "block";
-    document.getElementById("result-text").innerHTML = "⏳ Analizando estructura empresarial...";
-    setTimeout(() => {
-        document.getElementById("result-text").innerHTML = `
-        🚨 <b>EXPOSICIÓN DETECTADA</b><br><br>
-        — Riesgo fiscal SAT<br>
-        — Irregularidades IMSS<br>
-        — Incumplimiento operativo<br><br>
-        Impacto estimado:<br>
-        <span class="impacto">$120,000 - $450,000 MXN anuales</span>`;
-        document.getElementById("result").scrollIntoView({behavior:'smooth'});
-    }, 1800);
-}
-
-async async function pago() {
-    const check = document.getElementById("terminos");
-    if (!check.checked) { alert("Acepta los Términos para continuar."); return; }
-    try {
-        const res = await fetch(API + "/crear-sesion-omega", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ cliente_id: "cliente_" + Date.now(), sector: "PRIVADO", monto: 299, indice: 75 })
+const API="https://mesan-api.onrender.com";
+async function analizar(){
+    const texto=document.getElementById("texto").value.trim();
+    if(!texto){alert("Describe la situacion de tu empresa");return;}
+    const btn=document.getElementById("btn");
+    btn.disabled=true;btn.innerText="Analizando...";
+    document.getElementById("loading").style.display="block";
+    try{
+        const res=await fetch(API+"/ai/diagnostico",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({texto:texto,respuestas:{}})
         });
-        const data = await res.json();
-        if (data.url) window.location.href = data.url;
-        else alert("Error generando pago. Contacta por WhatsApp.");
-    } catch(e) { alert("Error de conexión"); }
-}
-
-async function pagoMensual() {
-    window.open("https://wa.me/526861629643?text=Quiero%20activar%20el%20plan%20de%20Monitoreo%20Mensual%20MESAN%20Ω", "_blank");
-}
-</script>
-
-</body>
-</html>
-<script>
-async function enviarCotizacion() {
-    // Capturamos los datos del formulario (ajusta los IDs según tu HTML)
-    const datos = {
-        empresa: document.getElementById('nombre_empresa').value,
-        giro: document.getElementById('giro_empresa').value,
-        metros_cuadrados: parseFloat(document.getElementById('m2').value),
-        turnos: parseInt(document.getElementById('turnos').value),
-        criticidad: document.getElementById('criticidad').value,
-        correo: document.getElementById('email').value,
-        telefono: document.getElementById('tel').value
-    };
-
-    try {
-        const respuesta = await fetch('https://TU-URL-DE-RENDER.onrender.com/cotizar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datos)
-        });
-
-        const resultado = await respuesta.json();
-
-        if (resultado.propuesta_economica) {
-            alert(`MESAN Ω ha calculado su propuesta: $${resultado.propuesta_economica} MXN mensualmente.`);
-            // Aquí podrías redirigir a una página de "Gracias" o mostrar el botón de descarga del PDF
-        }
-    } catch (error) {
-        console.error("Error en la conexión con MESAN Ω:", error);
-        alert("Hubo un error al procesar la cotización. Intente de nuevo.");
+        const d=await res.json();
+        const waMsg=encodeURIComponent(d.whatsapp||"Hola, acabo de hacer el diagnostico MESAN Omega. Quiero resolver el riesgo detectado.");
+        document.getElementById("resultado").innerHTML=
+            '<div class="metric red">'+(d.riesgo||"--")+'</div>'+
+            '<div class="impacto">$'+(d.impacto_min||0).toLocaleString()+' — $'+(d.impacto_max||0).toLocaleString()+' MXN</div>'+
+            '<div class="causa">'+(d.causas||[]).slice(0,2).join("<br>")||""+'</div>'+
+            '<br><button class="wa-btn" onclick="window.open(\'https://wa.me/526861629643?text='+waMsg+'\',\'_blank\')">Resolver por WhatsApp</button>';
+    }catch(e){
+        alert("Error de conexion. Intenta de nuevo.");
+    }finally{
+        btn.disabled=false;btn.innerText="Analizar ahora";
+        document.getElementById("loading").style.display="none";
     }
 }
 </script>
+</body>
+</html>
