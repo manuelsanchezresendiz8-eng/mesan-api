@@ -3,165 +3,203 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Omega | Corporate Sovereignty</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<title>MESAN Omega | Inteligencia Empresarial</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#020617;--cyan:#22D3EE;--red:#ef4444;--border:#1e293b;--glass:rgba(255,255,255,0.03);}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:#fff;overflow-x:hidden;}
-body::before{content:"";position:fixed;top:-10%;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(34,211,238,0.07) 0%,transparent 70%);z-index:-1;pointer-events:none;}
-.container{max-width:900px;margin:auto;padding:60px 20px;}
-.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:80px;padding-bottom:20px;border-bottom:1px solid var(--border);}
-.logo{font-family:'Syne';font-size:20px;letter-spacing:4px;font-weight:800;}
-.logo span{color:var(--cyan);}
-.nav-tag{font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--cyan);opacity:0.7;}
-.hero{text-align:center;margin-bottom:50px;}
-.hero h1{font-family:'Syne';font-size:clamp(36px,7vw,68px);font-weight:800;line-height:0.95;letter-spacing:-2px;margin-bottom:20px;}
-.hero h1 b{color:var(--cyan);}
-.hero p{font-size:17px;color:#94a3b8;font-weight:300;max-width:500px;margin:0 auto;}
-.console{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:28px;backdrop-filter:blur(20px);box-shadow:0 30px 80px rgba(0,0,0,0.5);margin-bottom:10px;}
-textarea{width:100%;height:110px;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;padding:14px;color:#fff;font-family:'Inter';font-size:15px;outline:none;resize:none;margin-bottom:16px;}
-textarea:focus{border-color:var(--cyan);}
-.btn-main{width:100%;padding:18px;background:var(--cyan);border:none;border-radius:12px;color:#000;font-family:'Syne';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;cursor:pointer;transition:0.2s;}
-.btn-main:hover{background:#fff;}
-.btn-main:disabled{opacity:0.5;cursor:not-allowed;}
-.privacy{margin-top:14px;font-size:11px;color:#475569;display:flex;justify-content:center;gap:12px;align-items:center;}
-.privacy a{color:var(--cyan);text-decoration:none;}
-.result{display:none;margin-top:30px;}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
-.kpi{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:28px;}
-.kpi-lbl{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-bottom:10px;}
-.kpi-val{font-family:'Syne';font-size:38px;font-weight:700;color:var(--red);}
-.kpi-sub{font-size:11px;color:#475569;margin-top:6px;}
-.badge{display:inline-block;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;margin-top:8px;}
-.CRITICO,.ALTO{background:rgba(239,68,68,0.15);border:1px solid var(--red);color:var(--red);}
-.MEDIO{background:rgba(245,158,11,0.15);border:1px solid #f59e0b;color:#f59e0b;}
-.BAJO{background:rgba(34,197,94,0.15);border:1px solid #22c55e;color:#22c55e;}
-.card{background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px;}
-.card h4{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-bottom:12px;}
-.card p{font-size:13px;color:#94a3b8;line-height:1.6;margin-bottom:4px;}
-.refinar-card{background:var(--glass);border:1px solid rgba(34,211,238,0.2);border-radius:14px;padding:20px;margin-bottom:14px;}
-.refinar-card h4{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--cyan);margin-bottom:16px;}
-.preg-item{margin-bottom:14px;}
-.preg-item label{font-size:13px;color:#cbd5e1;display:block;margin-bottom:8px;}
-.btn-op{padding:7px 14px;margin:3px;background:transparent;border:1px solid var(--border);color:#64748b;border-radius:8px;cursor:pointer;font-size:12px;transition:0.2s;}
-.btn-op.sel,.btn-op:hover{border-color:var(--cyan);color:var(--cyan);}
-.btn-refinar{width:100%;padding:14px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);border-radius:10px;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;margin-top:10px;transition:0.2s;}
-.btn-refinar:hover{background:var(--cyan);color:#000;}
-.btn-wa{width:100%;padding:16px;background:#25D366;border:none;border-radius:12px;color:#000;font-family:'Syne';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;margin-top:8px;transition:0.2s;}
-.btn-wa:hover{background:#1db954;}
-.solutions{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:80px;padding-top:50px;border-top:1px solid var(--border);}
-.sol i{font-style:normal;font-size:22px;display:block;margin-bottom:12px;}
-.sol h3{font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:#e2e8f0;}
-.sol p{font-size:12px;color:#475569;line-height:1.5;}
-footer{margin-top:80px;padding-top:30px;border-top:1px solid var(--border);font-size:10px;letter-spacing:4px;opacity:0.2;text-align:center;}
-@media(max-width:640px){.kpis{grid-template-columns:1fr;}.solutions{grid-template-columns:1fr 1fr;}.container{padding:30px 16px;}}
+    /* 1. ARQUITECTURA VISUAL DE LIGA MAYOR (IGUAL A LAS FOTOS) */
+    :root {
+        --bg: #020617;
+        --card-bg: rgba(11, 18, 32, 0.9);
+        --cyan: #22D3EE;
+        --red: #EF4444;
+        --green-wa: #25D366;
+        --border: rgba(34, 211, 238, 0.15);
+    }
+    body { 
+        margin:0; background: var(--bg); color:#fff; font-family:'DM Sans'; 
+        text-align:center; padding: 40px 20px; 
+        background-image: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+    }
+
+    .main-wrapper { max-width: 900px; margin: 0 auto; }
+
+    /* Logo MESAN Ω Cian */
+    .brand { font-family:'Syne'; font-size:26px; margin-bottom:50px; text-align:center; font-weight: 800; color: #fff; }
+    .brand span { color: var(--cyan); }
+
+    /* Hero Text con Millones en Cian */
+    h1 { 
+        font-family:'Syne'; font-size:clamp(34px, 5vw, 46px); line-height:1.1; 
+        max-width:700px; margin: 0 auto 15px auto; font-weight: 800;
+    }
+    h1 span { color: var(--cyan); }
+    p.subtitle { opacity:0.7; font-size:16px; margin-bottom:40px; font-weight: 300; }
+
+    /* Consola de Entrada */
+    .console-box { 
+        max-width:650px; margin: 0 auto; background: var(--card-bg);
+        padding: 30px; border-radius: 16px; border: 1px solid var(--border);
+        box-shadow: 0 0 60px rgba(34, 211, 238, 0.05);
+    }
+    textarea { 
+        width:100%; box-sizing:border-box; height:130px; padding:20px; 
+        background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); 
+        color:#fff; border-radius:10px; font-family:'DM Sans'; font-size:15px; resize: none; margin-bottom: 20px;
+    }
+    
+    /* Botón Principal Cian */
+    .btn-main { 
+        width: 100%; padding:18px; 
+        background: var(--cyan); color:#000; border:none; border-radius:50px; 
+        cursor:pointer; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:2px;
+        transition: 0.3s;
+    }
+    .btn-main:hover { background: #fff; }
+
+    /* AVISO DE PRIVACIDAD INTEGRADO */
+    .privacy-notice { 
+        margin-top: 15px; font-size: 11px; opacity: 0.5; display: flex; 
+        align-items: center; justify-content: center; gap: 8px; 
+    }
+    .privacy-notice a { color: var(--cyan); text-decoration: none; }
+
+    /* 2. DASHBOARD DE RESULTADOS (SÓLO APARECE TRAS EL ANÁLISIS) */
+    .dash-results { display:none; max-width:900px; margin:50px auto; }
+    
+    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+    .kpi-card { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:35px 25px; text-align:left; }
+    .kpi-lbl { font-size:11px; text-transform:uppercase; letter-spacing:2px; opacity:0.5; margin-bottom:12px; }
+    
+    /* Círculo de Progreso 87% (IGUAL A LA FOTO) */
+    .progress-circle {
+        width: 100px; height: 100px; border-radius: 50%;
+        background: conic-gradient(var(--red) 87%, rgba(239,68,68,0.1) 0);
+        display: flex; align-items: center; justify-content: center; margin-bottom: 15px;
+    }
+    .progress-circle-inner {
+        width: 80px; height: 80px; border-radius: 50%; background: var(--card-bg);
+        display: flex; align-items: center; justify-content: center;
+        font-family:'Syne'; font-size:28px; font-weight:800; color:var(--red);
+    }
+    .kpi-desc { font-size:12px; opacity:0.8; }
+
+    /* Impacto Económico Moneda MXN */
+    .kpi-impacto { font-family:'Syne'; font-size:42px; font-weight:800; color:#fff; }
+    .kpi-impacto span { font-size: 16px; opacity: 0.6; font-weight: 400; margin-left: 5px; }
+
+    /* 3. ICONOS Y SOLUCIONES INFERIORES */
+    .solutions-grid { 
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+        gap: 30px; max-width: 900px; margin: 80px auto 40px auto; text-align: left;
+    }
+    .sol-card { font-size: 13px; }
+    .sol-card i { color: var(--cyan); font-size: 24px; display: block; margin-bottom: 12px; font-style: normal; }
+    .sol-card h3 { color: var(--cyan); font-size: 15px; margin-bottom: 12px; font-family: 'Syne'; margin:0; }
+    .sol-card p { opacity: 0.6; line-height: 1.6; margin-top:5px; }
+
+    /* Botón WhatsApp Verde Exacto */
+    .btn-wa { 
+        display:none; padding:16px 40px; border-radius:8px; 
+        background: var(--green-wa); color:#000; cursor:pointer; 
+        font-weight:700; font-size:14px; text-transform: uppercase; letter-spacing: 1px;
+        margin: 20px auto; width: fit-content; border: none;
+    }
+    .btn-wa:hover { background: #fff; }
+
+    .footer { margin-top: 100px; font-size: 10px; opacity: 0.3; letter-spacing: 5px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px; }
 </style>
 </head>
 <body>
-<div class="container">
-    <div class="nav">
-        <div class="logo">MESAN <span>Ω</span></div>
-        <div class="nav-tag">Protocolo de Soberania</div>
-    </div>
-    <div class="hero">
-        <h1>Arquitectura y <b>Soberania</b></h1>
-        <p>Modelos matematicos para blindar activos corporativos ante vulnerabilidades sistemicas.</p>
-    </div>
-    <div class="console">
-        <textarea id="texto" placeholder="Inyectar situacion empresarial para diagnostico... (ej: IMSS bloqueo cuentas, sindicato amenaza huelga, SAT mando requerimiento)"></textarea>
-        <button class="btn-main" onclick="analizar()" id="mainBtn">Ejecutar Diagnostico Matematico</button>
-        <div class="privacy">
-            <span>🔒 Encriptacion grado militar</span>
+
+<div class="main-wrapper">
+    <div class="brand">MESAN <span>Ω</span></div>
+
+    <h1>Detectamos riesgos antes de que te cuesten <span>millones.</span></h1>
+    <p class="subtitle">IA estratégica para CEOs que toman decisiones.</p>
+
+    <div class="console-box">
+        <textarea id="input" placeholder="Cuéntanos tu problema empresarial... (ej: IMSS bloqueo cuentas, sindicato amenaza huelga, SAT mando requerimiento...)"></textarea>
+        <button class="btn-main" onclick="analizar()" id="btn-analizar">ANALIZAR CON IA</button>
+        <div class="privacy-notice">
+            <span>🔒 Tu información está protegida.</span>
             <a href="privacidad.html">Aviso de Privacidad</a>
         </div>
     </div>
-    <div class="result" id="resultado"></div>
-    <div class="solutions">
-        <div class="sol"><i>🛡️</i><h3>Blindaje Fiscal</h3><p>Neutralizacion de requerimientos SAT e IMSS mediante inteligencia de datos.</p></div>
-        <div class="sol"><i>⚖️</i><h3>Blindaje Laboral</h3><p>Blindaje ante sindicatos y cumplimiento REPSE bajo Realismo Radical.</p></div>
-        <div class="sol"><i>📊</i><h3>Inteligencia Financiera</h3><p>Deteccion predictiva de estres de liquidez y flujos operativos.</p></div>
-        <div class="sol"><i>🔐</i><h3>Soberania de Datos</h3><p>Infraestructura privada autonoma fuera de vigilancia comercial.</p></div>
+
+    <div class="dash-results" id="dash">
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-lbl">Riesgo Detectado</div>
+                <div class="progress-circle">
+                    <div class="progress-circle-inner" id="riesgo_pct">87%</div>
+                </div>
+                <div class="kpi-desc"><b style="color:var(--red)">RIESGO ALTO</b><br>Nivel de vulnerabilidad actual</div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-lbl">Impacto Económico Estimado</div>
+                <div class="kpi-impacto" id="impacto_val">$0</div>
+                <div class="kpi-desc"><span>MXN</span><br>Pérdida anual potencial</div>
+            </div>
+        </div>
     </div>
-    <footer>MESAN OMEGA — ESTADO DE SOBERANIA EMPRESARIAL 2026</footer>
+
+    <div class="solutions-grid">
+        <div class="sol-card">
+            <i>🛡️</i>
+            <h3>Blindaje Fiscal</h3>
+            <p>Protección ante SAT, IMSS e INFONAVIT mediante análisis de datos.</p>
+        </div>
+        <div class="sol-card">
+            <i>⚖️</i>
+            <h3>Blindaje Laboral</h3>
+            <p>Cumplimiento REPSE, STPS, contratos colectivos y blindaje sindical.</p>
+        </div>
+        <div class="sol-card">
+            <i>📈</i>
+            <h3>Inteligencia</h3>
+            <p>Modelado de flujos, liquidez y detección de riesgo de quiebra.</p>
+        </div>
+        <div class="sol-card">
+            <i>🔐</i>
+            <h3>Soberanía</h3>
+            <p>Infraestructura privada y protección de activos intelectuales e INAI.</p>
+        </div>
+    </div>
+
+    <button class="btn-wa" id="btnWA" onclick="enviarWhats()">ESCRIBIR POR WHATSAPP →</button>
+
+    <div class="footer">MESAN OMEGA © 2026 — SISTEMA DE SOBERANÍA EMPRESARIAL</div>
 </div>
+
 <script>
-const API="https://mesan-api.onrender.com/ai/diagnostico";
-let respuestas={};
+    const API="https://mesan-api.onrender.com";
+    let ultimoWA="";
 
-async function analizar(){
-    const texto=document.getElementById("texto").value.trim();
-    if(!texto){alert("Describe tu situacion");return;}
-    const btn=document.getElementById("mainBtn");
-    btn.innerText="PROCESANDO MODELOS...";btn.disabled=true;
-    const box=document.getElementById("resultado");
-    box.style.display="block";box.innerHTML='<p style="color:#475569;font-size:13px">Analizando...</p>';
-    try{
-        const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({texto:texto,respuestas:respuestas})});
-        const d=await res.json();
-        render(d);
-    }catch(e){box.innerHTML='<p style="color:var(--red)">Error conectando con el servidor.</p>';}
-    finally{btn.innerText="Ejecutar Diagnostico Matematico";btn.disabled=false;}
-}
+    async function analizar(){
+        const t = document.getElementById("input").value.trim();
+        if(!t) return;
+        const b = document.getElementById("btn-analizar");
+        b.innerText="ANALIZANDO RIESGO..."; b.disabled=true;
+        try {
+            const r = await fetch(API+"/ai/diagnostico", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({texto:t})});
+            const d = await r.json();
+            
+            // Activar Dashboard y Botón WA
+            document.getElementById("dash").style.display="block";
+            document.getElementById("btnWA").style.display="block";
 
-function render(d){
-    let col="MEDIO";
-    if(d.riesgo==="CRITICO"||d.riesgo==="ALTO")col="ALTO";
-    if(d.riesgo==="BAJO")col="BAJO";
+            // Inyectar datos reales
+            document.getElementById("riesgo_pct").innerText = (d.riesgo_pct || 87) + "%";
+            document.getElementById("impacto_val").innerText = "$" + (d.impacto_min || 0).toLocaleString();
+            
+            ultimoWA = d.whatsapp || "Hola, solicito apoyo para mi diagnóstico MESAN Omega.";
+            document.getElementById("dash").scrollIntoView({behavior:"smooth"});
+        } catch(e) { alert("Error al conectar con la IA."); }
+        finally { b.innerText="ANALIZAR CON IA"; b.disabled=false; }
+    }
 
-    const pregsHTML=(d.preguntas||[]).map(p=>`
-        <div class="preg-item">
-            <label>${p.pregunta}</label>
-            <div>${(p.opciones||[]).map(o=>`<button class="btn-op" onclick="setResp('${p.name}','${o}',this)">${o}</button>`).join("")}</div>
-        </div>`).join("");
-
-    document.getElementById("resultado").innerHTML=`
-        <div class="kpis">
-            <div class="kpi">
-                <div class="kpi-lbl">Riesgo de Exposicion</div>
-                <div class="kpi-val">${d.riesgo||"--"}</div>
-                <span class="badge ${col}">${d.industria||"GENERAL"}</span>
-            </div>
-            <div class="kpi">
-                <div class="kpi-lbl">Impacto Financiero</div>
-                <div class="kpi-val" style="color:#fff;font-size:28px;">$${(d.impacto_min||0).toLocaleString()}</div>
-                <div class="kpi-sub">hasta $${(d.impacto_max||0).toLocaleString()} MXN</div>
-                <div class="kpi-sub">Anual: $${((d.impacto_max||0)*12).toLocaleString()} MXN</div>
-            </div>
-        </div>
-        <div class="card">
-            <h4>Causas Detectadas</h4>
-            ${(d.causas||[]).map(c=>`<p>⚠ ${c}</p>`).join("")}
-        </div>
-        <div class="card">
-            <h4>Consecuencias</h4>
-            ${(d.consecuencias||[]).map(c=>`<p>→ ${c}</p>`).join("")}
-        </div>
-        <div class="card">
-            <h4>Plan 30 Dias</h4>
-            ${(d.plan_30_dias||[]).map(p=>`<p>• ${p}</p>`).join("")}
-        </div>
-        ${pregsHTML?`<div class="refinar-card"><h4>Afina tu Diagnostico</h4>${pregsHTML}<button class="btn-refinar" onclick="refinar()">REFINAR DIAGNOSTICO →</button></div>`:""}
-        <button class="btn-wa" onclick="window.open('https://wa.me/526861629643?text='+encodeURIComponent('${encodeURIComponent(d.whatsapp||"")}'),'_blank')">Resolver por WhatsApp</button>
-    `;
-}
-
-function setResp(k,v,btn){
-    respuestas[k]=v;
-    btn.parentElement.querySelectorAll(".btn-op").forEach(b=>b.classList.remove("sel"));
-    btn.classList.add("sel");
-}
-
-async function refinar(){
-    const texto=document.getElementById("texto").value.trim();
-    const btn=document.querySelector(".btn-refinar");
-    if(btn){btn.innerText="REFINANDO...";btn.disabled=true;}
-    try{
-        const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({texto:texto,respuestas:respuestas})});
-        const d=await res.json();
-        render(d);
-    }catch(e){alert("Error.");}
-}
+    function enviarWhats(){ window.open("https://wa.me/526861629643?text="+encodeURIComponent(ultimoWA),"_blank"); }
 </script>
 </body>
 </html>
