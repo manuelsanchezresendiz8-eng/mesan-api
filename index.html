@@ -5,219 +5,227 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MESAN Ω</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
 body{
     margin:0;
     background:#020617;
-    color:#fff;
-    font-family:'DM Sans';
+    color:#E2E8F0;
+    font-family:'Inter';
+}
+
+/* NAV */
+.nav{
+    display:flex;
+    justify-content:space-between;
+    padding:20px 40px;
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.logo{font-weight:600;letter-spacing:2px;color:#fff;}
+
+.cta-top{
+    border:1px solid rgba(255,255,255,.1);
+    padding:8px 16px;
+    border-radius:6px;
+    cursor:pointer;
 }
 
 /* HERO */
 .hero{
     text-align:center;
-    padding:100px 20px 60px;
+    padding:120px 20px 80px;
 }
 
-.logo{font-family:'Syne';letter-spacing:4px;}
-.tag{font-size:12px;color:#64748B;margin-bottom:20px;}
+.hero h1{
+    font-size:48px;
+    color:#fff;
+    margin-bottom:10px;
+}
 
-h1{font-family:'Syne';font-size:40px;margin-bottom:10px;}
-.sub{color:#94A3B8;max-width:600px;margin:auto;}
+.hero p{
+    color:#94A3B8;
+    max-width:600px;
+    margin:auto;
+    margin-bottom:40px;
+}
+
+/* INPUT */
+.input-box{
+    max-width:600px;
+    margin:auto;
+}
 
 textarea{
-    width:90%;max-width:600px;height:120px;
-    background:#0B1220;border:1px solid rgba(255,255,255,.1);
-    border-radius:12px;padding:15px;color:#fff;
+    width:100%;
+    height:120px;
+    background:#0B1220;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;
+    padding:15px;
+    color:#fff;
 }
 
 .btn{
-    margin-top:20px;padding:14px 40px;
-    background:linear-gradient(90deg,#22D3EE,#3B82F6);
-    border:none;border-radius:10px;color:white;
-    cursor:pointer;font-weight:600;
+    width:100%;
+    margin-top:15px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#2563EB;
+    color:#fff;
+    font-weight:500;
+    cursor:pointer;
 }
 
-/* RESULTADO */
+/* RESULT */
 .result{
     display:none;
-    margin-top:40px;
+    margin-top:50px;
 }
 
-.cards{
-    display:flex;
-    justify-content:center;
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
     gap:20px;
-    flex-wrap:wrap;
+    max-width:800px;
+    margin:auto;
 }
 
 .card{
     background:#0B1220;
     padding:20px;
-    border-radius:10px;
-    width:200px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.05);
 }
 
-.big{font-size:28px;color:#EF4444;}
-
-/* SCANNER */
-.scanner{
-    margin-top:30px;
-    font-size:14px;
-    color:#22D3EE;
-    display:none;
+.value{
+    font-size:28px;
+    color:#22C55E;
 }
 
-/* REFINAR */
-.preguntas{
-    margin-top:30px;
-    display:none;
+/* ANALYSIS BOX */
+.analysis{
+    max-width:800px;
+    margin:40px auto;
+    padding:25px;
+    background:#0B1220;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.05);
+    text-align:left;
+    line-height:1.6;
 }
 
-.pregunta button{
-    margin:5px;
-    padding:8px 14px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
+/* FEATURES */
+.features{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    max-width:1000px;
+    margin:80px auto;
+    padding:0 20px;
 }
 
-/* WA */
-.btn-wa{
-    margin-top:20px;
-    background:#25D366;
-    color:#000;
+.feature{
+    padding:20px;
+    background:#0B1220;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+/* FOOTER */
+.footer{
+    text-align:center;
+    padding:40px;
+    font-size:12px;
+    color:#64748B;
 }
 </style>
 </head>
 
 <body>
 
+<div class="nav">
+    <div class="logo">MESAN Ω</div>
+    <div class="cta-top">Acceso Enterprise</div>
+</div>
+
 <section class="hero">
+<h1>Diagnóstico Empresarial en Tiempo Real</h1>
+<p>Detecta riesgos fiscales, laborales y financieros antes de que generen pérdidas.</p>
 
-<div class="logo">MESAN Ω</div>
-<div class="tag">Predictive Analytics</div>
-
-<h1>Detectamos riesgos antes de que te cuesten millones</h1>
-
-<p class="sub">
-Modelos matemáticos para anticipar problemas fiscales, laborales y financieros.
-</p>
-
-<textarea id="input" placeholder="Describe tu situación empresarial..."></textarea><br>
-<button class="btn" onclick="analizar()">Iniciar Diagnóstico Matemático</button>
-
-<div class="scanner" id="scanner">⚡ Analizando estructura empresarial...</div>
-
-<!-- RESULTADO -->
-<div class="result" id="resultado">
-
-<div class="cards">
-    <div class="card">
-        <div class="big" id="score">0%</div>
-        <p>Índice de Riesgo</p>
-    </div>
-
-    <div class="card">
-        <div class="big" id="impacto">$0</div>
-        <p>Impacto Estimado</p>
-    </div>
+<div class="input-box">
+<textarea id="input" placeholder="Ej: El IMSS bloqueó cuentas y tengo empleados sin registrar..."></textarea>
+<button class="btn" onclick="analizar()">Analizar</button>
 </div>
 
-<!-- REFINAR -->
-<div class="preguntas" id="preguntas"></div>
+<div class="result" id="result">
 
-<button class="btn" onclick="refinar()" id="btnRefinar">Refinar Diagnóstico</button>
-
-<button class="btn btn-wa" onclick="enviarWhats()">Enviar a WhatsApp</button>
-
+<div class="grid">
+<div class="card">
+<div class="value" id="score">0%</div>
+<p>Riesgo</p>
 </div>
 
+<div class="card">
+<div class="value" id="impacto">$0</div>
+<p>Impacto mensual</p>
+</div>
+
+<div class="card">
+<div class="value" id="nivel">-</div>
+<p>Nivel</p>
+</div>
+</div>
+
+<div class="analysis" id="analysis"></div>
+
+<button class="btn" onclick="whatsapp()">Hablar con Consultor</button>
+
+</div>
 </section>
 
-<script>
-const API = "https://mesan-api.onrender.com"; // CAMBIA SI ES NECESARIO
+<section class="features">
+<div class="feature">🛡️ Blindaje Fiscal</div>
+<div class="feature">⚖️ Blindaje Laboral</div>
+<div class="feature">📈 Inteligencia Financiera</div>
+<div class="feature">🔐 Soberanía de Datos</div>
+</section>
 
-let respuestas = {};
+<div class="footer">MESAN Ω © 2026</div>
+
+<script>
+const API = "https://mesan-api.onrender.com";
 let mensaje = "";
 
-// ANALIZAR
 async function analizar(){
-    const texto = document.getElementById("input").value;
-
-    document.getElementById("scanner").style.display = "block";
-
-    setTimeout(async ()=>{
-        const res = await fetch(API + "/diagnostico",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({texto})
-        });
-
-        const data = await res.json();
-
-        document.getElementById("scanner").style.display = "none";
-        document.getElementById("resultado").style.display = "block";
-
-        document.getElementById("score").innerText = data.score + "%";
-        document.getElementById("impacto").innerText =
-            "$" + data.impacto.toLocaleString();
-
-        mensaje = `MESAN Ω\nRiesgo: ${data.riesgo}\nImpacto: $${data.impacto}`;
-
-        generarPreguntas();
-    },1500);
-}
-
-// PREGUNTAS
-function generarPreguntas(){
-    const cont = document.getElementById("preguntas");
-    cont.style.display = "block";
-
-    cont.innerHTML = `
-    <div class="pregunta">
-    <p>¿Recibiste notificación del SAT o IMSS?</p>
-    <button onclick="setResp('notificacion','Si')">Si</button>
-    <button onclick="setResp('notificacion','No')">No</button>
-    <button onclick="setResp('notificacion','No se')">No sé</button>
-    </div>
-
-    <div class="pregunta">
-    <p>¿Cuántos empleados tienes?</p>
-    <button onclick="setResp('empleados','1-5')">1-5</button>
-    <button onclick="setResp('empleados','6-20')">6-20</button>
-    <button onclick="setResp('empleados','Mas de 20')">+20</button>
-    </div>
-    `;
-}
-
-function setResp(k,v){
-    respuestas[k]=v;
-}
-
-// REFINAR
-async function refinar(){
     const texto = document.getElementById("input").value;
 
     const res = await fetch(API + "/diagnostico",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({texto,respuestas})
+        body:JSON.stringify({texto})
     });
 
     const data = await res.json();
 
+    document.getElementById("result").style.display = "block";
+
     document.getElementById("score").innerText = data.score + "%";
-    document.getElementById("impacto").innerText =
-        "$" + data.impacto.toLocaleString();
+    document.getElementById("impacto").innerText = "$" + data.impacto.toLocaleString();
+    document.getElementById("nivel").innerText = data.riesgo;
+
+    document.getElementById("analysis").innerHTML = `
+    <b>Diagnóstico:</b><br>
+    Riesgo ${data.riesgo} detectado con impacto financiero relevante.<br>
+    Se recomienda intervención inmediata para evitar escalamiento.
+    `;
 
     mensaje = `MESAN Ω\nRiesgo: ${data.riesgo}\nImpacto: $${data.impacto}`;
 }
 
-// WHATSAPP
-function enviarWhats(){
+function whatsapp(){
     window.open("https://wa.me/526861629643?text=" + encodeURIComponent(mensaje));
 }
 </script>
