@@ -3,135 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω — Intelligence Engine</title>
+<title>MESAN Ω — Intelligence</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-    background:#050816;
-    color:#fff;
     font-family:'Inter',sans-serif;
+    background:#020617;
+    color:#fff;
 }
 
 /* HERO */
 .hero{
+    max-width:900px;
+    margin:auto;
     padding:80px 20px;
     text-align:center;
 }
 
 .logo{
-    font-size:22px;
-    letter-spacing:3px;
     font-weight:800;
+    letter-spacing:3px;
     margin-bottom:10px;
 }
 
-.tag{
-    font-size:12px;
-    color:#6b7280;
-    letter-spacing:3px;
+h1{
+    font-size:36px;
+    margin-bottom:10px;
+}
+
+.sub{
+    color:#94a3b8;
     margin-bottom:40px;
 }
 
-h1{
-    font-size:32px;
-    font-weight:800;
-    margin-bottom:16px;
-}
-
-p{
-    color:#9ca3af;
-    max-width:500px;
-    margin:auto;
-}
-
 /* INPUT */
-.box{
-    margin-top:40px;
-}
-
 textarea{
     width:100%;
-    max-width:500px;
-    height:100px;
-    background:#0b1222;
-    border:1px solid #1f2937;
-    color:#fff;
+    height:110px;
+    background:#020617;
+    border:1px solid #1e293b;
+    border-radius:10px;
     padding:12px;
+    color:#fff;
 }
 
-/* BUTTON */
-.btn{
-    margin-top:20px;
-    padding:14px 30px;
+button{
+    margin-top:15px;
+    width:100%;
+    padding:14px;
     background:#06b6d4;
     border:none;
-    color:#000;
-    font-weight:700;
+    border-radius:10px;
+    font-weight:600;
     cursor:pointer;
-}
-
-/* SCAN */
-.scan{
-    margin-top:40px;
-    display:none;
-}
-
-.bar{
-    width:300px;
-    height:6px;
-    background:#1f2937;
-    margin:20px auto;
-    overflow:hidden;
-}
-
-.fill{
-    height:100%;
-    width:0%;
-    background:#06b6d4;
-    animation:scan 2s forwards;
-}
-
-@keyframes scan{
-    to{width:100%}
-}
-
-.log{
-    font-size:12px;
-    color:#6b7280;
 }
 
 /* RESULT */
 .result{
-    display:none;
-    margin-top:40px;
-}
-
-.money{
-    font-size:36px;
-    color:#ef4444;
-    font-weight:800;
-}
-
-.risk{
-    margin-top:10px;
-    font-size:18px;
-}
-
-/* CTA */
-.cta{
     margin-top:30px;
+    background:#020617;
+    border:1px solid #1e293b;
+    border-radius:10px;
+    padding:20px;
+    display:none;
+    text-align:left;
 }
 
-.cta button{
-    padding:14px 30px;
-    background:#ef4444;
-    border:none;
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-top:20px;
+}
+
+.card{
+    background:#020617;
+    border:1px solid #1e293b;
+    padding:15px;
+    border-radius:10px;
+}
+
+/* BADGE */
+.badge{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    margin-bottom:10px;
+}
+
+.alto{background:#dc2626}
+.medio{background:#f59e0b}
+.bajo{background:#16a34a}
+
+/* MONEY */
+.money{
+    font-size:28px;
+    font-weight:800;
+    color:#ef4444;
+}
+
+/* SELECT */
+select{
+    width:100%;
+    margin-top:10px;
+    padding:10px;
+    background:#020617;
     color:#fff;
-    font-weight:700;
-    cursor:pointer;
+    border:1px solid #1e293b;
+    border-radius:6px;
 }
 </style>
 </head>
@@ -141,46 +125,123 @@ textarea{
 <div class="hero">
 
 <div class="logo">MESAN Ω</div>
-<div class="tag">INTELLIGENCE ENGINE</div>
+<h1>Diagnóstico Empresarial</h1>
+<p class="sub">Detecta pérdidas reales en tu operación en segundos</p>
 
-<h1>Detecta dónde estás perdiendo dinero</h1>
-<p>Analizamos tu operación en segundos y proyectamos pérdidas reales en MXN.</p>
+<textarea id="texto" placeholder="Ej: IMSS bloqueó cuentas y tengo empleados sin registrar"></textarea>
+<button onclick="analizar()">ANALIZAR</button>
 
-<div class="box">
-<textarea id="input" placeholder="Ejemplo: IMSS bloqueó cuentas, empleados sin registrar..."></textarea>
-<br>
-<button class="btn" onclick="analizar()">ANALIZAR</button>
-</div>
-
-<div class="scan" id="scan">
-<div class="log">Inicializando motor...</div>
-<div class="bar"><div class="fill"></div></div>
-<div class="log">Cruzando datos SAT / IMSS...</div>
-</div>
-
-<div class="result" id="result">
-<div class="money" id="money">$0 MXN</div>
-<div class="risk" id="risk">RIESGO ALTO</div>
-
-<div class="cta">
-<button onclick="alert('Aquí conectas Stripe o WhatsApp')">
-RESOLVER ESTO AHORA
-</button>
-</div>
-</div>
+<div id="resultado" class="result"></div>
 
 </div>
 
 <script>
-function analizar(){
-    document.getElementById("scan").style.display="block";
+const API = "https://mesan-api.onrender.com/ai/diagnostico";
 
-    setTimeout(()=>{
-        document.getElementById("scan").style.display="none";
-        document.getElementById("result").style.display="block";
+async function analizar(){
 
-        document.getElementById("money").innerText="$230,000 MXN";
-    },2000);
+    const texto = document.getElementById("texto").value;
+
+    if(!texto){
+        alert("Describe tu situación");
+        return;
+    }
+
+    const box = document.getElementById("resultado");
+    box.style.display="block";
+    box.innerHTML="Analizando...";
+
+    try{
+
+        const res = await fetch(API,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({texto:texto})
+        });
+
+        const data = await res.json();
+
+        render(data);
+
+    }catch(e){
+        box.innerHTML="Error conectando API";
+    }
+}
+
+function render(data){
+
+    let color="medio";
+    if(data.riesgo==="ALTO" || data.riesgo==="CRÍTICO") color="alto";
+    if(data.riesgo==="BAJO") color="bajo";
+
+    document.getElementById("resultado").innerHTML=`
+
+    <div class="badge ${color}">${data.riesgo}</div>
+
+    <div class="money">
+        $${data.impacto_min.toLocaleString()} - $${data.impacto_max.toLocaleString()} MXN
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <h4>Causas</h4>
+            ${data.causas.map(c=>`<p>⚠ ${c}</p>`).join("")}
+        </div>
+
+        <div class="card">
+            <h4>Consecuencias</h4>
+            ${data.consecuencias.map(c=>`<p>→ ${c}</p>`).join("")}
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top:20px">
+        <h4>Plan 30 días</h4>
+        ${data.plan_30_dias.map(p=>`<p>• ${p}</p>`).join("")}
+    </div>
+
+    <div class="card" style="margin-top:20px">
+        <h4>Refinar diagnóstico</h4>
+
+        ${data.preguntas.map(p=>`
+            <label>${p.pregunta}</label>
+            <select id="${p.name}">
+                ${p.opciones.map(o=>`<option>${o}</option>`).join("")}
+            </select>
+        `).join("")}
+
+        <button onclick="refinar()">REFINAR</button>
+    </div>
+
+    `;
+}
+
+async function refinar(){
+
+    const texto = document.getElementById("texto").value;
+
+    const respuestas={};
+
+    document.querySelectorAll("select").forEach(s=>{
+        respuestas[s.id]=s.value;
+    });
+
+    const box = document.getElementById("resultado");
+    box.innerHTML="Refinando...";
+
+    const res = await fetch(API,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            texto:texto,
+            respuestas:respuestas
+        })
+    });
+
+    const data = await res.json();
+
+    render(data);
 }
 </script>
 
