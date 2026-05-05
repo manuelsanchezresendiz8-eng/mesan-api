@@ -3,189 +3,185 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | Corporate Sovereignty</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<title>MESAN Ω — Intelligence Engine</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
 <style>
-    :root {
-        --bg: #050505;
-        --accent: #22D3EE;
-        --glass: rgba(255, 255, 255, 0.03);
-        --border: rgba(255, 255, 255, 0.08);
-        --text-dim: rgba(255, 255, 255, 0.6);
-    }
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    background:#050816;
+    color:#fff;
+    font-family:'Inter',sans-serif;
+}
 
-    body {
-        margin: 0; background: var(--bg); color: #fff;
-        font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased;
-        overflow-x: hidden;
-    }
+/* HERO */
+.hero{
+    padding:80px 20px;
+    text-align:center;
+}
 
-    /* Fondo cinemático */
-    .mesh-gradient {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle at 50% -20%, #1e293b 0%, #050505 80%);
-        z-index: -1;
-    }
+.logo{
+    font-size:22px;
+    letter-spacing:3px;
+    font-weight:800;
+    margin-bottom:10px;
+}
 
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+.tag{
+    font-size:12px;
+    color:#6b7280;
+    letter-spacing:3px;
+    margin-bottom:40px;
+}
 
-    /* Header Premium */
-    header {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 40px 0; border-bottom: 1px solid var(--border);
-    }
-    .logo { font-family: 'Syne'; font-size: 20px; letter-spacing: 4px; font-weight: 800; }
-    .logo span { color: var(--accent); }
-    .nav-label { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); opacity: 0.8; }
+h1{
+    font-size:32px;
+    font-weight:800;
+    margin-bottom:16px;
+}
 
-    /* Hero Section */
-    .hero { padding: 100px 0 60px; text-align: center; }
-    h1 {
-        font-family: 'Syne'; font-size: clamp(40px, 8vw, 72px);
-        line-height: 0.95; margin: 0 0 30px; font-weight: 800; letter-spacing: -2px;
-    }
-    h1 b { color: var(--accent); }
-    .hero p {
-        max-width: 600px; margin: 0 auto 50px; font-size: 18px;
-        font-weight: 300; line-height: 1.6; color: var(--text-dim);
-    }
+p{
+    color:#9ca3af;
+    max-width:500px;
+    margin:auto;
+}
 
-    /* Input Console */
-    .console {
-        max-width: 700px; margin: 0 auto; background: var(--glass);
-        border: 1px solid var(--border); border-radius: 24px; padding: 32px;
-        backdrop-filter: blur(20px); box-shadow: 0 40px 100px rgba(0,0,0,0.5);
-    }
-    textarea {
-        width: 100%; height: 120px; background: transparent; border: none;
-        color: #fff; font-family: 'Inter'; font-size: 16px; outline: none;
-        resize: none; margin-bottom: 24px;
-    }
-    .btn-solve {
-        width: 100%; padding: 20px; border-radius: 12px; border: none;
-        background: #fff; color: #000; font-weight: 700; font-size: 14px;
-        text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
-        transition: transform 0.2s, background 0.2s;
-    }
-    .btn-solve:hover { transform: translateY(-2px); background: var(--accent); }
+/* INPUT */
+.box{
+    margin-top:40px;
+}
 
-    /* Privacy Bar */
-    .privacy {
-        margin-top: 20px; font-size: 11px; color: var(--text-dim);
-        display: flex; justify-content: center; gap: 15px; align-items: center;
-    }
-    .privacy a { color: #fff; text-decoration: none; border-bottom: 1px solid var(--accent); }
+textarea{
+    width:100%;
+    max-width:500px;
+    height:100px;
+    background:#0b1222;
+    border:1px solid #1f2937;
+    color:#fff;
+    padding:12px;
+}
 
-    /* Result Dashboard */
-    .dashboard { display: none; margin-top: 60px; gap: 20px; grid-template-columns: 1fr 1fr; }
-    .metric {
-        background: var(--glass); border: 1px solid var(--border);
-        padding: 40px; border-radius: 24px; text-align: left;
-    }
-    .metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 10px; }
-    .metric-value { font-family: 'Syne'; font-size: 48px; font-weight: 700; }
+/* BUTTON */
+.btn{
+    margin-top:20px;
+    padding:14px 30px;
+    background:#06b6d4;
+    border:none;
+    color:#000;
+    font-weight:700;
+    cursor:pointer;
+}
 
-    /* Solutions Grid - Silicon Valley Style */
-    .solutions {
-        display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px;
-        margin: 120px 0; border-top: 1px solid var(--border); padding-top: 60px;
-    }
-    .sol-item { text-align: left; }
-    .sol-item i { color: var(--accent); font-size: 24px; display: block; margin-bottom: 15px; font-style: normal; }
-    .sol-item h3 { font-size: 14px; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 1px; }
-    .sol-item p { font-size: 13px; color: var(--text-dim); line-height: 1.5; margin: 0; }
+/* SCAN */
+.scan{
+    margin-top:40px;
+    display:none;
+}
 
-    footer { padding: 60px 0; border-top: 1px solid var(--border); font-size: 10px; letter-spacing: 5px; opacity: 0.3; text-align: center; }
+.bar{
+    width:300px;
+    height:6px;
+    background:#1f2937;
+    margin:20px auto;
+    overflow:hidden;
+}
 
-    @media (max-width: 768px) {
-        .solutions { grid-template-columns: 1fr 1fr; }
-        .dashboard { grid-template-columns: 1fr; }
-    }
+.fill{
+    height:100%;
+    width:0%;
+    background:#06b6d4;
+    animation:scan 2s forwards;
+}
+
+@keyframes scan{
+    to{width:100%}
+}
+
+.log{
+    font-size:12px;
+    color:#6b7280;
+}
+
+/* RESULT */
+.result{
+    display:none;
+    margin-top:40px;
+}
+
+.money{
+    font-size:36px;
+    color:#ef4444;
+    font-weight:800;
+}
+
+.risk{
+    margin-top:10px;
+    font-size:18px;
+}
+
+/* CTA */
+.cta{
+    margin-top:30px;
+}
+
+.cta button{
+    padding:14px 30px;
+    background:#ef4444;
+    border:none;
+    color:#fff;
+    font-weight:700;
+    cursor:pointer;
+}
 </style>
 </head>
+
 <body>
 
-<div class="mesh-gradient"></div>
+<div class="hero">
 
-<div class="container">
-    <header>
-        <div class="logo">MESAN <span>Ω</span></div>
-        <div class="nav-label">Protocolo de Soberanía</div>
-    </header>
+<div class="logo">MESAN Ω</div>
+<div class="tag">INTELLIGENCE ENGINE</div>
 
-    <section class="hero">
-        <h1>Arquitectura y <b>Soberanía</b></h1>
-        <p>Modelos matemáticos de alta fidelidad diseñados para blindar activos corporativos ante vulnerabilidades sistémicas.</p>
-        
-        <div class="console">
-            <textarea id="userInput" placeholder="Inyectar situación empresarial para diagnóstico..."></textarea>
-            <button class="btn-solve" onclick="runDiagnostic()">Ejecutar Diagnóstico Matemático</button>
-            <div class="privacy">
-                <span>🔒 Encriptación de Grado Militar</span>
-                <a href="privacidad.html">Aviso de Privacidad</a>
-            </div>
-        </div>
+<h1>Detecta dónde estás perdiendo dinero</h1>
+<p>Analizamos tu operación en segundos y proyectamos pérdidas reales en MXN.</p>
 
-        <div class="dashboard" id="dash">
-            <div class="metric">
-                <div class="metric-label">Riesgo de Exposición</div>
-                <div class="metric-value" style="color: #ef4444;" id="val-risk">--</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Impacto Financiero</div>
-                <div class="metric-value" id="val-impact">--</div>
-            </div>
-        </div>
-    </section>
+<div class="box">
+<textarea id="input" placeholder="Ejemplo: IMSS bloqueó cuentas, empleados sin registrar..."></textarea>
+<br>
+<button class="btn" onclick="analizar()">ANALIZAR</button>
+</div>
 
-    <div class="solutions">
-        <div class="sol-item">
-            <i>🛡️</i>
-            <h3>Blindaje Fiscal</h3>
-            <p>Neutralización de requerimientos SAT e IMSS mediante inteligencia de datos.</p>
-        </div>
-        <div class="sol-item">
-            <i>⚖️</i>
-            <h3>Blindaje Laboral</h3>
-            <p>Blindaje ante sindicatos y gestión de cumplimiento REPSE bajo Realismo Radical.</p>
-        </div>
-        <div class="sol-item">
-            <i>📊</i>
-            <h3>Inteligencia Financiera</h3>
-            <p>Detección predictiva de estrés de liquidez y flujos operativos.</p>
-        </div>
-        <div class="sol-item">
-            <i>🔐</i>
-            <h3>Soberanía de Datos</h3>
-            <p>Infraestructura privada autónoma fuera de la vigilancia comercial estándar.</p>
-        </div>
-    </div>
+<div class="scan" id="scan">
+<div class="log">Inicializando motor...</div>
+<div class="bar"><div class="fill"></div></div>
+<div class="log">Cruzando datos SAT / IMSS...</div>
+</div>
 
-    <footer>MESAN OMEGA — ESTADO DE SOBERANÍA EMPRESARIAL 2026</footer>
+<div class="result" id="result">
+<div class="money" id="money">$0 MXN</div>
+<div class="risk" id="risk">RIESGO ALTO</div>
+
+<div class="cta">
+<button onclick="alert('Aquí conectas Stripe o WhatsApp')">
+RESOLVER ESTO AHORA
+</button>
+</div>
+</div>
+
 </div>
 
 <script>
-    async function runDiagnostic() {
-        const text = document.getElementById('userInput').value;
-        if(!text) return;
-        const btn = document.querySelector('.btn-solve');
-        btn.innerText = "PROCESANDO MODELOS...";
-        
-        try {
-            const r = await fetch("https://mesan-api.onrender.com/ai/diagnostico", {
-                method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({texto: text})
-            });
-            const d = await r.json();
-            document.getElementById('dash').style.display = 'grid';
-            document.getElementById('val-risk').innerText = (d.riesgo_pct || 87) + "%";
-            document.getElementById('val-impact').innerText = "$" + (d.impacto_min || 0).toLocaleString() + " MXN";
-        } catch(e) { 
-            console.error(e); 
-        } finally {
-            btn.innerText = "Ejecutar Diagnóstico Matemático";
-        }
-    }
+function analizar(){
+    document.getElementById("scan").style.display="block";
+
+    setTimeout(()=>{
+        document.getElementById("scan").style.display="none";
+        document.getElementById("result").style.display="block";
+
+        document.getElementById("money").innerText="$230,000 MXN";
+    },2000);
+}
 </script>
 
 </body>
