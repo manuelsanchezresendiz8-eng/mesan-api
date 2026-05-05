@@ -3,180 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
+<title>MESAN Omega</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-body{
-    margin:0;
-    background:#020617;
-    color:white;
-    font-family:'DM Sans',sans-serif;
-}
-
-/* HERO */
-.hero{
-    text-align:center;
-    padding:120px 20px;
-}
-
-h1{
-    font-family:'Syne';
-    font-size:48px;
-}
-
+body{margin:0;background:#020617;color:#fff;font-family:'DM Sans';text-align:center;padding:60px 20px;}
+h1{font-family:'Syne';font-size:42px;}
 h1 span{color:#22D3EE;}
-
-p{opacity:.6;}
-
-/* INPUT */
-.input{
-    margin:40px auto;
-    max-width:600px;
-    border:1px solid rgba(255,255,255,.1);
-    padding:20px;
-    border-radius:12px;
-}
-
-/* BUTTON */
-.btn{
-    background:linear-gradient(90deg,#22D3EE,#3B82F6);
-    padding:14px 30px;
-    border:none;
-    border-radius:10px;
-    color:white;
-    cursor:pointer;
-}
-
-/* CARDS */
-.cards{
-    display:flex;
-    justify-content:center;
-    gap:20px;
-    margin-top:60px;
-}
-
-.card{
-    background:#0B1220;
-    padding:30px;
-    border-radius:16px;
-    width:240px;
-}
-
-.card .num{
-    font-size:30px;
-    color:#EF4444;
-}
-
-/* ICONS GRID */
-.icons{
-    display:flex;
-    justify-content:center;
-    gap:40px;
-    margin-top:60px;
-}
-
-.icon{
-    text-align:center;
-    opacity:.7;
-}
-
-/* METRICS */
-.metrics{
-    display:flex;
-    justify-content:center;
-    gap:40px;
-    margin-top:60px;
-}
-
-.metric{
-    text-align:center;
-}
-
-.metric .big{
-    font-size:22px;
-    font-weight:bold;
-}
-
-/* CTA */
-.cta{
-    margin:60px auto;
-    max-width:800px;
-    background:#0B1220;
-    padding:30px;
-    border-radius:16px;
-    display:flex;
-    justify-content:space-between;
-}
-
-.cta button{
-    background:#22C55E;
-    border:none;
-    padding:12px 20px;
-    border-radius:8px;
-    color:white;
-}
-
+textarea{width:100%;max-width:600px;height:120px;margin-top:30px;padding:15px;background:#0B1220;border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:10px;font-family:'DM Sans';font-size:14px;}
+button{margin-top:20px;padding:14px 40px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;}
+.btn-main{background:#22D3EE;color:#000;}
+.btn-refinar{background:#3B82F6;color:#fff;margin-top:15px;}
+.btn-wa{background:#25D366;color:#000;margin-top:15px;}
+.cards{margin-top:40px;display:none;justify-content:center;gap:20px;flex-wrap:wrap;}
+.card{background:#0B1220;padding:20px;border-radius:10px;width:200px;}
+.big{font-size:24px;color:#EF4444;}
+.causas{margin-top:20px;max-width:600px;margin-left:auto;margin-right:auto;text-align:left;}
+.causa-item{padding:8px 12px;margin:4px 0;background:rgba(239,68,68,0.05);border-left:3px solid #EF4444;font-size:13px;}
+.preguntas{margin-top:30px;display:none;max-width:600px;margin-left:auto;margin-right:auto;}
+.pregunta{margin-bottom:15px;text-align:left;}
+.pregunta p{font-size:13px;margin-bottom:8px;}
+.btn-op{padding:7px 14px;margin:3px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);border-radius:6px;cursor:pointer;font-size:12px;margin-top:0;}
+.btn-op.sel{border-color:#22D3EE;color:#22D3EE;background:rgba(34,211,238,0.1);}
+.footer{margin-top:60px;font-size:10px;opacity:.2;letter-spacing:2px;}
 </style>
 </head>
-
 <body>
-
-<section class="hero">
-
 <h1>Detectamos riesgos antes de que te cuesten <span>millones.</span></h1>
-<p>IA estratégica para CEOs que toman decisiones.</p>
+<textarea id="input" placeholder="Describe tu problema empresarial... (ej: IMSS bloqueo cuentas, sindicato amenaza huelga, SAT mando requerimiento...)"></textarea>
+<br>
+<button class="btn-main" onclick="analizar()" id="btn-analizar">ANALIZAR CON IA</button>
 
-<div class="input">Cuéntanos tu problema empresarial...</div>
-
-<button class="btn">ANALIZAR CON IA</button>
-
-<!-- RESULTADOS -->
-<div class="cards">
-<div class="card">
-<div class="num">87%</div>
-<p>Riesgo detectado</p>
+<div class="cards" id="resultado">
+    <div class="card"><div class="big" id="riesgo">-</div><p>Riesgo</p></div>
+    <div class="card"><div class="big" id="impacto">-</div><p>Impacto</p></div>
+    <div class="card"><div class="big" id="sector">-</div><p>Sector</p></div>
 </div>
 
-<div class="card">
-<div class="num">$241,956</div>
-<p>Impacto económico</p>
-</div>
+<div class="causas" id="causas"></div>
+<div class="preguntas" id="preguntas"></div>
 
-<div class="card">
-<div class="num">!</div>
-<p>Estado vulnerable</p>
-</div>
-</div>
+<button class="btn-refinar" onclick="refinar()" id="btnRefinar" style="display:none;">REFINAR DIAGNOSTICO →</button>
+<button class="btn-wa" onclick="enviarWhats()" id="btnWA" style="display:none;">ENVIAR A WHATSAPP</button>
 
-<!-- ICONOS -->
-<div class="icons">
-<div class="icon">🛡️<br>Blindaje Fiscal</div>
-<div class="icon">⚖️<br>Blindaje Laboral</div>
-<div class="icon">📈<br>Inteligencia Financiera</div>
-<div class="icon">☁️<br>Soberanía de Datos</div>
-<div class="icon">⚡<br>Respuesta Estratégica</div>
-</div>
+<div class="footer">MESAN Omega © 2026 — SOBERANIA EMPRESARIAL</div>
 
-<!-- METRICAS -->
-<div class="metrics">
-<div class="metric"><div class="big">100+</div>Empresas</div>
-<div class="metric"><div class="big">98%</div>Precisión</div>
-<div class="metric"><div class="big">15 min</div>Diagnóstico</div>
-<div class="metric"><div class="big">100%</div>Confidencialidad</div>
-</div>
+<script>
+const API="https://mesan-api.onrender.com";
+let respuestas={};
+let ultimoWA="";
 
-<!-- CTA -->
-<div class="cta">
-<div>
-<b>Habla con un especialista</b><br>
-Diagnóstico por WhatsApp
-</div>
-<button>Escribir por WhatsApp</button>
-</div>
+async function analizar(){
+    const texto=document.getElementById("input").value.trim();
+    if(!texto){alert("Describe la situacion de tu empresa");return;}
+    const btn=document.getElementById("btn-analizar");
+    btn.innerText="ANALIZANDO...";btn.disabled=true;
+    try{
+        const res=await fetch(API+"/ai/diagnostico",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({texto:texto,respuestas:respuestas})});
+        const d=await res.json();
+        document.getElementById("resultado").style.display="flex";
+        document.getElementById("riesgo").innerText=d.riesgo||"-";
+        document.getElementById("impacto").innerText="$"+(d.impacto_min||0).toLocaleString();
+        document.getElementById("sector").innerText=d.industria||"-";
+        document.getElementById("causas").innerHTML=(d.causas||[]).map(c=>'<div class="causa-item">'+c+'</div>').join("");
+        ultimoWA=d.whatsapp||"Hola, acabo de hacer el diagnostico MESAN Omega. Impacto: $"+(d.impacto_max||0).toLocaleString()+" MXN";
+        if(d.preguntas&&d.preguntas.length>0){
+            const cont=document.getElementById("preguntas");
+            cont.innerHTML="";cont.style.display="block";
+            d.preguntas.forEach(p=>{
+                let html='<div class="pregunta"><p>'+p.pregunta+'</p>';
+                (p.opciones||[]).forEach(o=>{html+='<button class="btn-op" onclick="setResp(\''+p.name+'\',\''+o+'\',this)">'+o+'</button> ';});
+                html+='</div>';
+                cont.innerHTML+=html;
+            });
+        }
+        document.getElementById("btnRefinar").style.display="inline-block";
+        document.getElementById("btnWA").style.display="inline-block";
+        document.getElementById("resultado").scrollIntoView({behavior:"smooth"});
+    }catch(e){alert("Error de conexion. Intenta de nuevo.");}
+    finally{btn.innerText="ANALIZAR CON IA";btn.disabled=false;}
+}
 
-</section>
+function setResp(k,v,btn){
+    respuestas[k]=v;
+    btn.parentElement.querySelectorAll(".btn-op").forEach(b=>b.classList.remove("sel"));
+    btn.classList.add("sel");
+}
 
+async function refinar(){
+    const texto=document.getElementById("input").value.trim();
+    const btn=document.getElementById("btnRefinar");
+    btn.innerText="REFINANDO...";btn.disabled=true;
+    try{
+        const res=await fetch(API+"/ai/diagnostico",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({texto:texto,respuestas:respuestas})});
+        const d=await res.json();
+        document.getElementById("riesgo").innerText=d.riesgo||"-";
+        document.getElementById("impacto").innerText="$"+(d.impacto_min||0).toLocaleString();
+        document.getElementById("causas").innerHTML=(d.causas||[]).map(c=>'<div class="causa-item">'+c+'</div>').join("");
+        ultimoWA=d.whatsapp||ultimoWA;
+    }catch(e){alert("Error de conexion.");}
+    finally{btn.innerText="REFINAR DIAGNOSTICO →";btn.disabled=false;}
+}
+
+function enviarWhats(){
+    window.open("https://wa.me/526861629643?text="+encodeURIComponent(ultimoWA),"_blank");
+}
+</script>
 </body>
 </html>
