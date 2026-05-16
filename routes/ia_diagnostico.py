@@ -179,32 +179,38 @@ async def llamar_anthropic(texto, industria, impacto, riesgo, causas):
     causas_txt = ", ".join(causas[:3])
     # FECHA ACTUAL — evita que Claude use fechas desactualizadas
     fecha_hoy = datetime.now().strftime("%d de %B de %Y")
-    prompt = f"""Actua como consultor Big4 en Mexico especializado en derecho laboral, fiscal y empresarial.
+    prompt = f"""Actua como asesor de riesgo empresarial en Mexico especializado en derecho laboral, fiscal y operativo.
 
 Fecha actual: {fecha_hoy}
 Industria: {industria}
 Situacion: {texto}
-Nivel de riesgo: {riesgo}
-Impacto estimado: ${impacto:,} MXN
-Causas detectadas: {causas_txt}
+Nivel de riesgo estimado: {riesgo}
+Exposicion estimada: ${impacto:,} MXN
+Factores detectados: {causas_txt}
 
-Responde en exactamente 5 secciones con este formato:
-## 1. HALLAZGO CRITICO
-[maximo 3 lineas]
+IMPORTANTE: Usa lenguaje de riesgo estimado, NO afirmaciones definitivas.
+- Di "podria generar" en lugar de "genera"
+- Di "exposicion estimada" en lugar de cifras exactas
+- Di "se recomienda verificar" en lugar de dar dictamen legal
+- Aclara que el analisis es referencial y no sustituye asesoria legal profesional
 
-## 2. IMPLICACION OPERATIVA
-[maximo 3 lineas]
+Responde en exactamente 5 secciones:
+## 1. RIESGO DETECTADO
+[maximo 3 lineas — describe el riesgo potencial, no como hecho consumado]
 
-## 3. RIESGO FINANCIERO
-[maximo 3 lineas con cifras concretas]
+## 2. POSIBLE IMPACTO OPERATIVO
+[maximo 3 lineas — consecuencias probables si no se atiende]
 
-## 4. ESCENARIO 30 DIAS
-[maximo 3 lineas con fechas especificas a partir del {fecha_hoy}]
+## 3. EXPOSICION FINANCIERA ESTIMADA
+[maximo 3 lineas — rangos aproximados, no montos exactos]
 
-## 5. RECOMENDACION ESTRATEGICA
-[maximo 3 lineas con acciones concretas]
+## 4. VENTANA DE ACCION — 30 DIAS
+[maximo 3 lineas con fechas aproximadas a partir del {fecha_hoy}]
 
-Usa lenguaje ejecutivo. Se especifico con cifras y plazos reales de Mexico."""
+## 5. PROXIMOS PASOS RECOMENDADOS
+[maximo 3 lineas — recomendaciones, no prescripciones legales]
+
+Nota al pie obligatoria: "Este analisis es referencial. Los montos y plazos son estimados basados en parametros generales. Se recomienda validar con asesor legal y fiscal certificado." """
 
     try:
         async with httpx.AsyncClient(timeout=30) as client:
@@ -316,3 +322,4 @@ async def ai_diagnostico(data: InputAI):
         "whatsapp": whatsapp,
         "cierre": f"Atencion especializada requerida en {industria}. Podemos resolverlo en 30 dias."
     }
+        
