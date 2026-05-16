@@ -1,0 +1,56 @@
+# core/mesan_index.py — MESAN Ω
+# Calcula el MESAN Index 0-100 unificado
+
+def calcular_mesan_index(data: dict) -> dict:
+    liquidez   = data.get("liquidez", "AJUSTADA")
+    flujo      = float(data.get("flujo", 0))
+    laboral    = data.get("laboral", "MEDIO")
+    fiscal     = data.get("fiscal", "MEDIO")
+    operativo  = data.get("operativo", "MEDIO")
+
+    # Puntajes por área (0-25 cada una)
+    def score_nivel(nivel):
+        return {"CRITICO": 25, "ALTO": 18, "MEDIO": 10, "BAJO": 5, "ESTABLE": 0}.get(nivel.upper(), 10)
+
+    def score_liquidez(liq):
+        return {"CRITICA": 25, "AJUSTADA": 12, "SALUDABLE": 0, "SIN_DATOS": 15}.get(liq.upper(), 10)
+
+    p_financiero = score_liquidez(liquidez) + (15 if flujo < 0 else 0)
+    p_laboral    = score_nivel(laboral)
+    p_fiscal     = score_nivel(fiscal)
+    p_operativo  = score_nivel(operativo)
+
+    total = min(100, p_financiero + p_laboral + p_fiscal + p_operativo)
+
+    if total >= 70:
+        nivel = "CRITICO"
+    elif total >= 50:
+        nivel = "ALTO"
+    elif total >= 30:
+        nivel = "MEDIO"
+    else:
+        nivel = "ESTABLE"
+
+    # Área crítica
+    areas = {
+        "FINANCIERO": p_financiero,
+        "LABORAL":    p_laboral,
+        "FISCAL":     p_fiscal,
+        "OPERATIVO":  p_operativo
+    }
+    area_critica = max(areas, key=areas.get)
+
+    impacto = int(abs(flujo) * 12) if flujo < 0 else int(total * 1000)
+
+    return {
+        "index":        100 - total,
+        "nivel":        nivel,
+        "impacto":      impacto,
+        "area_critica": area_critica,
+        "desglose": {
+            "financiero": p_financiero,
+            "laboral":    p_laboral,
+            "fiscal":     p_fiscal,
+            "operativo":  p_operativo
+        }
+    }
