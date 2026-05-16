@@ -7,6 +7,7 @@ import logging
 import os
 import httpx
 import traceback
+from datetime import datetime
 
 from core.preguntas import generar_preguntas
 
@@ -76,16 +77,12 @@ def detectar_industria(texto: str) -> str:
 def analizar_fallback(texto, respuestas, industria):
     causas = []
     impacto = 0
-
     impacto_declarado = detectar_impacto_declarado(texto)
 
     if industria == "LABORAL":
         if any(p in texto for p in ["huelga", "paro", "emplazamiento", "sindicato"]):
             causas.append("Huelga activa - perdida de produccion por dia")
-            if impacto_declarado > 0:
-                impacto += impacto_declarado * 30
-            else:
-                impacto += 2000000
+            impacto += impacto_declarado * 30 if impacto_declarado > 0 else 2000000
         if any(p in texto for p in ["accidente", "incapacidad", "herido", "lesion"]):
             causas.append("Accidente laboral sin cobertura IMSS - responsabilidad patronal directa")
             impacto += 300000
@@ -95,7 +92,6 @@ def analizar_fallback(texto, respuestas, industria):
         if any(p in texto for p in ["prestaciones", "contrato colectivo"]):
             causas.append("Conflicto por prestaciones - riesgo de escalamiento sindical")
             impacto += 500000
-
     elif industria == "SEGURIDAD":
         causas.append("Operacion sin permisos federales SSPC")
         impacto += 300000
@@ -109,18 +105,13 @@ def analizar_fallback(texto, respuestas, industria):
         if any(p in texto for p in ["imss", "sin imss", "no tiene imss"]):
             causas.append("Trabajador sin IMSS - capital constitutivo obligatorio")
             impacto += 200000
-
     elif industria == "MANUFACTURA":
         if any(p in texto for p in ["huelga", "paro", "sindicato"]):
             causas.append("Conflicto sindical - paro de produccion activo")
-            if impacto_declarado > 0:
-                impacto += impacto_declarado * 30
-            else:
-                impacto += 3000000
+            impacto += impacto_declarado * 30 if impacto_declarado > 0 else 3000000
         if any(p in texto for p in ["imss", "stps", "accidente"]):
             causas.append("Riesgo laboral - IMSS y STPS")
             impacto += 200000
-
     elif industria == "SERVICIOS_APOYO":
         causas.append("REPSE vencido - responsabilidad solidaria activa")
         impacto += 180000
@@ -128,11 +119,9 @@ def analizar_fallback(texto, respuestas, industria):
             causas.append("Accidente laboral - trabajador sin cobertura")
             causas.append("Responsabilidad civil: seguro RC o pago directo al trabajador")
             impacto += 400000
-
     elif industria == "SALUD":
         causas.append("Riesgo de clausura sanitaria COFEPRIS")
         impacto += 200000
-
     elif industria == "TECNOLOGIA":
         causas.append("Riesgo operativo y fiscal")
         impacto += 150000
@@ -140,22 +129,18 @@ def analizar_fallback(texto, respuestas, industria):
     if "imss" in texto and industria not in ["LABORAL", "SEGURIDAD", "MANUFACTURA", "SERVICIOS_APOYO"]:
         causas.append("Incumplimiento IMSS - multas y capitales constitutivos")
         impacto += 80000
-
     if "sat" in texto or "auditoria" in texto:
         causas.append("Riesgo fiscal SAT - posible embargo")
         impacto += 200000
-
     if "bloqueo" in texto or "embargo" in texto:
         causas.append("Bloqueo de cuentas bancarias")
         impacto += 150000
-
     if "nomina" in texto and industria not in ["LABORAL", "MANUFACTURA"]:
         causas.append("Riesgo de incumplimiento laboral de nomina")
         impacto += 100000
 
     if impacto_declarado > 0 and impacto < impacto_declarado:
         impacto = impacto_declarado
-
     if impacto == 0:
         impacto = 25000
 
@@ -168,13 +153,11 @@ def ajustar_laboral(causas, impacto, respuestas):
     elif respuestas.get("huelga") == "En negociacion":
         causas.append("Conflicto en fase critica de negociacion sindical")
         impacto = int(impacto * 1.3)
-
     if respuestas.get("demanda_laboral") == "Si":
         causas.append("Demanda formal presentada ante JLCA")
         impacto += 800000
     elif respuestas.get("demanda_laboral") == "No se":
         impacto += 300000
-
     return causas, impacto
 
 def ajustar_por_respuestas(causas, impacto, respuestas, industria):
@@ -194,8 +177,11 @@ async def llamar_anthropic(texto, industria, impacto, riesgo, causas):
     if not api_key or not causas:
         return ""
     causas_txt = ", ".join(causas[:3])
+    # FECHA ACTUAL — evita que Claude use fechas desactualizadas
+    fecha_hoy = datetime.now().strftime("%d de %B de %Y")
     prompt = f"""Actua como consultor Big4 en Mexico especializado en derecho laboral, fiscal y empresarial.
 
+Fecha actual: {fecha_hoy}
 Industria: {industria}
 Situacion: {texto}
 Nivel de riesgo: {riesgo}
@@ -213,7 +199,7 @@ Responde en exactamente 5 secciones con este formato:
 [maximo 3 lineas con cifras concretas]
 
 ## 4. ESCENARIO 30 DIAS
-[maximo 3 lineas con fechas especificas]
+[maximo 3 lineas con fechas especificas a partir del {fecha_hoy}]
 
 ## 5. RECOMENDACION ESTRATEGICA
 [maximo 3 lineas con acciones concretas]
@@ -269,7 +255,6 @@ async def ai_diagnostico(data: InputAI):
     impacto_min = impacto
     impacto_max = int(impacto * 2.5)
 
-    # Indice de riesgo alineado
     if riesgo == "CRITICO":
         indice_riesgo = min(95, 85 + min(int(impacto / 1000000), 10))
     elif riesgo == "ALTO":
@@ -280,7 +265,6 @@ async def ai_diagnostico(data: InputAI):
         indice_riesgo = 20
 
     analisis_ai = await llamar_anthropic(texto, industria, impacto, riesgo, causas)
-
     preguntas = generar_preguntas(industria, texto, riesgo)
 
     consecuencias = {
