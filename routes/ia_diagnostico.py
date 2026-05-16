@@ -72,6 +72,8 @@ def detectar_industria(texto: str) -> str:
         return "FINANCIERO"
     if any(p in texto for p in ["transporte", "logistica", "almacen", "flete", "trailer"]):
         return "LOGISTICA"
+    if any(p in texto for p in ["ingresos", "egresos", "gastos fijos", "flujo", "caja", "deficit", "perdida mensual", "no tengo caja", "sin liquidez", "deuda", "prestamo"]):
+        return "FINANCIERO"
     return "GENERAL"
 
 def analizar_fallback(texto, respuestas, industria):
@@ -125,6 +127,16 @@ def analizar_fallback(texto, respuestas, industria):
     elif industria == "TECNOLOGIA":
         causas.append("Riesgo operativo y fiscal")
         impacto += 150000
+
+    elif industria == "FINANCIERO":
+        causas.append("Deficit de flujo de caja — egresos superan ingresos")
+        impacto += 150000
+        if any(p in texto for p in ["3 meses", "tres meses", "varios meses"]):
+            causas.append("Deficit sostenido por mas de 90 dias — riesgo de insolvencia")
+            impacto += 100000
+        if any(p in texto for p in ["sin caja", "no tengo caja", "sin liquidez"]):
+            causas.append("Liquidez critica — incapacidad de cubrir obligaciones inmediatas")
+            impacto += 80000
 
     if "imss" in texto and industria not in ["LABORAL", "SEGURIDAD", "MANUFACTURA", "SERVICIOS_APOYO"]:
         causas.append("Incumplimiento IMSS - multas y capitales constitutivos")
@@ -322,4 +334,3 @@ async def ai_diagnostico(data: InputAI):
         "whatsapp": whatsapp,
         "cierre": f"Atencion especializada requerida en {industria}. Podemos resolverlo en 30 dias."
     }
-        
