@@ -1,7 +1,12 @@
 import os
 import logging
 from fastapi import APIRouter
-from core.engine import sistema_enterprise if False else None
+
+# Import seguro — sin sintaxis invalida
+try:
+    from enterprise.enterprise_engine import sistema_enterprise
+except Exception:
+    sistema_enterprise = None
 
 router = APIRouter()
 
@@ -53,7 +58,7 @@ def fallback_local() -> str:
     return (
         "Detectamos posibles irregularidades en tu operacion. "
         "Esto puede estar costándote dinero hoy. "
-        "¿Quieres que te explique como corregirlo?"
+        "Quieres que te explique como corregirlo?"
     )
 
 def detectar_intencion(msg: str) -> str:
@@ -72,26 +77,25 @@ def flujo_local(mensaje: str, contexto: dict) -> dict:
 
     if all(k in contexto for k in ["empleados", "precio", "servicio"]):
         try:
-            from enterprise.enterprise_engine import sistema_enterprise
-            resultado = sistema_enterprise(contexto)
+            resultado = sistema_enterprise(contexto) if sistema_enterprise else {}
             perdida = resultado.get("impacto", {}).get("impacto_min", 12000)
         except Exception:
             perdida = 12000
             resultado = {}
 
         return {
-            "respuesta": f"Detecto que podrias perder ${perdida} MXN al mes. ¿Quieres ver como corregirlo?",
+            "respuesta": f"Detecto que podrias perder ${perdida} MXN al mes. Quieres ver como corregirlo?",
             "cerrar": True,
             "resultado": resultado,
             "contexto": contexto
         }
 
     if "servicio" not in contexto:
-        return {"respuesta": "¿A que se dedica tu empresa?", "contexto": contexto}
+        return {"respuesta": "A que se dedica tu empresa?", "contexto": contexto}
     if "empleados" not in contexto:
-        return {"respuesta": "¿Cuantos empleados tienes?", "contexto": contexto}
+        return {"respuesta": "Cuantos empleados tienes?", "contexto": contexto}
     if "precio" not in contexto:
-        return {"respuesta": "¿Cuanto cobras mensual?", "contexto": contexto}
+        return {"respuesta": "Cuanto cobras mensual?", "contexto": contexto}
 
     return {"respuesta": "Cuentame mas sobre tu operacion", "contexto": contexto}
 
@@ -100,7 +104,6 @@ def flujo_local(mensaje: str, contexto: dict) -> dict:
 # =========================
 @router.post("/chat")
 def chat(payload: dict):
-
     mensaje = payload.get("mensaje", "")
     historial = payload.get("historial", [])
     contexto = payload.get("contexto", {})
@@ -111,3 +114,22 @@ def chat(payload: dict):
             messages = [{"role": "system", "content": SYSTEM_PROMPT}]
             messages += historial[-10:]
             messages.append({"role": "user", "content": mensaje[:2000]})
+
+            frase = random.choice(FRASES_CIERRE)
+            messages[0]["content"] += f"\n\nUsa esta frase al final: {frase}"
+
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=messages,
+                max_tokens=200,
+                temperature=0.7
+            )
+            respuesta = response.choices[0].message.content
+            return {"respuesta": respuesta, "contexto": contexto, "motor": "gpt"}
+
+        except Exception as e:
+            logging.error(f"Error GPT chat: {e}")
+
+    resultado = flujo_local(mensaje, contexto)
+    resultado["motor"] = "local"
+    return resultado
