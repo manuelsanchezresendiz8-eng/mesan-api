@@ -98,7 +98,7 @@ def analizar_fallback(texto, respuestas, industria):
             impacto += 500000
 
     elif industria == "SEGURIDAD":
-        causas.append("Posible operacion sin permisos federales SSPC vigentes")
+        causas.append("Posible brecha de regularizacion en registro SSPC — ventana de cumplimiento activa")
         impacto += 300000
         if any(p in texto for p in ["herido", "asalto", "lesion", "accidente", "disparo"]):
             causas.append("Posible incidente con lesion — exposicion de responsabilidad civil")
@@ -106,6 +106,12 @@ def analizar_fallback(texto, respuestas, industria):
         if any(p in texto for p in ["imss", "sin imss", "no tiene imss"]):
             causas.append("Posible trabajador sin cobertura IMSS")
             impacto += 200000
+        if any(p in texto for p in ["sin seguro", "sin seguro rc", "sin seguro de responsabilidad civil", "no tenemos seguro"]):
+            causas.append("Ausencia de cobertura de responsabilidad civil para personal operativo")
+            impacto += 250000
+        if any(p in texto for p in ["plazas", "corporativos", "sucursales", "ubicaciones", "sitios"]):
+            causas.append("Operacion multisede — mayor exposicion operativa")
+            impacto += 180000
 
     elif industria == "MANUFACTURA":
         if any(p in texto for p in ["huelga", "paro", "sindicato"]):
@@ -154,6 +160,16 @@ def analizar_fallback(texto, respuestas, industria):
     if "nomina" in texto and industria not in ["LABORAL", "MANUFACTURA"]:
         causas.append("Posible riesgo de incumplimiento laboral en nomina")
         impacto += 100000
+
+    # MULTIPLICADOR OPERATIVO — SEGURIDAD
+    if industria == "SEGURIDAD":
+        empleados_seg = int(respuestas.get("num_empleados", 0))
+        if empleados_seg >= 40 or any(p in texto for p in ["40 guardias", "50 guardias", "60 guardias"]):
+            impacto += 180000
+        if "corporativos" in texto:
+            impacto += 120000
+        if "plazas" in texto:
+            impacto += 90000
 
     if impacto_declarado > 0 and impacto < impacto_declarado:
         impacto = impacto_declarado
