@@ -116,7 +116,7 @@ def analizar_fallback(texto, respuestas, industria):
             impacto += 200000
 
     elif industria == "SERVICIOS_APOYO":
-        causas.append("Posible incumplimiento REPSE — riesgo de responsabilidad solidaria")
+        causas.append("Posible brecha de regularizacion REPSE — exposicion administrativa y contractual")
         impacto += 180000
         if any(p in texto for p in ["accidente", "herido", "lesion"]):
             causas.append("Posible accidente laboral sin cobertura adecuada")
@@ -195,31 +195,50 @@ async def llamar_anthropic(texto, industria, impacto, riesgo, causas):
     causas_txt = ", ".join(causas[:3])
     fecha_hoy = datetime.now().strftime("%d de %B de %Y")
     prompt = f"""
-Actua como asesor de riesgo empresarial en Mexico
-especializado en cumplimiento operativo, laboral, fiscal y financiero.
+Actua como consultor ejecutivo de riesgo empresarial
+en Mexico especializado en cumplimiento operativo,
+laboral, fiscal y financiero.
+
+Tu estilo debe parecer: Deloitte, KPMG, PwC o EY.
 
 Fecha actual: {fecha_hoy}
 Industria: {industria}
-Situacion: {texto}
+Situacion analizada: {texto}
 Nivel estimado: {riesgo}
 Exposicion estimada: ${impacto:,} MXN
 Factores detectados: {causas_txt}
 
 IMPORTANTE:
-NO afirmes delitos, fraude, insolvencia real, quiebra, embargo confirmado ni sanciones definitivas.
-Describe todo como riesgo potencial, posible contingencia, presion operativa o escenario preventivo.
-Usa lenguaje corporativo estilo Deloitte / KPMG / PwC.
-NO uses lenguaje alarmista. NO hagas amenazas regulatorias. NO inventes leyes. NO des dictamen legal.
+NO afirmes delitos, fraude, insolvencia, quiebra, incumplimientos confirmados ni sanciones definitivas.
+Describe todo como posible contingencia, brecha de regularizacion, presion operativa, exposicion estimada o escenario preventivo.
+NO uses amenazas, lenguaje alarmista ni afirmaciones absolutas.
+Usa lenguaje corporativo, ejecutivo, preventivo y consultivo.
 
-Responde exactamente en estas secciones:
+Responde exactamente en este formato:
+
+# ANALISIS DE RIESGO EMPRESARIAL
+
 ## 1. HALLAZGO PRINCIPAL
+[maximo 5 lineas]
+
 ## 2. POSIBLE IMPACTO OPERATIVO
+[maximo 5 lineas]
+
 ## 3. EXPOSICION FINANCIERA ESTIMADA
+Usa SOLO:
+- Escenario conservador
+- Escenario probable
+- Escenario de alta exposicion
+NO uses tablas, multas exactas, articulos legales ni sanciones especificas.
+
 ## 4. ESCENARIO PROYECTADO — 30 DIAS
+[maximo 4 lineas con fechas aproximadas a partir del {fecha_hoy}]
+
 ## 5. RECOMENDACIONES PRIORITARIAS
+[maximo 5 bullets]
 
 Cierra obligatoriamente con:
-"Este analisis es referencial. Los montos y escenarios son estimados con base en variables declaradas y patrones generales de riesgo empresarial. Se recomienda validar con asesor legal, fiscal o financiero certificado."
+"Este analisis es referencial. Los escenarios y montos son estimados con base en variables declaradas y patrones generales de riesgo empresarial. Se recomienda validar con asesoria legal, fiscal o financiera especializada."
 """
     try:
         async with httpx.AsyncClient(timeout=30) as client:
@@ -304,7 +323,7 @@ async def ai_diagnostico(data: InputAI):
     # TENDENCIA DINAMICA
     if score_final >= 75:
         tendencia_final = "ASCENDENTE"
-    elif score_final >= 45:
+    elif score_final >= 40:
         tendencia_final = "ESTABLE"
     else:
         tendencia_final = "CONTROLADA"
@@ -327,7 +346,7 @@ async def ai_diagnostico(data: InputAI):
         "LABORAL": ["Posible demanda laboral colectiva", "Multas STPS estimadas", "Paro de operaciones"],
         "MANUFACTURA": ["Posible perdida de produccion", "Ruptura de contratos con clientes", "Contingencias sindicales"],
         "SALUD": ["Posible clausura sanitaria COFEPRIS", "Multas estimadas", "Suspension de operaciones"],
-        "SERVICIOS_APOYO": ["Posible rescision de contratos", "Responsabilidad solidaria estimada", "Multas IMSS"],
+        "SERVICIOS_APOYO": ["Posible presion en renovaciones contractuales", "Exposicion administrativa estimada", "Requerimientos de regularizacion operativa"],
         "FINANCIERO": ["Presion de liquidez progresiva", "Posibles atrasos en obligaciones", "Riesgo de continuidad operativa"],
         "GENERAL": ["Posibles multas y sanciones", "Contingencias laborales estimadas", "Revision SAT potencial"]
     }.get(industria, ["Escalamiento del riesgo", "Sanciones estimadas", "Perdida operativa potencial"])
@@ -347,14 +366,18 @@ async def ai_diagnostico(data: InputAI):
         ),
         "SERVICIOS_APOYO": (
             f"MESAN Omega — Riesgo operativo detectado.\n\n"
-            f"Se identificaron posibles contingencias de cumplimiento REPSE/IMSS.\n\n"
+            f"Se identificaron posibles brechas de regularizacion relacionadas con cumplimiento REPSE.\n\n"
             f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
-            f"Responde SI para revisar acciones preventivas."
+            f"Responde SI para revisar acciones preventivas recomendadas."
         ),
     }
     whatsapp = mensajes_wa.get(industria,
         f"MESAN Omega — Alerta {riesgo}\n\nDetectamos posible riesgo en tu operacion.\nExposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te explicamos como prevenirlo."
     )
+
+    escenario_conservador = int(impacto * 0.65)
+    escenario_probable    = int(impacto)
+    escenario_alto        = int(impacto * 2.5)
 
     disclaimer = (
         "Analisis preventivo generado por MESAN Omega Intelligence Engine. "
@@ -387,5 +410,10 @@ async def ai_diagnostico(data: InputAI):
         "origen":        origen_final,
         "whatsapp":      whatsapp,
         "disclaimer":    disclaimer,
-        "cierre": f"Analisis preventivo completado para sector {industria}. MESAN Omega puede ayudarte a reducir este riesgo."
+        "escenarios": {
+            "conservador": escenario_conservador,
+            "probable":    escenario_probable,
+            "alto":        escenario_alto
+        },
+        "cierre": f"Se recomienda seguimiento preventivo especializado para el sector {industria}."
     }
