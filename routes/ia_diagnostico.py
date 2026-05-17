@@ -115,11 +115,17 @@ def analizar_fallback(texto, respuestas, industria):
 
     elif industria == "MANUFACTURA":
         if any(p in texto for p in ["huelga", "paro", "sindicato"]):
-            causas.append("Posible conflicto sindical — riesgo de paro productivo")
+            causas.append("Posible conflicto sindical — presion relevante sobre continuidad operativa")
             impacto += impacto_declarado * 30 if impacto_declarado > 0 else 3000000
+        if "emplazamiento" in texto:
+            causas.append("Emplazamiento sindical activo — ventana critica de negociacion")
+            impacto += 1800000
         if any(p in texto for p in ["imss", "stps", "accidente"]):
             causas.append("Posible riesgo laboral — IMSS y STPS")
             impacto += 200000
+        if any(p in texto for p in ["cliente americano", "cliente unico", "solo cliente", "penalizacion contractual", "exportacion"]):
+            causas.append("Alta dependencia de cliente estrategico — exposicion de concentracion")
+            impacto += 2500000
 
     elif industria == "SERVICIOS_APOYO":
         causas.append("Posible brecha de regularizacion REPSE — exposicion administrativa y contractual")
@@ -287,6 +293,9 @@ async def ai_diagnostico(data: InputAI):
         t_check = texto.lower()
         if any(p in t_check for p in ["huelga", "paro", "emplazamiento", "sindicato"]):
             riesgo = "CRITICO"
+    
+    if industria == "MANUFACTURA" and "emplazamiento" in texto:
+        riesgo = "CRITICO"
         elif impacto > 1200000:
             riesgo = "ALTO"
         elif impacto > 350000:
@@ -391,9 +400,10 @@ async def ai_diagnostico(data: InputAI):
         f"MESAN Omega — Alerta {riesgo}\n\nDetectamos posible riesgo en tu operacion.\nExposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te explicamos como prevenirlo."
     )
 
-    escenario_conservador = int(impacto * 0.65)
-    escenario_probable    = int(impacto)
-    escenario_alto        = int(impacto * 2.5)
+    # Escenarios coherentes — exposicion total nunca menor que perdida base
+    escenario_conservador = int(impacto * 0.80)
+    escenario_probable    = int(impacto * 1.30)
+    escenario_alto        = int(impacto * 2.50)
 
     disclaimer = (
         "Analisis preventivo generado por MESAN Omega Intelligence Engine. "
