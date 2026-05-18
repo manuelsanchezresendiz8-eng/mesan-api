@@ -367,20 +367,41 @@ Analisis referencial sujeto a validacion especializada.
     if industria == "FINANCIERO":
         prompt += """
 
-REGLAS FINANCIERAS ESPECIALES:
-- Prioriza liquidez, continuidad operativa y proteccion de nomina
-- Las recomendaciones deben parecer emitidas por CFO o turnaround advisory Big4
-- PROHIBIDO usar: "evaluar opciones", "analizar alternativas", "implementar mejoras", "acelerar cobranza", "optimizar procesos", "fortalecer operaciones"
-- Cada recomendacion DEBE incluir: accion concreta + objetivo operativo + horizonte de tiempo
-- PROHIBIDO usar palabras: validacion, consolidacion, potencial, implementacion, optimizacion, fortalecimiento
-- Usa lenguaje directo, ejecutivo, operativo y financiero
-- Las acciones deben sonar como plan de rescate financiero o contencion de crisis
+REGLAS EJECUTIVAS OBLIGATORIAS — TURNAROUND ADVISOR:
+
+LOGICA DE CLASIFICACION:
+- Si existen deuda + cartera vencida + ISR + lineas de credito + nomina comprometida simultaneamente: clasifica como "estres financiero severo" o "riesgo de insolvencia operativa"
+- Si cartera vencida > ingresos mensuales: "dependencia critica de cobranza"
+- Si ISR retenido vencido: "contingencia fiscal prioritaria"
+- Si lineas de credito usadas para nomina: "capital de trabajo agotado"
+
+PRIORIDAD DE RECOMENDACIONES:
+1. Supervivencia de caja — acciones en 24-72 horas
+2. Evitar incumplimiento bancario — antes del proximo vencimiento
+3. Proteger nomina — semana 1
+4. Contingencia SAT — semana 2
+5. Regularizacion IMSS — semana 3-4
+
+ESCENARIOS FINANCIEROS — SIEMPRE PROGRESIVOS:
+Los montos deben ser: Conservador < Probable < Critico
+NUNCA invertir el orden.
+
+PROHIBIDO usar: "evaluar opciones", "explorar alternativas", "considerar medidas", "presion moderada", "ligera tension", "flujo ajustado"
+
+USAR OBLIGATORIAMENTE: "negociar", "reestructurar", "suspender", "priorizar", "reducir", "inyectar", "renegociar"
+
+MINIMO 4 RECOMENDACIONES COMPLETAS — nunca terminar incompleto.
+
+Cada recomendacion: accion concreta + objetivo + plazo especifico
+
+TONO: turnaround consultant + restructuring advisor + CRO corporativo. NO chatbot motivacional.
 
 EJEMPLOS CORRECTOS:
-- Reducir gastos fijos no esenciales 15% en 14 dias
-- Negociar extension bancaria antes del siguiente vencimiento
-- Priorizar flujo para nomina y SAT durante proximas 3 semanas
-- Congelar contrataciones y compras no operativas inmediatamente
+- Negociar con banco extension de 60 dias antes del vencimiento de esta semana
+- Suspender pagos no criticos y priorizar nomina y SAT en proximas 72 horas
+- Reestructurar deuda bancaria solicitando periodo de gracia de 90 dias
+- Reducir gastos fijos operativos minimo 20% en los proximos 14 dias
+- Activar cobranza ejecutiva en las 2 cuentas principales con plazo de 15 dias
 """
 
     try:
@@ -419,8 +440,37 @@ async def ai_diagnostico(data: InputAI):
         causas, impacto = ajustar_laboral(causas, impacto, respuestas)
 
     # NIVEL DE RIESGO
-    # CLASIFICACION FINANCIERA REAL
+    # CLASIFICACION FINANCIERA REAL — LOGICA EJECUTIVA
     if industria == "FINANCIERO":
+
+        # Detectores de estres financiero severo
+        tiene_deuda       = any(p in texto for p in ["deuda", "bancaria", "banco"])
+        tiene_cartera     = any(p in texto for p in ["cartera vencida", "no pagar", "dejaron de pagar"])
+        tiene_isr         = any(p in texto for p in ["isr", "retenido", "sat"])
+        tiene_lineas      = any(p in texto for p in ["linea de credito", "lineas de credito", "credito para"])
+        tiene_nomina_comp = any(p in texto for p in ["nomina", "pagar nomina", "cubrir pagos"])
+
+        factores_criticos = sum([tiene_deuda, tiene_cartera, tiene_isr, tiene_lineas, tiene_nomina_comp])
+
+        if factores_criticos >= 3:
+            causas.append("Estres financiero severo — multiples presiones simultaneas sobre liquidez")
+            impacto += 500000
+
+        # Cartera vencida mayor a ingresos mensuales
+        if tiene_cartera:
+            causas.append("Dependencia critica de cobranza — cartera vencida comprometida")
+            impacto += 400000
+
+        # ISR retenido vencido
+        if tiene_isr:
+            causas.append("Contingencia fiscal prioritaria — ISR retenido no enterado")
+            impacto += 350000
+
+        # Lineas de credito para nomina
+        if tiene_lineas and tiene_nomina_comp:
+            causas.append("Capital de trabajo agotado — lineas de credito usadas para nomina")
+            impacto += 300000
+
         if impacto >= 1500000:
             riesgo = "CRITICO"
             tendencia_final = "ASCENDENTE"
@@ -446,182 +496,4 @@ async def ai_diagnostico(data: InputAI):
     elif impacto > 350000:
         riesgo = "MEDIO"
     else:
-        riesgo = "BAJO"
-
-    if industria not in ["LABORAL", "MANUFACTURA"]:
-        if impacto > 1200000:
-            riesgo = "CRITICO"
-        elif impacto > 450000:
-            riesgo = "ALTO"
-        elif impacto > 120000:
-            riesgo = "MEDIO"
-        else:
-            riesgo = "BAJO"
-
-    impacto_min = impacto
-    impacto_max = int(impacto * 2.5)
-
-    if riesgo == "CRITICO":
-        indice_riesgo = min(95, 85 + min(int(impacto / 1000000), 10))
-    elif riesgo == "ALTO":
-        indice_riesgo = min(80, 60 + min(int(impacto / 200000), 20))
-    elif riesgo == "MEDIO":
-        indice_riesgo = min(60, 40 + min(int(impacto / 100000), 20))
-    else:
-        indice_riesgo = 20
-
-    # SCORING DINAMICO
-    try:
-        from core.scoring_engine import calcular_score
-        scoring_data = {
-            **respuestas,
-            "industria": industria,
-            "ingresos": float(respuestas.get("ingresos", 0) or 0),
-            "egresos": float(respuestas.get("egresos", 0) or 0),
-        }
-        scoring = calcular_score(scoring_data)
-        score_final     = scoring.get("score", indice_riesgo)
-        nivel_final     = scoring.get("nivel", riesgo)
-        confianza_final = scoring.get("confianza", 74)
-        origen_final    = scoring.get("origen", ["Variables declaradas", "Simulacion operativa"])
-    except Exception:
-        score_final     = indice_riesgo
-        nivel_final     = riesgo
-        confianza_final = 74
-        origen_final    = ["Variables declaradas", "Simulacion operativa", "Patrones regulatorios"]
-        scoring         = {}
-
-    # TENDENCIA DINAMICA
-    if score_final >= 75:
-        tendencia_final = "ASCENDENTE"
-    elif score_final >= 40:
-        tendencia_final = "ESTABLE"
-    else:
-        tendencia_final = "CONTROLADA"
-
-    # CLAUDE
-    analisis_ai = await llamar_anthropic(texto, industria, impacto, riesgo, causas)
-
-    # FALLBACK REPORTE EJECUTIVO
-    if not analisis_ai:
-        try:
-            from services.executive_report_generator import generar_reporte
-            analisis_ai = generar_reporte(scoring, respuestas)
-        except Exception:
-            pass
-
-    preguntas = generar_preguntas(industria, texto, riesgo)
-
-    consecuencias = {
-        "SEGURIDAD": ["Posible clausura por operacion sin permisos", "Nulidad de contratos", "Responsabilidad patrimonial estimada"],
-        "LABORAL": ["Posible demanda laboral colectiva", "Multas STPS estimadas", "Paro de operaciones"],
-        "MANUFACTURA": ["Posible perdida de produccion", "Ruptura de contratos con clientes", "Contingencias sindicales"],
-        "SALUD": ["Posible clausura sanitaria COFEPRIS", "Multas estimadas", "Suspension de operaciones"],
-        "SERVICIOS_APOYO": ["Posible presion en renovaciones contractuales", "Exposicion administrativa estimada", "Requerimientos de regularizacion operativa"],
-        "FINANCIERO": ["Tension de liquidez progresiva", "Posibles fricciones operativas en cumplimiento de obligaciones", "Necesidad de reestructuracion financiera preventiva"],
-        "GENERAL": ["Posibles multas y sanciones", "Contingencias laborales estimadas", "Revision SAT potencial"]
-    }.get(industria, ["Escalamiento del riesgo", "Sanciones estimadas", "Perdida operativa potencial"])
-
-    mensajes_wa = {
-        "LABORAL": (
-            f"MESAN Omega — Riesgo laboral detectado.\n\n"
-            f"Se identificaron posibles contingencias operativas y laborales.\n\n"
-            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
-            f"Responde SI para revisar acciones preventivas recomendadas."
-        ),
-        "FINANCIERO": (
-            f"MESAN Omega — Tension financiera detectada.\n\n"
-            f"Se identifico posible presion sobre liquidez y continuidad operativa.\n\n"
-            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
-            f"Responde SI para revisar escenarios de estabilizacion y reestructuracion."
-        ),
-        "SERVICIOS_APOYO": (
-            f"MESAN Omega — Riesgo operativo detectado.\n\n"
-            f"Se identificaron posibles brechas de regularizacion relacionadas con cumplimiento REPSE.\n\n"
-            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
-            f"Responde SI para revisar acciones preventivas recomendadas."
-        ),
-    }
-    whatsapp = mensajes_wa.get(industria,
-        f"MESAN Omega — Alerta {riesgo}\n\nDetectamos posible riesgo en tu operacion.\nExposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te explicamos como prevenirlo."
-    )
-
-    # Escenarios coherentes — exposicion total nunca menor que perdida base
-    escenario_conservador = int(impacto * 0.80)
-    escenario_probable    = int(impacto * 1.30)
-    escenario_alto        = int(impacto * 2.50)
-
-    # PLAN 30 DIAS DINAMICO
-    if industria == "FINANCIERO":
-        if riesgo == "CRITICO":
-            consecuencias = [
-                "Posible incumplimiento bancario",
-                "Riesgo de atraso en nomina",
-                "Presion severa de liquidez"
-            ]
-            plan_30 = [
-                "Semana 1: Reestructuracion urgente de deuda bancaria",
-                "Semana 2: Recorte de gastos no esenciales",
-                "Semana 3: Negociacion con acreedores y flujo prioritario",
-                "Semana 4: Estabilizacion de caja y control operativo"
-            ]
-        elif riesgo == "ALTO":
-            consecuencias = [
-                "Presion de liquidez progresiva",
-                "Posibles atrasos en obligaciones",
-                "Riesgo de deterioro operativo"
-            ]
-            plan_30 = [
-                "Semana 1: Auditoria financiera especializada",
-                "Semana 2: Ajuste operativo inmediato",
-                "Semana 3: Control de pasivos y cobranza",
-                "Semana 4: Monitoreo de flujo y estabilizacion"
-            ]
-        else:
-            plan_30 = [
-                f"Semana 1: Auditoria preventiva sector {industria}",
-                "Semana 2: Regularizacion documental prioritaria",
-                "Semana 3: Blindaje operativo y cumplimiento",
-                "Semana 4: Monitoreo continuo y estabilizacion"
-            ]
-    else:
-        plan_30 = [
-            f"Semana 1: Auditoria preventiva sector {industria}",
-            "Semana 2: Regularizacion documental prioritaria",
-            "Semana 3: Blindaje operativo y cumplimiento",
-            "Semana 4: Monitoreo continuo y estabilizacion"
-        ]
-
-    disclaimer = (
-        "Analisis preventivo generado por MESAN Omega Intelligence Engine. "
-        "No constituye dictamen legal, fiscal, financiero ni resolucion oficial."
-    )
-
-    logging.info(f"Diagnostico | {industria} | {riesgo} | ${impacto:,}")
-
-    return {
-        "ok": True,
-        "industria": industria,
-        "riesgo": riesgo,
-        "impacto": impacto,
-        "impacto_min": impacto_min,
-        "impacto_max": impacto_max,
-        "causas": causas,
-        "consecuencias": consecuencias,
-        "preguntas": preguntas,
-        "analisis_ai": analisis_ai,
-        "plan_30_dias": plan_30,
-        "indice_riesgo": score_final,
-        "nivel_score":   nivel_final,
-        "confianza":     confianza_final,
-        "tendencia":     tendencia_final,
-        "origen":        origen_final,
-        "whatsapp":      whatsapp,
-        "disclaimer":    disclaimer,
-        "escenarios": {
-            "conservador": escenario_conservador,
-            "probable":    escenario_probable,
-            "alto":        escenario_alto
-        },
-        "cierre": f"Se recomienda seguimiento preventivo especializado para el sector {industria}."
-    }
+        riesgo = "BA
