@@ -292,20 +292,22 @@ Formato exacto:
 - Escenario de alta exposicion: [monto estimado]
 
 ## 4. ESCENARIO PROYECTADO — 30 DIAS
-[3 lineas con fechas a partir del {fecha_hoy}]
+[maximo 2 lineas con fechas a partir del {fecha_hoy}]
 
 ## 5. RECOMENDACIONES PRIORITARIAS
-[5 bullets concisos]
+[minimo 3 recomendaciones completas y accionables]
 
 Cierra con:
 "Este analisis es referencial. Los escenarios son estimados con base en variables declaradas y patrones generales de riesgo empresarial. Se recomienda validar con asesoria especializada."
+
+IMPORTANTE: Completa SIEMPRE las 5 secciones. NO truncar. NO terminar antes de las recomendaciones.
 """
     try:
         async with httpx.AsyncClient(timeout=30) as client:
             r = await client.post(
                 "https://api.anthropic.com/v1/messages",
                 headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-                json={"model": "claude-haiku-4-5-20251001", "max_tokens": 520,
+                json={"model": "claude-haiku-4-5-20251001", "max_tokens": 1200,
                       "messages": [{"role": "user", "content": prompt}]}
             )
             if r.status_code == 200:
@@ -451,8 +453,5 @@ async def ai_diagnostico(data: InputAI):
         ),
     }
     whatsapp = mensajes_wa.get(industria,
-        f"MESAN Omega — Alerta {riesgo}\n\nDetectamos posible riesgo en tu operacion.\nExposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te explicamos como prevenirlo."
-    )
-
-    # Escenarios coherentes — exposicion total nunca menor que perdida base
-    escenario_conservador = int(impacto * 0.
+        f"MESAN Omega — Alerta {riesgo}\n\nDetectamos posible riesgo en tu operacion.\nExposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te explicamos como p
+                                
