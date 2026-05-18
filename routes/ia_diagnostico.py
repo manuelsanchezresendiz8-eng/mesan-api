@@ -143,16 +143,19 @@ def analizar_fallback(texto, respuestas, industria):
         impacto += 150000
 
     elif industria == "FINANCIERO":
-        empleados = int(respuestas.get("num_empleados", 5))
-        impacto_base = empleados * 18000
-        causas.append("Presion de flujo operativo detectada")
+        empleados_fin = int(respuestas.get("num_empleados", 5))
+        impacto_base  = empleados_fin * 18000
+        causas.append("Tension de liquidez operativa detectada")
         impacto += impacto_base
         if any(p in texto for p in ["3 meses", "tres meses", "varios meses"]):
-            causas.append("Deficit sostenido por mas de 90 dias — presion financiera progresiva")
+            causas.append("Presion sostenida sobre caja operativa por mas de 90 dias")
             impacto += int(impacto_base * 0.8)
-        if any(p in texto for p in ["sin caja", "no tengo caja", "sin liquidez"]):
-            causas.append("Liquidez limitada para obligaciones inmediatas")
-            impacto += int(impacto_base * 0.5)
+        if any(p in texto for p in ["sin caja", "no tengo caja", "sin liquidez", "ya no me alcanza", "no puedo pagar", "atrasos", "flujo"]):
+            causas.append("Presion sostenida sobre caja operativa")
+            impacto += 450000
+        if any(p in texto for p in ["deuda", "credito", "bancaria"]):
+            causas.append("Nivel elevado de apalancamiento financiero")
+            impacto += 600000
 
     if "imss" in texto and industria not in ["LABORAL", "SEGURIDAD", "MANUFACTURA", "SERVICIOS_APOYO"]:
         causas.append("Posible incumplimiento IMSS")
@@ -166,6 +169,22 @@ def analizar_fallback(texto, respuestas, industria):
     if "nomina" in texto and industria not in ["LABORAL", "MANUFACTURA"]:
         causas.append("Posible riesgo de incumplimiento laboral en nomina")
         impacto += 100000
+
+    # MULTIPLICADOR FINANCIERO
+    if industria == "FINANCIERO":
+        ingresos_txt = float(respuestas.get("ingresos", 0) or 0)
+        egresos_txt  = float(respuestas.get("egresos", 0) or 0)
+        if ingresos_txt > 0 and egresos_txt > ingresos_txt:
+            deficit = egresos_txt - ingresos_txt
+            if deficit >= 40000:
+                impacto += 800000
+            if deficit >= 100000:
+                impacto += 1800000
+        empleados_fin2 = int(respuestas.get("num_empleados", 0))
+        if empleados_fin2 >= 20:
+            impacto += 300000
+        if "3.2" in texto or "3,200,000" in texto or "3.2 millones" in texto:
+            impacto += 700000
 
     # MULTIPLICADOR OPERATIVO — SEGURIDAD
     if industria == "SEGURIDAD":
@@ -370,7 +389,7 @@ async def ai_diagnostico(data: InputAI):
         "MANUFACTURA": ["Posible perdida de produccion", "Ruptura de contratos con clientes", "Contingencias sindicales"],
         "SALUD": ["Posible clausura sanitaria COFEPRIS", "Multas estimadas", "Suspension de operaciones"],
         "SERVICIOS_APOYO": ["Posible presion en renovaciones contractuales", "Exposicion administrativa estimada", "Requerimientos de regularizacion operativa"],
-        "FINANCIERO": ["Presion de liquidez progresiva", "Posibles atrasos en obligaciones", "Riesgo de continuidad operativa"],
+        "FINANCIERO": ["Tension de liquidez progresiva", "Posibles fricciones operativas en cumplimiento de obligaciones", "Necesidad de reestructuracion financiera preventiva"],
         "GENERAL": ["Posibles multas y sanciones", "Contingencias laborales estimadas", "Revision SAT potencial"]
     }.get(industria, ["Escalamiento del riesgo", "Sanciones estimadas", "Perdida operativa potencial"])
 
@@ -382,10 +401,10 @@ async def ai_diagnostico(data: InputAI):
             f"Responde SI para revisar acciones preventivas recomendadas."
         ),
         "FINANCIERO": (
-            f"MESAN Omega — Presion financiera detectada.\n\n"
-            f"Se identificaron posibles riesgos de liquidez y flujo operativo.\n\n"
+            f"MESAN Omega — Tension financiera detectada.\n\n"
+            f"Se identifico posible presion sobre liquidez y continuidad operativa.\n\n"
             f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
-            f"Responde SI para revisar escenarios de estabilizacion."
+            f"Responde SI para revisar escenarios de estabilizacion y reestructuracion."
         ),
         "SERVICIOS_APOYO": (
             f"MESAN Omega — Riesgo operativo detectado.\n\n"
@@ -439,5 +458,3 @@ async def ai_diagnostico(data: InputAI):
             "probable":    escenario_probable,
             "alto":        escenario_alto
         },
-        "cierre": f"Se recomienda seguimiento preventivo especializado para el sector {industria}."
-    }
