@@ -251,70 +251,140 @@ def ajustar_por_respuestas(causas, impacto, respuestas, industria):
     return causas, impacto
 
 async def llamar_anthropic(texto, industria, impacto, riesgo, causas):
+
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key or not causas:
         return ""
-    causas_txt = ", ".join(causas[:3])
-    fecha_hoy = datetime.now().strftime("%d de %B de %Y")
-    prompt = f"""
-Actua como consultor ejecutivo de riesgo empresarial en Mexico.
-Estilo: Deloitte / EY / KPMG / PwC.
 
-Fecha: {fecha_hoy}
+    causas_txt = " | ".join([c[:80] for c in causas[:4]])
+    fecha_hoy  = datetime.now().strftime("%d de %B de %Y")
+
+    modo_crisis = riesgo == "CRITICO" and len(causas) >= 4
+
+    impacto_bajo     = int(impacto * 0.4)
+    impacto_probable = int(impacto * 0.75)
+    impacto_critico  = int(impacto * 1.0)
+    if industria == "FINANCIERO":
+        impacto_critico = min(impacto_critico, 2500000)
+
+    prompt_normal = f"""
+Actua como consultor senior de riesgo empresarial en Mexico.
+Entrega diagnosticos EJECUTIVOS, concretos y accionables.
+
+REGLAS:
+- NO expliques leyes extensamente
+- NO hagas introducciones largas
+- Usa lenguaje ejecutivo y bullets cortos
+- NO exageres montos
+- Usa lenguaje de riesgo estimado
+- Maximo 120 palabras por seccion
+
+Fecha actual: {fecha_hoy}
 Industria: {industria}
-Nivel estimado: {riesgo}
-Exposicion estimada: ${impacto:,} MXN
-Factores: {causas_txt}
+Riesgo: {riesgo}
 Situacion: {texto}
+Factores: {causas_txt}
 
-REGLAS CRITICAS:
-- Maximo 500 palabras en total
-- Secciones breves y ejecutivas
-- Optimizado para lectura movil
-- NO uses: fraude, evasion, invalidacion total, sancion definitiva, maximos recargos, incumplimiento confirmado
-- Describe todo como: posible contingencia, exposicion estimada, presion operativa, regularizacion preventiva
-- NO redactes dictamen legal
-- Enfocate en: exposicion estimada, continuidad operativa, riesgo reputacional, gestion de contingencias
+ESCENARIOS FINANCIEROS OBLIGATORIOS (NO modificar):
+- Conservador: ${impacto_bajo:,}
+- Probable: ${impacto_probable:,}
+- Critico: ${impacto_critico:,}
 
-Formato exacto:
-
-# ANALISIS DE RIESGO EMPRESARIAL
+RESPONDE EXACTAMENTE:
 
 ## 1. HALLAZGO PRINCIPAL
-[3 lineas maximo]
+[Resumen ejecutivo]
 
-## 2. POSIBLE IMPACTO OPERATIVO
-[3 lineas maximo]
+## 2. IMPACTO OPERATIVO
+[Impacto operativo real]
 
-## 3. EXPOSICION FINANCIERA ESTIMADA
-- Escenario conservador: [monto estimado]
-- Escenario probable: [monto estimado]
-- Escenario de alta exposicion: [monto estimado]
+## 3. EXPOSICION FINANCIERA
+- Conservador: ${impacto_bajo:,} MXN
+- Probable: ${impacto_probable:,} MXN
+- Critico: ${impacto_critico:,} MXN
 
-## 4. ESCENARIO PROYECTADO — 30 DIAS
-[maximo 2 lineas con fechas a partir del {fecha_hoy}]
+## 4. ESCENARIO 30 DIAS
+[Timeline ejecutivo con fechas desde {fecha_hoy}]
 
 ## 5. RECOMENDACIONES PRIORITARIAS
-[minimo 3 recomendaciones completas y accionables]
+- Accion 1:
+- Accion 2:
+- Accion 3:
+- Accion 4:
 
-Cierra con:
-"Este analisis es referencial. Los escenarios son estimados con base en variables declaradas y patrones generales de riesgo empresarial. Se recomienda validar con asesoria especializada."
-
-IMPORTANTE: Completa SIEMPRE las 5 secciones. NO truncar. NO terminar antes de las recomendaciones.
+Analisis referencial sujeto a validacion legal y fiscal especializada.
 """
+
+    prompt_crisis = f"""
+Actua como consultor senior de crisis empresariales en Mexico.
+Este caso involucra multiples contingencias simultaneas.
+Prioriza: CONTENCION, ACCIONES, CONTINUIDAD OPERATIVA.
+
+NO hagas texto academico. NO expliques leyes. NO excedas 90 palabras por seccion.
+Estilo Big4: concreto, accionable, financiero, enfocado en mitigacion inmediata.
+
+Fecha actual: {fecha_hoy}
+Industria: {industria}
+Riesgo: {riesgo}
+Contexto: {texto}
+Factores: {causas_txt}
+
+ESCENARIOS FINANCIEROS OBLIGATORIOS (NO modificar):
+- Conservador: ${impacto_bajo:,}
+- Probable: ${impacto_probable:,}
+- Critico: ${impacto_critico:,}
+
+RESPONDE EXACTAMENTE:
+
+## 1. HALLAZGO PRINCIPAL
+[maximo 90 palabras]
+
+## 2. IMPACTO OPERATIVO
+[maximo 90 palabras]
+
+## 3. EXPOSICION FINANCIERA
+- Conservador: ${impacto_bajo:,} MXN
+- Probable: ${impacto_probable:,} MXN
+- Critico: ${impacto_critico:,} MXN
+
+## 4. ESCENARIO 30 DIAS
+[maximo 90 palabras con fechas desde {fecha_hoy}]
+
+## 5. RECOMENDACIONES PRIORITARIAS
+- Accion inmediata 24h:
+- Accion inmediata 72h:
+- Accion semana 1:
+- Accion semana 2:
+- Accion financiera:
+- Accion legal:
+
+Analisis referencial sujeto a validacion especializada.
+"""
+
+    prompt = prompt_crisis if modo_crisis else prompt_normal
+
     try:
-        async with httpx.AsyncClient(timeout=30) as client:
+        async with httpx.AsyncClient(timeout=45) as client:
             r = await client.post(
                 "https://api.anthropic.com/v1/messages",
-                headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-                json={"model": "claude-haiku-4-5-20251001", "max_tokens": 1200,
-                      "messages": [{"role": "user", "content": prompt}]}
+                headers={
+                    "x-api-key": api_key,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json"
+                },
+                json={
+                    "model": "claude-haiku-4-5-20251001",
+                    "max_tokens": 1400,
+                    "messages": [{"role": "user", "content": prompt}]
+                }
             )
             if r.status_code == 200:
                 return r.json()["content"][0]["text"]
+            logging.error(f"Claude Error: {r.text}")
     except Exception:
         logging.error(traceback.format_exc())
     return ""
+
 
 @router.post("/ai/diagnostico")
 async def ai_diagnostico(data: InputAI):
@@ -431,27 +501,3 @@ async def ai_diagnostico(data: InputAI):
         "FINANCIERO": ["Tension de liquidez progresiva", "Posibles fricciones operativas en cumplimiento de obligaciones", "Necesidad de reestructuracion financiera preventiva"],
         "GENERAL": ["Posibles multas y sanciones", "Contingencias laborales estimadas", "Revision SAT potencial"]
     }.get(industria, ["Escalamiento del riesgo", "Sanciones estimadas", "Perdida operativa potencial"])
-
-    mensajes_wa = {
-        "LABORAL": (
-            f"MESAN Omega — Riesgo laboral detectado.\n\n"
-            f"Se identificaron posibles contingencias operativas y laborales.\n\n"
-            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
-            f"Responde SI para revisar acciones preventivas recomendadas."
-        ),
-        "FINANCIERO": (
-            f"MESAN Omega — Tension financiera detectada.\n\n"
-            f"Se identifico posible presion sobre liquidez y continuidad operativa.\n\n"
-            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
-            f"Responde SI para revisar escenarios de estabilizacion y reestructuracion."
-        ),
-        "SERVICIOS_APOYO": (
-            f"MESAN Omega — Riesgo operativo detectado.\n\n"
-            f"Se identificaron posibles brechas de regularizacion relacionadas con cumplimiento REPSE.\n\n"
-            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
-            f"Responde SI para revisar acciones preventivas recomendadas."
-        ),
-    }
-    whatsapp = mensajes_wa.get(industria,
-        f"MESAN Omega — Alerta {riesgo}\n\nDetectamos posible riesgo en tu operacion.\nExposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te explicamos como p
-                                
