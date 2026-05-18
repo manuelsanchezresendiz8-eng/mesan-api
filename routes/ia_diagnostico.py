@@ -363,6 +363,26 @@ Analisis referencial sujeto a validacion especializada.
 
     prompt = prompt_crisis if modo_crisis else prompt_normal
 
+    # REGLAS ESPECIALIZADAS FINANCIERO
+    if industria == "FINANCIERO":
+        prompt += """
+
+REGLAS FINANCIERAS ESPECIALES:
+- Prioriza liquidez, continuidad operativa y proteccion de nomina
+- Las recomendaciones deben parecer emitidas por CFO o turnaround advisory Big4
+- PROHIBIDO usar: "evaluar opciones", "analizar alternativas", "implementar mejoras", "acelerar cobranza", "optimizar procesos", "fortalecer operaciones"
+- Cada recomendacion DEBE incluir: accion concreta + objetivo operativo + horizonte de tiempo
+- PROHIBIDO usar palabras: validacion, consolidacion, potencial, implementacion, optimizacion, fortalecimiento
+- Usa lenguaje directo, ejecutivo, operativo y financiero
+- Las acciones deben sonar como plan de rescate financiero o contencion de crisis
+
+EJEMPLOS CORRECTOS:
+- Reducir gastos fijos no esenciales 15% en 14 dias
+- Negociar extension bancaria antes del siguiente vencimiento
+- Priorizar flujo para nomina y SAT durante proximas 3 semanas
+- Congelar contrataciones y compras no operativas inmediatamente
+"""
+
     try:
         async with httpx.AsyncClient(timeout=45) as client:
             r = await client.post(
@@ -492,12 +512,4 @@ async def ai_diagnostico(data: InputAI):
 
     preguntas = generar_preguntas(industria, texto, riesgo)
 
-    consecuencias = {
-        "SEGURIDAD": ["Posible clausura por operacion sin permisos", "Nulidad de contratos", "Responsabilidad patrimonial estimada"],
-        "LABORAL": ["Posible demanda laboral colectiva", "Multas STPS estimadas", "Paro de operaciones"],
-        "MANUFACTURA": ["Posible perdida de produccion", "Ruptura de contratos con clientes", "Contingencias sindicales"],
-        "SALUD": ["Posible clausura sanitaria COFEPRIS", "Multas estimadas", "Suspension de operaciones"],
-        "SERVICIOS_APOYO": ["Posible presion en renovaciones contractuales", "Exposicion administrativa estimada", "Requerimientos de regularizacion operativa"],
-        "FINANCIERO": ["Tension de liquidez progresiva", "Posibles fricciones operativas en cumplimiento de obligaciones", "Necesidad de reestructuracion financiera preventiva"],
-        "GENERAL": ["Posibles multas y sanciones", "Contingencias laborales estimadas", "Revision SAT potencial"]
-    }.get(industria, ["Escalamiento del riesgo", "Sanciones estimadas", "Perdida operativa potencial"])
+    consecuenc
