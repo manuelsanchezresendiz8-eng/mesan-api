@@ -313,13 +313,14 @@ async def ai_diagnostico(data: InputAI):
     
     if industria == "MANUFACTURA" and "emplazamiento" in texto:
         riesgo = "CRITICO"
-        elif impacto > 1200000:
-            riesgo = "ALTO"
-        elif impacto > 350000:
-            riesgo = "MEDIO"
-        else:
-            riesgo = "BAJO"
+    elif impacto > 1200000:
+        riesgo = "ALTO"
+    elif impacto > 350000:
+        riesgo = "MEDIO"
     else:
+        riesgo = "BAJO"
+
+    if industria not in ["LABORAL", "MANUFACTURA"]:
         if impacto > 1200000:
             riesgo = "CRITICO"
         elif impacto > 450000:
@@ -456,5 +457,4 @@ async def ai_diagnostico(data: InputAI):
         "escenarios": {
             "conservador": escenario_conservador,
             "probable":    escenario_probable,
-            "alto":        escenario_alto
-        },
+            "alto":        escenario
