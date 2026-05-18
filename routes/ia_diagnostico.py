@@ -143,19 +143,56 @@ def analizar_fallback(texto, respuestas, industria):
         impacto += 150000
 
     elif industria == "FINANCIERO":
-        empleados_fin = int(respuestas.get("num_empleados", 5))
-        impacto_base  = empleados_fin * 18000
-        causas.append("Tension de liquidez operativa detectada")
-        impacto += impacto_base
-        if any(p in texto for p in ["3 meses", "tres meses", "varios meses"]):
-            causas.append("Presion sostenida sobre caja operativa por mas de 90 dias")
-            impacto += int(impacto_base * 0.8)
-        if any(p in texto for p in ["sin caja", "no tengo caja", "sin liquidez", "ya no me alcanza", "no puedo pagar", "atrasos", "flujo"]):
-            causas.append("Presion sostenida sobre caja operativa")
-            impacto += 450000
-        if any(p in texto for p in ["deuda", "credito", "bancaria"]):
-            causas.append("Nivel elevado de apalancamiento financiero")
-            impacto += 600000
+        import re
+
+        causas_financieras = []
+
+        def extraer_monto(patron, txt):
+            m = re.search(patron, txt)
+            if not m:
+                return 0
+            try:
+                return int(m.group(1).replace(",", "").replace(".", ""))
+            except:
+                return 0
+
+        ingresos_ext  = extraer_monto(r'factura\s+([\d,\.]+)', texto)
+        deuda_ext     = extraer_monto(r'deuda\s+(?:bancaria\s+)?de\s+([\d,\.]+)', texto)
+        pago_banco    = extraer_monto(r'pagos?\s+de\s+([\d,\.]+)', texto)
+        nomina_ext    = extraer_monto(r'nomina\s+es\s+de\s+([\d,\.]+)', texto)
+        gastos_ext    = extraer_monto(r'gastos?\s+fijos\s+son\s+([\d,\.]+)', texto)
+
+        obligaciones  = pago_banco + nomina_ext + gastos_ext
+        deficit       = obligaciones - ingresos_ext
+
+        if deficit > 0:
+            causas_financieras.append("Deficit operativo mensual — obligaciones superan ingresos")
+            impacto += deficit * 6
+            if deuda_ext >= (ingresos_ext * 4) and ingresos_ext > 0:
+                causas_financieras.append("Nivel de apalancamiento elevado — deuda superior a capacidad operativa anual")
+                impacto += int(deuda_ext * 0.20)
+            if nomina_ext >= (ingresos_ext * 0.50) and ingresos_ext > 0:
+                causas_financieras.append("Alta carga laboral sobre flujo operativo")
+                impacto += 250000
+            if pago_banco >= (ingresos_ext * 0.15) and ingresos_ext > 0:
+                causas_financieras.append("Presion bancaria significativa sobre liquidez")
+                impacto += 180000
+            if deficit >= 40000:
+                causas_financieras.append("Liquidez critica — flujo insuficiente para cubrir obligaciones mensuales")
+                impacto += 350000
+            if deficit >= 80000:
+                causas_financieras.append("Riesgo de continuidad operativa en corto plazo")
+                impacto += 500000
+        else:
+            causas_financieras.append("Presion financiera moderada detectada")
+            impacto += 120000
+
+        if any(p in texto for p in ["ya no me alcanza", "sin liquidez", "no puedo pagar", "atrasado", "morosidad"]):
+            causas_financieras.append("Tension de liquidez declarada por direccion")
+            impacto += 220000
+
+        impacto = min(impacto, max(deuda_ext if deuda_ext > 0 else 2500000, 2500000))
+        causas.extend(causas_financieras)
 
     if "imss" in texto and industria not in ["LABORAL", "SEGURIDAD", "MANUFACTURA", "SERVICIOS_APOYO"]:
         causas.append("Posible incumplimiento IMSS")
@@ -169,22 +206,6 @@ def analizar_fallback(texto, respuestas, industria):
     if "nomina" in texto and industria not in ["LABORAL", "MANUFACTURA"]:
         causas.append("Posible riesgo de incumplimiento laboral en nomina")
         impacto += 100000
-
-    # MULTIPLICADOR FINANCIERO
-    if industria == "FINANCIERO":
-        ingresos_txt = float(respuestas.get("ingresos", 0) or 0)
-        egresos_txt  = float(respuestas.get("egresos", 0) or 0)
-        if ingresos_txt > 0 and egresos_txt > ingresos_txt:
-            deficit = egresos_txt - ingresos_txt
-            if deficit >= 40000:
-                impacto += 800000
-            if deficit >= 100000:
-                impacto += 1800000
-        empleados_fin2 = int(respuestas.get("num_empleados", 0))
-        if empleados_fin2 >= 20:
-            impacto += 300000
-        if "3.2" in texto or "3,200,000" in texto or "3.2 millones" in texto:
-            impacto += 700000
 
     # MULTIPLICADOR OPERATIVO — SEGURIDAD
     if industria == "SEGURIDAD":
@@ -306,6 +327,21 @@ async def ai_diagnostico(data: InputAI):
         causas, impacto = ajustar_laboral(causas, impacto, respuestas)
 
     # NIVEL DE RIESGO
+    # CLASIFICACION FINANCIERA REAL
+    if industria == "FINANCIERO":
+        if impacto >= 1500000:
+            riesgo = "CRITICO"
+            tendencia_final = "ASCENDENTE"
+        elif impacto >= 600000:
+            riesgo = "ALTO"
+            tendencia_final = "VOLATIL"
+        elif impacto >= 180000:
+            riesgo = "MEDIO"
+            tendencia_final = "ESTABLE"
+        else:
+            riesgo = "BAJO"
+            tendencia_final = "CONTROLADA"
+
     if industria == "LABORAL":
         t_check = texto.lower()
         if any(p in t_check for p in ["huelga", "paro", "emplazamiento", "sindicato"]):
@@ -419,42 +455,4 @@ async def ai_diagnostico(data: InputAI):
     )
 
     # Escenarios coherentes — exposicion total nunca menor que perdida base
-    escenario_conservador = int(impacto * 0.80)
-    escenario_probable    = int(impacto * 1.30)
-    escenario_alto        = int(impacto * 2.50)
-
-    disclaimer = (
-        "Analisis preventivo generado por MESAN Omega Intelligence Engine. "
-        "No constituye dictamen legal, fiscal, financiero ni resolucion oficial."
-    )
-
-    logging.info(f"Diagnostico | {industria} | {riesgo} | ${impacto:,}")
-
-    return {
-        "ok": True,
-        "industria": industria,
-        "riesgo": riesgo,
-        "impacto": impacto,
-        "impacto_min": impacto_min,
-        "impacto_max": impacto_max,
-        "causas": causas,
-        "consecuencias": consecuencias,
-        "preguntas": preguntas,
-        "analisis_ai": analisis_ai,
-        "plan_30_dias": [
-            f"Semana 1: Auditoria preventiva sector {industria}",
-            "Semana 2: Regularizacion documental prioritaria",
-            "Semana 3: Blindaje operativo y cumplimiento",
-            "Semana 4: Monitoreo continuo y estabilizacion"
-        ],
-        "indice_riesgo": score_final,
-        "nivel_score":   nivel_final,
-        "confianza":     confianza_final,
-        "tendencia":     tendencia_final,
-        "origen":        origen_final,
-        "whatsapp":      whatsapp,
-        "disclaimer":    disclaimer,
-        "escenarios": {
-            "conservador": escenario_conservador,
-            "probable":    escenario_probable,
-            "alto":        escenario
+    escenario_conservador = int(impacto * 0.
