@@ -512,4 +512,116 @@ async def ai_diagnostico(data: InputAI):
 
     preguntas = generar_preguntas(industria, texto, riesgo)
 
-    consecuenc
+    consecuencias = {
+        "SEGURIDAD": ["Posible clausura por operacion sin permisos", "Nulidad de contratos", "Responsabilidad patrimonial estimada"],
+        "LABORAL": ["Posible demanda laboral colectiva", "Multas STPS estimadas", "Paro de operaciones"],
+        "MANUFACTURA": ["Posible perdida de produccion", "Ruptura de contratos con clientes", "Contingencias sindicales"],
+        "SALUD": ["Posible clausura sanitaria COFEPRIS", "Multas estimadas", "Suspension de operaciones"],
+        "SERVICIOS_APOYO": ["Posible presion en renovaciones contractuales", "Exposicion administrativa estimada", "Requerimientos de regularizacion operativa"],
+        "FINANCIERO": ["Tension de liquidez progresiva", "Posibles fricciones operativas en cumplimiento de obligaciones", "Necesidad de reestructuracion financiera preventiva"],
+        "GENERAL": ["Posibles multas y sanciones", "Contingencias laborales estimadas", "Revision SAT potencial"]
+    }.get(industria, ["Escalamiento del riesgo", "Sanciones estimadas", "Perdida operativa potencial"])
+
+    mensajes_wa = {
+        "LABORAL": (
+            f"MESAN Omega — Riesgo laboral detectado.\n\n"
+            f"Se identificaron posibles contingencias operativas y laborales.\n\n"
+            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
+            f"Responde SI para revisar acciones preventivas recomendadas."
+        ),
+        "FINANCIERO": (
+            f"MESAN Omega — Tension financiera detectada.\n\n"
+            f"Se identifico posible presion sobre liquidez y continuidad operativa.\n\n"
+            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
+            f"Responde SI para revisar escenarios de estabilizacion y reestructuracion."
+        ),
+        "SERVICIOS_APOYO": (
+            f"MESAN Omega — Riesgo operativo detectado.\n\n"
+            f"Se identificaron posibles brechas de regularizacion relacionadas con cumplimiento REPSE.\n\n"
+            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
+            f"Responde SI para revisar acciones preventivas recomendadas."
+        ),
+    }
+    whatsapp = mensajes_wa.get(industria,
+        f"MESAN Omega — Alerta {riesgo}\n\nDetectamos posible riesgo en tu operacion.\nExposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te explicamos como prevenirlo."
+    )
+
+    # Escenarios coherentes — exposicion total nunca menor que perdida base
+    escenario_conservador = int(impacto * 0.80)
+    escenario_probable    = int(impacto * 1.30)
+    escenario_alto        = int(impacto * 2.50)
+
+    # PLAN 30 DIAS DINAMICO
+    if industria == "FINANCIERO":
+        if riesgo == "CRITICO":
+            consecuencias = [
+                "Posible incumplimiento bancario",
+                "Riesgo de atraso en nomina",
+                "Presion severa de liquidez"
+            ]
+            plan_30 = [
+                "Semana 1: Reestructuracion urgente de deuda bancaria",
+                "Semana 2: Recorte de gastos no esenciales",
+                "Semana 3: Negociacion con acreedores y flujo prioritario",
+                "Semana 4: Estabilizacion de caja y control operativo"
+            ]
+        elif riesgo == "ALTO":
+            consecuencias = [
+                "Presion de liquidez progresiva",
+                "Posibles atrasos en obligaciones",
+                "Riesgo de deterioro operativo"
+            ]
+            plan_30 = [
+                "Semana 1: Auditoria financiera especializada",
+                "Semana 2: Ajuste operativo inmediato",
+                "Semana 3: Control de pasivos y cobranza",
+                "Semana 4: Monitoreo de flujo y estabilizacion"
+            ]
+        else:
+            plan_30 = [
+                f"Semana 1: Auditoria preventiva sector {industria}",
+                "Semana 2: Regularizacion documental prioritaria",
+                "Semana 3: Blindaje operativo y cumplimiento",
+                "Semana 4: Monitoreo continuo y estabilizacion"
+            ]
+    else:
+        plan_30 = [
+            f"Semana 1: Auditoria preventiva sector {industria}",
+            "Semana 2: Regularizacion documental prioritaria",
+            "Semana 3: Blindaje operativo y cumplimiento",
+            "Semana 4: Monitoreo continuo y estabilizacion"
+        ]
+
+    disclaimer = (
+        "Analisis preventivo generado por MESAN Omega Intelligence Engine. "
+        "No constituye dictamen legal, fiscal, financiero ni resolucion oficial."
+    )
+
+    logging.info(f"Diagnostico | {industria} | {riesgo} | ${impacto:,}")
+
+    return {
+        "ok": True,
+        "industria": industria,
+        "riesgo": riesgo,
+        "impacto": impacto,
+        "impacto_min": impacto_min,
+        "impacto_max": impacto_max,
+        "causas": causas,
+        "consecuencias": consecuencias,
+        "preguntas": preguntas,
+        "analisis_ai": analisis_ai,
+        "plan_30_dias": plan_30,
+        "indice_riesgo": score_final,
+        "nivel_score":   nivel_final,
+        "confianza":     confianza_final,
+        "tendencia":     tendencia_final,
+        "origen":        origen_final,
+        "whatsapp":      whatsapp,
+        "disclaimer":    disclaimer,
+        "escenarios": {
+            "conservador": escenario_conservador,
+            "probable":    escenario_probable,
+            "alto":        escenario_alto
+        },
+        "cierre": f"Se recomienda seguimiento preventivo especializado para el sector {industria}."
+    }
