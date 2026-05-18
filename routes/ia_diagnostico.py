@@ -217,57 +217,55 @@ async def llamar_anthropic(texto, industria, impacto, riesgo, causas):
     causas_txt = ", ".join(causas[:3])
     fecha_hoy = datetime.now().strftime("%d de %B de %Y")
     prompt = f"""
-Actua como consultor ejecutivo de riesgo empresarial
-en Mexico especializado en cumplimiento operativo,
-laboral, fiscal y financiero.
+Actua como consultor ejecutivo de riesgo empresarial en Mexico.
+Estilo: Deloitte / EY / KPMG / PwC.
 
-Tu estilo debe parecer: Deloitte, KPMG, PwC o EY.
-
-Fecha actual: {fecha_hoy}
+Fecha: {fecha_hoy}
 Industria: {industria}
-Situacion analizada: {texto}
 Nivel estimado: {riesgo}
 Exposicion estimada: ${impacto:,} MXN
-Factores detectados: {causas_txt}
+Factores: {causas_txt}
+Situacion: {texto}
 
-IMPORTANTE:
-NO afirmes delitos, fraude, insolvencia, quiebra, incumplimientos confirmados ni sanciones definitivas.
-Describe todo como posible contingencia, brecha de regularizacion, presion operativa, exposicion estimada o escenario preventivo.
-NO uses amenazas, lenguaje alarmista ni afirmaciones absolutas.
-Usa lenguaje corporativo, ejecutivo, preventivo y consultivo.
+REGLAS CRITICAS:
+- Maximo 500 palabras en total
+- Secciones breves y ejecutivas
+- Optimizado para lectura movil
+- NO uses: fraude, evasion, invalidacion total, sancion definitiva, maximos recargos, incumplimiento confirmado
+- Describe todo como: posible contingencia, exposicion estimada, presion operativa, regularizacion preventiva
+- NO redactes dictamen legal
+- Enfocate en: exposicion estimada, continuidad operativa, riesgo reputacional, gestion de contingencias
 
-Responde exactamente en este formato:
+Formato exacto:
 
 # ANALISIS DE RIESGO EMPRESARIAL
 
 ## 1. HALLAZGO PRINCIPAL
-[maximo 5 lineas]
+[3 lineas maximo]
 
 ## 2. POSIBLE IMPACTO OPERATIVO
-[maximo 5 lineas]
+[3 lineas maximo]
 
 ## 3. EXPOSICION FINANCIERA ESTIMADA
-Usa SOLO:
-- Escenario conservador
-- Escenario probable
-- Escenario de alta exposicion
-NO uses tablas, multas exactas, articulos legales ni sanciones especificas.
+- Escenario conservador: [monto estimado]
+- Escenario probable: [monto estimado]
+- Escenario de alta exposicion: [monto estimado]
 
 ## 4. ESCENARIO PROYECTADO — 30 DIAS
-[maximo 4 lineas con fechas aproximadas a partir del {fecha_hoy}]
+[3 lineas con fechas a partir del {fecha_hoy}]
 
 ## 5. RECOMENDACIONES PRIORITARIAS
-[maximo 5 bullets]
+[5 bullets concisos]
 
-Cierra obligatoriamente con:
-"Este analisis es referencial. Los escenarios y montos son estimados con base en variables declaradas y patrones generales de riesgo empresarial. Se recomienda validar con asesoria legal, fiscal o financiera especializada."
+Cierra con:
+"Este analisis es referencial. Los escenarios son estimados con base en variables declaradas y patrones generales de riesgo empresarial. Se recomienda validar con asesoria especializada."
 """
     try:
         async with httpx.AsyncClient(timeout=30) as client:
             r = await client.post(
                 "https://api.anthropic.com/v1/messages",
                 headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-                json={"model": "claude-haiku-4-5-20251001", "max_tokens": 700,
+                json={"model": "claude-haiku-4-5-20251001", "max_tokens": 520,
                       "messages": [{"role": "user", "content": prompt}]}
             )
             if r.status_code == 200:
