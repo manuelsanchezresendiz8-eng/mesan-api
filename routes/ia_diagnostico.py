@@ -545,9 +545,9 @@ async def ai_diagnostico(data: InputAI):
             impacto += 400000
 
         # ISR retenido vencido
-        causas.append("Contingencia fiscal prioritaria — ISR retenido no enterado")
+        if tiene_isr:
+            causas.append("Contingencia fiscal prioritaria — ISR retenido no enterado")
             impacto += 350000
-
         # Lineas de credito para nomina
         if tiene_lineas and tiene_nomina_comp:
             causas.append("Capital de trabajo agotado — lineas de credito usadas para nomina")
