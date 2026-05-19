@@ -12,6 +12,10 @@ import traceback
 from datetime import datetime
 
 from core.preguntas import generar_preguntas
+try:
+    from services.refine_engine import generar_refinamiento
+except Exception:
+    generar_refinamiento = None
 
 router = APIRouter()
 
@@ -45,108 +49,163 @@ def detectar_impacto_declarado(texto: str) -> int:
                 return int(mult)
     return 0
 
+# CRISIS EVENTS — pesos reales
+CRISIS_EVENTS = {
+    "cuentas_bloqueadas": {"score": 95, "impacto": 1200000, "nivel": "CRITICO", "tendencia": "ASCENDENTE"},
+    "embargo_sat":        {"score": 92, "impacto": 1500000, "nivel": "CRITICO", "tendencia": "ASCENDENTE"},
+    "nomina_riesgo":      {"score": 85, "impacto": 650000,  "nivel": "ALTO",    "tendencia": "ASCENDENTE"},
+    "huelga_activa":      {"score": 97, "impacto": 3000000, "nivel": "CRITICO", "tendencia": "ASCENDENTE"},
+    "cliente_rescision":  {"score": 82, "impacto": 800000,  "nivel": "ALTO",    "tendencia": "ASCENDENTE"},
+    "sin_rc_lesionado":   {"score": 94, "impacto": 1800000, "nivel": "CRITICO", "tendencia": "ASCENDENTE"},
+    "infonavit_omision":  {"score": 78, "impacto": 450000,  "nivel": "ALTO",    "tendencia": "ASCENDENTE"},
+}
+
+def aplicar_colision_riesgos(texto, impacto, score):
+    """Motor de colision — multiplica impacto cuando coexisten riesgos criticos"""
+    t = texto.lower()
+
+    if ("bloqueo" in t or "embargo" in t) and "nomina" in t:
+        impacto = int(impacto * 1.8)
+        score += 12
+
+    if ("huelga" in t or "sindicato" in t) and "cliente americano" in t:
+        impacto = int(impacto * 2.5)
+        score += 15
+
+    if "sspc" in t and ("lesion" in t or "herido" in t) and ("sin seguro" in t or "responsabilidad civil" in t):
+        impacto = int(impacto * 2.2)
+        score += 14
+
+    if "sat" in t and ("bloqueo" in t or "embargo" in t):
+        impacto = int(impacto * 2.0)
+        score += 15
+
+    if "infonavit" in t and ("bloqueo" in t or "embargo" in t):
+        impacto = int(impacto * 1.6)
+        score += 10
+
+    return int(impacto), min(score, 99)
+
 def detectar_industria(texto: str) -> str:
-    if any(p in texto for p in ["call center", "contact center", "agentes telefonicos", "cobranza telefonica"]):
-        return "CALL_CENTER"
-    if any(p in texto for p in ["seguridad privada", "guardia", "sspc", "dgsp", "cuip", "guardias"]):
-        return "SEGURIDAD"
-    if any(p in texto for p in ["huelga", "sindicato", "emplazamiento", "paro laboral", "paro de labores", "contrato colectivo"]):
-        return "LABORAL"
-    if any(p in texto for p in ["accidente laboral", "incapacidad", "riesgo de trabajo", "imss nego", "obra determinada"]):
-        return "LABORAL"
-    if any(p in texto for p in ["limpieza", "aseo", "intendencia", "outsourcing", "repse", "staffing"]):
-        return "SERVICIOS_APOYO"
-    if any(p in texto for p in ["hospital", "clinica", "medico", "cofepris", "paciente"]):
-        return "SALUD"
-    if any(p in texto for p in ["cbtis", "preparatoria", "escuela", "universidad", "plantel"]):
-        return "EDUCACION"
-    if any(p in texto for p in ["saas", "mrr", "churn", "aws", "sla", "startup", "fintech"]):
-        return "TECNOLOGIA"
-    if any(p in texto for p in ["obra", "construccion", "albanil", "cemento", "edificio"]):
-        return "CONSTRUCCION"
-    if any(p in texto for p in ["restaurante", "comida", "cocina", "alimentos", "cofepris"]):
-        return "ALIMENTOS"
-    if any(p in texto for p in ["fabrica", "produccion", "maquila", "planta", "manufactura", "refacciones", "ensamble"]):
-        return "MANUFACTURA"
-    if any(p in texto for p in ["tienda", "retail", "inventario", "comercio"]):
-        return "RETAIL"
-    if any(p in texto for p in ["banco", "credito", "financiera", "prestamos", "wallet"]):
-        return "FINANCIERO"
-    if any(p in texto for p in ["transporte", "logistica", "almacen", "flete", "trailer"]):
-        return "LOGISTICA"
-    if any(p in texto for p in ["ingresos", "egresos", "gastos fijos", "flujo", "caja", "deficit", "perdida mensual", "no tengo caja", "sin liquidez", "deuda"]):
-        return "FINANCIERO"
+    t = texto.lower()
+    sectores = {
+        "SEGURIDAD":       ["seguridad privada", "guardia", "sspc", "guardias", "custodia", "dgsp", "cuip"],
+        "LABORAL":         ["huelga", "sindicato", "paro laboral", "emplazamiento", "contrato colectivo"],
+        "FINANCIERO":      ["deuda", "liquidez", "flujo", "credito", "cartera vencida", "banco", "sin liquidez", "no me alcanza", "ingresos", "egresos", "gastos fijos", "caja", "deficit"],
+        "LOGISTICA":       ["logistica", "trailer", "operadores", "flete", "transporte", "almacen"],
+        "MANUFACTURA":     ["maquila", "planta", "produccion", "manufactura", "fabrica", "ensamble"],
+        "SERVICIOS_APOYO": ["repse", "limpieza", "outsourcing", "intendencia", "staffing"],
+        "SALUD":           ["hospital", "clinica", "medico", "cofepris", "paciente"],
+        "CONSTRUCCION":    ["obra", "construccion", "albanil", "cemento", "edificio"],
+        "TECNOLOGIA":      ["saas", "mrr", "churn", "aws", "startup", "fintech"],
+        "RETAIL":          ["tienda", "retail", "inventario", "comercio"],
+        "EDUCACION":       ["escuela", "universidad", "preparatoria", "plantel"],
+        "ALIMENTOS":       ["restaurante", "comida", "cocina", "alimentos"],
+    }
+    for sector, palabras in sectores.items():
+        if any(p in t for p in palabras):
+            return sector
     return "GENERAL"
 
 def analizar_fallback(texto, respuestas, industria):
+    t = texto.lower()
     causas = []
     impacto = 0
-    impacto_declarado = detectar_impacto_declarado(texto)
+    score = 25
 
-    if industria == "LABORAL":
-        if any(p in texto for p in ["huelga", "paro", "emplazamiento", "sindicato"]):
-            causas.append("Posible conflicto sindical con riesgo de paro operativo")
-            impacto += impacto_declarado * 30 if impacto_declarado > 0 else 2000000
-        if any(p in texto for p in ["accidente", "incapacidad", "herido", "lesion"]):
-            causas.append("Posible accidente laboral con exposicion de responsabilidad patronal")
-            impacto += 300000
-        if any(p in texto for p in ["imss", "incapacidad", "obra determinada"]):
-            causas.append("Posible irregularidad IMSS — riesgo de demanda laboral")
-            impacto += 150000
-        if any(p in texto for p in ["prestaciones", "contrato colectivo"]):
-            causas.append("Posible conflicto por prestaciones — riesgo de escalamiento")
-            impacto += 500000
+    # CUENTAS BLOQUEADAS / EMBARGO
+    if any(p in t for p in ["bloqueo", "embargo", "cuentas bloqueadas", "inmovilizacion", "pae", "ejecucion fiscal", "infonavit bloqueo", "cuenta bloqueada"]):
+        causas.append("Inmovilizacion bancaria detectada — continuidad operativa comprometida")
+        impacto += 1200000
+        score += 30
 
-    elif industria == "SEGURIDAD":
-        causas.append("Posible brecha de regularizacion en registro SSPC — ventana de cumplimiento activa")
-        impacto += 300000
-        if any(p in texto for p in ["herido", "asalto", "lesion", "accidente", "disparo"]):
-            causas.append("Posible incidente con lesion — exposicion de responsabilidad civil")
-            impacto += 600000
-        if any(p in texto for p in ["imss", "sin imss", "no tiene imss"]):
-            causas.append("Posible trabajador sin cobertura IMSS")
-            impacto += 200000
-        if any(p in texto for p in ["sin seguro", "sin seguro rc", "sin seguro de responsabilidad civil", "no tenemos seguro"]):
-            causas.append("Ausencia de cobertura de responsabilidad civil para personal operativo")
-            impacto += 250000
-        if any(p in texto for p in ["plazas", "corporativos", "sucursales", "ubicaciones", "sitios"]):
-            causas.append("Operacion multisede — mayor exposicion operativa")
-            impacto += 180000
+    # INFONAVIT
+    if "infonavit" in t:
+        causas.append("Omisiones patronales INFONAVIT detectadas — riesgo de credito fiscal")
+        impacto += 450000
+        score += 15
 
-    elif industria == "MANUFACTURA":
-        if any(p in texto for p in ["huelga", "paro", "sindicato"]):
-            causas.append("Posible conflicto sindical — presion relevante sobre continuidad operativa")
-            impacto += impacto_declarado * 30 if impacto_declarado > 0 else 3000000
-        if "emplazamiento" in texto:
-            causas.append("Emplazamiento sindical activo — ventana critica de negociacion")
-            impacto += 1800000
-        if any(p in texto for p in ["imss", "stps", "accidente"]):
-            causas.append("Posible riesgo laboral — IMSS y STPS")
-            impacto += 200000
-        if any(p in texto for p in ["cliente americano", "cliente unico", "solo cliente", "penalizacion contractual", "exportacion"]):
-            causas.append("Alta dependencia de cliente estrategico — exposicion de concentracion")
-            impacto += 2500000
+    # NOMINA
+    if "nomina" in t:
+        causas.append("Presion sobre cumplimiento de nomina — riesgo de incumplimiento en cadena")
+        impacto += 350000
+        score += 18
 
-    elif industria == "SERVICIOS_APOYO":
-        causas.append("Posible brecha de regularizacion REPSE — exposicion administrativa y contractual")
+    # SAT
+    if "sat" in t or "credito fiscal" in t:
+        causas.append("Credito fiscal o presion SAT detectada")
+        impacto += 800000
+        score += 20
+
+    # HUELGA / SINDICAL
+    if any(p in t for p in ["huelga", "emplazamiento", "sindicato", "paro laboral"]):
+        causas.append("Conflicto sindical con riesgo de paralizacion operativa")
+        impacto += 2500000
+        score += 35
+
+    # SSPC
+    if "sspc" in t:
+        causas.append("Operacion con vulnerabilidad regulatoria SSPC")
+        impacto += 650000
+        score += 15
+
+    # REPSE
+    if "repse" in t:
+        causas.append("Brecha REPSE con riesgo contractual")
+        impacto += 380000
+        score += 12
+
+    # IMSS
+    if "imss" in t:
+        causas.append("Posible contingencia IMSS detectada")
+        impacto += 280000
+        score += 10
+
+    # SUA / SIPARE
+    if any(p in t for p in ["sua", "sipare"]):
+        causas.append("Inconsistencias SUA/SIPARE — posible omision de cuotas no detectada")
+        impacto += 250000
+        score += 8
+
+    # LESIONES / RC
+    if any(p in t for p in ["lesion", "herido", "accidente laboral"]):
+        causas.append("Incidente operativo con posible responsabilidad civil")
+        impacto += 950000
+        score += 20
+
+    # CLIENTE ESTRATEGICO
+    if any(p in t for p in ["cliente americano", "cliente unico", "penalizacion contractual", "exportacion"]):
+        causas.append("Alta dependencia de cliente estrategico — exposicion de concentracion")
+        impacto += 2500000
+        score += 20
+
+    # SEGURO RC
+    if any(p in t for p in ["sin seguro", "sin seguro rc", "no tenemos seguro"]):
+        causas.append("Ausencia de cobertura de responsabilidad civil para personal operativo")
+        impacto += 250000
+        score += 10
+
+    # MULTISEDE
+    if any(p in t for p in ["plazas", "corporativos", "sucursales", "ubicaciones"]):
+        causas.append("Operacion multisede — mayor exposicion operativa")
         impacto += 180000
-        if any(p in texto for p in ["accidente", "herido", "lesion"]):
-            causas.append("Posible accidente laboral sin cobertura adecuada")
-            impacto += 400000
+        score += 5
 
-    elif industria == "SALUD":
-        causas.append("Posible riesgo de observacion sanitaria COFEPRIS")
-        impacto += 200000
+    # CARTERA VENCIDA
+    if any(p in t for p in ["cartera vencida", "no pagaron", "dejaron de pagar"]):
+        causas.append("Cartera vencida critica — flujo operativo comprometido")
+        impacto += 600000
+        score += 15
 
-    elif industria == "TECNOLOGIA":
-        causas.append("Posible riesgo operativo y fiscal")
-        impacto += 150000
+    # DEUDA / APALANCAMIENTO
+    if any(p in t for p in ["deuda bancaria", "linea de credito", "prestamo bancario"]):
+        causas.append("Nivel elevado de apalancamiento financiero")
+        impacto += 400000
+        score += 12
 
-    elif industria == "FINANCIERO":
+    # INDUSTRIA FINANCIERO
+    if industria == "FINANCIERO":
         import re
-
-        causas_financieras = []
-
         def extraer_monto(patron, txt):
             m = re.search(patron, txt)
             if not m:
@@ -156,69 +215,28 @@ def analizar_fallback(texto, respuestas, industria):
             except:
                 return 0
 
-        ingresos_ext  = extraer_monto(r'factura\s+([\d,\.]+)', texto)
-        deuda_ext     = extraer_monto(r'deuda\s+(?:bancaria\s+)?de\s+([\d,\.]+)', texto)
-        pago_banco    = extraer_monto(r'pagos?\s+de\s+([\d,\.]+)', texto)
-        nomina_ext    = extraer_monto(r'nomina\s+es\s+de\s+([\d,\.]+)', texto)
-        gastos_ext    = extraer_monto(r'gastos?\s+fijos\s+son\s+([\d,\.]+)', texto)
-
-        obligaciones  = pago_banco + nomina_ext + gastos_ext
-        deficit       = obligaciones - ingresos_ext
+        ingresos_ext  = extraer_monto(r'factura\s+([\d,\.]+)', t)
+        egresos_ext   = extraer_monto(r'gastos?\s+fijos\s+son\s+([\d,\.]+)', t)
+        pago_banco    = extraer_monto(r'pagos?\s+de\s+([\d,\.]+)', t)
+        nomina_ext    = extraer_monto(r'nomina\s+es\s+de\s+([\d,\.]+)', t)
+        obligaciones  = pago_banco + nomina_ext + egresos_ext
+        deficit       = obligaciones - ingresos_ext if ingresos_ext > 0 else 0
 
         if deficit > 0:
-            causas_financieras.append("Deficit operativo mensual — obligaciones superan ingresos")
+            causas.append("Deficit operativo mensual — obligaciones superan ingresos")
             impacto += deficit * 6
-            if deuda_ext >= (ingresos_ext * 4) and ingresos_ext > 0:
-                causas_financieras.append("Nivel de apalancamiento elevado — deuda superior a capacidad operativa anual")
-                impacto += int(deuda_ext * 0.20)
-            if nomina_ext >= (ingresos_ext * 0.50) and ingresos_ext > 0:
-                causas_financieras.append("Alta carga laboral sobre flujo operativo")
-                impacto += 250000
-            if pago_banco >= (ingresos_ext * 0.15) and ingresos_ext > 0:
-                causas_financieras.append("Presion bancaria significativa sobre liquidez")
-                impacto += 180000
             if deficit >= 40000:
-                causas_financieras.append("Liquidez critica — flujo insuficiente para cubrir obligaciones mensuales")
+                causas.append("Liquidez critica — flujo insuficiente para cubrir obligaciones mensuales")
                 impacto += 350000
             if deficit >= 80000:
-                causas_financieras.append("Riesgo de continuidad operativa en corto plazo")
+                causas.append("Riesgo de continuidad operativa en corto plazo")
                 impacto += 500000
-        else:
-            causas_financieras.append("Presion financiera moderada detectada")
-            impacto += 120000
 
-        if any(p in texto for p in ["ya no me alcanza", "sin liquidez", "no puedo pagar", "atrasado", "morosidad"]):
-            causas_financieras.append("Tension de liquidez declarada por direccion")
-            impacto += 220000
+        impacto = min(impacto, 4000000)
 
-        impacto = min(impacto, max(deuda_ext if deuda_ext > 0 else 2500000, 2500000))
-        causas.extend(causas_financieras)
+    # COLISION DE RIESGOS
+    impacto, score = aplicar_colision_riesgos(t, impacto, score)
 
-    if "imss" in texto and industria not in ["LABORAL", "SEGURIDAD", "MANUFACTURA", "SERVICIOS_APOYO"]:
-        causas.append("Posible incumplimiento IMSS")
-        impacto += 80000
-    if "sat" in texto or "auditoria" in texto:
-        causas.append("Posible riesgo fiscal SAT")
-        impacto += 200000
-    if "bloqueo" in texto or "embargo" in texto:
-        causas.append("Posible presion de cuentas bancarias")
-        impacto += 150000
-    if "nomina" in texto and industria not in ["LABORAL", "MANUFACTURA"]:
-        causas.append("Posible riesgo de incumplimiento laboral en nomina")
-        impacto += 100000
-
-    # MULTIPLICADOR OPERATIVO — SEGURIDAD
-    if industria == "SEGURIDAD":
-        empleados_seg = int(respuestas.get("num_empleados", 0))
-        if empleados_seg >= 40 or any(p in texto for p in ["40 guardias", "50 guardias", "60 guardias"]):
-            impacto += 180000
-        if "corporativos" in texto:
-            impacto += 120000
-        if "plazas" in texto:
-            impacto += 90000
-
-    if impacto_declarado > 0 and impacto < impacto_declarado:
-        impacto = impacto_declarado
     if impacto == 0:
         impacto = 25000
 
@@ -268,100 +286,147 @@ async def llamar_anthropic(texto, industria, impacto, riesgo, causas):
         impacto_critico = min(impacto_critico, 2500000)
 
     prompt_normal = f"""
-Actua como consultor senior de riesgo empresarial en Mexico.
-Entrega diagnosticos EJECUTIVOS, concretos y accionables.
+Actua como Chief Restructuring Officer y consultor de crisis empresariales en Mexico.
+Estilo: war-room executive advisor. NO consultor prudente ni abogado generico.
 
-REGLAS:
-- NO expliques leyes extensamente
-- NO hagas introducciones largas
-- Usa lenguaje ejecutivo y bullets cortos
-- NO exageres montos
-- Usa lenguaje de riesgo estimado
-- Maximo 120 palabras por seccion
-
-Fecha actual: {fecha_hoy}
+Fecha: {fecha_hoy}
 Industria: {industria}
-Riesgo: {riesgo}
-Situacion: {texto}
+Nivel: {riesgo}
+Exposicion: ${impacto:,} MXN
 Factores: {causas_txt}
+Situacion: {texto}
 
-ESCENARIOS FINANCIEROS OBLIGATORIOS (NO modificar):
-- Conservador: ${impacto_bajo:,}
-- Probable: ${impacto_probable:,}
-- Critico: ${impacto_critico:,}
+ESCENARIOS (NO modificar):
+- Conservador: ${impacto_bajo:,} MXN
+- Probable: ${impacto_probable:,} MXN
+- Critico: ${impacto_critico:,} MXN
 
-RESPONDE EXACTAMENTE:
+PRIORIDAD DE ANALISIS:
+1. Continuidad operativa y flujo de caja
+2. Riesgo bancario y bloqueos
+3. Supervivencia operativa
+4. Nomina y contratos
+5. Contingencias simultaneas
 
-## 1. HALLAZGO PRINCIPAL
-[Resumen ejecutivo]
+PROHIBIDO: "monitoreo", "seguimiento", "estabilizacion", "contingencia moderada", planes vacios
 
-## 2. IMPACTO OPERATIVO
-[Impacto operativo real]
+ESTRUCTURA OBLIGATORIA:
+
+## 1. HALLAZGO CRITICO
+[maximo 2 lineas — directo, sin introducciones]
+
+## 2. RIESGO DE CONTINUIDAD
+[maximo 2 lineas — impacto operativo real]
 
 ## 3. EXPOSICION FINANCIERA
 - Conservador: ${impacto_bajo:,} MXN
 - Probable: ${impacto_probable:,} MXN
 - Critico: ${impacto_critico:,} MXN
 
-## 4. ESCENARIO 30 DIAS
-[Timeline ejecutivo con fechas desde {fecha_hoy}]
+## 4. VENTANA DE COLAPSO OPERATIVO
+[maximo 2 lineas con fechas desde {fecha_hoy}]
 
-## 5. RECOMENDACIONES PRIORITARIAS
-- Accion 1:
-- Accion 2:
-- Accion 3:
-- Accion 4:
+## 5. ACCIONES EJECUTIVAS PRIORITARIAS
+- Accion 1 (24h):
+- Accion 2 (72h):
+- Accion 3 (semana 1):
+- Accion 4 (semana 2):
 
-Analisis referencial sujeto a validacion legal y fiscal especializada.
+Analisis referencial sujeto a validacion especializada.
 """
 
     prompt_crisis = f"""
-Actua como consultor senior de crisis empresariales en Mexico.
-Este caso involucra multiples contingencias simultaneas.
-Prioriza: CONTENCION, ACCIONES, CONTINUIDAD OPERATIVA.
+Actua como Chief Restructuring Officer en sala de crisis empresarial.
+Este caso tiene multiples contingencias criticas simultaneas.
+Responde como war-room advisor. Cada segundo cuenta.
 
-NO hagas texto academico. NO expliques leyes. NO excedas 90 palabras por seccion.
-Estilo Big4: concreto, accionable, financiero, enfocado en mitigacion inmediata.
-
-Fecha actual: {fecha_hoy}
+Fecha: {fecha_hoy}
 Industria: {industria}
-Riesgo: {riesgo}
-Contexto: {texto}
+Nivel: {riesgo}
+Exposicion: ${impacto:,} MXN
 Factores: {causas_txt}
+Situacion: {texto}
 
-ESCENARIOS FINANCIEROS OBLIGATORIOS (NO modificar):
-- Conservador: ${impacto_bajo:,}
-- Probable: ${impacto_probable:,}
-- Critico: ${impacto_critico:,}
+ESCENARIOS (NO modificar):
+- Conservador: ${impacto_bajo:,} MXN
+- Probable: ${impacto_probable:,} MXN
+- Critico: ${impacto_critico:,} MXN
 
-RESPONDE EXACTAMENTE:
+PROHIBIDO ABSOLUTAMENTE: "monitoreo", "estabilizacion", "evaluar opciones", planes vacios
+USA: negociar, reestructurar, suspender, priorizar, reducir, separar flujo
 
-## 1. HALLAZGO PRINCIPAL
-[maximo 90 palabras]
+ESTRUCTURA OBLIGATORIA:
 
-## 2. IMPACTO OPERATIVO
-[maximo 90 palabras]
+## 1. HALLAZGO CRITICO
+[2 lineas — directo]
+
+## 2. RIESGO DE CONTINUIDAD
+[2 lineas — consecuencias reales inmediatas]
 
 ## 3. EXPOSICION FINANCIERA
 - Conservador: ${impacto_bajo:,} MXN
 - Probable: ${impacto_probable:,} MXN
 - Critico: ${impacto_critico:,} MXN
 
-## 4. ESCENARIO 30 DIAS
-[maximo 90 palabras con fechas desde {fecha_hoy}]
+## 4. VENTANA DE COLAPSO OPERATIVO
+[2 lineas con fechas criticas desde {fecha_hoy}]
 
-## 5. RECOMENDACIONES PRIORITARIAS
+## 5. ACCIONES EJECUTIVAS PRIORITARIAS
 - Accion inmediata 24h:
 - Accion inmediata 72h:
 - Accion semana 1:
 - Accion semana 2:
 - Accion financiera:
-- Accion legal:
+- Accion legal/regulatoria:
 
 Analisis referencial sujeto a validacion especializada.
 """
 
     prompt = prompt_crisis if modo_crisis else prompt_normal
+
+    # REGLAS IMSS / INFONAVIT / EMBARGO
+    if any(p in texto for p in ["bloqueo", "embargo", "infonavit", "sua", "sipare", "pae", "credito fiscal", "inmovilizacion"]):
+        prompt += """
+
+REGLAS CRITICAS — IMSS / INFONAVIT / EMBARGO:
+
+DIFERENCIAR SIEMPRE:
+- IMSS: cuotas obrero-patronales (SUA/SIPARE)
+- INFONAVIT: aportaciones de vivienda — son DIFERENTES obligaciones
+- NO afirmar que IMSS embargo por deuda Infonavit salvo que el usuario lo diga
+
+SI HAY CUENTAS BLOQUEADAS:
+- Tratar como evento de continuidad operativa critica
+- Priorizar flujo de caja y nomina INMEDIATAMENTE
+- Explicar impacto bancario: pagos detenidos, credito comprometido, cadena de incumplimiento
+
+SEVERIDAD MINIMA CON BLOQUEO:
+- Riesgo: ALTO o CRITICO
+- Tendencia: ASCENDENTE
+- Confianza: minimo 82%
+
+RECOMENDACIONES OBLIGATORIAS EN ESTE ORDEN:
+1. Solicitar liberacion parcial de cuentas ante autoridad competente
+2. Iniciar convenio de pago o aclaracion fiscal en 48 horas
+3. Separar flujo operativo en cuenta no embargada para proteger nomina
+4. Auditar SUA y SIPARE para identificar omisiones reales vs. errores administrativos
+5. Evaluar responsabilidad del despacho contable si hay omisiones no reportadas
+6. Documentar posicion legal ante PAE si aplica
+
+LENGUAJE OBLIGATORIO:
+- "flujo detenido"
+- "operacion comprometida"
+- "riesgo de incumplimiento en cadena"
+- "vulnerabilidad financiera inmediata"
+
+PROHIBIDO:
+- "presion moderada"
+- "contingencia potencial"
+- "brecha administrativa"
+- "monitoreo continuo"
+- "estabilizacion"
+- planes vacios sin acciones concretas
+"""
 
     # REGLAS ESPECIALIZADAS FINANCIERO
     if industria == "FINANCIERO":
@@ -496,4 +561,210 @@ async def ai_diagnostico(data: InputAI):
     elif impacto > 350000:
         riesgo = "MEDIO"
     else:
-        riesgo = "BA
+        riesgo = "BAJO"
+
+    if industria not in ["LABORAL", "MANUFACTURA"]:
+        if impacto > 1200000:
+            riesgo = "CRITICO"
+        elif impacto > 450000:
+            riesgo = "ALTO"
+        elif impacto > 120000:
+            riesgo = "MEDIO"
+        else:
+            riesgo = "BAJO"
+
+    impacto_min = impacto
+    impacto_max = int(impacto * 2.5)
+
+    if riesgo == "CRITICO":
+        indice_riesgo = min(95, 85 + min(int(impacto / 1000000), 10))
+    elif riesgo == "ALTO":
+        indice_riesgo = min(80, 60 + min(int(impacto / 200000), 20))
+    elif riesgo == "MEDIO":
+        indice_riesgo = min(60, 40 + min(int(impacto / 100000), 20))
+    else:
+        indice_riesgo = 20
+
+    # SCORING DINAMICO
+    try:
+        from core.scoring_engine import calcular_score
+        scoring_data = {
+            **respuestas,
+            "industria": industria,
+            "ingresos": float(respuestas.get("ingresos", 0) or 0),
+            "egresos": float(respuestas.get("egresos", 0) or 0),
+        }
+        scoring = calcular_score(scoring_data)
+        score_final     = scoring.get("score", indice_riesgo)
+        nivel_final     = scoring.get("nivel", riesgo)
+        confianza_final = scoring.get("confianza", 74)
+        origen_final    = scoring.get("origen", ["Variables declaradas", "Simulacion operativa"])
+    except Exception:
+        score_final     = indice_riesgo
+        nivel_final     = riesgo
+        confianza_final = 74
+        origen_final    = ["Variables declaradas", "Simulacion operativa", "Patrones regulatorios"]
+        scoring         = {}
+
+    # TENDENCIA DINAMICA
+    if score_final >= 75:
+        tendencia_final = "ASCENDENTE"
+    elif score_final >= 40:
+        tendencia_final = "ESTABLE"
+    else:
+        tendencia_final = "CONTROLADA"
+
+    # Override por bloqueo/embargo — severidad minima ALTO
+    if any(p in texto for p in ["bloqueo", "embargo", "cuentas bloqueadas", "inmovilizacion", "pae", "ejecucion fiscal", "infonavit bloqueo", "cuenta bloqueada"]):
+        if riesgo not in ["CRITICO"]:
+            riesgo = "ALTO"
+        tendencia_final = "ASCENDENTE"
+        confianza_final = max(confianza_final, 82)
+
+    # CLAUDE
+    analisis_ai = await llamar_anthropic(texto, industria, impacto, riesgo, causas)
+
+    # FALLBACK REPORTE EJECUTIVO
+    if not analisis_ai:
+        try:
+            from services.executive_report_generator import generar_reporte
+            analisis_ai = generar_reporte(scoring, respuestas)
+        except Exception:
+            pass
+
+    preguntas = generar_preguntas(industria, texto, riesgo)
+
+    consecuencias = {
+        "SEGURIDAD": ["Posible clausura por operacion sin permisos", "Nulidad de contratos", "Responsabilidad patrimonial estimada"],
+        "LABORAL": ["Posible demanda laboral colectiva", "Multas STPS estimadas", "Paro de operaciones"],
+        "MANUFACTURA": ["Posible perdida de produccion", "Ruptura de contratos con clientes", "Contingencias sindicales"],
+        "SALUD": ["Posible clausura sanitaria COFEPRIS", "Multas estimadas", "Suspension de operaciones"],
+        "SERVICIOS_APOYO": ["Posible presion en renovaciones contractuales", "Exposicion administrativa estimada", "Requerimientos de regularizacion operativa"],
+        "FINANCIERO": ["Tension de liquidez progresiva", "Posibles fricciones operativas en cumplimiento de obligaciones", "Necesidad de reestructuracion financiera preventiva"],
+        "GENERAL": ["Posibles multas y sanciones", "Contingencias laborales estimadas", "Revision SAT potencial"]
+    }.get(industria, ["Escalamiento del riesgo", "Sanciones estimadas", "Perdida operativa potencial"])
+
+    mensajes_wa = {
+        "LABORAL": (
+            f"MESAN Omega — Riesgo laboral detectado.\n\n"
+            f"Se identificaron posibles contingencias operativas y laborales.\n\n"
+            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
+            f"Responde SI para revisar acciones preventivas recomendadas."
+        ),
+        "FINANCIERO": (
+            f"MESAN Omega — Tension financiera detectada.\n\n"
+            f"Se identifico posible presion sobre liquidez y continuidad operativa.\n\n"
+            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
+            f"Responde SI para revisar escenarios de estabilizacion y reestructuracion."
+        ),
+        "SERVICIOS_APOYO": (
+            f"MESAN Omega — Riesgo operativo detectado.\n\n"
+            f"Se identificaron posibles brechas de regularizacion relacionadas con cumplimiento REPSE.\n\n"
+            f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
+            f"Responde SI para revisar acciones preventivas recomendadas."
+        ),
+    }
+    whatsapp = mensajes_wa.get(industria,
+        f"MESAN Omega — Alerta {riesgo}\n\nDetectamos posible riesgo en tu operacion.\nExposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te explicamos como prevenirlo."
+    )
+
+    # Escenarios coherentes — exposicion total nunca menor que perdida base
+    escenario_conservador = int(impacto * 0.80)
+    escenario_probable    = int(impacto * 1.30)
+    escenario_alto        = int(impacto * 2.50)
+
+    # PLAN 30 DIAS DINAMICO
+    if industria == "FINANCIERO":
+        if riesgo == "CRITICO":
+            consecuencias = [
+                "Posible incumplimiento bancario",
+                "Riesgo de atraso en nomina",
+                "Presion severa de liquidez"
+            ]
+            plan_30 = [
+                "Semana 1: Reestructuracion urgente de deuda bancaria",
+                "Semana 2: Recorte de gastos no esenciales",
+                "Semana 3: Negociacion con acreedores y flujo prioritario",
+                "Semana 4: Estabilizacion de caja y control operativo"
+            ]
+        elif riesgo == "ALTO":
+            consecuencias = [
+                "Presion de liquidez progresiva",
+                "Posibles atrasos en obligaciones",
+                "Riesgo de deterioro operativo"
+            ]
+            plan_30 = [
+                "Semana 1: Auditoria financiera especializada",
+                "Semana 2: Ajuste operativo inmediato",
+                "Semana 3: Control de pasivos y cobranza",
+                "Semana 4: Monitoreo de flujo y estabilizacion"
+            ]
+        else:
+            plan_30 = [
+                f"Semana 1: Auditoria preventiva sector {industria}",
+                "Semana 2: Regularizacion documental prioritaria",
+                "Semana 3: Blindaje operativo y cumplimiento",
+                "Semana 4: Monitoreo continuo y estabilizacion"
+            ]
+    else:
+        plan_30 = [
+            f"Semana 1: Auditoria preventiva sector {industria}",
+            "Semana 2: Regularizacion documental prioritaria",
+            "Semana 3: Blindaje operativo y cumplimiento",
+            "Semana 4: Monitoreo continuo y estabilizacion"
+        ]
+
+    # MOTOR DE REFINAMIENTO
+    refinamiento = {}
+    if generar_refinamiento:
+        try:
+            refinamiento = generar_refinamiento({
+                "industria":   industria,
+                "riesgo":      riesgo,
+                "impacto":     impacto,
+                "impacto_min": impacto_min,
+                "impacto_max": impacto_max,
+                "causas":      causas
+            })
+        except Exception:
+            pass
+
+    # WhatsApp ejecutivo
+    whatsapp = mensajes_wa.get(industria,
+        f"MESAN Omega — ALERTA {riesgo}\n\nDetectamos presion operativa en sector {industria}.\n\nExposicion estimada:\n${impacto_min:,} - ${impacto_max:,} MXN\n\nHemos preparado escenarios de estabilizacion y contencion.\n\nResponde SI para continuar el diagnostico ejecutivo."
+    )
+
+    disclaimer = (
+        "Analisis preventivo generado por MESAN Omega Intelligence Engine. "
+        "No constituye dictamen legal, fiscal, financiero ni resolucion oficial."
+    )
+
+    logging.info(f"Diagnostico | {industria} | {riesgo} | ${impacto:,}")
+
+    return {
+        "ok": True,
+        "industria": industria,
+        "riesgo": riesgo,
+        "impacto": impacto,
+        "impacto_min": impacto_min,
+        "impacto_max": impacto_max,
+        "causas": causas,
+        "consecuencias": consecuencias,
+        "preguntas": preguntas,
+        "analisis_ai": analisis_ai,
+        "plan_30_dias": plan_30,
+        "indice_riesgo": score_final,
+        "nivel_score":   nivel_final,
+        "confianza":     confianza_final,
+        "tendencia":     tendencia_final,
+        "origen":        origen_final,
+        "whatsapp":      whatsapp,
+        "disclaimer":    disclaimer,
+        "escenarios": {
+            "conservador": escenario_conservador,
+            "probable":    escenario_probable,
+            "alto":        escenario_alto
+        },
+        "cierre":        f"Se recomienda seguimiento preventivo especializado para el sector {industria}.",
+        "refinamiento":  refinamiento
+    }
