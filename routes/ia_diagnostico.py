@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# routes/ia_diagnostico.py — MESAN Ω v4.0
+# routes/ia_diagnostico.py -- MESAN Ω v4.0
 # Tono: riesgo estimado, NO afirmaciones definitivas
 
 from fastapi import APIRouter
@@ -49,7 +49,7 @@ def detectar_impacto_declarado(texto: str) -> int:
                 return int(mult)
     return 0
 
-# CRISIS EVENTS — pesos reales
+# CRISIS EVENTS -- pesos reales
 CRISIS_EVENTS = {
     "cuentas_bloqueadas": {"score": 95, "impacto": 1200000, "nivel": "CRITICO", "tendencia": "ASCENDENTE"},
     "embargo_sat":        {"score": 92, "impacto": 1500000, "nivel": "CRITICO", "tendencia": "ASCENDENTE"},
@@ -61,7 +61,7 @@ CRISIS_EVENTS = {
 }
 
 def aplicar_colision_riesgos(texto, impacto, score):
-    """Motor de colision — multiplica impacto cuando coexisten riesgos criticos"""
+    """Motor de colision -- multiplica impacto cuando coexisten riesgos criticos"""
     t = texto.lower()
 
     if ("bloqueo" in t or "embargo" in t) and "nomina" in t:
@@ -115,19 +115,19 @@ def analizar_fallback(texto, respuestas, industria):
 
     # CUENTAS BLOQUEADAS / EMBARGO
     if any(p in t for p in ["bloqueo", "embargo", "cuentas bloqueadas", "inmovilizacion", "pae", "ejecucion fiscal", "infonavit bloqueo", "cuenta bloqueada"]):
-        causas.append("Inmovilizacion bancaria detectada — continuidad operativa comprometida")
+        causas.append("Inmovilizacion bancaria detectada -- continuidad operativa comprometida")
         impacto += 1200000
         score += 30
 
     # INFONAVIT
     if "infonavit" in t:
-        causas.append("Omisiones patronales INFONAVIT detectadas — riesgo de credito fiscal")
+        causas.append("Omisiones patronales INFONAVIT detectadas -- riesgo de credito fiscal")
         impacto += 450000
         score += 15
 
     # NOMINA
     if "nomina" in t:
-        causas.append("Presion sobre cumplimiento de nomina — riesgo de incumplimiento en cadena")
+        causas.append("Presion sobre cumplimiento de nomina -- riesgo de incumplimiento en cadena")
         impacto += 350000
         score += 18
 
@@ -163,7 +163,7 @@ def analizar_fallback(texto, respuestas, industria):
 
     # SUA / SIPARE
     if any(p in t for p in ["sua", "sipare"]):
-        causas.append("Inconsistencias SUA/SIPARE — posible omision de cuotas no detectada")
+        causas.append("Inconsistencias SUA/SIPARE -- posible omision de cuotas no detectada")
         impacto += 250000
         score += 8
 
@@ -175,7 +175,7 @@ def analizar_fallback(texto, respuestas, industria):
 
     # CLIENTE ESTRATEGICO
     if any(p in t for p in ["cliente americano", "cliente unico", "penalizacion contractual", "exportacion"]):
-        causas.append("Alta dependencia de cliente estrategico — exposicion de concentracion")
+        causas.append("Alta dependencia de cliente estrategico -- exposicion de concentracion")
         impacto += 2500000
         score += 20
 
@@ -187,13 +187,13 @@ def analizar_fallback(texto, respuestas, industria):
 
     # MULTISEDE
     if any(p in t for p in ["plazas", "corporativos", "sucursales", "ubicaciones"]):
-        causas.append("Operacion multisede — mayor exposicion operativa")
+        causas.append("Operacion multisede -- mayor exposicion operativa")
         impacto += 180000
         score += 5
 
     # CARTERA VENCIDA
     if any(p in t for p in ["cartera vencida", "no pagaron", "dejaron de pagar"]):
-        causas.append("Cartera vencida critica — flujo operativo comprometido")
+        causas.append("Cartera vencida critica -- flujo operativo comprometido")
         impacto += 600000
         score += 15
 
@@ -223,10 +223,10 @@ def analizar_fallback(texto, respuestas, industria):
         deficit       = obligaciones - ingresos_ext if ingresos_ext > 0 else 0
 
         if deficit > 0:
-            causas.append("Deficit operativo mensual — obligaciones superan ingresos")
+            causas.append("Deficit operativo mensual -- obligaciones superan ingresos")
             impacto += deficit * 6
             if deficit >= 40000:
-                causas.append("Liquidez critica — flujo insuficiente para cubrir obligaciones mensuales")
+                causas.append("Liquidez critica -- flujo insuficiente para cubrir obligaciones mensuales")
                 impacto += 350000
             if deficit >= 80000:
                 causas.append("Riesgo de continuidad operativa en corto plazo")
@@ -244,7 +244,7 @@ def analizar_fallback(texto, respuestas, industria):
 
 def ajustar_laboral(causas, impacto, respuestas):
     if respuestas.get("huelga") == "Si":
-        causas.append("Huelga activa confirmada — posible paralizacion operativa")
+        causas.append("Huelga activa confirmada -- posible paralizacion operativa")
         impacto = int(impacto * 1.8)
     elif respuestas.get("huelga") == "En negociacion":
         causas.append("Conflicto en fase critica de negociacion sindical")
@@ -264,7 +264,7 @@ def ajustar_por_respuestas(causas, impacto, respuestas, industria):
         causas.append("Alto volumen de personal con posible exposicion")
         impacto += 100000
     if respuestas.get("dias_paro") == "Mas de 3 dias":
-        causas.append("Paro prolongado — posible dano acumulado")
+        causas.append("Paro prolongado -- posible dano acumulado")
         impacto += 500000
     return causas, impacto
 
@@ -303,14 +303,14 @@ ESCENARIOS OBLIGATORIOS (NO modificar montos):
 - Critico: ${impacto_critico:,} MXN
 
 REGLAS CRITICAS:
-- MAXIMO 60 palabras por seccion — SER CONCISO
-- NUNCA cortes una recomendacion — termina cada bullet completo
+- MAXIMO 60 palabras por seccion -- SER CONCISO
+- NUNCA cortes una recomendacion -- termina cada bullet completo
 - Bullets cortos: maximo 15 palabras por bullet
 - Escenarios financieros SIEMPRE crecientes: conservador < probable < critico
-- Estilo: Big4 ejecutivo — directo, sin narrativa larga
+- Estilo: Big4 ejecutivo -- directo, sin narrativa larga
 - PROHIBIDO: tablas, texto narrativo largo, introducciones
 - PROHIBIDO: "mejorar flujo", "revisar operaciones", "responde SI"
-- MAXIMO 3 recomendaciones en seccion 5 — cada una en 2 lineas
+- MAXIMO 3 recomendaciones en seccion 5 -- cada una en 2 lineas
 
 ESTRUCTURA OBLIGATORIA:
 
@@ -318,7 +318,7 @@ ESTRUCTURA OBLIGATORIA:
 [Max 2 lineas. Sintaxis tactica. Ej: "Liquidez insuficiente. Riesgo mora en 6 dias."]
 
 ## 2. IMPACTO OPERATIVO
-[3 bullets cortos — max 12 palabras cada uno]
+[3 bullets cortos -- max 12 palabras cada uno]
 
 ## 3. EXPOSICION FINANCIERA
 - Conservador: ${impacto_bajo:,} MXN
@@ -330,19 +330,19 @@ ESTRUCTURA OBLIGATORIA:
 
 ## 5. ACCIONES EJECUTIVAS
 
-🔴 CRITICO — [titulo]
+🔴 CRITICO -- [titulo]
 - Accion: [max 10 palabras]
 - Plazo: [fecha/horas]
 - Responsable: [rol]
 - Riesgo si no ejecuta: [max 8 palabras]
 
-🟠 ALTO — [titulo]
+🟠 ALTO -- [titulo]
 - Accion: [max 10 palabras]
 - Plazo: [fecha/horas]
 - Responsable: [rol]
 - Riesgo si no ejecuta: [max 8 palabras]
 
-🟡 MEDIO — [titulo]
+🟡 MEDIO -- [titulo]
 - Accion: [max 10 palabras]
 - Plazo: [fecha/horas]
 - Responsable: [rol]
@@ -383,10 +383,10 @@ USA: negociar, reestructurar, suspender, priorizar, reducir, separar flujo
 ESTRUCTURA OBLIGATORIA:
 
 ## 1. HALLAZGO CRITICO
-[2 lineas — directo]
+[2 lineas -- directo]
 
 ## 2. RIESGO DE CONTINUIDAD
-[2 lineas — consecuencias reales inmediatas]
+[2 lineas -- consecuencias reales inmediatas]
 
 ## 3. EXPOSICION FINANCIERA
 - Conservador: ${impacto_bajo:,} MXN
@@ -413,11 +413,11 @@ Analisis referencial sujeto a validacion especializada.
     if any(p in texto for p in ["bloqueo", "embargo", "infonavit", "sua", "sipare", "pae", "credito fiscal", "inmovilizacion"]):
         prompt += """
 
-REGLAS CRITICAS — IMSS / INFONAVIT / EMBARGO:
+REGLAS CRITICAS -- IMSS / INFONAVIT / EMBARGO:
 
 DIFERENCIAR SIEMPRE:
 - IMSS: cuotas obrero-patronales (SUA/SIPARE)
-- INFONAVIT: aportaciones de vivienda — son DIFERENTES obligaciones
+- INFONAVIT: aportaciones de vivienda -- son DIFERENTES obligaciones
 - NO afirmar que IMSS embargo por deuda Infonavit salvo que el usuario lo diga
 
 SI HAY CUENTAS BLOQUEADAS:
@@ -457,7 +457,7 @@ PROHIBIDO:
     if industria == "FINANCIERO":
         prompt += """
 
-REGLAS EJECUTIVAS OBLIGATORIAS — TURNAROUND ADVISOR:
+REGLAS EJECUTIVAS OBLIGATORIAS -- TURNAROUND ADVISOR:
 
 LOGICA DE CLASIFICACION:
 - Si existen deuda + cartera vencida + ISR + lineas de credito + nomina comprometida simultaneamente: clasifica como "estres financiero severo" o "riesgo de insolvencia operativa"
@@ -466,13 +466,13 @@ LOGICA DE CLASIFICACION:
 - Si lineas de credito usadas para nomina: "capital de trabajo agotado"
 
 PRIORIDAD DE RECOMENDACIONES:
-1. Supervivencia de caja — acciones en 24-72 horas
-2. Evitar incumplimiento bancario — antes del proximo vencimiento
-3. Proteger nomina — semana 1
-4. Contingencia SAT — semana 2
-5. Regularizacion IMSS — semana 3-4
+1. Supervivencia de caja -- acciones en 24-72 horas
+2. Evitar incumplimiento bancario -- antes del proximo vencimiento
+3. Proteger nomina -- semana 1
+4. Contingencia SAT -- semana 2
+5. Regularizacion IMSS -- semana 3-4
 
-ESCENARIOS FINANCIEROS — SIEMPRE PROGRESIVOS:
+ESCENARIOS FINANCIEROS -- SIEMPRE PROGRESIVOS:
 Los montos deben ser: Conservador < Probable < Critico
 NUNCA invertir el orden.
 
@@ -480,7 +480,7 @@ PROHIBIDO usar: "evaluar opciones", "explorar alternativas", "considerar medidas
 
 USAR OBLIGATORIAMENTE: "negociar", "reestructurar", "suspender", "priorizar", "reducir", "inyectar", "renegociar"
 
-MINIMO 4 RECOMENDACIONES COMPLETAS — nunca terminar incompleto.
+MINIMO 4 RECOMENDACIONES COMPLETAS -- nunca terminar incompleto.
 
 Cada recomendacion: accion concreta + objetivo + plazo especifico
 
@@ -530,7 +530,7 @@ async def ai_diagnostico(data: InputAI):
         causas, impacto = ajustar_laboral(causas, impacto, respuestas)
 
     # NIVEL DE RIESGO
-    # CLASIFICACION FINANCIERA REAL — LOGICA EJECUTIVA
+    # CLASIFICACION FINANCIERA REAL -- LOGICA EJECUTIVA
     if industria == "FINANCIERO":
 
         # Detectores de estres financiero severo
@@ -543,22 +543,22 @@ async def ai_diagnostico(data: InputAI):
         factores_criticos = sum([tiene_deuda, tiene_cartera, tiene_isr, tiene_lineas, tiene_nomina_comp])
 
         if factores_criticos >= 3:
-            causas.append("Estres financiero severo — multiples presiones simultaneas sobrecausas.append("Estres financiero severo — multiples presiones simultaneas sobre liquidez")
+            causas.append("Estres financiero severo -- mucausas.append("Estres financiero severo -- multiples presiones simultaneas sobre liquidez")
             impacto += 500000
 
         # Cartera vencida mayor a ingresos mensuales
         if tiene_cartera:
-            causas.append("Dependencia critica de cobranza — cartera vencida comprometida")
+            causas.append("Dependencia critica de cobranza -- cartera vencida comprometida")
             impacto += 400000
 
         # ISR retenido vencido
         if tiene_isr:
-            causas.append("Contingencia fiscal prioritaria — ISR retenido no enterado")
+            causas.append("Contingencia fiscal prioritaria -- ISR retenido no enterado")
             impacto += 350000
 
         # Lineas de credito para nomina
         if tiene_lineas and tiene_nomina_comp:
-            causas.append("Capital de trabajo agotado — lineas de credito usadas para nomina")
+            causas.append("Capital de trabajo agotado -- lineas de credito usadas para nomina")
             impacto += 300000
 
         if impacto >= 1500000:
@@ -639,14 +639,14 @@ async def ai_diagnostico(data: InputAI):
     else:
         tendencia_final = "CONTROLADA"
 
-    # Override por bloqueo/embargo — severidad minima ALTO
+    # Override por bloqueo/embargo -- severidad minima ALTO
     if any(p in texto for p in ["bloqueo", "embargo", "cuentas bloqueadas", "inmovilizacion", "pae", "ejecucion fiscal", "infonavit bloqueo", "cuenta bloqueada"]):
         if riesgo not in ["CRITICO"]:
             riesgo = "ALTO"
         tendencia_final = "ASCENDENTE"
         confianza_final = max(confianza_final, 82)
 
-    # INSOLVENCIA OPERATIVA INMINENTE — multiples factores criticos
+    # INSOLVENCIA OPERATIVA INMINENTE -- multiples factores criticos
     factores_insolvencia = sum([
         "cartera vencida" in texto or "dejaron de pagar" in texto,
         "isr" in texto or "sat" in texto,
@@ -658,7 +658,7 @@ async def ai_diagnostico(data: InputAI):
     if factores_insolvencia >= 4:
         riesgo = "CRITICO"
         tendencia_final = "ASCENDENTE"
-        causas.append("INSOLVENCIA OPERATIVA INMINENTE — multiples presiones criticas simultaneas")
+        causas.append("INSOLVENCIA OPERATIVA INMINENTE -- multiples presiones criticas simultaneas")
 
     # CLAUDE
     analisis_ai = await llamar_anthropic(texto, industria, impacto, riesgo, causas)
@@ -685,29 +685,29 @@ async def ai_diagnostico(data: InputAI):
 
     mensajes_wa = {
         "LABORAL": (
-            f"MESAN Omega — Riesgo laboral detectado.\n\n"
+            f"MESAN Omega -- Riesgo laboral detectado.\n\n"
             f"Se identificaron posibles contingencias operativas y laborales.\n\n"
             f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
             f"Responde SI para revisar acciones preventivas recomendadas."
         ),
         "FINANCIERO": (
-            f"MESAN Omega — Tension financiera detectada.\n\n"
+            f"MESAN Omega -- Tension financiera detectada.\n\n"
             f"Se identifico posible presion sobre liquidez y continuidad operativa.\n\n"
             f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
             f"Responde SI para revisar escenarios de estabilizacion y reestructuracion."
         ),
         "SERVICIOS_APOYO": (
-            f"MESAN Omega — Riesgo operativo detectado.\n\n"
+            f"MESAN Omega -- Riesgo operativo detectado.\n\n"
             f"Se identificaron posibles brechas de regularizacion relacionadas con cumplimiento REPSE.\n\n"
             f"Exposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\n"
             f"Responde SI para revisar acciones preventivas recomendadas."
         ),
     }
     whatsapp = mensajes_wa.get(industria,
-        f"MESAN Omega — Alerta {riesgo}\n\nDetectamos posible riesgo en tu operacion.\nExposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te explicamos como prevenirlo."
+        f"MESAN Omega -- Alerta {riesgo}\n\nDetectamos posible riesgo en tu operacion.\nExposicion estimada: ${impacto_min:,} - ${impacto_max:,} MXN\n\nResponde SI y te explicamos como prevenirlo."
     )
 
-    # Escenarios coherentes — exposicion total nunca menor que perdida base
+    # Escenarios coherentes -- exposicion total nunca menor que perdida base
     escenario_conservador = int(impacto * 0.80)
     escenario_probable    = int(impacto * 1.30)
     escenario_alto        = int(impacto * 2.50)
@@ -770,7 +770,7 @@ async def ai_diagnostico(data: InputAI):
 
     # WhatsApp ejecutivo
     whatsapp = mensajes_wa.get(industria,
-        f"MESAN Omega — ALERTA {riesgo}\n\nDetectamos presion operativa en sector {industria}.\n\nExposicion estimada:\n${impacto_min:,} - ${impacto_max:,} MXN\n\nHemos preparado escenarios de estabilizacion y contencion.\n\nResponde SI para continuar el diagnostico ejecutivo."
+        f"MESAN Omega -- ALERTA {riesgo}\n\nDetectamos presion operativa en sector {industria}.\n\nExposicion estimada:\n${impacto_min:,} - ${impacto_max:,} MXN\n\nHemos preparado escenarios de estabilizacion y contencion.\n\nResponde SI para continuar el diagnostico ejecutivo."
     )
 
     disclaimer = (
@@ -807,4 +807,3 @@ async def ai_diagnostico(data: InputAI):
         "cierre":        f"Se recomienda seguimiento preventivo especializado para el sector {industria}.",
         "refinamiento":  refinamiento
     }
-                          
