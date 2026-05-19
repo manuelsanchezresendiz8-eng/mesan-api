@@ -543,7 +543,7 @@ async def ai_diagnostico(data: InputAI):
         factores_criticos = sum([tiene_deuda, tiene_cartera, tiene_isr, tiene_lineas, tiene_nomina_comp])
 
         if factores_criticos >= 3:
-            causas.append("Estres financiero severo -- mucausas.append("Estres financiero severo -- multiples presiones simultaneas sobre liquidez")
+            causas.append("Estres financiero severo -- multiples presiones simultaneas sobre liquidez")
             impacto += 500000
 
         # Cartera vencida mayor a ingresos mensuales
