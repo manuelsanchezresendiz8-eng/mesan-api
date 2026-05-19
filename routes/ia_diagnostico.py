@@ -1,3 +1,31 @@
+# routes/ia_diagnostico.py
+
+from fastapi import APIRouter
+from pydantic import BaseModel, Field
+import os
+import logging
+import traceback
+import httpx
+from datetime import datetime
+
+# =========================================
+# ROUTER
+# =========================================
+
+router = APIRouter()
+
+# =========================================
+# INPUT MODEL
+# =========================================
+
+class InputAI(BaseModel):
+    texto: str
+    respuestas: dict = Field(default_factory=dict)
+
+# =========================================
+# FUNCION PRINCIPAL CLAUDE
+# =========================================
+
 async def llamar_anthropic(
     texto,
     industria,
@@ -127,7 +155,7 @@ Analisis referencial sujeto a validacion especializada.
 
                 respuesta = data["content"][0]["text"]
 
-                # VALIDADORES DE RESPUESTA
+                # VALIDADORES
 
                 if len(respuesta) < 300:
                     logging.error("Respuesta demasiado corta")
@@ -149,3 +177,68 @@ Analisis referencial sujeto a validacion especializada.
         logging.error(traceback.format_exc())
 
     return ""
+
+# =========================================
+# ENDPOINT
+# =========================================
+
+@router.post("/ai/diagnostico")
+async def ai_diagnostico(data: InputAI):
+
+    texto = data.texto.lower()
+
+    industria = "GENERAL"
+    riesgo = "MEDIO"
+    impacto = 350000
+
+    causas = []
+
+    if "sat" in texto:
+        causas.append("Presion fiscal SAT")
+
+    if "imss" in texto:
+        causas.append("Contingencia IMSS")
+
+    if "infonavit" in texto:
+        causas.append("Omisiones INFONAVIT")
+
+    if "bloqueo" in texto or "embargo" in texto:
+        causas.append("Bloqueo bancario")
+
+    if "nomina" in texto:
+        causas.append("Riesgo de incumplimiento de nomina")
+
+    if "deuda" in texto or "credito" in texto:
+        causas.append("Presion financiera")
+
+    if "logistica" in texto:
+        industria = "LOGISTICA"
+
+    if "financ" in texto:
+        industria = "FINANCIERO"
+
+    if len(causas) >= 4:
+        riesgo = "CRITICO"
+        impacto = 2500000
+
+    elif len(causas) >= 2:
+        riesgo = "ALTO"
+        impacto = 1200000
+
+    respuesta = await llamar_anthropic(
+        texto=texto,
+        industria=industria,
+        impacto=impacto,
+        riesgo=riesgo,
+        causas=causas,
+        modo="WAR_ROOM"
+    )
+
+    return {
+        "success": True,
+        "industria": industria,
+        "riesgo": riesgo,
+        "impacto": impacto,
+        "causas": causas,
+        "analisis": respuesta
+    }
