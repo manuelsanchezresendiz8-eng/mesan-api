@@ -303,52 +303,59 @@ ESCENARIOS OBLIGATORIOS (NO modificar montos):
 - Critico: ${impacto_critico:,} MXN
 
 REGLAS CRITICAS:
-- NUNCA cortes una recomendacion
-- NUNCA termines frases abiertas
-- NUNCA dejes bullets truncados
-- Cada seccion debe iniciar, desarrollarse y cerrarse completamente
-- Recomendaciones con: accion concreta + objetivo + plazo + responsable
+- MAXIMO 60 palabras por seccion — SER CONCISO
+- NUNCA cortes una recomendacion — termina cada bullet completo
+- Bullets cortos: maximo 15 palabras por bullet
 - Escenarios financieros SIEMPRE crecientes: conservador < probable < critico
-- Estilo: Big4 + comite de crisis + inteligencia financiera
-- PROHIBIDO: "mejorar flujo", "revisar operaciones", "responde SI", "continuar analisis"
+- Estilo: Big4 ejecutivo — directo, sin narrativa larga
+- PROHIBIDO: tablas, texto narrativo largo, introducciones
+- PROHIBIDO: "mejorar flujo", "revisar operaciones", "responde SI"
+- MAXIMO 3 recomendaciones en seccion 5 — cada una en 2 lineas
 
-ESTRUCTURA OBLIGATORIA — completar TODAS las secciones:
+ESTRUCTURA OBLIGATORIA:
 
 ## 1. HALLAZGO PRINCIPAL
-[2-3 lineas — directo]
+[Max 2 lineas. Sintaxis tactica. Ej: "Liquidez insuficiente. Riesgo mora en 6 dias."]
 
 ## 2. IMPACTO OPERATIVO
-[2-3 lineas — consecuencias reales]
+[3 bullets cortos — max 12 palabras cada uno]
 
 ## 3. EXPOSICION FINANCIERA
 - Conservador: ${impacto_bajo:,} MXN
 - Probable: ${impacto_probable:,} MXN
 - Critico: ${impacto_critico:,} MXN
 
-## 4. ESCENARIO PROYECTADO — 30 DIAS
-[Timeline con fechas desde {fecha_hoy}]
+## 4. VENTANA CRITICA
+[2 fechas especificas desde {fecha_hoy} con consecuencia en una linea cada una]
 
-## 5. RECOMENDACIONES PRIORITARIAS
-### A. [titulo]
-- Accion: [concreta]
-- Objetivo: [especifico]
-- Plazo: [horas/dias]
+## 5. ACCIONES EJECUTIVAS
+
+🔴 CRITICO — [titulo]
+- Accion: [max 10 palabras]
+- Plazo: [fecha/horas]
+- Responsable: [rol]
+- Riesgo si no ejecuta: [max 8 palabras]
+
+🟠 ALTO — [titulo]
+- Accion: [max 10 palabras]
+- Plazo: [fecha/horas]
+- Responsable: [rol]
+- Riesgo si no ejecuta: [max 8 palabras]
+
+🟡 MEDIO — [titulo]
+- Accion: [max 10 palabras]
+- Plazo: [fecha/horas]
 - Responsable: [rol]
 
-### B. [titulo]
-- Accion: [concreta]
-- Objetivo: [especifico]
-- Plazo: [horas/dias]
-- Responsable: [rol]
+## 6. PROTOCOLO DE SUPERVIVENCIA
+- Dias operativos estimados: [N dias]
+- Pago prioritario: [cual]
+- Pago sacrificable: [cual]
+- Riesgo embargo: [SI/NO/PROBABLE]
+- Punto de no retorno: [fecha estimada]
 
-### C. [titulo]
-- Accion: [concreta]
-- Objetivo: [especifico]
-- Plazo: [horas/dias]
-- Responsable: [rol]
-
-## ACCION PRIORITARIA — PROXIMAS 24 HORAS
-[Resumen ejecutivo de la accion mas urgente]
+## 7. DECISION EJECUTIVA
+[Una sola instruccion. Ej: "Negociar banco antes del 21 May. Priorizar nomina. Suspender expansion."]
 
 Analisis referencial sujeto a validacion especializada.
 """
@@ -498,7 +505,7 @@ EJEMPLOS CORRECTOS:
                 },
                 json={
                     "model": "claude-haiku-4-5-20251001",
-                    "max_tokens": 1400,
+                    "max_tokens": 2000,
                     "messages": [{"role": "user", "content": prompt}]
                 }
             )
@@ -536,7 +543,7 @@ async def ai_diagnostico(data: InputAI):
         factores_criticos = sum([tiene_deuda, tiene_cartera, tiene_isr, tiene_lineas, tiene_nomina_comp])
 
         if factores_criticos >= 3:
-            causas.append("Estres financiero severo — multiples presiones simultaneas sobre liquidez")
+            causas.append("Estres financiero severo — multiples presiones simultaneas sobrecausas.append("Estres financiero severo — multiples presiones simultaneas sobre liquidez")
             impacto += 500000
 
         # Cartera vencida mayor a ingresos mensuales
@@ -548,6 +555,7 @@ async def ai_diagnostico(data: InputAI):
         if tiene_isr:
             causas.append("Contingencia fiscal prioritaria — ISR retenido no enterado")
             impacto += 350000
+
         # Lineas de credito para nomina
         if tiene_lineas and tiene_nomina_comp:
             causas.append("Capital de trabajo agotado — lineas de credito usadas para nomina")
@@ -637,6 +645,20 @@ async def ai_diagnostico(data: InputAI):
             riesgo = "ALTO"
         tendencia_final = "ASCENDENTE"
         confianza_final = max(confianza_final, 82)
+
+    # INSOLVENCIA OPERATIVA INMINENTE — multiples factores criticos
+    factores_insolvencia = sum([
+        "cartera vencida" in texto or "dejaron de pagar" in texto,
+        "isr" in texto or "sat" in texto,
+        "nomina" in texto,
+        "linea de credito" in texto or "lineas de credito" in texto,
+        "imss" in texto,
+        "banco" in texto and ("garantias" in texto or "mora" in texto)
+    ])
+    if factores_insolvencia >= 4:
+        riesgo = "CRITICO"
+        tendencia_final = "ASCENDENTE"
+        causas.append("INSOLVENCIA OPERATIVA INMINENTE — multiples presiones criticas simultaneas")
 
     # CLAUDE
     analisis_ai = await llamar_anthropic(texto, industria, impacto, riesgo, causas)
@@ -785,3 +807,4 @@ async def ai_diagnostico(data: InputAI):
         "cierre":        f"Se recomienda seguimiento preventivo especializado para el sector {industria}.",
         "refinamiento":  refinamiento
     }
+                          
