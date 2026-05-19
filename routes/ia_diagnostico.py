@@ -1,252 +1,41 @@
-# -*- coding: utf-8 -*-
-# routes/ia_diagnostico.py -- MESAN Ω v5.0 ENTERPRISE
-# Arquitectura corregida anti-truncamiento + CRO Crisis Engine
-
-from fastapi import APIRouter
-from pydantic import BaseModel, Field
-import unicodedata
-import logging
-import os
-import httpx
-import traceback
-from datetime import datetime
-
-router = APIRouter()
-
-# =========================================================
-# INPUT MODEL
-# =========================================================
-
-class InputAI(BaseModel):
-    texto: str
-    respuestas: dict = Field(default_factory=dict)
-
-# =========================================================
-# NORMALIZADOR
-# =========================================================
-
-def normalizar(texto: str) -> str:
-    texto = texto.lower()
-    texto = unicodedata.normalize("NFD", texto)
-    return texto.encode("ascii", "ignore").decode("utf-8")
-
-# =========================================================
-# INDUSTRIAS
-# =========================================================
-
-def detectar_industria(texto: str) -> str:
-
-    t = texto.lower()
-
-    sectores = {
-        "SEGURIDAD": ["sspc", "guardia", "seguridad privada"],
-        "FINANCIERO": ["liquidez", "flujo", "cartera vencida", "banco", "credito"],
-        "LABORAL": ["huelga", "sindicato", "paro"],
-        "LOGISTICA": ["operadores", "trailer", "flete"],
-        "SALUD": ["hospital", "clinica"],
-        "SERVICIOS_APOYO": ["repse", "outsourcing"],
-    }
-
-    for sector, palabras in sectores.items():
-        if any(p in t for p in palabras):
-            return sector
-
-    return "GENERAL"
-
-# =========================================================
-# ANALISIS FALLBACK
-# =========================================================
-
-def analizar_fallback(texto, industria):
-
-    t = texto.lower()
-
-    causas = []
-    impacto = 0
-    score = 25
-
-    # SAT
-    if "sat" in t or "isr" in t:
-        causas.append("Contingencia fiscal prioritaria detectada")
-        impacto += 800000
-        score += 18
-
-    # IMSS
-    if "imss" in t:
-        causas.append("Exposicion IMSS detectada")
-        impacto += 350000
-        score += 12
-
-    # INFONAVIT
-    if "infonavit" in t:
-        causas.append("Omisiones Infonavit detectadas")
-        impacto += 450000
-        score += 15
-
-    # BLOQUEO
-    if any(x in t for x in ["bloqueo", "embargo", "cuentas bloqueadas"]):
-        causas.append("Flujo bancario comprometido")
-        impacto += 1200000
-        score += 25
-
-    # NOMINA
-    if "nomina" in t:
-        causas.append("Presion sobre cumplimiento de nomina")
-        impacto += 450000
-        score += 15
-
-    # CARTERA
-    if any(x in t for x in ["cartera vencida", "no pagaron"]):
-        causas.append("Dependencia critica de cobranza")
-        impacto += 850000
-        score += 18
-
-    # SSPC
-    if "sspc" in t:
-        causas.append("Vulnerabilidad regulatoria SSPC")
-        impacto += 650000
-        score += 15
-
-    # REPSE
-    if "repse" in t:
-        causas.append("Brecha REPSE detectada")
-        impacto += 500000
-        score += 14
-
-    # LESION
-    if any(x in t for x in ["lesion", "herido", "accidente"]):
-        causas.append("Responsabilidad civil operativa")
-        impacto += 950000
-        score += 20
-
-    # COLISIONES
-    if "bloqueo" in t and "nomina" in t:
-        impacto = int(impacto * 1.6)
-        score += 10
-
-    if "sat" in t and "bloqueo" in t:
-        impacto = int(impacto * 1.8)
-        score += 12
-
-    if "sspc" in t and "lesion" in t:
-        impacto = int(impacto * 2.0)
-        score += 15
-
-    impacto = max(impacto, 25000)
-    score = min(score, 99)
-
-    return causas, impacto, score
-
-# =========================================================
-# MOTOR DE MODO EJECUTIVO
-# =========================================================
-
-def detectar_modo(score):
-
-    if score >= 85:
-        return "CRO_CRISIS"
-
-    elif score >= 60:
-        return "RISK_EXECUTIVE"
-
-    return "PREVENTIVO"
-
-# =========================================================
-# COMPRESOR DE BULLETS
-# =========================================================
-
-def compactar_bullets(texto):
-
-    lineas = texto.splitlines()
-
-    nuevas = []
-    bullets = 0
-
-    for l in lineas:
-
-        if l.strip().startswith("-"):
-            bullets += 1
-
-        if bullets > 3 and l.strip().startswith("-"):
-            continue
-
-        nuevas.append(l)
-
-    return "\n".join(nuevas)
-
-# =========================================================
-# REPARADOR ANTI-TRUNCAMIENTO
-# =========================================================
-
-def reparar_respuesta(texto: str):
-
-    if not texto:
-        return texto
-
-    cortes = [
-        "reestruct",
-        "negoci",
-        "operac",
-        "fiscal",
-        "financ",
-        "nomina",
-        "embarg",
-    ]
-
-    for c in cortes:
-        if texto.strip().endswith(c):
-            texto += "..."
-
-    if not texto.strip().endswith(("---FIN---", ".", "MXN")):
-        texto += "\n\n---FIN---"
-
-    return texto
-
-# =========================================================
-# GENERADOR CLAUDE
-# =========================================================
-
-async def llamar_claude(
+async def llamar_anthropic(
     texto,
     industria,
     impacto,
     riesgo,
     causas,
-    modo
+    modo="NORMAL"
 ):
 
     api_key = os.getenv("ANTHROPIC_API_KEY")
 
     if not api_key:
+        logging.error("ANTHROPIC_API_KEY no configurada")
         return ""
 
-    fecha = datetime.now().strftime("%d de %B de %Y")
-
-    impacto_bajo = int(impacto * 0.40)
-    impacto_probable = int(impacto * 0.75)
-
-    impacto_critico = max(
-        impacto_probable + 250000,
-        impacto
-    )
+    fecha = datetime.now().strftime("%d %B %Y")
 
     causas_txt = " | ".join(causas[:4])
 
+    impacto_bajo = int(impacto * 0.45)
+    impacto_probable = int(impacto * 0.75)
+    impacto_critico = int(impacto)
+
     prompt = f"""
-Actua como CRO (Chief Restructuring Officer) y advisor ejecutivo.
+Actua como CRO (Chief Restructuring Officer) y War-Room Advisor.
 
 Fecha: {fecha}
 Industria: {industria}
 Modo: {modo}
-Nivel Riesgo: {riesgo}
+Nivel de Riesgo: {riesgo}
 
 Situacion:
 {texto}
 
-Factores:
+Factores Detectados:
 {causas_txt}
 
-Escenarios:
+ESCENARIOS FINANCIEROS:
 - Conservador: ${impacto_bajo:,} MXN
 - Probable: ${impacto_probable:,} MXN
 - Critico: ${impacto_critico:,} MXN
@@ -256,8 +45,13 @@ REGLAS:
 - NO usar tablas markdown
 - NO cortar frases
 - NO usar recomendaciones genericas
-- Cada accion debe incluir:
+- TODAS las acciones deben incluir:
   accion + objetivo + plazo
+- NO usar:
+  "monitorear"
+  "evaluar opciones"
+  "dar seguimiento"
+  "revisar continuamente"
 
 ESTRUCTURA OBLIGATORIA:
 
@@ -292,57 +86,66 @@ ESTRUCTURA OBLIGATORIA:
 - Objetivo:
 - Plazo:
 
-## 6. DECISION CEO
+## 6. PROTOCOLO DE SUPERVIVENCIA
+- Priorizar:
+- Suspender:
+- Proteger:
+- Riesgo embargo:
+
+## 7. DECISION CEO
 [orden ejecutiva final]
 
 Analisis referencial sujeto a validacion especializada.
 """
 
-try:
-    async with httpx.AsyncClient(timeout=45) as client:
+    try:
 
-        r = await client.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={
-                "x-api-key": api_key,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json"
-            },
-            json={
-                "model": "claude-haiku-4-5-20251001",
-                "max_tokens": 2000,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
-            }
-        )
+        async with httpx.AsyncClient(timeout=45) as client:
 
-        if r.status_code == 200:
+            response = await client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": api_key,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json"
+                },
+                json={
+                    "model": "claude-haiku-4-5-20251001",
+                    "max_tokens": 2000,
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": prompt
+                        }
+                    ]
+                }
+            )
 
-            respuesta = r.json()["content"][0]["text"]
+            if response.status_code == 200:
 
-            # VALIDADORES
+                data = response.json()
 
-            if len(respuesta) < 300:
-                return "Error de convergencia ejecutiva."
+                respuesta = data["content"][0]["text"]
 
-            if "## 5." not in respuesta:
-                return "Respuesta incompleta."
+                # VALIDADORES DE RESPUESTA
 
-            if respuesta.count("##") < 5:
-                return "Estructura insuficiente."
+                if len(respuesta) < 300:
+                    logging.error("Respuesta demasiado corta")
+                    return "Error de convergencia ejecutiva."
 
-            respuesta = compactar_bullets(respuesta)
-            respuesta = reparar_respuesta(respuesta)
+                if "## 5." not in respuesta:
+                    logging.error("Respuesta incompleta")
+                    return "Respuesta incompleta."
 
-            return respuesta
+                if respuesta.count("##") < 5:
+                    logging.error("Estructura insuficiente")
+                    return "Estructura insuficiente."
 
-        logging.error(f"Claude Error: {r.text}")
+                return respuesta
 
-except Exception:
-    logging.error(traceback.format_exc())
+            logging.error(f"Claude Error: {response.text}")
 
-return ""
+    except Exception:
+        logging.error(traceback.format_exc())
+
+    return ""
