@@ -312,50 +312,60 @@ REGLAS CRITICAS:
 - PROHIBIDO: "mejorar flujo", "revisar operaciones", "responde SI"
 - MAXIMO 3 recomendaciones en seccion 5 -- cada una en 2 lineas
 
-ESTRUCTURA OBLIGATORIA:
+ESTRUCTURA DEFINITIVA -- COMPLETAR TODAS:
 
-## 1. HALLAZGO PRINCIPAL
-[Max 2 lineas. Sintaxis tactica. Ej: "Liquidez insuficiente. Riesgo mora en 6 dias."]
+## 1. HALLAZGO CRITICO
+[Max 3 lineas. Sintaxis tactica directa.]
 
-## 2. IMPACTO OPERATIVO
-[3 bullets cortos -- max 12 palabras cada uno]
+## 2. CONTINUIDAD OPERATIVA
+[Max 3 bullets -- una idea cada uno]
 
 ## 3. EXPOSICION FINANCIERA
 - Conservador: ${impacto_bajo:,} MXN
 - Probable: ${impacto_probable:,} MXN
 - Critico: ${impacto_critico:,} MXN
 
-## 4. VENTANA CRITICA
-[2 fechas especificas desde {fecha_hoy} con consecuencia en una linea cada una]
+## 4. CAJA OPERATIVA
+- Deficit diario estimado: [calcular]
+- Dias restantes operativos: [N dias]
+- Capital urgente requerido: [monto]
+- Punto de colapso: [fecha desde {fecha_hoy}]
 
-## 5. ACCIONES EJECUTIVAS
+## 5. VENTANA DE COLAPSO
+[2 fechas criticas con consecuencia en una linea]
 
-🔴 CRITICO -- [titulo]
-- Accion: [max 10 palabras]
-- Plazo: [fecha/horas]
+## 6. ACCIONES 24 HORAS
+🔴 [titulo]
+- Ejecutar: [accion concreta max 10 palabras]
+- Deadline: [fecha/hora]
 - Responsable: [rol]
-- Riesgo si no ejecuta: [max 8 palabras]
+- Si no: [consecuencia max 8 palabras]
 
-🟠 ALTO -- [titulo]
-- Accion: [max 10 palabras]
-- Plazo: [fecha/horas]
+🔴 [titulo]
+- Ejecutar: [accion concreta max 10 palabras]
+- Deadline: [fecha/hora]
 - Responsable: [rol]
-- Riesgo si no ejecuta: [max 8 palabras]
+- Si no: [consecuencia max 8 palabras]
 
-🟡 MEDIO -- [titulo]
-- Accion: [max 10 palabras]
-- Plazo: [fecha/horas]
+## 7. ACCIONES 7 DIAS
+🟠 [titulo]
+- Ejecutar: [accion]
+- Deadline: [fecha]
 - Responsable: [rol]
 
-## 6. PROTOCOLO DE SUPERVIVENCIA
-- Dias operativos estimados: [N dias]
-- Pago prioritario: [cual]
-- Pago sacrificable: [cual]
+🟡 [titulo]
+- Ejecutar: [accion]
+- Deadline: [fecha]
+- Responsable: [rol]
+
+## 8. PROTOCOLO DE SUPERVIVENCIA
+- Pago prioritario: [cual primero]
+- Pago sacrificable: [cual diferir]
+- Suspender: [que congelar]
 - Riesgo embargo: [SI/NO/PROBABLE]
-- Punto de no retorno: [fecha estimada]
 
-## 7. DECISION EJECUTIVA
-[Una sola instruccion. Ej: "Negociar banco antes del 21 May. Priorizar nomina. Suspender expansion."]
+## 9. DECISION CEO
+[UNA sola orden. Verbos: ejecutar/bloquear/renegociar/suspender/proteger. Max 2 lineas.]
 
 Analisis referencial sujeto a validacion especializada.
 """
