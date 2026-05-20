@@ -377,8 +377,20 @@ TERMINA COMPLETAMENTE LA RESPUESTA.
                 contenido = r.json()["content"][0]["text"]
 
                 # PROTECCION ANTI-CORTE
+                # Eliminar duplicados accidentales
+                contenido = contenido.replace("## 7. DECISIÓN CEO", "## 7. DECISION CEO")
+                partes = contenido.split("## 7. DECISION CEO")
+                if len(partes) > 2:
+                    contenido = partes[0] + "## 7. DECISION CEO" + partes[-1]
+
+                # Agregar seccion 7 si Claude se corto
                 if "## 7. DECISION CEO" not in contenido:
-                    contenido += "\n\n## 7. DECISION CEO\nEjecutar protocolo de contingencia financiera inmediatamente."
+                    contenido += """
+
+## 7. DECISION CEO
+
+Ejecutar cobranza inmediata, regularizacion IMSS y renegociacion financiera en paralelo durante las proximas 72 horas.
+"""
 
                 if not contenido.strip().endswith("."):
                     contenido += "."
@@ -549,7 +561,7 @@ async def ai_diagnostico(data: InputAI):
     consecuencias = {
         "SEGURIDAD": ["Posible clausura por operacion sin permisos", "Nulidad de contratos", "Responsabilidad patrimonial estimada"],
         "LABORAL": ["Posible demanda laboral colectiva", "Multas STPS estimadas", "Paro de operaciones"],
-        "MANUFACTURA": ["Posible perdida de produccion", "Ruptura de contratos con clientes", "Contingencias sindicales"],
+       "MANUFACTURA": ["Posible perdida de produccion", "Ruptura de contratos con clientes", "Contingencias sindicales"],
         "SALUD": ["Posible clausura sanitaria COFEPRIS", "Multas estimadas", "Suspension de operaciones"],
         "SERVICIOS_APOYO": ["Posible presion en renovaciones contractuales", "Exposicion administrativa estimada", "Requerimientos de regularizacion operativa"],
         "FINANCIERO": ["Tension de liquidez progresiva", "Posibles fricciones operativas en cumplimiento de obligaciones", "Necesidad de reestructuracion financiera preventiva"],
