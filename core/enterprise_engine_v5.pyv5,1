@@ -1,0 +1,564 @@
+# ============================================================
+# MESAN Omega -- ENTERPRISE OPERATING RISK PLATFORM v5.1
+# Multi-Layer Predictive Corporate Intelligence Engine
+# CORREGIDO + HARDENED VERSION
+# ============================================================
+
+from dataclasses import dataclass, field, asdict
+from typing import List
+from datetime import datetime
+import uuid
+import logging
+
+
+# ============================================================
+# DATA MODELS
+# ============================================================
+
+@dataclass
+class Alerta:
+    tipo: str
+    severidad: str
+    mensaje: str
+
+
+@dataclass
+class KPI:
+    nombre: str
+    valor: str
+    estado: str
+
+
+@dataclass
+class Riesgo:
+    categoria: str
+    descripcion: str
+    severidad: int
+    impacto: float
+    accion: str
+
+
+@dataclass
+class Escenario:
+    nombre: str
+    dias_supervivencia: int
+    impacto: str
+    probabilidad: str
+    accion_clave: str
+
+
+@dataclass
+class Empresa:
+    nombre: str
+    sector: str
+
+    ingresos: float = 0.0
+    nomina: float = 0.0
+    gastos: float = 0.0
+    deuda_mensual: float = 0.0
+
+    cartera_vencida: float = 0.0
+    iva: float = 0.0
+    isr_retenido: float = 0.0
+
+    trabajadores: int = 0
+    trabajadores_sin_imss: int = 0
+
+    repse_suspendido: bool = False
+    sspc_vencido: bool = False
+    bloqueo_bancario: bool = False
+
+    empresa_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    fecha: str = field(default_factory=lambda: datetime.now().isoformat())
+
+
+@dataclass
+class ResultadoEnterprise:
+    score: int
+    nivel: str
+    tendencia: str
+    confianza: int
+
+    dias_supervivencia: int
+
+    kpis: List[KPI]
+    alertas: List[Alerta]
+    riesgos: List[Riesgo]
+
+    cascadas: List[str]
+    escenarios: List[Escenario]
+
+    acciones_hoy: List[str]
+    acciones_72h: List[str]
+    acciones_7d: List[str]
+
+    preguntas_refinamiento: List[str]
+
+    resumen_ceo: str
+    resumen_cfo: str
+    resumen_legal: str
+    resumen_operativo: str
+
+
+# ============================================================
+# ENGINE
+# ============================================================
+
+class MesanOmegaEnterprise:
+
+    def __init__(self):
+        self.historial = []
+
+    # ========================================================
+    # HELPERS
+    # ========================================================
+
+    def _safe_div(self, a, b, default=0):
+        try:
+            if b == 0:
+                return default
+            return a / b
+        except Exception:
+            return default
+
+    def _nivel_riesgo(self, score):
+
+        if score >= 85:
+            return "CRITICO", "ASCENDENTE"
+
+        if score >= 65:
+            return "ALTO", "VOLATIL"
+
+        if score >= 40:
+            return "MEDIO", "ESTABLE"
+
+        return "BAJO", "CONTROLADA"
+
+    # ========================================================
+    # MAIN ANALYSIS
+    # ========================================================
+
+    def analizar(self, empresa: Empresa) -> ResultadoEnterprise:
+
+        riesgos = []
+        alertas = []
+        cascadas = []
+        escenarios = []
+        kpis = []
+
+        acciones_hoy = []
+        acciones_72h = []
+        acciones_7d = []
+
+        preguntas = []
+
+        score = 0
+
+        # ====================================================
+        # CALCULOS BASE
+        # ====================================================
+
+        flujo_operativo = (
+            empresa.ingresos
+            - empresa.nomina
+            - empresa.gastos
+            - empresa.deuda_mensual
+        )
+
+        burn_rate = (
+            empresa.nomina
+            + empresa.gastos
+            + empresa.deuda_mensual
+        )
+
+        dias_supervivencia = (
+            int((max(empresa.ingresos, 1) / max(burn_rate, 1)) * 30)
+            if burn_rate > 0
+            else 365
+        )
+
+        dscr = round(
+            self._safe_div(
+                empresa.ingresos,
+                empresa.deuda_mensual,
+                99
+            ),
+            2
+        )
+
+        capital_trabajo = empresa.ingresos - burn_rate
+
+        # ====================================================
+        # KPIs
+        # ====================================================
+
+        kpis.append(
+            KPI(
+                "Flujo Operativo",
+                f"${flujo_operativo:,.0f}",
+                "CRITICO" if flujo_operativo < 0 else "ESTABLE"
+            )
+        )
+
+        kpis.append(
+            KPI(
+                "DSCR",
+                str(dscr),
+                "CRITICO" if dscr < 1.2 else "ESTABLE"
+            )
+        )
+
+        kpis.append(
+            KPI(
+                "Capital de Trabajo",
+                f"${capital_trabajo:,.0f}",
+                "CRITICO" if capital_trabajo < 0 else "ESTABLE"
+            )
+        )
+
+        # ====================================================
+        # FINANCIERO
+        # ====================================================
+
+        if flujo_operativo < 0:
+
+            impacto = abs(flujo_operativo) * 12
+
+            riesgos.append(
+                Riesgo(
+                    categoria="FINANCIERO",
+                    descripcion="Deficit operativo estructural",
+                    severidad=35,
+                    impacto=impacto,
+                    accion="Reestructura inmediata"
+                )
+            )
+
+            alertas.append(
+                Alerta(
+                    "LIQUIDEZ",
+                    "CRITICA",
+                    "Flujo operativo negativo"
+                )
+            )
+
+            score += 30
+
+        # ====================================================
+        # CARTERA
+        # ====================================================
+
+        if empresa.cartera_vencida > empresa.ingresos:
+
+            riesgos.append(
+                Riesgo(
+                    categoria="COBRANZA",
+                    descripcion="Cartera vencida critica",
+                    severidad=25,
+                    impacto=empresa.cartera_vencida,
+                    accion="Cobranza agresiva"
+                )
+            )
+
+            cascadas.append(
+                "Cartera vencida -> Falta de flujo -> Riesgo nomina"
+            )
+
+            score += 20
+
+        # ====================================================
+        # ISR
+        # ====================================================
+
+        if empresa.isr_retenido > 0:
+
+            riesgos.append(
+                Riesgo(
+                    categoria="FISCAL",
+                    descripcion="ISR retenido pendiente",
+                    severidad=35,
+                    impacto=empresa.isr_retenido * 2,
+                    accion="Negociacion SAT urgente"
+                )
+            )
+
+            alertas.append(
+                Alerta(
+                    "SAT",
+                    "CRITICA",
+                    "ISR retenido detectado"
+                )
+            )
+
+            score += 35
+
+        # ====================================================
+        # IVA
+        # ====================================================
+
+        if empresa.iva > 0:
+
+            riesgos.append(
+                Riesgo(
+                    categoria="FISCAL",
+                    descripcion="Adeudo IVA",
+                    severidad=18,
+                    impacto=empresa.iva,
+                    accion="Regularizacion fiscal"
+                )
+            )
+
+            score += 15
+
+        # ====================================================
+        # IMSS
+        # ====================================================
+
+        if empresa.trabajadores_sin_imss > 0:
+
+            impacto_imss = empresa.trabajadores_sin_imss * 15000
+
+            riesgos.append(
+                Riesgo(
+                    categoria="LABORAL",
+                    descripcion="Trabajadores sin IMSS",
+                    severidad=30,
+                    impacto=impacto_imss,
+                    accion="Alta inmediata IMSS"
+                )
+            )
+
+            cascadas.append(
+                "Sin IMSS -> Inspeccion -> Retroactivos -> Multas"
+            )
+
+            score += 25
+
+        # ====================================================
+        # SSPC
+        # ====================================================
+
+        if empresa.sspc_vencido:
+
+            riesgos.append(
+                Riesgo(
+                    categoria="REGULATORIO",
+                    descripcion="Permiso SSPC vencido",
+                    severidad=35,
+                    impacto=950000,
+                    accion="Renovacion SSPC"
+                )
+            )
+
+            score += 30
+
+        # ====================================================
+        # REPSE
+        # ====================================================
+
+        if empresa.repse_suspendido:
+
+            riesgos.append(
+                Riesgo(
+                    categoria="REGULATORIO",
+                    descripcion="REPSE suspendido",
+                    severidad=25,
+                    impacto=450000,
+                    accion="Regularizacion REPSE"
+                )
+            )
+
+            score += 20
+
+        # ====================================================
+        # BLOQUEO BANCARIO
+        # ====================================================
+
+        if empresa.bloqueo_bancario:
+
+            riesgos.append(
+                Riesgo(
+                    categoria="BANCARIO",
+                    descripcion="Bloqueo bancario activo",
+                    severidad=40,
+                    impacto=1200000,
+                    accion="Desbloqueo legal inmediato"
+                )
+            )
+
+            alertas.append(
+                Alerta(
+                    "BANCARIA",
+                    "CRITICA",
+                    "Bloqueo bancario detectado"
+                )
+            )
+
+            cascadas.append(
+                "Bloqueo bancario -> Paralizacion operativa"
+            )
+
+            score += 35
+
+        # ====================================================
+        # COLISIONES DE RIESGO
+        # ====================================================
+
+        if (
+            empresa.bloqueo_bancario
+            and empresa.isr_retenido > 0
+        ):
+            cascadas.append(
+                "SAT + bloqueo bancario -> Riesgo continuidad operativa"
+            )
+            score += 10
+
+        if (
+            empresa.trabajadores_sin_imss > 0
+            and empresa.flujo_operativo if hasattr(empresa, "flujo_operativo") else flujo_operativo < 0
+        ):
+            cascadas.append(
+                "Sin IMSS + flujo negativo -> Riesgo laboral escalado"
+            )
+            score += 8
+
+        # ====================================================
+        # SCORE FINAL
+        # ====================================================
+
+        score = min(score, 100)
+
+        nivel, tendencia = self._nivel_riesgo(score)
+
+        # ====================================================
+        # CONFIANZA
+        # ====================================================
+
+        campos = [
+            empresa.ingresos,
+            empresa.nomina,
+            empresa.gastos,
+            empresa.deuda_mensual
+        ]
+
+        faltantes = sum(1 for x in campos if x <= 0)
+
+        confianza = max(35, 95 - (faltantes * 15))
+
+        # ====================================================
+        # ESCENARIOS
+        # ====================================================
+
+        escenarios.append(
+            Escenario(
+                nombre="Conservador",
+                dias_supervivencia=dias_supervivencia,
+                impacto="Controlable",
+                probabilidad="Alta",
+                accion_clave="Contencion preventiva"
+            )
+        )
+
+        escenarios.append(
+            Escenario(
+                nombre="Probable",
+                dias_supervivencia=max(dias_supervivencia - 10, 1),
+                impacto="Elevado",
+                probabilidad="Media",
+                accion_clave="Reestructura parcial"
+            )
+        )
+
+        if score >= 85:
+
+            escenarios.append(
+                Escenario(
+                    nombre="Critico",
+                    dias_supervivencia=max(dias_supervivencia - 20, 1),
+                    impacto="Severo",
+                    probabilidad="Alta",
+                    accion_clave="Intervencion inmediata"
+                )
+            )
+
+        # ====================================================
+        # ACCIONES
+        # ====================================================
+
+        acciones_hoy.extend([
+            "Priorizar nomina e impuestos retenidos.",
+            "Suspender gastos no esenciales.",
+            "Activar comite de crisis ejecutivo."
+        ])
+
+        if empresa.cartera_vencida > 0:
+            acciones_hoy.append(
+                "Activar cobranza intensiva a clientes morosos."
+            )
+
+        if empresa.trabajadores_sin_imss > 0:
+            acciones_72h.append(
+                "Regularizar trabajadores IMSS prioritarios."
+            )
+
+        acciones_72h.extend([
+            "Negociar SAT e instituciones financieras.",
+            "Revisar flujo semanal de caja."
+        ])
+
+        acciones_7d.extend([
+            "Reestructurar costos fijos.",
+            "Renegociar contratos criticos.",
+            "Separar cuentas operativas y nomina."
+        ])
+
+        # ====================================================
+        # PREGUNTAS
+        # ====================================================
+
+        if empresa.isr_retenido > 0:
+
+            preguntas.extend([
+                "Ya existe requerimiento formal SAT?",
+                "Cuantos meses acumulados existen?"
+            ])
+
+        if empresa.cartera_vencida > 0:
+
+            preguntas.extend([
+                "Los clientes firmaron reconocimiento de adeudo?",
+                "Cual es el aging promedio?"
+            ])
+
+        if empresa.trabajadores_sin_imss > 0:
+
+            preguntas.extend([
+                "Existen accidentes laborales recientes?",
+                "Hay inspecciones programadas?"
+            ])
+
+        # ====================================================
+        # RESUMENES
+        # ====================================================
+
+        resumen_ceo = (
+            f"MESAN Omega detecta escenario {nivel} "
+            f"con score {score}%. "
+            f"La organizacion presenta aproximadamente "
+            f"{dias_supervivencia} dias de estabilidad financiera."
+        )
+
+        resumen_cfo = (
+            f"Flujo operativo: ${flujo_operativo:,.0f} MXN. "
+            f"DSCR: {dscr}. "
+            f"Capital de trabajo: ${capital_trabajo:,.0f} MXN."
+        )
+
+        resumen_legal = (
+            "Se identifican riesgos fiscales, laborales "
+            "y regulatorios con potencial escalamiento."
+        )
+
+        resumen_operativo = (
+            "La continuidad operativa depende de estabilizacion "
+            "de flujo, cobranza y cumplimiento regulatorio."
