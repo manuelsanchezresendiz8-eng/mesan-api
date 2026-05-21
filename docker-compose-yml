@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: mesan_metabase_local
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./metabase-data:/metabase-data
+    environment:
+      - MB_DB_FILE=/metabase-data/metabase.db
+    restart: always
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: mesan_n8n_local
+    ports:
+      - "5678:5678"
+    volumes:
+      - ./n8n-data:/home/node/.n8n
+    restart: always
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: mesan_ollama_local
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama-data:/root/.ollama
+    restart: always
+      
