@@ -1,381 +1,83 @@
-# core/digital_twin_core.py
-# MESAN Omega — Digital Twin Foundation (Enterprise Hardened)
-
+# core/digital_twin_enterprise.py -- MESAN Omega Enterprise Digital Twin v2.1
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from typing import Dict, Any, List
 from datetime import datetime
-from enum import Enum
-
-
-# =========================================================
-# ENUMS
-# =========================================================
-
-class RiskLevel(str, Enum):
-    ESTABLE = "ESTABLE"
-    MEDIO = "MEDIO"
-    ALTO = "ALTO"
-    CRITICO = "CRITICO"
-
-
-# =========================================================
-# DATA MODELS
-# =========================================================
+import copy
 
 @dataclass
-class SimulationResult:
-    scenario_id: str
-    escenario: str
-    flujo_resultante: float
-    dias_supervivencia: int
-    nivel_riesgo: RiskLevel
-    descripcion: str
-    timestamp: str = field(
-        default_factory=lambda: datetime.utcnow().isoformat()
-    )
-
-
-# =========================================================
-# DIGITAL TWIN CORE
-# =========================================================
-
-class DigitalTwinCore:
-
-    ENGINE_VERSION = "2.0.0"
-
-    # =====================================================
-    # INIT
-    # =====================================================
-
-    def __init__(self, empresa: Dict[str, Any]):
-
-        self.ingresos = self.safe_float(
-            empresa.get("ingresos_mensuales")
-        )
-
-        self.nomina = self.safe_float(
-            empresa.get("nomina")
-        )
-
-        self.gastos = self.safe_float(
-            empresa.get("gastos")
-        )
-
-        self.deuda = self.safe_float(
-            empresa.get("deuda_mensual")
-        )
-
-        self.reserva_efectivo = self.safe_float(
-            empresa.get("reserva_efectivo", 0)
-        )
-
-        # Burn mensual total
-        self.burn = self.nomina + self.gastos + self.deuda
-
-    # =====================================================
-    # SAFE PARSERS
-    # =====================================================
-
-    @staticmethod
-    def safe_float(value, default=0.0) -> float:
-
-        try:
-
-            if value in [None, "", "null"]:
-                return default
-
-            return float(value)
-
-        except (TypeError, ValueError):
-            return default
-
-    # =====================================================
-    # RISK CLASSIFICATION
-    # =====================================================
-
-    def _clasificar(
-        self,
-        flujo: float,
-        dias: int
-    ) -> RiskLevel:
-
-        if dias < 15 or flujo < -500000:
-            return RiskLevel.CRITICO
-
-        if dias < 30 or flujo < 0:
-            return RiskLevel.ALTO
-
-        if dias < 60:
-            return RiskLevel.MEDIO
-
-        return RiskLevel.ESTABLE
-
-    # =====================================================
-    # SURVIVAL DAYS
-    # =====================================================
-
-    def _dias_supervivencia(
-        self,
-        ingreso_mensual: float
-    ) -> int:
-
-        burn_real = max(self.burn, 1)
-
-        flujo_neto = ingreso_mensual - self.burn
-
-        # Reserva de efectivo incluida
-        capacidad_total = max(
-            ingreso_mensual + self.reserva_efectivo,
-            0
-        )
-
-        dias = int((capacidad_total / burn_real) * 30)
-
-        return max(dias, 0)
-
-    # =====================================================
-    # RESULT BUILDER
-    # =====================================================
-
-    def _result(
-        self,
-        scenario_id: str,
-        escenario: str,
-        flujo: float,
-        ingreso: float,
-        descripcion: str
-    ) -> SimulationResult:
-
-        dias = self._dias_supervivencia(ingreso)
-
-        return SimulationResult(
-            scenario_id=scenario_id,
-            escenario=escenario,
-            flujo_resultante=round(flujo, 2),
-            dias_supervivencia=dias,
-            nivel_riesgo=self._clasificar(flujo, dias),
-            descripcion=descripcion
-        )
-
-    # =====================================================
-    # SCENARIOS
-    # =====================================================
-
-    def simulate_perdida_cliente(
-        self,
-        ingreso_cliente: float
-    ) -> SimulationResult:
-
-        ingreso_cliente = max(
-            self.safe_float(ingreso_cliente),
-            0
-        )
-
-        nuevo_ingreso = max(
-            self.ingresos - ingreso_cliente,
-            0
-        )
-
-        flujo = nuevo_ingreso - self.burn
-
-        return self._result(
-            scenario_id="DT_001",
-            escenario="PERDIDA_CLIENTE",
-            flujo=flujo,
-            ingreso=nuevo_ingreso,
-            descripcion=(
-                f"Pérdida de cliente equivalente a "
-                f"${ingreso_cliente:,.0f} mensuales."
-            )
-        )
-
-    # -----------------------------------------------------
-
-    def simulate_embargo(
-        self,
-        monto: float = 500000
-    ) -> SimulationResult:
-
-        monto = max(self.safe_float(monto), 0)
-
-        flujo = (self.ingresos - self.burn) - monto
-
-        return self._result(
-            scenario_id="DT_002",
-            escenario="EMBARGO_SAT",
-            flujo=flujo,
-            ingreso=self.ingresos,
-            descripcion=(
-                f"Embargo SAT simulado por "
-                f"${monto:,.0f}."
-            )
-        )
-
-    # -----------------------------------------------------
-
-    def simulate_huelga(
-        self,
-        dias_paro: int = 5
-    ) -> SimulationResult:
-
-        dias_paro = max(int(dias_paro), 0)
-
-        perdida_diaria = self.ingresos / 30
-
-        perdida_total = perdida_diaria * dias_paro
-
-        nuevo_ingreso = max(
-            self.ingresos - perdida_total,
-            0
-        )
-
-        flujo = nuevo_ingreso - self.burn
-
-        return self._result(
-            scenario_id="DT_003",
-            escenario="HUELGA_OPERATIVA",
-            flujo=flujo,
-            ingreso=nuevo_ingreso,
-            descripcion=(
-                f"Paro operativo de {dias_paro} días "
-                f"con pérdida estimada de "
-                f"${perdida_total:,.0f}."
-            )
-        )
-
-    # -----------------------------------------------------
-
-    def simulate_caida_ingresos(
-        self,
-        porcentaje: float
-    ) -> SimulationResult:
-
-        porcentaje = min(
-            max(self.safe_float(porcentaje), 0),
-            100
-        )
-
-        nuevo_ingreso = self.ingresos * (
-            1 - (porcentaje / 100)
-        )
-
-        flujo = nuevo_ingreso - self.burn
-
-        return self._result(
-            scenario_id="DT_004",
-            escenario="CAIDA_INGRESOS",
-            flujo=flujo,
-            ingreso=nuevo_ingreso,
-            descripcion=(
-                f"Caída de ingresos del "
-                f"{porcentaje:.0f}%."
-            )
-        )
-
-    # -----------------------------------------------------
-
-    def simulate_aumento_nomina(
-        self,
-        porcentaje: float
-    ) -> SimulationResult:
-
-        porcentaje = max(
-            self.safe_float(porcentaje),
-            0
-        )
-
-        nueva_nomina = self.nomina * (
-            1 + (porcentaje / 100)
-        )
-
-        nuevo_burn = (
-            nueva_nomina +
-            self.gastos +
-            self.deuda
-        )
-
-        flujo = self.ingresos - nuevo_burn
-
-        return self._result(
-            scenario_id="DT_005",
-            escenario="AUMENTO_NOMINA",
-            flujo=flujo,
-            ingreso=self.ingresos,
-            descripcion=(
-                f"Aumento de nómina del "
-                f"{porcentaje:.0f}% "
-                f"(nueva nómina: "
-                f"${nueva_nomina:,.0f})."
-            )
-        )
-
-    # -----------------------------------------------------
-
-    def simulate_bloqueo_bancario(
-        self,
-        porcentaje_retenido: float = 30
-    ) -> SimulationResult:
-
-        porcentaje_retenido = min(
-            max(self.safe_float(porcentaje_retenido), 0),
-            100
-        )
-
-        ingreso_disponible = self.ingresos * (
-            1 - porcentaje_retenido / 100
-        )
-
-        flujo = ingreso_disponible - self.burn
-
-        return self._result(
-            scenario_id="DT_006",
-            escenario="BLOQUEO_BANCARIO",
-            flujo=flujo,
-            ingreso=ingreso_disponible,
-            descripcion=(
-                f"Bloqueo bancario con "
-                f"{porcentaje_retenido:.0f}% "
-                f"de ingresos retenidos."
-            )
-        )
-
-    # =====================================================
-    # MASTER EXECUTION
-    # =====================================================
-
-    def run_all(
-        self,
-        cliente_pct: float = 20,
-        embargo: float = 500000,
-        dias_huelga: int = 5,
-        caida_pct: float = 25,
-        aumento_nomina: float = 15
-    ) -> List[SimulationResult]:
-
-        return [
-
-            self.simulate_perdida_cliente(
-                self.ingresos * (
-                    cliente_pct / 100
-                )
-            ),
-
-            self.simulate_embargo(
-                embargo
-            ),
-
-            self.simulate_huelga(
-                dias_huelga
-            ),
-
-            self.simulate_caida_ingresos(
-                caida_pct
-            ),
-
-            self.simulate_aumento_nomina(
-                aumento_nomina
-            ),
-
-            self.simulate_bloqueo_bancario()
-
-        ]
+class TwinScenarioResult:
+    scenario: str; timestamp: str; riesgo: str
+    ingresos: float; flujo_operativo: float; burn_rate: float; dias_supervivencia: int
+    variables: Dict[str, Any] = field(default_factory=dict)
+    summary: str = ""
+
+class EnterpriseTwin:
+    VERSION = "2.1.0"
+
+    def __init__(self, empresa: dict):
+        self.empresa = copy.deepcopy(empresa)
+
+    def snapshot(self) -> dict:
+        return {"empresa_id": self.empresa.get("empresa_id"), "tenant_id": self.empresa.get("tenant_id"),
+                "ingresos": float(self.empresa.get("ingresos",0)), "nomina": float(self.empresa.get("nomina",0)),
+                "gastos": float(self.empresa.get("gastos",0)), "deuda_mensual": float(self.empresa.get("deuda_mensual",0)),
+                "timestamp": datetime.utcnow().isoformat(), "version": self.VERSION}
+
+    def simulate_cashflow_drop(self, percentage: float) -> TwinScenarioResult:
+        ingresos = self._safe_float(self.empresa.get("ingresos",0))
+        new_income = max(ingresos - ingresos*(percentage/100), 0)
+        burn = self._calculate_burn(); flujo = new_income - burn
+        dias = self._calculate_survival_days(new_income, burn)
+        return TwinScenarioResult("CASHFLOW_DROP", datetime.utcnow().isoformat(), self._risk_level(dias,flujo),
+                                  round(new_income,2), round(flujo,2), round(burn,2), dias,
+                                  {"drop_percentage":percentage,"income_reduction":round(ingresos*(percentage/100),2)},
+                                  f"Cashflow reduction {percentage}% → {dias} survival days.")
+
+    def simulate_embargo(self, monto: float = 500000) -> TwinScenarioResult:
+        ingresos = self._safe_float(self.empresa.get("ingresos",0))
+        burn = self._calculate_burn(); flujo = ingresos - burn - monto
+        dias = self._calculate_survival_days(ingresos - monto, burn)
+        return TwinScenarioResult("EMBARGO", datetime.utcnow().isoformat(), self._risk_level(dias,flujo),
+                                  ingresos, round(flujo,2), round(burn,2), dias,
+                                  {"embargo_amount":monto}, f"Embargo ${monto:,.0f} → {dias} survival days.")
+
+    def simulate_perdida_cliente(self, ingreso_cliente: float) -> TwinScenarioResult:
+        ingresos = self._safe_float(self.empresa.get("ingresos",0))
+        new_income = max(ingresos - ingreso_cliente, 0)
+        burn = self._calculate_burn(); flujo = new_income - burn
+        dias = self._calculate_survival_days(new_income, burn)
+        return TwinScenarioResult("CLIENT_LOSS", datetime.utcnow().isoformat(), self._risk_level(dias,flujo),
+                                  round(new_income,2), round(flujo,2), round(burn,2), dias,
+                                  {"lost_client_income":ingreso_cliente}, f"Client loss ${ingreso_cliente:,.0f} → {dias} days.")
+
+    def simulate_nomina_aumento(self, percentage: float) -> TwinScenarioResult:
+        ingresos = self._safe_float(self.empresa.get("ingresos",0))
+        nueva_nomina = self._safe_float(self.empresa.get("nomina",0)) * (1+percentage/100)
+        burn = nueva_nomina + self._safe_float(self.empresa.get("gastos",0)) + self._safe_float(self.empresa.get("deuda_mensual",0))
+        flujo = ingresos - burn; dias = self._calculate_survival_days(ingresos, burn)
+        return TwinScenarioResult("PAYROLL_INCREASE", datetime.utcnow().isoformat(), self._risk_level(dias,flujo),
+                                  ingresos, round(flujo,2), round(burn,2), dias,
+                                  {"increase_percentage":percentage,"new_payroll":round(nueva_nomina,2)},
+                                  f"Payroll +{percentage}% → {dias} survival days.")
+
+    def run_all(self) -> List[TwinScenarioResult]:
+        return [self.simulate_cashflow_drop(20), self.simulate_cashflow_drop(40),
+                self.simulate_embargo(500000), self.simulate_perdida_cliente(300000), self.simulate_nomina_aumento(15)]
+
+    def _calculate_burn(self) -> float:
+        return sum(self._safe_float(self.empresa.get(k,0)) for k in ["nomina","gastos","deuda_mensual"])
+
+    def _calculate_survival_days(self, ingresos, burn) -> int:
+        if burn <= 0: return 365
+        if ingresos <= 0: return 0
+        return max(int((ingresos/burn)*30), 0)
+
+    def _risk_level(self, dias, flujo) -> str:
+        if flujo < 0 or dias < 15: return "CRITICO"
+        if dias < 30: return "ALTO"
+        if dias < 60: return "MEDIO"
+        return "BAJO"
+
+    def _safe_float(self, value) -> float:
+        try: return float(value)
+        except: return 0.0
