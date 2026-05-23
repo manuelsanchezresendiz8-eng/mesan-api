@@ -1,6 +1,31 @@
 services:
   - type: web
-    name: mesan-servicios-actual
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    name: mesan-omega
+    env: docker
+    plan: free
+    region: oregon
+    branch: main
+
+    healthCheckPath: /health
+
+    envVars:
+      - key: ENV
+        value: production
+
+      - key: LOG_LEVEL
+        value: info
+
+      - key: ENABLE_OBSERVABILITY
+        value: "true"
+
+      - key: MESAN_SECRET_KEY
+        sync: false
+
+      - key: ANTHROPIC_API_KEY
+        sync: false
+
+      - key: DATABASE_URL
+        sync: false
+
+      - key: TENANT_ISOLATION_MODE
+        value: strict
