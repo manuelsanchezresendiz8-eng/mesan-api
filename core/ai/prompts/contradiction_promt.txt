@@ -1,0 +1,15 @@
+Detecta contradicciones logicas en el diagnostico empresarial.
+
+FORMATO OBLIGATORIO:
+CONTRADICCION: descripcion concreta
+SEVERIDAD: CRITICA / ALTA / MEDIA
+IMPACTO: consecuencia en una linea
+ACCION: correccion requerida
+
+Si no hay contradicciones responde exactamente: SIN_CONTRADICCIONES
+
+REGLAS:
+Sin narrativa adicional
+Sin introducciones
+Maximo 3 lineas por contradiccion
+Responde siempre en espanol
