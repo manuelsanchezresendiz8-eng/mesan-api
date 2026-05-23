@@ -1,0 +1,151 @@
+# core/state_schema_v2.py -- MESAN Omega Enterprise Core State Schema v2.0
+# Deterministic • Replayable • Auditable • Distributed-Ready
+
+from dataclasses import dataclass, field
+from typing import Dict, Any, Optional, Union
+from datetime import datetime
+import hashlib
+import json
+
+
+# ============================================================
+# BASE SUB-STATES
+# ============================================================
+
+@dataclass(frozen=True)
+class MetadataState:
+    tenant_id: str
+    trace_id: str
+    schema_version: str = "2.0.0"
+    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    updated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+
+
+@dataclass(frozen=True)
+class FinancialState:
+    ingresos: float = 0.0
+    nomina: float = 0.0
+    gastos: float = 0.0
+    deuda_mensual: float = 0.0
+    flujo_operativo: float = 0.0
+    burn_rate: float = 0.0
+    dias_supervivencia: int = 0
+
+
+@dataclass(frozen=True)
+class RiskState:
+    score: float = 0.0
+    confidence: float = 0.82
+    nivel_riesgo: str = "MEDIO"
+
+    contradictions: int = 0
+    validation_penalty: float = 0.0
+
+    exposicion_probable: float = 0.0
+    exposure_score: float = 0.0
+
+    system_inconsistency: bool = False
+    system_confidence: float = 1.0
+
+
+@dataclass(frozen=True)
+class PipelineState:
+    pipeline_status: str = "INITIALIZED"
+    last_successful_engine: Optional[str] = None
+    last_event: Optional[str] = None
+    event_version: int = 1
+    snapshot_version: int = 1
+
+
+@dataclass(frozen=True)
+class AuditState:
+    state_hash: str = ""
+    rebuildable: bool = True
+    replayable: bool = True
+    audit_enabled: bool = True
+
+
+# ============================================================
+# CORE STATE
+# ============================================================
+
+@dataclass(frozen=True)
+class CoreState:
+
+    metadata: MetadataState
+    financial: FinancialState = field(default_factory=FinancialState)
+    risk: RiskState = field(default_factory=RiskState)
+    pipeline: PipelineState = field(default_factory=PipelineState)
+    audit: AuditState = field(default_factory=AuditState)
+
+    # Namespaced extensibility ONLY
+    extra: Dict[str, Dict[str, Union[str, int, float, bool]]] = field(
+        default_factory=lambda: {
+            "laboral": {},
+            "fiscal": {},
+            "operativo": {},
+            "compliance": {}
+        }
+    )
+
+    # ========================================================
+    # SERIALIZATION
+    # ========================================================
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "metadata": self.metadata.__dict__,
+            "financial": self.financial.__dict__,
+            "risk": self.risk.__dict__,
+            "pipeline": self.pipeline.__dict__,
+            "audit": self.audit.__dict__,
+            "extra": self.extra
+        }
+
+    # ========================================================
+    # HASHING
+    # ========================================================
+
+    def calculate_hash(self) -> str:
+        payload = json.dumps(
+            self.to_dict(),
+            sort_keys=True,
+            default=str
+        ).encode()
+
+        return hashlib.sha256(payload).hexdigest()
+
+    # ========================================================
+    # VALIDATION
+    # ========================================================
+
+    def validate_integrity(self) -> bool:
+        if not self.metadata.tenant_id:
+            return False
+
+        if not self.metadata.trace_id:
+            return False
+
+        if self.risk.confidence < 0 or self.risk.confidence > 1:
+            return False
+
+        if self.risk.system_confidence < 0 or self.risk.system_confidence > 1:
+            return False
+
+        return True
+
+    # ========================================================
+    # STATE SUMMARY
+    # ========================================================
+
+    def summary(self) -> dict:
+        return {
+            "tenant_id": self.metadata.tenant_id,
+            "trace_id": self.metadata.trace_id,
+            "score": self.risk.score,
+            "risk_level": self.risk.nivel_riesgo,
+            "confidence": self.risk.confidence,
+            "pipeline_status": self.pipeline.pipeline_status,
+            "last_engine": self.pipeline.last_successful_engine,
+            "schema_version": self.metadata.schema_version
+        }
