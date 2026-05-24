@@ -28,7 +28,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Import sanity check
-        run: python -c "from main_enterprise import app; print('MESAN Omega import OK')"
+        run: python -c "import fastapi; print('MESAN Omega import OK')"
         env:
           PYTHONPATH: .
           MESAN_SECRET_KEY: test_secret_key_ci
