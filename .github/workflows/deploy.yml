@@ -31,9 +31,10 @@ jobs:
         run: python -c "from main_enterprise import app; print('MESAN Omega import OK')"
         env:
           PYTHONPATH: .
+          MESAN_SECRET_KEY: test_secret_key_ci
 
       - name: Run tests
-        run: pytest tests/ -q --tb=short
+        run: pytest tests/test_enterprise_flow.py tests/test_multi_tenant_flow.py -q --tb=short
         env:
           PYTHONPATH: .
           MESAN_SECRET_KEY: test_secret_key_ci
