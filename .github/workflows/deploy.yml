@@ -2,7 +2,11 @@ name: Deploy MESAN Omega
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
 
 jobs:
   build:
@@ -10,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -24,7 +28,12 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Import sanity check
-        run: python -c "from core.api import app; print('MESAN Omega import OK')"
+        run: python -c "from main_enterprise import app; print('MESAN Omega import OK')"
+        env:
+          PYTHONPATH: .
 
       - name: Run tests
-        run: pytest -q
+        run: pytest tests/ -q --tb=short
+        env:
+          PYTHONPATH: .
+          MESAN_SECRET_KEY: test_secret_key_ci
