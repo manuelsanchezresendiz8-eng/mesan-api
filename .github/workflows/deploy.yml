@@ -32,9 +32,11 @@ jobs:
         env:
           PYTHONPATH: .
           MESAN_SECRET_KEY: test_secret_key_ci
+          ENV: ci
 
       - name: Run tests
         run: pytest tests/ -q --tb=short --ignore=tests/test_exposure_engine.py --ignore=tests/test_explainability_engine.py --ignore=tests/test_temporal_systems.py
         env:
           PYTHONPATH: .
           MESAN_SECRET_KEY: test_secret_key_ci
+          ENV: ci
