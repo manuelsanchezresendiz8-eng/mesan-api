@@ -13,6 +13,7 @@ from services.executive_narrative_generator import ExecutiveNarrativeGenerator
 
 router = APIRouter()
 
+
 @router.post("/execute")
 async def execute(payload: dict):
 
@@ -20,17 +21,29 @@ async def execute(payload: dict):
 
     print("TENANT:", tenant)
 
+    # ============================================
+    # VALIDAR TENANT
+    # ============================================
+
     if not tenant:
         return JSONResponse(
             status_code=401,
             content={"error": "TENANT_MISSING"}
         )
 
+    # ============================================
+    # INPUTS
+    # ============================================
+
     ingresos = payload.get("ingresos", 0)
-    gastos   = payload.get("gastos", 0)
-    deuda    = payload.get("deuda_mensual", 0)
-    cartera  = payload.get("cartera_vencida", 0)
+    gastos = payload.get("gastos", 0)
+    deuda = payload.get("deuda_mensual", 0)
+    cartera = payload.get("cartera_vencida", 0)
     sin_imss = payload.get("trabajadores_sin_imss", 0)
+
+    # ============================================
+    # ENGINE
+    # ============================================
 
     score = 72
 
@@ -43,14 +56,25 @@ async def execute(payload: dict):
     if sin_imss > 10:
         score += 5
 
+    # ============================================
+    # NIVEL
+    # ============================================
+
     if score >= 85:
         nivel = "CRITICO"
+
     elif score >= 70:
         nivel = "ALTO"
+
     elif score >= 50:
         nivel = "MEDIO"
+
     else:
         nivel = "BAJO"
+
+    # ============================================
+    # FLUJO
+    # ============================================
 
     flujo_operativo = ingresos - gastos - deuda
 
@@ -58,22 +82,29 @@ async def execute(payload: dict):
         90 if flujo_operativo > 0 else 18
     )
 
+    # ============================================
+    # RESULTADO
+    # ============================================
+
     resultado = {
         "nivel": nivel,
         "score": score,
         "dias_supervivencia": dias_supervivencia,
         "flujo_operativo": flujo_operativo,
         "dscr": 1.2,
+
         "acciones_hoy": [
             "Reducir gasto operativo",
             "Negociar deuda bancaria",
             "Ejecutar cobranza inmediata"
         ],
+
         "acciones_72h": [
             "Reestructurar pasivos",
             "Congelar contrataciones",
             "Proteger flujo crítico"
         ],
+
         "acciones_7d": [
             "Optimizar capital de trabajo",
             "Auditar proveedores",
@@ -81,8 +112,12 @@ async def execute(payload: dict):
         ]
     }
 
-    audit     = AuditLog()
-    billing   = BillingEngine()
+    # ============================================
+    # SERVICES
+    # ============================================
+
+    audit = AuditLog()
+    billing = BillingEngine()
     narrative = ExecutiveNarrativeGenerator()
 
     # ============================================
@@ -90,6 +125,7 @@ async def execute(payload: dict):
     # ============================================
 
     try:
+
         audit.log(
             tenant_id=tenant.tenant_id,
             event_type="EXECUTION",
@@ -137,13 +173,20 @@ async def execute(payload: dict):
 
         report = "Narrativa temporalmente no disponible"
 
+    # ============================================
+    # RESPONSE
+    # ============================================
+
     return {
         "tenant": tenant.tenant_id,
+
         "result": resultado,
+
         "invoice": {
             "amount": invoice.amount,
             "currency": invoice.currency,
             "reason": invoice.reason
         },
+
         "report": report
     }
