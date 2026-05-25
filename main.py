@@ -1,5 +1,6 @@
 # ============================================
 # MESAN Ω — main.py v2.5.1
+# Enterprise Survival OS LATAM
 # ============================================
 
 print("MESAN MAIN.PY v2.5.1 LOADED")
@@ -33,6 +34,7 @@ app.add_middleware(
 # ============================================
 
 from core.auth.auth_middleware import auth_middleware
+
 app.middleware("http")(auth_middleware)
 
 # ============================================
@@ -41,6 +43,7 @@ app.middleware("http")(auth_middleware)
 
 try:
     from routes.execution_routes import router as execution_router
+
     app.include_router(execution_router)
 
     print("EXECUTION ROUTER LOADED")
@@ -77,7 +80,9 @@ async def health():
 
 @app.get("/ready")
 async def ready():
-    return {"ready": True}
+    return {
+        "ready": True
+    }
 
 # ============================================
 # STARTUP
@@ -100,4 +105,3 @@ if __name__ == "__main__":
         port=8000,
         reload=True
     )
-    
