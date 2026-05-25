@@ -1,13 +1,11 @@
 # ============================================
-# MESAN Ω — main.py v2.5.0
-# Enterprise Survival OS LATAM
+# MESAN Ω — main.py v2.5.1
 # ============================================
 
-print("MESAN MAIN.PY v2.5.0 LOADED")
+print("MESAN MAIN.PY v2.5.1 LOADED")
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes.execution_routes import router as execution_router
 
 # ============================================
 # APP
@@ -15,7 +13,7 @@ from routes.execution_routes import router as execution_router
 
 app = FastAPI(
     title="MESAN Omega",
-    version="2.5.0"
+    version="2.5.1"
 )
 
 # ============================================
@@ -31,29 +29,52 @@ app.add_middleware(
 )
 
 # ============================================
-# MIDDLEWARE
+# AUTH MIDDLEWARE
 # ============================================
 
 from core.auth.auth_middleware import auth_middleware
 app.middleware("http")(auth_middleware)
 
 # ============================================
-# ROUTERS
+# IMPORT ROUTERS
 # ============================================
 
-app.include_router(execution_router)
+try:
+    from routes.execution_routes import router as execution_router
+
+    app.include_router(execution_router)
+
+    print("EXECUTION ROUTER LOADED")
+
+except Exception as e:
+    print("ROUTER LOAD ERROR:", str(e))
+
+# ============================================
+# ROOT
+# ============================================
+
+@app.get("/")
+async def root():
+    return {
+        "system": "MESAN Omega",
+        "status": "online",
+        "version": "2.5.1"
+    }
 
 # ============================================
 # HEALTH
 # ============================================
 
-@app.get("/")
-async def root():
-    return {"system": "MESAN Omega", "status": "online", "version": "2.5.0"}
-
 @app.get("/health")
 async def health():
-    return {"status": "ok", "version": "2.5.0"}
+    return {
+        "status": "ok",
+        "version": "2.5.1"
+    }
+
+# ============================================
+# READY
+# ============================================
 
 @app.get("/ready")
 async def ready():
@@ -67,6 +88,16 @@ async def ready():
 async def startup_event():
     print("MESAN Ω ENTERPRISE ONLINE")
 
+# ============================================
+# LOCAL RUN
+# ============================================
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True
+    )
