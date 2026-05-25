@@ -1,4 +1,4 @@
-# routes/execution_routes.py -- MESAN Omega Execution Routes v1.0
+# routes/execution_routes.py -- MESAN Omega Execution Routes v1.1
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from core.auth.tenant_context import get_tenant
@@ -47,9 +47,24 @@ async def execute(payload: dict):
     billing   = BillingEngine()
     narrative = ExecutiveNarrativeGenerator()
 
-    audit.log(tenant_id=tenant.tenant_id, event_type="EXECUTION", payload=resultado)
-    invoice = billing.charge(tenant_id=tenant.tenant_id, operation="EXECUTION_DECISION", risk_score=resultado["score"])
-    report  = narrative.generar(resultado)
+    try:
+        audit.log(tenant_id=tenant.tenant_id, event_type="EXECUTION", payload=resultado)
+    except Exception as e:
+        print("AUDIT ERROR:", str(e))
+
+    try:
+        invoice = billing.charge(tenant_id=tenant.tenant_id, operation="EXECUTION_DECISION", risk_score=resultado["score"])
+    except Exception as e:
+        print("BILLING ERROR:", str(e))
+        class DummyInvoice:
+            amount = 0; currency = "MXN"; reason = "billing_disabled"
+        invoice = DummyInvoice()
+
+    try:
+        report = narrative.generar(resultado)
+    except Exception as e:
+        print("NARRATIVE ERROR:", str(e))
+        report = "Narrativa temporalmente no disponible"
 
     return {
         "tenant": tenant.tenant_id,
