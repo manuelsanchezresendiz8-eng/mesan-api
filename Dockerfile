@@ -1,23 +1,45 @@
+# ============================================
+# MESAN Ω Dockerfile v1.1
+# Enterprise Runtime
+# ============================================
+
 FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y build-essential curl \
+# System deps
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
+# Non-root user
 RUN useradd -m mesanuser
-USER mesanuser
 
-COPY --chown=mesanuser:mesanuser requirements.txt .
+# Python env
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+ENV PATH=/home/mesanuser/.local/bin:$PATH
+
+# Install deps first (cache layer)
+COPY requirements.txt .
+
 RUN pip install --no-cache-dir --user -r requirements.txt
 
-COPY --chown=mesanuser:mesanuser . .
+# Copy app
+COPY . .
 
-ENV PYTHONUNBUFFERED=1
+# Permissions
+RUN chown -R mesanuser:mesanuser /app
 
-EXPOSE 8000
+USER mesanuser
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl --fail http://localhost:8000/health || exit 1
+# Render uses 10000 internally
+EXPOSE 10000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD curl --fail http://localhost:10000/health || exit 1
+
+# Runtime
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
