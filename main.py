@@ -41,7 +41,6 @@ app.middleware("http")(auth_middleware)
 
 try:
     from routes.execution_routes import router as execution_router
-
     app.include_router(execution_router)
 
     print("EXECUTION ROUTER LOADED")
@@ -101,3 +100,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True
     )
+    
