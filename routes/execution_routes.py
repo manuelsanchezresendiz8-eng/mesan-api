@@ -1,51 +1,73 @@
-# ============================================
-# routes/execution_routes.py
-# MESAN Omega Execution Routes v1.1
-# ============================================
+# routes/execution_routes.py -- MESAN Omega Execution Routes v1.4
+import os
+import time
+import logging
 
-from fastapi import APIRouter
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
-from core.auth.tenant_context import get_tenant
+from core.auth.tenant_context import get_tenant, set_tenant
+from core.auth.tenant_model import Tenant
 from core.auth.audit_log import AuditLog
 from core.billing.billing_engine import BillingEngine
 from services.executive_narrative_generator import ExecutiveNarrativeGenerator
 
 router = APIRouter()
 
+logger = logging.getLogger("mesan.execute")
 
-@router.post("/execute")
-async def execute(payload: dict):
+# ============================================================
+# ENV
+# ============================================================
 
-    tenant = get_tenant()
+ENV = os.getenv("ENV", "production").lower()
 
-    print("TENANT:", tenant)
+# ============================================================
+# PAYLOAD MODEL
+# ============================================================
 
-    # ============================================
-    # VALIDAR TENANT
-    # ============================================
+class ExecutePayload(BaseModel):
 
-    if not tenant:
-        return JSONResponse(
-            status_code=401,
-            content={"error": "TENANT_MISSING"}
-        )
+    empresa: str = Field(default="EMPRESA")
 
-    # ============================================
-    # INPUTS
-    # ============================================
+    ingresos: float = Field(default=0, ge=0)
+    gastos: float = Field(default=0, ge=0)
+    nomina: float = Field(default=0, ge=0)
 
-    ingresos = payload.get("ingresos", 0)
-    gastos = payload.get("gastos", 0)
-    deuda = payload.get("deuda_mensual", 0)
-    cartera = payload.get("cartera_vencida", 0)
-    sin_imss = payload.get("trabajadores_sin_imss", 0)
+    deuda_mensual: float = Field(default=0, ge=0)
+    cartera_vencida: float = Field(default=0, ge=0)
 
-    # ============================================
-    # ENGINE
-    # ============================================
+    trabajadores_sin_imss: int = Field(default=0, ge=0)
+
+    bloqueo_bancario: bool = False
+    repse_suspendido: bool = False
+
+# ============================================================
+# RISK ENGINE
+# ============================================================
+
+def calcular_riesgo(data: dict) -> tuple:
+
+    ingresos = max(float(data.get("ingresos", 0)), 1)
+
+    gastos   = float(data.get("gastos", 0))
+    nomina   = float(data.get("nomina", 0))
+    deuda    = float(data.get("deuda_mensual", 0))
+    cartera  = float(data.get("cartera_vencida", 0))
+
+    sin_imss = int(data.get("trabajadores_sin_imss", 0))
+
+    bloqueo_bancario = bool(data.get("bloqueo_bancario", False))
+    repse_suspendido = bool(data.get("repse_suspendido", False))
 
     score = 72
+
+    # ========================================================
+    # FINANCIAL PRESSURE
+    # ========================================================
 
     if deuda > ingresos * 0.35:
         score += 8
@@ -56,9 +78,17 @@ async def execute(payload: dict):
     if sin_imss > 10:
         score += 5
 
-    # ============================================
-    # NIVEL
-    # ============================================
+    if repse_suspendido:
+        score += 10
+
+    if bloqueo_bancario:
+        score += 15
+
+    score = min(score, 100)
+
+    # ========================================================
+    # RISK LEVEL
+    # ========================================================
 
     if score >= 85:
         nivel = "CRITICO"
@@ -72,121 +102,282 @@ async def execute(payload: dict):
     else:
         nivel = "BAJO"
 
-    # ============================================
-    # FLUJO
-    # ============================================
+    # ========================================================
+    # CASHFLOW
+    # ========================================================
 
-    flujo_operativo = ingresos - gastos - deuda
+    flujo_operativo = ingresos - gastos - deuda - nomina
 
-    dias_supervivencia = (
-        90 if flujo_operativo > 0 else 18
+    if flujo_operativo <= 0:
+        dias_supervivencia = 18
+
+    elif flujo_operativo < ingresos * 0.10:
+        dias_supervivencia = 45
+
+    else:
+        dias_supervivencia = 90
+
+    return (
+        score,
+        nivel,
+        flujo_operativo,
+        dias_supervivencia
     )
 
-    # ============================================
-    # RESULTADO
-    # ============================================
+# ============================================================
+# FALLBACK REPORT
+# ============================================================
 
-    resultado = {
-        "nivel": nivel,
-        "score": score,
-        "dias_supervivencia": dias_supervivencia,
-        "flujo_operativo": flujo_operativo,
-        "dscr": 1.2,
+def fallback_report() -> str:
 
-        "acciones_hoy": [
-            "Reducir gasto operativo",
-            "Negociar deuda bancaria",
-            "Ejecutar cobranza inmediata"
-        ],
+    return (
+        "RIESGO OPERATIVO ELEVADO.\n"
+        "Ejecutar contención financiera inmediata.\n"
+        "Proteger flujo operativo crítico.\n"
+        "Renegociar presión bancaria y fiscal.\n"
+        "Reducir exposición laboral de alto impacto."
+    )
 
-        "acciones_72h": [
-            "Reestructurar pasivos",
-            "Congelar contrataciones",
-            "Proteger flujo crítico"
-        ],
+# ============================================================
+# EXECUTE ENDPOINT
+# ============================================================
 
-        "acciones_7d": [
-            "Optimizar capital de trabajo",
-            "Auditar proveedores",
-            "Renegociar contratos"
-        ]
-    }
+@router.post("/execute")
+async def execute(payload: ExecutePayload, request: Request):
 
-    # ============================================
-    # SERVICES
-    # ============================================
+    started = time.time()
 
-    audit = AuditLog()
-    billing = BillingEngine()
-    narrative = ExecutiveNarrativeGenerator()
+    trace_id = f"exec-{int(started * 1000)}"
 
-    # ============================================
-    # SAFE AUDIT
-    # ============================================
+    logger.info(
+        f"[EXECUTE] request received trace_id={trace_id}"
+    )
+
+    # ========================================================
+    # TENANT RESOLUTION
+    # ========================================================
+
+    tenant = get_tenant()
+
+    if not tenant:
+
+        if ENV != "production":
+
+            set_tenant(
+                Tenant(
+                    tenant_id="demo",
+                    name="DEMO_TENANT",
+                    plan="FREE"
+                )
+            )
+
+            tenant = get_tenant()
+
+        else:
+
+            logger.warning(
+                f"[EXECUTE] tenant missing trace_id={trace_id}"
+            )
+
+            return JSONResponse(
+                status_code=401,
+                content={
+                    "status": "error",
+                    "message": "TENANT_MISSING",
+                    "trace_id": trace_id
+                }
+            )
+
+    # ========================================================
+    # EXECUTION PIPELINE
+    # ========================================================
 
     try:
 
-        audit.log(
-            tenant_id=tenant.tenant_id,
-            event_type="EXECUTION",
-            payload=resultado
+        data = payload.model_dump()
+
+        (
+            score,
+            nivel,
+            flujo_operativo,
+            dias_supervivencia
+        ) = calcular_riesgo(data)
+
+        resultado = {
+
+            "nivel": nivel,
+
+            "score": score,
+
+            "dias_supervivencia": dias_supervivencia,
+
+            "flujo_operativo": flujo_operativo,
+
+            "dscr": round(
+                flujo_operativo /
+                max(float(data.get("deuda_mensual", 1)), 1),
+                2
+            ),
+
+            "acciones_hoy": [
+
+                "Bloquear gasto no esencial",
+
+                "Renegociar pasivos bancarios",
+
+                "Proteger flujo operativo crítico"
+            ],
+
+            "acciones_72h": [
+
+                "Reestructurar presión financiera",
+
+                "Congelar contrataciones",
+
+                "Ejecutar reducción táctica de gasto"
+            ],
+
+            "acciones_7d": [
+
+                "Optimizar capital de trabajo",
+
+                "Auditar contratos críticos",
+
+                "Reducir exposición SAT/IMSS"
+            ]
+        }
+
+        # ====================================================
+        # AUDIT
+        # ====================================================
+
+        try:
+
+            AuditLog().log(
+                tenant_id=tenant.tenant_id,
+                event_type="EXECUTION",
+                payload={
+                    **resultado,
+                    "trace_id": trace_id
+                }
+            )
+
+        except Exception as e:
+
+            logger.warning(
+                f"[EXECUTE] audit error "
+                f"trace_id={trace_id}: {e}"
+            )
+
+        # ====================================================
+        # BILLING
+        # ====================================================
+
+        try:
+
+            invoice = BillingEngine().charge(
+                tenant_id=tenant.tenant_id,
+                operation="EXECUTION_DECISION",
+                risk_score=score
+            )
+
+        except Exception as e:
+
+            logger.warning(
+                f"[EXECUTE] billing error "
+                f"trace_id={trace_id}: {e}"
+            )
+
+            class DummyInvoice:
+                amount   = 0
+                currency = "MXN"
+                reason   = "billing_disabled"
+
+            invoice = DummyInvoice()
+
+        # ====================================================
+        # NARRATIVE
+        # ====================================================
+
+        try:
+
+            report = (
+                ExecutiveNarrativeGenerator()
+                .generar(resultado)
+            )
+
+            if not report:
+                report = fallback_report()
+
+        except Exception as e:
+
+            logger.warning(
+                f"[EXECUTE] narrative error "
+                f"trace_id={trace_id}: {e}"
+            )
+
+            report = fallback_report()
+
+        # ====================================================
+        # RESPONSE
+        # ====================================================
+
+        latency_ms = round(
+            (time.time() - started) * 1000,
+            2
         )
 
-    except Exception as e:
-
-        print("AUDIT ERROR:", str(e))
-
-    # ============================================
-    # SAFE BILLING
-    # ============================================
-
-    try:
-
-        invoice = billing.charge(
-            tenant_id=tenant.tenant_id,
-            operation="EXECUTION_DECISION",
-            risk_score=resultado["score"]
+        logger.info(
+            f"[EXECUTE] pipeline completed "
+            f"trace_id={trace_id} "
+            f"latency_ms={latency_ms}"
         )
 
+        return {
+
+            "status": "success",
+
+            "trace_id": trace_id,
+
+            "tenant_id": tenant.tenant_id,
+
+            "timestamp": datetime.now(
+                timezone.utc
+            ).isoformat(),
+
+            "latency_ms": latency_ms,
+
+            "result": resultado,
+
+            "invoice": {
+
+                "amount": invoice.amount,
+
+                "currency": invoice.currency,
+
+                "reason": invoice.reason
+            },
+
+            "report": report
+        }
+
     except Exception as e:
 
-        print("BILLING ERROR:", str(e))
+        logger.exception(
+            f"[EXECUTE] pipeline failed "
+            f"trace_id={trace_id}"
+        )
 
-        class DummyInvoice:
-            amount = 0
-            currency = "MXN"
-            reason = "billing_disabled"
+        return JSONResponse(
 
-        invoice = DummyInvoice()
+            status_code=500,
 
-    # ============================================
-    # SAFE NARRATIVE
-    # ============================================
+            content={
 
-    try:
+                "status": "error",
 
-        report = narrative.generar(resultado)
+                "message": "EXECUTION_TEMPORARILY_UNAVAILABLE",
 
-    except Exception as e:
-
-        print("NARRATIVE ERROR:", str(e))
-
-        report = "Narrativa temporalmente no disponible"
-
-    # ============================================
-    # RESPONSE
-    # ============================================
-
-    return {
-        "tenant": tenant.tenant_id,
-
-        "result": resultado,
-
-        "invoice": {
-            "amount": invoice.amount,
-            "currency": invoice.currency,
-            "reason": invoice.reason
-        },
-
-        "report": report
-    }
+                "trace_id": trace_id
+            }
+        )
