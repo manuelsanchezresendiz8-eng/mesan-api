@@ -3,1172 +3,196 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>MESAN Ω — Survival Intelligence LATAM</title>
-
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
 <style>
-
-:root{
-  --bg:#04080F;
-  --surface:rgba(255,255,255,.03);
-  --surface-2:rgba(255,255,255,.05);
-  --border:rgba(255,255,255,.07);
-
-  --cyan:#00D4FF;
-  --green:#00FF9D;
-  --red:#FF3B30;
-  --orange:#FF8C00;
-
-  --text:#F0F4F8;
-  --dim:#6B7A8A;
-
-  --mono:'JetBrains Mono', monospace;
-}
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  background:
-    radial-gradient(circle at top right, rgba(0,212,255,.08), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(255,59,48,.08), transparent 30%),
-    var(--bg);
-
-  color:var(--text);
-  font-family:'Inter', sans-serif;
-  min-height:100vh;
-}
-
-/* ========================================= */
-/* ELITE BAR */
-/* ========================================= */
-
-.elite-bar{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-
-  z-index:999;
-
-  background:rgba(4,8,15,.92);
-  border-bottom:1px solid var(--border);
-
-  padding:10px 24px;
-
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-
-  backdrop-filter:blur(12px);
-
-  font-family:var(--mono);
-  font-size:10px;
-  letter-spacing:1.5px;
-}
-
-.logo{
-  color:var(--cyan);
-  font-weight:700;
-  font-size:12px;
-}
-
-.status{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  color:var(--dim);
-}
-
-.dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:var(--green);
-
-  animation:pulse 1.5s infinite;
-}
-
-@keyframes pulse{
-  0%,100%{opacity:1}
-  50%{opacity:.25}
-}
-
-/* ========================================= */
-/* MAIN */
-/* ========================================= */
-
-.main{
-  max-width:960px;
-  margin:0 auto;
-  padding:80px 20px 40px;
-}
-
-/* ========================================= */
-/* HEADER */
-/* ========================================= */
-
-.header{
-  text-align:center;
-  padding:40px 0 30px;
-}
-
-.header h1{
-  font-family:'Bebas Neue';
-  font-size:clamp(3rem,10vw,6rem);
-  letter-spacing:4px;
-  color:var(--cyan);
-
-  line-height:.95;
-}
-
-.header p{
-  margin-top:10px;
-  color:var(--dim);
-
-  font-size:13px;
-  letter-spacing:2px;
-
-  font-family:var(--mono);
-}
-
-/* ========================================= */
-/* THREAT */
-/* ========================================= */
-
-.threat-banner{
-  background:rgba(255,59,48,.08);
-  border:1px solid rgba(255,59,48,.25);
-
-  color:#FF7B72;
-
-  padding:14px;
-  border-radius:14px;
-
-  margin-bottom:18px;
-
-  text-align:center;
-
-  font-family:var(--mono);
-  font-size:11px;
-  letter-spacing:1px;
-}
-
-.hook{
-  text-align:center;
-
-  color:#B8C5D1;
-
-  line-height:1.8;
-  font-size:14px;
-
-  margin-bottom:30px;
-}
-
-/* ========================================= */
-/* SELECTOR */
-/* ========================================= */
-
-.selector{
-  background:var(--surface);
-
-  border:1px solid var(--border);
-
-  border-radius:18px;
-
-  padding:24px;
-
-  margin-bottom:24px;
-
-  backdrop-filter:blur(10px);
-}
-
-.selector h3{
-  font-family:var(--mono);
-
-  font-size:10px;
-  letter-spacing:2px;
-
-  color:var(--cyan);
-
-  margin-bottom:16px;
-}
-
-.empresas{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:14px;
-}
-
-.empresa-btn{
-  background:var(--surface);
-
-  border:1px solid var(--border);
-
-  border-radius:14px;
-
-  padding:18px;
-
-  cursor:pointer;
-
-  transition:.25s;
-
-  text-align:left;
-}
-
-.empresa-btn:hover{
-  transform:translateY(-2px);
-
-  border-color:rgba(0,212,255,.45);
-
-  background:rgba(0,212,255,.04);
-}
-
-.empresa-btn.active{
-  border-color:var(--cyan);
-
-  background:rgba(0,212,255,.07);
-
-  box-shadow:0 0 25px rgba(0,212,255,.08);
-}
-
-.nombre{
-  font-weight:700;
-  font-size:14px;
-
-  margin-bottom:5px;
-}
-
-.sector{
-  font-family:var(--mono);
-  font-size:10px;
-
-  color:var(--dim);
-}
-
-/* ========================================= */
-/* BUTTON */
-/* ========================================= */
-
-.execute-btn{
-  width:100%;
-
-  border:none;
-  border-radius:14px;
-
-  padding:18px;
-
-  background:linear-gradient(135deg,var(--cyan),#38BDF8);
-
-  color:#001018;
-
-  font-family:var(--mono);
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:1px;
-
-  cursor:pointer;
-
-  transition:.25s;
-
-  margin-bottom:26px;
-}
-
-.execute-btn:hover{
-  transform:translateY(-2px);
-
-  box-shadow:0 0 35px rgba(0,212,255,.28);
-}
-
-.execute-btn:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-  transform:none;
-}
-
-/* ========================================= */
-/* PROGRESS */
-/* ========================================= */
-
-.progress-box{
-  display:none;
-
-  background:var(--surface);
-
-  border:1px solid var(--border);
-
-  border-radius:14px;
-
-  padding:20px;
-
-  margin-bottom:24px;
-}
-
-.progress-bar-track{
-  background:rgba(255,255,255,.06);
-
-  height:4px;
-
-  border-radius:4px;
-
-  overflow:hidden;
-
-  margin-bottom:12px;
-}
-
-.progress-bar-fill{
-  width:0;
-  height:100%;
-
-  background:var(--cyan);
-
-  transition:width .4s;
-}
-
-.progress-text{
-  font-family:var(--mono);
-  font-size:10px;
-  letter-spacing:1px;
-
-  color:var(--dim);
-}
-
-/* ========================================= */
-/* RESULTS */
-/* ========================================= */
-
-.result-box{
-  display:none;
-}
-
-.score-card{
-  background:var(--surface);
-
-  border:1px solid var(--border);
-
-  border-radius:18px;
-
-  padding:28px;
-
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-
-  gap:20px;
-
-  margin-bottom:18px;
-
-  backdrop-filter:blur(10px);
-
-  box-shadow:0 0 40px rgba(0,212,255,.04);
-}
-
-.metric{
-  text-align:center;
-}
-
-.metric .label{
-  font-family:var(--mono);
-
-  font-size:9px;
-  letter-spacing:2px;
-
-  color:var(--dim);
-
-  margin-bottom:8px;
-}
-
-.metric .value{
-  font-family:var(--mono);
-
-  font-size:2.1rem;
-  font-weight:700;
-}
-
-.metric .sub{
-  font-size:11px;
-  color:var(--dim);
-
-  margin-top:4px;
-}
-
-.critico{ color:var(--red); }
-.alto{ color:var(--orange); }
-.medio{ color:var(--cyan); }
-.bajo{ color:var(--green); }
-
-@keyframes pulse-ring{
-  0%,100%{text-shadow:0 0 0 rgba(255,59,48,.45)}
-  50%{text-shadow:0 0 22px rgba(255,59,48,.45)}
-}
-
-.pulse-critical{
-  animation:pulse-ring 1.8s infinite;
-}
-
-/* ========================================= */
-/* CARDS */
-/* ========================================= */
-
-.report-card,
-.actions-card,
-.invoice-card{
-  background:var(--surface);
-
-  border-radius:18px;
-
-  padding:24px;
-
-  margin-bottom:18px;
-
-  border:1px solid var(--border);
-
-  backdrop-filter:blur(10px);
-}
-
-.report-card{
-  border:1px solid rgba(0,212,255,.14);
-}
-
-.report-card h4,
-.actions-card h4{
-  font-family:var(--mono);
-
-  font-size:10px;
-  letter-spacing:2px;
-
-  margin-bottom:14px;
-}
-
-.report-card h4{
-  color:var(--cyan);
-}
-
-.actions-card h4{
-  color:var(--green);
-}
-
-.report-text{
-  color:#CBD5E1;
-
-  line-height:1.9;
-  font-size:13px;
-
-  white-space:pre-wrap;
-}
-
-.action-item{
-  background:rgba(0,255,157,.03);
-
-  border-left:3px solid var(--green);
-
-  padding:12px;
-
-  border-radius:0 10px 10px 0;
-
-  margin-bottom:10px;
-
-  color:#D5DFE8;
-
-  font-size:12px;
-}
-
-.invoice-card{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.inv-label{
-  font-family:var(--mono);
-  font-size:10px;
-  color:var(--dim);
-}
-
-.inv-amount{
-  font-family:var(--mono);
-
-  font-size:1.5rem;
-  font-weight:700;
-
-  color:var(--cyan);
-}
-
-/* ========================================= */
-/* WA */
-/* ========================================= */
-
-.wa-btn{
-  width:100%;
-
-  border:1px solid var(--green);
-
-  background:transparent;
-
-  color:var(--green);
-
-  padding:16px;
-
-  border-radius:14px;
-
-  cursor:pointer;
-
-  font-family:var(--mono);
-  font-size:12px;
-  letter-spacing:1px;
-
-  transition:.25s;
-}
-
-.wa-btn:hover{
-  background:rgba(0,255,157,.05);
-}
-
-/* ========================================= */
-/* ANIMATIONS */
-/* ========================================= */
-
-@keyframes slideUp{
-  from{
-    opacity:0;
-    transform:translateY(14px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-.slide-in{
-  animation:slideUp .45s ease forwards;
-}
-
-/* ========================================= */
-/* MOBILE */
-/* ========================================= */
-
-@media(max-width:640px){
-
-  .elite-bar{
-    padding:10px 14px;
-  }
-
-  .header h1{
-    font-size:3.4rem;
-  }
-
-  .invoice-card{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:14px;
-  }
-}
-
+:root{--bg:#04080F;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.07);--cyan:#00D4FF;--green:#00FF9D;--red:#FF3B30;--orange:#FF8C00;--text:#F0F4F8;--dim:#6B7A8A;--mono:'JetBrains Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:radial-gradient(circle at top right,rgba(0,212,255,.08),transparent 30%),radial-gradient(circle at bottom left,rgba(255,59,48,.08),transparent 30%),var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+.elite-bar{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(4,8,15,.92);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(12px);font-family:var(--mono);font-size:10px;letter-spacing:1.5px;}
+.logo{color:var(--cyan);font-weight:700;font-size:12px;}
+.status{display:flex;align-items:center;gap:6px;color:var(--dim);}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.main{max-width:960px;margin:0 auto;padding:80px 20px 40px;}
+.header{text-align:center;padding:40px 0 30px;}
+.header h1{font-family:'Bebas Neue';font-size:clamp(3rem,10vw,6rem);letter-spacing:4px;color:var(--cyan);line-height:.95;}
+.header p{margin-top:10px;color:var(--dim);font-size:13px;letter-spacing:2px;font-family:var(--mono);}
+.threat-banner{background:rgba(255,59,48,.08);border:1px solid rgba(255,59,48,.25);color:#FF7B72;padding:14px;border-radius:14px;margin-bottom:18px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:1px;}
+.hook{text-align:center;color:#B8C5D1;line-height:1.8;font-size:14px;margin-bottom:30px;}
+.selector{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:24px;}
+.selector h3{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--cyan);margin-bottom:16px;}
+.empresas{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.empresa-btn{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:.25s;text-align:left;}
+.empresa-btn:hover{transform:translateY(-2px);border-color:rgba(0,212,255,.45);background:rgba(0,212,255,.04);}
+.empresa-btn.active{border-color:var(--cyan);background:rgba(0,212,255,.07);box-shadow:0 0 25px rgba(0,212,255,.08);}
+.nombre{font-weight:700;font-size:14px;margin-bottom:5px;}
+.sector{font-family:var(--mono);font-size:10px;color:var(--dim);}
+.execute-btn{width:100%;border:none;border-radius:14px;padding:18px;background:linear-gradient(135deg,var(--cyan),#38BDF8);color:#001018;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:.25s;margin-bottom:26px;}
+.execute-btn:hover{transform:translateY(-2px);box-shadow:0 0 35px rgba(0,212,255,.28);}
+.execute-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+.progress-box{display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:24px;}
+.progress-bar-track{background:rgba(255,255,255,.06);height:4px;border-radius:4px;overflow:hidden;margin-bottom:12px;}
+.progress-bar-fill{width:0;height:100%;background:var(--cyan);transition:width .4s;}
+.progress-text{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--dim);}
+.result-box{display:none;}
+.score-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;margin-bottom:18px;}
+.metric{text-align:center;}
+.metric .label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--dim);margin-bottom:8px;}
+.metric .value{font-family:var(--mono);font-size:2.1rem;font-weight:700;}
+.metric .sub{font-size:11px;color:var(--dim);margin-top:4px;}
+.critico{color:var(--red);}
+.alto{color:var(--orange);}
+.medio{color:var(--cyan);}
+.bajo{color:var(--green);}
+@keyframes pulse-ring{0%,100%{text-shadow:0 0 0 rgba(255,59,48,.45)}50%{text-shadow:0 0 22px rgba(255,59,48,.45)}}
+.pulse-critical{animation:pulse-ring 1.8s infinite;}
+.alertas-card{background:rgba(255,59,48,.05);border:1px solid rgba(255,59,48,.2);border-radius:18px;padding:24px;margin-bottom:18px;}
+.alertas-card h4{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--red);margin-bottom:14px;}
+.alerta-item{display:flex;align-items:center;gap:10px;padding:10px;border-left:3px solid var(--red);background:rgba(255,59,48,.04);border-radius:0 8px 8px 0;margin-bottom:8px;font-size:12px;color:#FFB3B0;}
+.alerta-badge{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:4px;font-weight:700;}
+.badge-critico{background:rgba(255,59,48,.2);color:var(--red);}
+.badge-alto{background:rgba(255,140,0,.2);color:var(--orange);}
+.report-card,.actions-card,.invoice-card{background:var(--surface);border-radius:18px;padding:24px;margin-bottom:18px;border:1px solid var(--border);}
+.report-card{border:1px solid rgba(0,212,255,.14);}
+.report-card h4,.actions-card h4{font-family:var(--mono);font-size:10px;letter-spacing:2px;margin-bottom:14px;}
+.report-card h4{color:var(--cyan);}
+.actions-card h4{color:var(--green);}
+.report-text{color:#CBD5E1;line-height:1.9;font-size:13px;white-space:pre-wrap;}
+.action-item{background:rgba(0,255,157,.03);border-left:3px solid var(--green);padding:12px;border-radius:0 10px 10px 0;margin-bottom:10px;color:#D5DFE8;font-size:12px;}
+.invoice-card{display:flex;justify-content:space-between;align-items:center;}
+.inv-label{font-family:var(--mono);font-size:10px;color:var(--dim);}
+.inv-amount{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--cyan);}
+.wa-btn{width:100%;border:1px solid var(--green);background:transparent;color:var(--green);padding:16px;border-radius:14px;cursor:pointer;font-family:var(--mono);font-size:12px;letter-spacing:1px;transition:.25s;}
+.wa-btn:hover{background:rgba(0,255,157,.05);}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.slide-in{animation:slideUp .45s ease forwards;}
+@media(max-width:640px){.elite-bar{padding:10px 14px;}.header h1{font-size:3.4rem;}.invoice-card{flex-direction:column;align-items:flex-start;gap:14px;}}
 </style>
 </head>
-
 <body>
-
-<!-- ========================================= -->
-<!-- ELITE BAR -->
-<!-- ========================================= -->
-
 <div class="elite-bar">
-
-  <span class="logo">
-    MESAN Ω ENTERPRISE
-  </span>
-
-  <span class="status">
-    <span class="dot"></span>
-    <span id="elite-time"></span>
-  </span>
-
-  <span style="color:var(--dim)">
-    SECURE · ENCRYPTED · LIVE
-  </span>
-
+  <span class="logo">MESAN Ω ENTERPRISE</span>
+  <span class="status"><span class="dot"></span><span id="elite-time"></span></span>
+  <span style="color:var(--dim)">SECURE · ENCRYPTED · LIVE</span>
 </div>
-
-<!-- ========================================= -->
-<!-- MAIN -->
-<!-- ========================================= -->
-
 <div class="main">
-
   <div class="header">
-
-    <h1>
-      SURVIVAL INTELLIGENCE
-    </h1>
-
-    <p>
-      ENTERPRISE SURVIVAL OS · LATAM
-    </p>
-
+    <h1>SURVIVAL INTELLIGENCE</h1>
+    <p>ENTERPRISE SURVIVAL OS · LATAM</p>
   </div>
-
-  <div class="threat-banner">
-    ⚠ 73% DE LAS PyMES LATAM NO SOBREVIVEN CRISIS DE LIQUIDEZ + SAT + LABORAL
-  </div>
-
-  <p class="hook">
-    MESAN Ω detecta deterioro financiero, exposición SAT/IMSS y riesgo operativo antes del colapso empresarial.
-  </p>
-
-  <!-- SELECTOR -->
-
+  <div class="threat-banner">⚠ 73% DE LAS PyMES LATAM NO SOBREVIVEN CRISIS DE LIQUIDEZ + SAT + LABORAL</div>
+  <p class="hook">MESAN Ω detecta deterioro financiero, exposición SAT/IMSS y riesgo operativo antes del colapso empresarial.</p>
   <div class="selector">
-
-    <h3>
-      SELECCIONAR ESCENARIO EMPRESARIAL
-    </h3>
-
+    <h3>SELECCIONAR ESCENARIO EMPRESARIAL</h3>
     <div class="empresas">
-
-      <div class="empresa-btn active"
-           onclick="seleccionar(this,'embotelladora')">
-
-        <div class="nombre">
-          Embotelladora Regional
-        </div>
-
-        <div class="sector">
-          CONSUMO MASIVO · LATAM
-        </div>
-
+      <div class="empresa-btn active" onclick="seleccionar(this,'embotelladora')">
+        <div class="nombre">Embotelladora Regional</div>
+        <div class="sector">CONSUMO MASIVO · LATAM</div>
       </div>
-
-      <div class="empresa-btn"
-           onclick="seleccionar(this,'logistica')">
-
-        <div class="nombre">
-          Grupo Logístico
-        </div>
-
-        <div class="sector">
-          TRANSPORTE · 62 EMPLEADOS
-        </div>
-
+      <div class="empresa-btn" onclick="seleccionar(this,'logistica')">
+        <div class="nombre">Grupo Logístico</div>
+        <div class="sector">TRANSPORTE · 62 EMPLEADOS</div>
       </div>
-
-      <div class="empresa-btn"
-           onclick="seleccionar(this,'manufactura')">
-
-        <div class="nombre">
-          Manufactura Industrial
-        </div>
-
-        <div class="sector">
-          MANUFACTURA · MID MARKET
-        </div>
-
+      <div class="empresa-btn" onclick="seleccionar(this,'manufactura')">
+        <div class="nombre">Manufactura Industrial</div>
+        <div class="sector">MANUFACTURA · MID MARKET</div>
       </div>
-
+      <div class="empresa-btn" onclick="seleccionar(this,'tims')">
+        <div class="nombre">TIMS Otay</div>
+        <div class="sector">MAQUILADORA · TIJUANA</div>
+      </div>
     </div>
-
   </div>
-
-  <!-- BUTTON -->
-
-  <button class="execute-btn"
-          onclick="ejecutar()"
-          id="exec-btn">
-
-    ⚡ DETECTAR RIESGO DE COLAPSO EMPRESARIAL
-
-  </button>
-
-  <!-- PROGRESS -->
-
-  <div class="progress-box"
-       id="progress-box">
-
-    <div class="progress-bar-track">
-      <div class="progress-bar-fill"
-           id="prog-fill"></div>
-    </div>
-
-    <div class="progress-text"
-         id="prog-text">
-
-      Inicializando Survival Intelligence...
-
-    </div>
-
+  <button class="execute-btn" onclick="ejecutar()" id="exec-btn">⚡ DETECTAR RIESGO DE COLAPSO EMPRESARIAL</button>
+  <div class="progress-box" id="progress-box">
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-fill"></div></div>
+    <div class="progress-text" id="prog-text">Inicializando Survival Intelligence...</div>
   </div>
-
-  <!-- RESULT -->
-
-  <div class="result-box"
-       id="result-box"></div>
-
+  <div class="result-box" id="result-box"></div>
 </div>
-
 <script>
-
-/* ========================================= */
-/* API */
-/* ========================================= */
-
-const API =
-  window.location.origin.includes("localhost")
-    ? "http://localhost:8000"
-    : "https://mesan-api.onrender.com";
-
-/* ========================================= */
-/* PAYLOADS */
-/* ========================================= */
+const API = window.location.origin.includes("localhost") ? "http://localhost:8000" : "https://mesan-api.onrender.com";
 
 const PAYLOADS = {
-
-  embotelladora: {
-
-    empresa:"Grupo Embotellador LATAM",
-
-    ingresos:8500000,
-    nomina:2100000,
-    gastos:1800000,
-    deuda_mensual:950000,
-
-    isr_retenido:620000,
-    iva:480000,
-
-    trabajadores:180,
-    trabajadores_sin_imss:12,
-
-    cartera_vencida:3200000,
-
-    bloqueo_bancario:false,
-    repse_suspendido:false
-  },
-
-  logistica: {
-
-    empresa:"Grupo Logistico Norte",
-
-    ingresos:1800000,
-    nomina:740000,
-    gastos:550000,
-    deuda_mensual:320000,
-
-    isr_retenido:410000,
-    iva:620000,
-
-    trabajadores:62,
-    trabajadores_sin_imss:14,
-
-    cartera_vencida:2400000,
-
-    bloqueo_bancario:false,
-    repse_suspendido:false
-  },
-
-  manufactura: {
-
-    empresa:"Manufactura Industrial MX",
-
-    ingresos:4200000,
-    nomina:1400000,
-    gastos:980000,
-    deuda_mensual:650000,
-
-    isr_retenido:280000,
-    iva:190000,
-
-    trabajadores:95,
-    trabajadores_sin_imss:8,
-
-    cartera_vencida:1100000,
-
-    bloqueo_bancario:false,
-    repse_suspendido:true
-  }
+  embotelladora:{empresa:"Grupo Embotellador LATAM",ingresos:8500000,nomina:2100000,gastos:1800000,deuda_mensual:950000,isr_retenido:620000,iva:480000,trabajadores:180,trabajadores_sin_imss:12,cartera_vencida:3200000,bloqueo_bancario:false,repse_suspendido:false,opinion_sat:"POSITIVA",opinion_imss:"POSITIVA"},
+  logistica:{empresa:"Grupo Logistico Norte",ingresos:1800000,nomina:740000,gastos:550000,deuda_mensual:320000,isr_retenido:410000,iva:620000,trabajadores:62,trabajadores_sin_imss:14,cartera_vencida:2400000,bloqueo_bancario:false,repse_suspendido:false,opinion_sat:"NO_LOCALIZADA",opinion_imss:"NEGATIVA"},
+  manufactura:{empresa:"Manufactura Industrial MX",ingresos:4200000,nomina:1400000,gastos:980000,deuda_mensual:650000,isr_retenido:280000,iva:190000,trabajadores:95,trabajadores_sin_imss:8,cartera_vencida:1100000,bloqueo_bancario:false,repse_suspendido:true,opinion_sat:"NEGATIVA",opinion_imss:"NO_LOCALIZADA"},
+  tims:{empresa:"TIMS Otay Tijuana",ingresos:2800000,nomina:1200000,gastos:850000,deuda_mensual:420000,isr_retenido:380000,iva:290000,trabajadores:30,trabajadores_sin_imss:30,cartera_vencida:800000,bloqueo_bancario:false,repse_suspendido:false,opinion_sat:"NEGATIVA",opinion_imss:"NEGATIVA"}
 };
-
-/* ========================================= */
-/* STATE */
-/* ========================================= */
 
 let empresaActual = "embotelladora";
 
-/* ========================================= */
-/* SELECT */
-/* ========================================= */
-
 function seleccionar(el,key){
-
-  document
-    .querySelectorAll(".empresa-btn")
-    .forEach(btn => btn.classList.remove("active"));
-
-  el.classList.add("active");
-
-  empresaActual = key;
-
-  const rbox = document.getElementById("result-box");
-
-  rbox.style.display = "none";
-  rbox.innerHTML = "";
+  document.querySelectorAll(".empresa-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active"); empresaActual=key;
+  const r=document.getElementById("result-box"); r.style.display="none"; r.innerHTML="";
 }
 
-/* ========================================= */
-/* STAGES */
-/* ========================================= */
-
-const ETAPAS = [
-
-  "Inicializando Survival Intelligence...",
-
-  "Detectando deterioro financiero...",
-
-  "Analizando presión SAT / IMSS...",
-
-  "Calculando exposición operativa...",
-
-  "Evaluando supervivencia empresarial...",
-
-  "Generando decisión ejecutiva..."
-];
-
-/* ========================================= */
-/* EXECUTE */
-/* ========================================= */
+const ETAPAS=["Inicializando Survival Intelligence...","Detectando deterioro financiero...","Analizando presión SAT / IMSS...","Calculando exposición operativa...","Evaluando supervivencia empresarial...","Generando decisión ejecutiva..."];
 
 async function ejecutar(){
-
-  const btn  = document.getElementById("exec-btn");
-  const pbox = document.getElementById("progress-box");
-  const fill = document.getElementById("prog-fill");
-  const ptxt = document.getElementById("prog-text");
-  const rbox = document.getElementById("result-box");
-
-  btn.disabled = true;
-
-  rbox.style.display = "none";
-  rbox.innerHTML = "";
-
-  pbox.style.display = "block";
-
-  let idx = 0;
-
-  const interval = setInterval(() => {
-
-    idx++;
-
-    fill.style.width = Math.min(idx * 15, 85) + "%";
-
-    if(ETAPAS[idx]){
-      ptxt.textContent = ETAPAS[idx];
-    }
-
-    if(idx >= ETAPAS.length){
-      clearInterval(interval);
-    }
-
-  },500);
-
+  const btn=document.getElementById("exec-btn"),pbox=document.getElementById("progress-box"),fill=document.getElementById("prog-fill"),ptxt=document.getElementById("prog-text"),rbox=document.getElementById("result-box");
+  btn.disabled=true; rbox.style.display="none"; rbox.innerHTML=""; pbox.style.display="block";
+  let idx=0;
+  const interval=setInterval(()=>{idx++;fill.style.width=Math.min(idx*15,85)+"%";if(ETAPAS[idx])ptxt.textContent=ETAPAS[idx];if(idx>=ETAPAS.length)clearInterval(interval);},500);
   try{
-
-    const response = await fetch(
-      API + "/execute",
-      {
-        method:"POST",
-
-        headers:{
-          "Content-Type":"application/json",
-          "Authorization":"Bearer jwt_not_installed_tenant_1",
-          "X-Tenant-ID":"tenant_1"
-        },
-
-        body:JSON.stringify(
-          PAYLOADS[empresaActual]
-        )
-      }
-    );
-
-    clearInterval(interval);
-
-    fill.style.width = "100%";
-
-    ptxt.textContent =
-      "Diagnóstico completado.";
-
-    setTimeout(() => {
-
-      pbox.style.display = "none";
-
-      btn.disabled = false;
-
-    },600);
-
-    if(response.ok){
-
-      const data = await response.json();
-
-      renderResultado(data,rbox);
-
-    }else{
-
-      renderError(response.status,rbox);
-    }
-
-  }catch(e){
-
-    clearInterval(interval);
-
-    pbox.style.display = "none";
-
-    btn.disabled = false;
-
-    renderError("CONNECTION_ERROR",rbox);
-  }
+    const response=await fetch(API+"/execute",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer jwt_not_installed_tenant_1","X-Tenant-ID":"tenant_1"},body:JSON.stringify(PAYLOADS[empresaActual])});
+    clearInterval(interval); fill.style.width="100%"; ptxt.textContent="Diagnóstico completado.";
+    setTimeout(()=>{pbox.style.display="none";btn.disabled=false;},600);
+    if(response.ok){const data=await response.json();renderResultado(data,rbox);}
+    else{renderError(response.status,rbox);}
+  }catch(e){clearInterval(interval);pbox.style.display="none";btn.disabled=false;console.error("MESAN ERROR:",e);renderError(e.message||"CONNECTION_ERROR",rbox);}
 }
-
-/* ========================================= */
-/* RENDER RESULT */
-/* ========================================= */
 
 function renderResultado(data,rbox){
+  const r=data.result||{};
+  const score=r.score||72,nivel=(r.nivel||"ALTO").toUpperCase(),dias=r.dias_supervivencia||18,flujo=r.flujo_operativo||0;
+  const inv=data.invoice||{},report=data.report||"";
+  const alertas=r.alertas||[];
+  const acciones=r.acciones_hoy||["Proteger flujo operativo","Renegociar deuda","Ejecutar cobranza"];
+  const colores={CRITICO:"critico",EXTREMO:"critico",ALTO:"alto",MEDIO:"medio",BAJO:"bajo"};
+  const cls=colores[nivel]||"medio";
+  const pulsar=nivel==="CRITICO"||nivel==="EXTREMO"?"pulse-critical":"";
 
-  const r      = data.result || {};
+  const alertasHTML = alertas.length > 0 ? `
+    <div class="alertas-card slide-in">
+      <h4>🚨 ALERTAS DETECTADAS</h4>
+      ${alertas.map(a=>`
+        <div class="alerta-item">
+          <span class="alerta-badge badge-${a.nivel?.toLowerCase()||'alto'}">${a.tipo||'ALERTA'}</span>
+          <span>${a.mensaje||a}</span>
+        </div>
+      `).join("")}
+    </div>` : "";
 
-  const score  = r.score || 72;
-
-  const nivel  = (r.nivel || "HIGH").toUpperCase();
-
-  const dias   = r.dias_supervivencia || 18;
-
-  const flujo  = r.flujo_operativo || 0;
-
-  const inv    = data.invoice || {};
-
-  const report = data.report || "";
-
-  const colores = {
-
-    CRITICO:"critico",
-    ALTO:"alto",
-    MEDIO:"medio",
-    BAJO:"bajo",
-
-    HIGH:"alto",
-    LOW:"bajo"
-  };
-
-  const cls = colores[nivel] || "medio";
-
-  const pulsar =
-    nivel === "CRITICO"
-      ? "pulse-critical"
-      : "";
-
-  const acciones =
-    r.acciones_hoy || [
-      "Proteger flujo operativo crítico",
-      "Renegociar deuda bancaria",
-      "Ejecutar contención de gasto"
-    ];
-
-  rbox.innerHTML = `
-
+  rbox.innerHTML=`
   <div class="slide-in">
-
     <div class="score-card">
-
-      <div class="metric">
-
-        <div class="label">
-          SCORE RIESGO
-        </div>
-
-        <div class="value ${cls} ${pulsar}">
-          ${score}%
-        </div>
-
-        <div class="sub">
-          ${nivel}
-        </div>
-
-      </div>
-
-      <div class="metric">
-
-        <div class="label">
-          DÍAS SUPERVIVENCIA
-        </div>
-
-        <div class="value ${dias < 30 ? 'critico' : 'medio'}">
-          ${dias}
-        </div>
-
-        <div class="sub">
-          días estimados
-        </div>
-
-      </div>
-
-      <div class="metric">
-
-        <div class="label">
-          FLUJO OPERATIVO
-        </div>
-
-        <div class="value ${flujo < 0 ? 'critico' : 'bajo'}">
-
-          ${flujo < 0 ? '-' : ''}
-
-          $${Math.abs(flujo).toLocaleString('es-MX')}
-
-        </div>
-
-        <div class="sub">
-          MXN mensual
-        </div>
-
-      </div>
-
+      <div class="metric"><div class="label">SCORE RIESGO</div><div class="value ${cls} ${pulsar}">${score}%</div><div class="sub">${nivel}</div></div>
+      <div class="metric"><div class="label">DÍAS SUPERVIVENCIA</div><div class="value ${dias<30?'critico':'medio'}">${dias}</div><div class="sub">días estimados</div></div>
+      <div class="metric"><div class="label">FLUJO OPERATIVO</div><div class="value ${flujo<0?'critico':'bajo'}">${flujo<0?'-':''}$${Math.abs(flujo).toLocaleString('es-MX')}</div><div class="sub">MXN mensual</div></div>
     </div>
-
-    <div class="report-card">
-
-      <h4>
-        ANÁLISIS EJECUTIVO MESAN Ω
-      </h4>
-
-      <div class="report-text">
-${report}
-      </div>
-
-    </div>
-
-    <div class="actions-card">
-
-      <h4>
-        ACCIONES EJECUTIVAS INMEDIATAS
-      </h4>
-
-      ${acciones
-        .map(a => `
-          <div class="action-item">
-            ${a}
-          </div>
-        `)
-        .join("")}
-
-    </div>
-
+    ${alertasHTML}
+    <div class="report-card"><h4>ANÁLISIS EJECUTIVO MESAN Ω</h4><div class="report-text">${report}</div></div>
+    <div class="actions-card"><h4>ACCIONES EJECUTIVAS INMEDIATAS</h4>${acciones.map(a=>`<div class="action-item">${a}</div>`).join("")}</div>
     <div class="invoice-card">
-
-      <div>
-
-        <div class="inv-label">
-          DIAGNÓSTICO ENTERPRISE
-        </div>
-
-        <div style="font-size:11px;color:var(--dim);margin-top:4px;">
-          ${inv.reason || "EXECUTION_DECISION"}
-        </div>
-
-      </div>
-
-      <div>
-
-        <div class="inv-label">
-          COSTO ANÁLISIS
-        </div>
-
-        <div class="inv-amount">
-          $${(inv.amount || 0).toFixed(2)}
-          ${inv.currency || "MXN"}
-        </div>
-
-      </div>
-
+      <div><div class="inv-label">DIAGNÓSTICO ENTERPRISE</div><div style="font-size:11px;color:var(--dim);margin-top:4px;">${inv.reason||"EXECUTION_DECISION"}</div></div>
+      <div><div class="inv-label">COSTO ANÁLISIS</div><div class="inv-amount">$${(inv.amount||0).toFixed(2)} ${inv.currency||"MXN"}</div></div>
     </div>
-
-    <button class="wa-btn"
-            onclick="abrirWA()">
-
-      SOLICITAR CONSULTOR MESAN Ω →
-
-    </button>
-
-  </div>
-  `;
-
-  rbox.style.display = "block";
+    <button class="wa-btn" onclick="abrirWA()">SOLICITAR CONSULTOR MESAN Ω →</button>
+  </div>`;
+  rbox.style.display="block";
 }
-
-/* ========================================= */
-/* ERROR */
-/* ========================================= */
 
 function renderError(code,rbox){
-
-  rbox.innerHTML = `
-
-  <div class="report-card slide-in">
-
-    <h4>
-      ERROR DE CONEXIÓN
-    </h4>
-
-    <div class="report-text"
-         style="color:var(--red)">
-
-      Error ${code}
-      — verifica conexión con servidor MESAN Ω.
-
-    </div>
-
-  </div>
-  `;
-
-  rbox.style.display = "block";
+  rbox.innerHTML=`<div class="report-card slide-in"><h4>ERROR DE CONEXIÓN</h4><div class="report-text" style="color:var(--red)">Error ${code} — verifica conexión con servidor MESAN Ω.</div></div>`;
+  rbox.style.display="block";
 }
 
-/* ========================================= */
-/* WHATSAPP */
-/* ========================================= */
+function abrirWA(){window.open("https://wa.me/526861234567?text=MESAN%20Omega%20detectó%20riesgo%20operativo%20en%20mi%20empresa.%20Solicito%20evaluación%20ejecutiva.","_blank");}
 
-function abrirWA(){
-
-  window.open(
-    "https://wa.me/526861234567?text=MESAN%20Omega%20detect%C3%B3%20riesgo%20operativo%20en%20mi%20empresa.%20Solicito%20evaluaci%C3%B3n%20ejecutiva.",
-    "_blank"
-  );
-}
-
-/* ========================================= */
-/* CLOCK */
-/* ========================================= */
-
-setInterval(() => {
-
-  const el =
-    document.getElementById("elite-time");
-
-  if(el){
-
-    el.textContent =
-      new Date().toLocaleTimeString(
-        "es-MX",
-        {hour12:false}
-      );
-  }
-
-},1000);
-
+setInterval(()=>{const el=document.getElementById("elite-time");if(el)el.textContent=new Date().toLocaleTimeString("es-MX",{hour12:false});},1000);
 </script>
-
 </body>
 </html>
