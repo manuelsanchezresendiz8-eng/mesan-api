@@ -2,7 +2,7 @@
 # MESAN Omega Fiscal Sentinel Engine v2.1
 
 import logging
-
+import time
 
 from datetime import datetime, timezone
 
@@ -15,13 +15,7 @@ class FiscalSentinelEngine:
 
         self.version = "2.1"
 
-        self.engine = "MESAN_FISCAL_SENTINEL"
-
         self.regulatory_version = "SAT_IMSS_2026_01"
-
-    # =========================================================
-    # HELPERS
-    # =========================================================
 
     @staticmethod
     def to_bool(value):
@@ -37,27 +31,17 @@ class FiscalSentinelEngine:
     def safe_float(value, default=0.0):
 
         try:
-
             return float(value)
-
         except Exception:
-
             return default
 
     @staticmethod
     def safe_int(value, default=0):
 
         try:
-
             return int(value)
-
         except Exception:
-
             return default
-
-    # =========================================================
-    # ENGINE
-    # =========================================================
 
     def analizar(self, data: dict):
 
@@ -73,76 +57,42 @@ class FiscalSentinelEngine:
             "NO_TRACE"
         )
 
-        logger.info(
-            f"[FISCAL] analysis started "
-            f"tenant={tenant_id} "
-            f"trace_id={trace_id}"
-        )
-
         score = 0
 
         alertas = []
 
         recomendaciones = []
 
-        # =====================================================
-        # NORMALIZATION
-        # =====================================================
-
-        ingresos = max(
-            self.safe_float(
-                data.get("ingresos")
-            ),
-            0
+        ingresos = self.safe_float(
+            data.get("ingresos")
         )
 
-        gastos = max(
-            self.safe_float(
-                data.get("gastos")
-            ),
-            0
+        gastos = self.safe_float(
+            data.get("gastos")
         )
 
-        iva = max(
-            self.safe_float(
-                data.get("iva")
-            ),
-            0
+        iva = self.safe_float(
+            data.get("iva")
         )
 
-        isr = max(
-            self.safe_float(
-                data.get("isr_retenido")
-            ),
-            0
+        isr = self.safe_float(
+            data.get("isr_retenido")
         )
 
-        deuda = max(
-            self.safe_float(
-                data.get("deuda_mensual")
-            ),
-            0
+        deuda = self.safe_float(
+            data.get("deuda_mensual")
         )
 
-        cartera = max(
-            self.safe_float(
-                data.get("cartera_vencida")
-            ),
-            0
+        cartera = self.safe_float(
+            data.get("cartera_vencida")
         )
 
-        empleados = max(
-            self.safe_int(
-                data.get("trabajadores")
-            ),
-            0
+        empleados = self.safe_int(
+            data.get("trabajadores")
         )
 
-        sin_imss = max(
-            self.safe_int(
-                data.get("trabajadores_sin_imss")
-            ),
-            0
+        sin_imss = self.safe_int(
+            data.get("trabajadores_sin_imss")
         )
 
         repse = self.to_bool(
@@ -153,20 +103,11 @@ class FiscalSentinelEngine:
             data.get("bloqueo_bancario")
         )
 
-        # =====================================================
-        # CALCULATIONS
-        # =====================================================
-
         flujo = ingresos - gastos - deuda
 
-        exposicion_estimada = round(
-            (iva + isr + deuda) * 1.35,
-            2
-        )
-
-        # =====================================================
-        # LIQUIDITY
-        # =====================================================
+        # ====================================================
+        # LIQUIDEZ
+        # ====================================================
 
         if flujo < 0:
 
@@ -182,50 +123,53 @@ class FiscalSentinelEngine:
                 "Ejecutar contención inmediata de gasto"
             )
 
-        # =====================================================
-        # SAT PRESSURE
-        # =====================================================
+        # ====================================================
+        # SAT
+        # ====================================================
 
-        if ingresos > 0 and (
-            (iva + isr) > ingresos * 0.25
-        ):
+        carga_fiscal = iva + isr
 
-            score += 15
+        if ingresos > 0:
 
-            alertas.append({
-                "tipo": "SAT",
-                "nivel": "ALTO",
-                "mensaje": "Presión fiscal elevada"
-            })
+            if carga_fiscal > ingresos * 0.25:
 
-            recomendaciones.append(
-                "Reestructurar estrategia fiscal y flujo tributario"
-            )
+                score += 15
 
-        # =====================================================
+                alertas.append({
+                    "tipo": "SAT",
+                    "nivel": "ALTO",
+                    "mensaje": "Presión fiscal elevada"
+                })
+
+                recomendaciones.append(
+                    "Reestructurar estrategia fiscal"
+                )
+
+        # ====================================================
         # IMSS
-        # =====================================================
+        # ====================================================
 
-        if (
-            empleados > 0 and
-            (sin_imss / empleados) > 0.10
-        ):
+        if empleados > 0:
 
-            score += 18
+            ratio_imss = sin_imss / empleados
 
-            alertas.append({
-                "tipo": "IMSS",
-                "nivel": "CRITICO",
-                "mensaje": "Plantilla laboral fuera de IMSS"
-            })
+            if ratio_imss > 0.10:
 
-            recomendaciones.append(
-                "Regularizar plantilla laboral inmediatamente"
-            )
+                score += 18
 
-        # =====================================================
+                alertas.append({
+                    "tipo": "IMSS",
+                    "nivel": "CRITICO",
+                    "mensaje": "Plantilla fuera de IMSS"
+                })
+
+                recomendaciones.append(
+                    "Regularizar plantilla laboral"
+                )
+
+        # ====================================================
         # REPSE
-        # =====================================================
+        # ====================================================
 
         if repse:
 
@@ -241,9 +185,9 @@ class FiscalSentinelEngine:
                 "Ejecutar recuperación REPSE urgente"
             )
 
-        # =====================================================
-        # BANKING
-        # =====================================================
+        # ====================================================
+        # BLOQUEO
+        # ====================================================
 
         if bloqueo:
 
@@ -256,56 +200,54 @@ class FiscalSentinelEngine:
             })
 
             recomendaciones.append(
-                "Activar protocolo de supervivencia financiera"
+                "Activar protocolo financiero"
             )
 
-        # =====================================================
-        # COLLECTIONS
-        # =====================================================
+        # ====================================================
+        # CARTERA
+        # ====================================================
 
-        if ingresos > 0 and cartera > ingresos:
+        if ingresos > 0:
 
-            score += 12
+            if cartera > ingresos:
 
-            alertas.append({
-                "tipo": "COBRANZA",
-                "nivel": "ALTO",
-                "mensaje": "Cartera vencida superior a ingresos"
-            })
+                score += 12
 
-            recomendaciones.append(
-                "Ejecutar recuperación agresiva de cobranza"
-            )
+                alertas.append({
+                    "tipo": "COBRANZA",
+                    "nivel": "ALTO",
+                    "mensaje": "Cartera vencida crítica"
+                })
 
-        # =====================================================
-        # DEBT
-        # =====================================================
+                recomendaciones.append(
+                    "Recuperar cobranza urgente"
+                )
 
-        if ingresos > 0 and (
-            deuda > ingresos * 0.45
-        ):
+        # ====================================================
+        # DEUDA
+        # ====================================================
 
-            score += 15
+        if ingresos > 0:
 
-            alertas.append({
-                "tipo": "DEUDA",
-                "nivel": "CRITICO",
-                "mensaje": "Presión de deuda mensual crítica"
-            })
+            if deuda > ingresos * 0.45:
 
-            recomendaciones.append(
-                "Renegociar deuda bancaria y proteger liquidez"
-            )
+                score += 15
 
-        # =====================================================
-        # SCORE CAP
-        # =====================================================
+                alertas.append({
+                    "tipo": "DEUDA",
+                    "nivel": "CRITICO",
+                    "mensaje": "Presión bancaria crítica"
+                })
+
+                recomendaciones.append(
+                    "Renegociar deuda bancaria"
+                )
+
+        # ====================================================
+        # SCORE
+        # ====================================================
 
         score = min(score, 100)
-
-        # =====================================================
-        # LEVELS
-        # =====================================================
 
         if score >= 90:
 
@@ -327,31 +269,19 @@ class FiscalSentinelEngine:
 
             nivel = "BAJO"
 
-        # =====================================================
-        # LATENCY
-        # =====================================================
-
         latency_ms = round(
             (time.time() - started) * 1000,
             2
         )
 
-        logger.info(
-            f"[FISCAL] analysis completed "
-            f"tenant={tenant_id} "
-            f"trace_id={trace_id} "
-            f"score={score} "
-            f"nivel={nivel} "
-            f"latency_ms={latency_ms}"
+        exposicion = round(
+            (iva + isr + deuda) * 1.35,
+            2
         )
-
-        # =====================================================
-        # RESPONSE
-        # =====================================================
 
         return {
 
-            "engine": self.engine,
+            "engine": "MESAN_FISCAL_SENTINEL",
 
             "engine_status": "OK",
 
@@ -360,9 +290,10 @@ class FiscalSentinelEngine:
             "regulatory_version":
                 self.regulatory_version,
 
-            "timestamp": datetime.now(
-                timezone.utc
-            ).isoformat(),
+            "timestamp":
+                datetime.now(
+                    timezone.utc
+                ).isoformat(),
 
             "tenant_id": tenant_id,
 
@@ -379,7 +310,7 @@ class FiscalSentinelEngine:
                 "flujo_operativo": flujo,
 
                 "exposicion_estimada":
-                    exposicion_estimada,
+                    exposicion,
 
                 "alertas": alertas,
 
