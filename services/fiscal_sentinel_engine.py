@@ -2,7 +2,7 @@
 # MESAN Omega Fiscal Sentinel Engine v2.1
 
 import logging
-import ngi
+
 
 from datetime import datetime, timezone
 
