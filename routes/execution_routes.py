@@ -1,9 +1,9 @@
-# routes/execution_routes.py
-# MESAN Omega Execution Routes v1.6
+# routes/execution_routes.py -- MESAN Omega Execution Routes v1.8
 
 import os
 import time
 import logging
+import traceback
 
 from datetime import datetime, timezone
 
@@ -34,7 +34,6 @@ router = APIRouter()
 logger = logging.getLogger("mesan.execute")
 
 ENV = os.getenv("ENV", "development").lower()
-
 
 # ============================================================
 # PAYLOAD
@@ -86,22 +85,18 @@ class ExecutePayload(BaseModel):
 # ============================================================
 
 @router.post("/execute")
-async def execute(
-    payload: ExecutePayload,
-    request: Request
-):
+async def execute(payload: ExecutePayload, request: Request):
 
     started = time.time()
 
     trace_id = f"exec-{int(started * 1000)}"
 
     logger.info(
-        f"[EXECUTE] request received "
-        f"trace_id={trace_id}"
+        f"[EXECUTE] request received trace_id={trace_id}"
     )
 
     # ========================================================
-    # TENANT RESOLUTION
+    # TENANT
     # ========================================================
 
     tenant = get_tenant()
@@ -133,15 +128,10 @@ async def execute(
 
     try:
 
-        # ====================================================
-        # NORMALIZED DATA
-        # ====================================================
-
         data = payload.model_dump()
 
         data["tenant_id"] = tenant.tenant_id
-
-        data["trace_id"] = trace_id
+        data["trace_id"]  = trace_id
 
         # ====================================================
         # FISCAL ENGINE
@@ -183,9 +173,12 @@ async def execute(
 
         except Exception as e:
 
-            logger.exception(
-                f"[EXECUTE] fiscal engine failed "
-                f"trace_id={trace_id}"
+            logger.warning(
+                f"[EXECUTE] fiscal engine error: {e}"
+            )
+
+            logger.warning(
+                traceback.format_exc()
             )
 
             score = 72
@@ -193,7 +186,11 @@ async def execute(
             flujo = 0
 
             alertas = [
-                "Fiscal engine temporalmente degradado"
+                {
+                    "tipo": "ENGINE",
+                    "nivel": "ALTO",
+                    "mensaje": "Fiscal engine temporalmente degradado"
+                }
             ]
 
             recomendaciones = [
@@ -207,35 +204,31 @@ async def execute(
         try:
 
             compliance = (
-                ComplianceVerifyEngine()
-                .calcular_score(
-                    repse_vigente=(
-                        not payload.repse_suspendido
-                    ),
+                ComplianceVerifyEngine().calcular_score(
+                    repse_vigente=not payload.repse_suspendido,
                     opinion_sat=payload.opinion_sat,
-                    opinion_imss=payload.opinion_imss,
-                    tenant_id=tenant.tenant_id,
-                    trace_id=trace_id
+                    opinion_imss=payload.opinion_imss
                 )
             )
 
-        except Exception:
+        except Exception as e:
 
-            logger.exception(
-                f"[EXECUTE] compliance engine failed "
-                f"trace_id={trace_id}"
+            logger.warning(
+                f"[EXECUTE] compliance error: {e}"
+            )
+
+            logger.warning(
+                traceback.format_exc()
             )
 
             compliance = {
                 "score_compliance": 100,
                 "nivel": "SEGURO",
-                "alertas": [
-                    "Compliance engine unavailable"
-                ]
+                "alertas": []
             }
 
         # ====================================================
-        # SURVIVAL DAYS
+        # DIAS SUPERVIVENCIA
         # ====================================================
 
         ingresos = max(
@@ -259,18 +252,23 @@ async def execute(
         # DSCR
         # ====================================================
 
-        deuda = max(
-            float(data.get("deuda_mensual", 0)),
-            1
+        deuda = float(
+            data.get("deuda_mensual", 0)
         )
 
-        dscr = round(
-            flujo / deuda,
-            2
-        )
+        if deuda <= 0:
+
+            dscr = flujo
+
+        else:
+
+            dscr = round(
+                flujo / deuda,
+                2
+            )
 
         # ====================================================
-        # RESULT
+        # RESULTADO
         # ====================================================
 
         resultado = {
@@ -291,23 +289,20 @@ async def execute(
 
             "compliance": {
 
-                "score":
-                    compliance.get(
-                        "score_compliance",
-                        100
-                    ),
+                "score": compliance.get(
+                    "score_compliance",
+                    100
+                ),
 
-                "nivel":
-                    compliance.get(
-                        "nivel",
-                        "SEGURO"
-                    ),
+                "nivel": compliance.get(
+                    "nivel",
+                    "SEGURO"
+                ),
 
-                "alertas":
-                    compliance.get(
-                        "alertas",
-                        []
-                    )
+                "alertas": compliance.get(
+                    "alertas",
+                    []
+                )
             },
 
             "acciones_hoy": [
@@ -345,8 +340,11 @@ async def execute(
         try:
 
             AuditLog().log(
+
                 tenant_id=tenant.tenant_id,
+
                 event_type="EXECUTION",
+
                 payload={
                     "trace_id": trace_id,
                     "score": score,
@@ -354,11 +352,10 @@ async def execute(
                 }
             )
 
-        except Exception:
+        except Exception as e:
 
-            logger.exception(
-                f"[EXECUTE] audit failed "
-                f"trace_id={trace_id}"
+            logger.warning(
+                f"[EXECUTE] audit error: {e}"
             )
 
         # ====================================================
@@ -368,16 +365,18 @@ async def execute(
         try:
 
             invoice = BillingEngine().charge(
+
                 tenant_id=tenant.tenant_id,
+
                 operation="EXECUTION_DECISION",
+
                 risk_score=score
             )
 
-        except Exception:
+        except Exception as e:
 
-            logger.exception(
-                f"[EXECUTE] billing failed "
-                f"trace_id={trace_id}"
+            logger.warning(
+                f"[EXECUTE] billing error: {e}"
             )
 
             class DummyInvoice:
@@ -408,11 +407,10 @@ async def execute(
                     "financiera inmediata."
                 )
 
-        except Exception:
+        except Exception as e:
 
-            logger.exception(
-                f"[EXECUTE] narrative failed "
-                f"trace_id={trace_id}"
+            logger.warning(
+                f"[EXECUTE] narrative error: {e}"
             )
 
             report = (
@@ -471,11 +469,16 @@ async def execute(
         )
 
         return JSONResponse(
+
             status_code=500,
+
             content={
+
                 "status": "error",
+
                 "message":
                     "EXECUTION_TEMPORARILY_UNAVAILABLE",
+
                 "trace_id": trace_id
             }
         )
