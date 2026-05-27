@@ -1,5 +1,6 @@
 # services/fiscal_sentinel_engine.py
-# MESAN Omega Fiscal Sentinel Engine v2.1
+# MESAN Omega Fiscal Sentinel Engine v2.2
+# HARDENED ENTERPRISE VERSION
 
 import logging
 import time
@@ -13,9 +14,13 @@ class FiscalSentinelEngine:
 
     def __init__(self):
 
-        self.version = "2.1"
+        self.version = "2.2"
 
-        self.regulatory_version = "SAT_IMSS_2026_01"
+        self.regulatory_version = "SAT_IMSS_2026_02"
+
+    # =========================================================
+    # HELPERS
+    # =========================================================
 
     @staticmethod
     def to_bool(value):
@@ -43,6 +48,10 @@ class FiscalSentinelEngine:
         except Exception:
             return default
 
+    # =========================================================
+    # MAIN ANALYSIS
+    # =========================================================
+
     def analizar(self, data: dict):
 
         started = time.time()
@@ -62,6 +71,10 @@ class FiscalSentinelEngine:
         alertas = []
 
         recomendaciones = []
+
+        # =====================================================
+        # SAFE INPUTS
+        # =====================================================
 
         ingresos = self.safe_float(
             data.get("ingresos")
@@ -103,11 +116,17 @@ class FiscalSentinelEngine:
             data.get("bloqueo_bancario")
         )
 
+        # =====================================================
+        # CALCULOS
+        # =====================================================
+
         flujo = ingresos - gastos - deuda
 
-        # ====================================================
+        carga_fiscal = iva + isr
+
+        # =====================================================
         # LIQUIDEZ
-        # ====================================================
+        # =====================================================
 
         if flujo < 0:
 
@@ -123,11 +142,9 @@ class FiscalSentinelEngine:
                 "Ejecutar contención inmediata de gasto"
             )
 
-        # ====================================================
+        # =====================================================
         # SAT
-        # ====================================================
-
-        carga_fiscal = iva + isr
+        # =====================================================
 
         if ingresos > 0:
 
@@ -145,9 +162,9 @@ class FiscalSentinelEngine:
                     "Reestructurar estrategia fiscal"
                 )
 
-        # ====================================================
+        # =====================================================
         # IMSS
-        # ====================================================
+        # =====================================================
 
         if empleados > 0:
 
@@ -167,9 +184,9 @@ class FiscalSentinelEngine:
                     "Regularizar plantilla laboral"
                 )
 
-        # ====================================================
+        # =====================================================
         # REPSE
-        # ====================================================
+        # =====================================================
 
         if repse:
 
@@ -185,9 +202,9 @@ class FiscalSentinelEngine:
                 "Ejecutar recuperación REPSE urgente"
             )
 
-        # ====================================================
-        # BLOQUEO
-        # ====================================================
+        # =====================================================
+        # BLOQUEO BANCARIO
+        # =====================================================
 
         if bloqueo:
 
@@ -203,9 +220,9 @@ class FiscalSentinelEngine:
                 "Activar protocolo financiero"
             )
 
-        # ====================================================
-        # CARTERA
-        # ====================================================
+        # =====================================================
+        # COBRANZA
+        # =====================================================
 
         if ingresos > 0:
 
@@ -223,9 +240,9 @@ class FiscalSentinelEngine:
                     "Recuperar cobranza urgente"
                 )
 
-        # ====================================================
+        # =====================================================
         # DEUDA
-        # ====================================================
+        # =====================================================
 
         if ingresos > 0:
 
@@ -243,11 +260,29 @@ class FiscalSentinelEngine:
                     "Renegociar deuda bancaria"
                 )
 
-        # ====================================================
-        # SCORE
-        # ====================================================
+        # =====================================================
+        # HARD REGULATORY FLOOR
+        # =====================================================
+
+        # REPSE suspendido nunca puede ser BAJO
+        if repse:
+
+            score = max(score, 60)
+
+        # Bloqueo bancario nunca puede ser menor a CRITICO
+        if bloqueo:
+
+            score = max(score, 85)
+
+        # =====================================================
+        # NORMALIZACION SCORE
+        # =====================================================
 
         score = min(score, 100)
+
+        # =====================================================
+        # NIVEL FINAL
+        # =====================================================
 
         if score >= 90:
 
@@ -269,6 +304,10 @@ class FiscalSentinelEngine:
 
             nivel = "BAJO"
 
+        # =====================================================
+        # METRICAS
+        # =====================================================
+
         latency_ms = round(
             (time.time() - started) * 1000,
             2
@@ -278,6 +317,10 @@ class FiscalSentinelEngine:
             (iva + isr + deuda) * 1.35,
             2
         )
+
+        # =====================================================
+        # RESPONSE
+        # =====================================================
 
         return {
 
