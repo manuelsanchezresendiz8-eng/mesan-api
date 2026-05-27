@@ -1,5 +1,5 @@
 # services/fiscal_sentinel_engine.py
-# MESAN Omega Fiscal Sentinel Engine v2.0
+# MESAN Omega Fiscal Sentinel Engine v2.1
 
 import logging
 import time
@@ -12,7 +12,11 @@ logger = logging.getLogger("mesan.fiscal")
 class FiscalSentinelEngine:
 
     def __init__(self):
-        self.version = "2.0"
+
+        self.version = "2.1"
+
+        self.engine = "MESAN_FISCAL_SENTINEL"
+
         self.regulatory_version = "SAT_IMSS_2026_01"
 
     # =========================================================
@@ -21,20 +25,34 @@ class FiscalSentinelEngine:
 
     @staticmethod
     def to_bool(value):
-        return str(value).lower() in ("1", "true", "yes", "on")
+
+        return str(value).lower() in (
+            "1",
+            "true",
+            "yes",
+            "on"
+        )
 
     @staticmethod
-    def safe_float(value, default=0):
+    def safe_float(value, default=0.0):
+
         try:
+
             return float(value)
+
         except Exception:
+
             return default
 
     @staticmethod
     def safe_int(value, default=0):
+
         try:
+
             return int(value)
+
         except Exception:
+
             return default
 
     # =========================================================
@@ -45,42 +63,113 @@ class FiscalSentinelEngine:
 
         started = time.time()
 
-        tenant_id = data.get("tenant_id", "DEFAULT")
-        trace_id  = data.get("trace_id", "NO_TRACE")
+        tenant_id = data.get(
+            "tenant_id",
+            "DEFAULT"
+        )
+
+        trace_id = data.get(
+            "trace_id",
+            "NO_TRACE"
+        )
 
         logger.info(
             f"[FISCAL] analysis started "
-            f"tenant={tenant_id} trace_id={trace_id}"
+            f"tenant={tenant_id} "
+            f"trace_id={trace_id}"
         )
 
         score = 0
+
         alertas = []
+
         recomendaciones = []
 
         # =====================================================
-        # INPUT NORMALIZATION
+        # NORMALIZATION
         # =====================================================
 
-        ingresos  = self.safe_float(data.get("ingresos"))
-        gastos    = self.safe_float(data.get("gastos"))
-        iva       = self.safe_float(data.get("iva"))
-        isr       = self.safe_float(data.get("isr_retenido"))
-        deuda     = self.safe_float(data.get("deuda_mensual"))
-        cartera   = self.safe_float(data.get("cartera_vencida"))
+        ingresos = max(
+            self.safe_float(
+                data.get("ingresos")
+            ),
+            0
+        )
 
-        empleados = self.safe_int(data.get("trabajadores"))
-        sin_imss  = self.safe_int(data.get("trabajadores_sin_imss"))
+        gastos = max(
+            self.safe_float(
+                data.get("gastos")
+            ),
+            0
+        )
 
-        repse     = self.to_bool(data.get("repse_suspendido"))
-        bloqueo   = self.to_bool(data.get("bloqueo_bancario"))
+        iva = max(
+            self.safe_float(
+                data.get("iva")
+            ),
+            0
+        )
+
+        isr = max(
+            self.safe_float(
+                data.get("isr_retenido")
+            ),
+            0
+        )
+
+        deuda = max(
+            self.safe_float(
+                data.get("deuda_mensual")
+            ),
+            0
+        )
+
+        cartera = max(
+            self.safe_float(
+                data.get("cartera_vencida")
+            ),
+            0
+        )
+
+        empleados = max(
+            self.safe_int(
+                data.get("trabajadores")
+            ),
+            0
+        )
+
+        sin_imss = max(
+            self.safe_int(
+                data.get("trabajadores_sin_imss")
+            ),
+            0
+        )
+
+        repse = self.to_bool(
+            data.get("repse_suspendido")
+        )
+
+        bloqueo = self.to_bool(
+            data.get("bloqueo_bancario")
+        )
+
+        # =====================================================
+        # CALCULATIONS
+        # =====================================================
 
         flujo = ingresos - gastos - deuda
 
+        exposicion_estimada = round(
+            (iva + isr + deuda) * 1.35,
+            2
+        )
+
         # =====================================================
-        # LIQUIDEZ
+        # LIQUIDITY
         # =====================================================
 
         if flujo < 0:
+
             score += 20
 
             alertas.append({
@@ -94,10 +183,12 @@ class FiscalSentinelEngine:
             )
 
         # =====================================================
-        # PRESION FISCAL
+        # SAT PRESSURE
         # =====================================================
 
-        if ingresos > 0 and (iva + isr) > ingresos * 0.25:
+        if ingresos > 0 and (
+            (iva + isr) > ingresos * 0.25
+        ):
 
             score += 15
 
@@ -115,12 +206,10 @@ class FiscalSentinelEngine:
         # IMSS
         # =====================================================
 
-        imss_ratio = (
-            (sin_imss / empleados)
-            if empleados > 0 else 0
-        )
-
-        if imss_ratio > 0.10:
+        if (
+            empleados > 0 and
+            (sin_imss / empleados) > 0.10
+        ):
 
             score += 18
 
@@ -153,7 +242,7 @@ class FiscalSentinelEngine:
             )
 
         # =====================================================
-        # BLOQUEO BANCARIO
+        # BANKING
         # =====================================================
 
         if bloqueo:
@@ -171,7 +260,7 @@ class FiscalSentinelEngine:
             )
 
         # =====================================================
-        # CARTERA VENCIDA
+        # COLLECTIONS
         # =====================================================
 
         if ingresos > 0 and cartera > ingresos:
@@ -189,10 +278,12 @@ class FiscalSentinelEngine:
             )
 
         # =====================================================
-        # DEUDA CRITICA
+        # DEBT
         # =====================================================
 
-        if ingresos > 0 and deuda > ingresos * 0.45:
+        if ingresos > 0 and (
+            deuda > ingresos * 0.45
+        ):
 
             score += 15
 
@@ -213,29 +304,37 @@ class FiscalSentinelEngine:
         score = min(score, 100)
 
         # =====================================================
-        # NIVEL
+        # LEVELS
         # =====================================================
 
         if score >= 90:
+
             nivel = "EXTREMO"
 
         elif score >= 80:
+
             nivel = "CRITICO"
 
         elif score >= 60:
+
             nivel = "ALTO"
 
         elif score >= 40:
+
             nivel = "MEDIO"
 
         else:
+
             nivel = "BAJO"
 
         # =====================================================
         # LATENCY
         # =====================================================
 
-        latency_ms = round((time.time() - started) * 1000, 2)
+        latency_ms = round(
+            (time.time() - started) * 1000,
+            2
+        )
 
         logger.info(
             f"[FISCAL] analysis completed "
@@ -252,13 +351,14 @@ class FiscalSentinelEngine:
 
         return {
 
-            "engine": "MESAN_FISCAL_SENTINEL",
+            "engine": self.engine,
 
             "engine_status": "OK",
 
             "version": self.version,
 
-            "regulatory_version": self.regulatory_version,
+            "regulatory_version":
+                self.regulatory_version,
 
             "timestamp": datetime.now(
                 timezone.utc
@@ -278,13 +378,12 @@ class FiscalSentinelEngine:
 
                 "flujo_operativo": flujo,
 
-                "exposicion_estimada": round(
-                    (iva + isr + deuda) * 1.35,
-                    2
-                ),
+                "exposicion_estimada":
+                    exposicion_estimada,
 
                 "alertas": alertas,
 
-                "recomendaciones": recomendaciones
+                "recomendaciones":
+                    recomendaciones
             }
         }
