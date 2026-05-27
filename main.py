@@ -8,10 +8,6 @@ print("MESAN MAIN.PY v2.5.1 LOADED")
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# ============================================
-# APP
-# ============================================
-
 app = FastAPI(
     title="MESAN Omega",
     version="2.5.1"
@@ -38,10 +34,55 @@ from core.auth.auth_middleware import auth_middleware
 app.middleware("http")(auth_middleware)
 
 # ============================================
-# IMPORT ROUTERS
+# DEBUG IMPORTS
 # ============================================
 
 try:
+    import routes.execution_routes
+    print("execution_routes OK")
+
+except Exception as e:
+    import traceback
+
+    print("execution_routes ERROR:")
+    print(traceback.format_exc())
+
+try:
+    import services.fiscal_sentinel_engine
+    print("fiscal_sentinel_engine OK")
+
+except Exception as e:
+    import traceback
+
+    print("fiscal_sentinel_engine ERROR:")
+    print(traceback.format_exc())
+
+try:
+    import services.compliance_verify_engine
+    print("compliance_verify_engine OK")
+
+except Exception as e:
+    import traceback
+
+    print("compliance_verify_engine ERROR:")
+    print(traceback.format_exc())
+
+try:
+    import core.billing.billing_engine
+    print("billing_engine OK")
+
+except Exception as e:
+    import traceback
+
+    print("billing_engine ERROR:")
+    print(traceback.format_exc())
+
+# ============================================
+# ROUTER LOAD
+# ============================================
+
+try:
+
     from routes.execution_routes import router as execution_router
 
     app.include_router(execution_router)
@@ -49,10 +90,18 @@ try:
     print("EXECUTION ROUTER LOADED")
 
 except Exception as e:
+
+    import traceback
+
     print("ROUTER LOAD ERROR:", str(e))
 
+    print(
+        "ROUTER TRACEBACK:\n",
+        traceback.format_exc()
+    )
+
 # ============================================
-# ROOT
+# HEALTH
 # ============================================
 
 @app.get("/")
@@ -63,20 +112,12 @@ async def root():
         "version": "2.5.1"
     }
 
-# ============================================
-# HEALTH
-# ============================================
-
 @app.get("/health")
 async def health():
     return {
         "status": "ok",
         "version": "2.5.1"
     }
-
-# ============================================
-# READY
-# ============================================
 
 @app.get("/ready")
 async def ready():
@@ -93,10 +134,11 @@ async def startup_event():
     print("MESAN Ω ENTERPRISE ONLINE")
 
 # ============================================
-# LOCAL RUN
+# LOCAL DEV
 # ============================================
 
 if __name__ == "__main__":
+
     import uvicorn
 
     uvicorn.run(
