@@ -1,21 +1,28 @@
 # ============================================
-# MESAN Ω — main.py v2.5.1
+# MESAN Ω — main.py v2.6.0
 # Enterprise Survival OS LATAM
 # ============================================
 
-print("MESAN MAIN.PY v2.5.1 LOADED")
+print("MESAN MAIN.PY v2.6.0 LOADED")
 
+import traceback
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+# ==================================================
+# APP
+# ==================================================
+
 app = FastAPI(
     title="MESAN Omega",
-    version="2.5.1"
+    version="2.6.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 
-# ============================================
+# ==================================================
 # CORS
-# ============================================
+# ==================================================
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,99 +32,80 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ============================================
+# ==================================================
 # AUTH MIDDLEWARE
-# ============================================
-
-from core.auth.auth_middleware import auth_middleware
-
-app.middleware("http")(auth_middleware)
-
-# ============================================
-# DEBUG IMPORTS
-# ============================================
+# ==================================================
 
 try:
-    import routes.execution_routes
-    print("execution_routes OK")
-
+    from core.auth.auth_middleware import auth_middleware
+    app.middleware("http")(auth_middleware)
+    print("AUTH MIDDLEWARE LOADED")
 except Exception as e:
-    import traceback
-
-    print("execution_routes ERROR:")
+    print("AUTH MIDDLEWARE ERROR:", str(e))
     print(traceback.format_exc())
 
-try:
-    import services.fiscal_sentinel_engine
-    print("fiscal_sentinel_engine OK")
-
-except Exception as e:
-    import traceback
-
-    print("fiscal_sentinel_engine ERROR:")
-    print(traceback.format_exc())
+# ==================================================
+# EXECUTION ROUTES
+# ==================================================
 
 try:
-    import services.compliance_verify_engine
-    print("compliance_verify_engine OK")
-
-except Exception as e:
-    import traceback
-
-    print("compliance_verify_engine ERROR:")
-    print(traceback.format_exc())
-
-try:
-    import core.billing.billing_engine
-    print("billing_engine OK")
-
-except Exception as e:
-    import traceback
-
-    print("billing_engine ERROR:")
-    print(traceback.format_exc())
-
-# ============================================
-# ROUTER LOAD
-# ============================================
-
-try:
-
     from routes.execution_routes import router as execution_router
-
     app.include_router(execution_router)
-
     print("EXECUTION ROUTER LOADED")
-
 except Exception as e:
+    print("EXECUTION ROUTER ERROR:", str(e))
+    print(traceback.format_exc())
 
-    import traceback
+# ==================================================
+# PAYMENT ROUTES
+# ==================================================
 
-    print("ROUTER LOAD ERROR:", str(e))
+try:
+    from pro.pagos import router as payment_router
+    app.include_router(payment_router)
+    print("PAYMENT ROUTER LOADED")
+except Exception as e:
+    print("PAYMENT ROUTER ERROR:", str(e))
+    print(traceback.format_exc())
 
-    print(
-        "ROUTER TRACEBACK:\n",
-        traceback.format_exc()
-    )
+# ==================================================
+# UPLOAD ROUTES (FUTURO)
+# ==================================================
 
-# ============================================
-# HEALTH
-# ============================================
+try:
+    from routes.upload_routes import router as upload_router
+    app.include_router(upload_router)
+    print("UPLOAD ROUTER LOADED")
+except Exception as e:
+    print("UPLOAD ROUTER NOT AVAILABLE:", str(e))
+
+# ==================================================
+# ROOT
+# ==================================================
 
 @app.get("/")
 async def root():
     return {
         "system": "MESAN Omega",
         "status": "online",
-        "version": "2.5.1"
+        "version": "2.6.0",
+        "platform": "Enterprise Survival OS LATAM"
     }
+
+# ==================================================
+# HEALTH
+# ==================================================
 
 @app.get("/health")
 async def health():
     return {
         "status": "ok",
-        "version": "2.5.1"
+        "version": "2.6.0"
     }
+
+# ==================================================
+# READY
+# ==================================================
 
 @app.get("/ready")
 async def ready():
@@ -125,20 +113,19 @@ async def ready():
         "ready": True
     }
 
-# ============================================
+# ==================================================
 # STARTUP
-# ============================================
+# ==================================================
 
 @app.on_event("startup")
 async def startup_event():
     print("MESAN Ω ENTERPRISE ONLINE")
 
-# ============================================
+# ==================================================
 # LOCAL DEV
-# ============================================
+# ==================================================
 
 if __name__ == "__main__":
-
     import uvicorn
 
     uvicorn.run(
