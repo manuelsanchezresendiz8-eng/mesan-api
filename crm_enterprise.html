@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>MESAN Ω — War Room CRM</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+--bg:#04080F;
+--panel:#0B111B;
+--panel2:#101826;
+--border:rgba(255,255,255,.06);
+--cyan:#00D4FF;
+--green:#00FF9D;
+--orange:#FF8C00;
+--red:#FF3B30;
+--text:#F0F4F8;
+--muted:#6B7A8A;
+--shadow:0 10px 40px rgba(0,0,0,.35);
+--radius:22px;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:
+radial-gradient(circle at top right, rgba(0,212,255,.08), transparent 30%),
+radial-gradient(circle at bottom left, rgba(255,59,48,.08), transparent 30%),
+var(--bg);
+
+font-family:'Inter',sans-serif;
+color:var(--text);
+min-height:100vh;
+overflow:hidden;
+}
+
+.topbar{
+height:72px;
+border-bottom:1px solid var(--border);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 28px;
+background:rgba(4,8,15,.92);
+backdrop-filter:blur(12px);
+}
+
+.logo{
+display:flex;
+flex-direction:column;
+}
+
+.logo h1{
+font-family:'Bebas Neue';
+letter-spacing:3px;
+font-size:34px;
+color:var(--cyan);
+line-height:1;
+}
+
+.logo span{
+font-size:10px;
+letter-spacing:2px;
+color:var(--muted);
+font-family:'JetBrains Mono',monospace;
+}
+
+.status{
+display:flex;
+align-items:center;
+gap:10px;
+font-family:'JetBrains Mono',monospace;
+font-size:11px;
+color:var(--muted);
+}
+
+.dot{
+width:8px;
+height:8px;
+border-radius:50%;
+background:var(--green);
+box-shadow:0 0 12px var(--green);
+animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+0%,100%{opacity:1}
+50%{opacity:.3}
+}
+
+.layout{
+display:grid;
+grid-template-columns:280px 1fr 360px;
+height:calc(100vh - 72px);
+}
+
+.sidebar{
+border-right:1px solid var(--border);
+background:rgba(8,12,20,.88);
+padding:24px;
+overflow:auto;
+}
+
+.sidebar-section{
+margin-bottom:28px;
+}
+
+.sidebar-title{
+font-size:10px;
+letter-spacing:2px;
+font-family:'JetBrains Mono',monospace;
+color:var(--cyan);
+margin-bottom:14px;
+}
+
+.menu{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.menu button{
+background:transparent;
+border:1px solid var(--border);
+padding:14px;
+border-radius:16px;
+text-align:left;
+color:var(--text);
+cursor:pointer;
+transition:.25s;
+font-size:14px;
+}
+
+.menu button:hover{
+border-color:rgba(0,212,255,.4);
+background:rgba(0,212,255,.05);
+transform:translateX(4px);
+}
+
+.menu button.active{
+background:rgba(0,212,255,.08);
+border-color:var(--cyan);
+}
+
+.main{
+padding:28px;
+overflow:auto;
+}
+
+.hero{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:24px;
+}
+
+.hero-left h2{
+font-size:38px;
+font-weight:700;
+margin-bottom:8px;
+}
+
+.hero-left p{
+color:var(--muted);
+font-size:14px;
+}
+
+.hero-actions{
+display:flex;
+gap:12px;
+}
+
+.action-btn{
+border:none;
+padding:14px 18px;
+border-radius:16px;
+font-weight:600;
+cursor:pointer;
+transition:.25s;
+}
+
+.primary{
+background:linear-gradient(135deg,var(--cyan),#38BDF8);
+color:#001018;
+}
+
+.secondary{
+background:rgba(255,255,255,.04);
+border:1px solid var(--border);
+color:var(--text);
+}
+
+.action-btn:hover{
+transform:translateY(-2px);
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:18px;
+margin-bottom:24px;
+}
+
+.card{
+background:linear-gradient(180deg,var(--panel),var(--panel2));
+border:1px solid var(--border);
+border-radius:var(--radius);
+padding:22px;
+box-shadow:var(--shadow);
+}
+
+.stat-label{
+font-size:11px;
+letter-spacing:2px;
+font-family:'JetBrains Mono',monospace;
+color:var(--muted);
+margin-bottom:14px;
+}
+
+.stat-value{
+font-size:38px;
+font-weight:700;
+}
+
+.stat-sub{
+margin-top:8px;
+font-size:13px;
+color:var(--muted);
+}
+
+.grid{
+display:grid;
+grid-template-columns:1.2fr .8fr;
+gap:20px;
+}
+
+.pipeline{
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+
+.case{
+background:rgba(255,255,255,.02);
+border:1px solid var(--border);
+border-radius:18px;
+padding:18px;
+transition:.25s;
+cursor:pointer;
+}
+
+.case:hover{
+border-color:rgba(0,212,255,.3);
+transform:translateY(-2px);
+}
+
+.case-top{
+display:flex;
+justify-content:space-between;
+margin-bottom:12px;
+}
+
+.company{
+font-size:18px;
+font-weight:600;
+}
+
+.badge{
+padding:6px 10px;
+border-radius:999px;
+font-size:10px;
+font-family:'JetBrains Mono',monospace;
+letter-spacing:1px;
+}
+
+.high{
+background:rgba(255,140,0,.15);
+color:var(--orange);
+}
+
+.critical{
+background:rgba(255,59,48,.15);
+color:var(--red);
+}
+
+.medium{
+background:rgba(0,212,255,.15);
+color:var(--cyan);
+}
+
+.case-info{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:12px;
+margin-top:14px;
+}
+
+.info-box{
+background:rgba(255,255,255,.03);
+padding:12px;
+border-radius:12px;
+}
+
+.info-box span{
+display:block;
+font-size:10px;
+letter-spacing:1px;
+font-family:'JetBrains Mono',monospace;
+color:var(--muted);
+margin-bottom:6px;
+}
+
+.info-box strong{
+font-size:15px;
+}
+
+.right-panel{
+border-left:1px solid var(--border);
+padding:24px;
+background:rgba(8,12,20,.92);
+overflow:auto;
+}
+
+.analysis-title{
+font-size:12px;
+letter-spacing:2px;
+font-family:'JetBrains Mono',monospace;
+color:var(--cyan);
+margin-bottom:18px;
+}
+
+.analysis-box{
+background:linear-gradient(180deg,var(--panel),var(--panel2));
+border:1px solid var(--border);
+border-radius:22px;
+padding:24px;
+margin-bottom:18px;
+}
+
+.score{
+font-size:72px;
+font-weight:700;
+line-height:1;
+margin-bottom:8px;
+}
+
+.score.red{
+color:var(--red);
+}
+
+.score.orange{
+color:var(--orange);
+}
+
+.score.cyan{
+color:var(--cyan);
+}
+
+.analysis-sub{
+color:var(--muted);
+font-size:13px;
+line-height:1.7;
+}
+
+.alert{
+margin-top:16px;
+padding:14px;
+border-radius:14px;
+background:rgba(255,59,48,.08);
+border:1px solid rgba(255,59,48,.2);
+font-size:13px;
+line-height:1.6;
+color:#FFB4AF;
+}
+
+.timeline{
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+.step{
+display:flex;
+gap:14px;
+align-items:flex-start;
+}
+
+.step-dot{
+width:12px;
+height:12px;
+border-radius:50%;
+background:var(--cyan);
+margin-top:6px;
+}
+
+.step-content h4{
+font-size:14px;
+margin-bottom:4px;
+}
+
+.step-content p{
+font-size:12px;
+color:var(--muted);
+line-height:1.5;
+}
+
+@media(max-width:1400px){
+
+.layout{
+grid-template-columns:240px 1fr;
+}
+
+.right-panel{
+display:none;
+}
+
+}
+
+@media(max-width:980px){
+
+body{
+overflow:auto;
+}
+
+.layout{
+grid-template-columns:1fr;
+height:auto;
+}
+
+.sidebar{
+display:none;
+}
+
+.stats{
+grid-template-columns:1fr 1fr;
+}
+
+.grid{
+grid-template-columns:1fr;
+}
+
+}
+
+@media(max-width:640px){
+
+.stats{
+grid-template-columns:1fr;
+}
+
+.hero{
+flex-direction:column;
+align-items:flex-start;
+gap:18px;
+}
+
+.hero-left h2{
+font-size:28px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+
+<div class="logo">
+<h1>MESAN Ω</h1>
+<span>WAR ROOM CRM · ENTERPRISE</span>
+</div>
+
+<div class="status">
+<div class="dot"></div>
+<span>LIVE SYSTEM</span>
+</div>
+
+</div>
+
+<div class="layout">
+
+<aside class="sidebar">
+
+<div class="sidebar-section">
+<div class="sidebar-title">OPERACIONES</div>
+
+<div class="menu">
+<button class="active">📊 Dashboard CEO</button>
+<button>⚠ Casos críticos</button>
+<button>💰 Cobranza</button>
+<button>🛡 SAT / IMSS</button>
+<button>📄 Dictámenes</button>
+<button>📞 Leads</button>
+<button>🧠 War Room</button>
+</div>
+
+</div>
+
+<div class="sidebar-section">
+
+<div class="sidebar-title">MOTORES ACTIVOS</div>
+
+<div class="menu">
+<button>Continuity Engine</button>
+<button>Fiscal Sentinel</button>
+<button>Compliance Verify</button>
+<button>Severance Engine</button>
+<button>Governance Engine</button>
+</div>
+
+</div>
+
+</aside>
+
+<main class="main">
+
+<div class="hero">
+
+<div class="hero-left">
+<h2>Enterprise Survival Dashboard</h2>
+<p>Monitoreo operativo · Crisis detection · Riesgo empresarial LATAM</p>
+</div>
+
+<div class="hero-actions">
+<button class="action-btn secondary">Exportar PDF</button>
+<button class="action-btn primary">+ Nuevo Diagnóstico</button>
+</div>
+
+</div>
+
+<div class="stats">
+
+<div class="card">
+<div class="stat-label">CASOS ACTIVOS</div>
+<div class="stat-value">24</div>
+<div class="stat-sub">8 críticos esta semana</div>
+</div>
+
+<div class="card">
+<div class="stat-label">RIESGO PROMEDIO</div>
+<div class="stat-value" style="color:var(--orange)">68%</div>
+<div class="stat-sub">Presión operativa alta</div>
+</div>
+
+<div class="card">
+<div class="stat-label">INGRESOS MRR</div>
+<div class="stat-value">$84K</div>
+<div class="stat-sub">MXN mensuales</div>
+</div>
+
+<div class="card">
+<div class="stat-label">EMPRESAS MONITOREADAS</div>
+<div class="stat-value">113</div>
+<div class="stat-sub">Mid-market LATAM</div>
+</div>
+
+</div>
+
+<div class="grid">
+
+<div>
+
+<div class="card">
+
+<div class="sidebar-title" style="margin-bottom:18px;">
+CASOS PRIORITARIOS
+</div>
+
+<div class="pipeline">
+
+<div class="case">
+
+<div class="case-top">
+<div class="company">Grupo Maquilador Frontera</div>
+<div class="badge critical">RIESGO CRÍTICO</div>
+</div>
+
+<div style="color:var(--muted);font-size:13px;">
+REPSE suspendido · Opinión SAT negativa · Riesgo laboral elevado
+</div>
+
+<div class="case-info">
+
+<div class="info-box">
+<span>CONTINUITY</span>
+<strong style="color:var(--red)">32%</strong>
+</div>
+
+<div class="info-box">
+<span>EMPLEADOS</span>
+<strong>240</strong>
+</div>
+
+<div class="info-box">
+<span>EXPOSICIÓN</span>
+<strong>$4.2M</strong>
+</div>
+
+</div>
+
+</div>
+
+<div class="case">
+
+<div class="case-top">
+<div class="company">Grupo Logístico Norte</div>
+<div class="badge high">RIESGO ALTO</div>
+</div>
+
+<div style="color:var(--muted);font-size:13px;">
+Flujo comprometido · Cartera vencida · IMSS negativo
+</div>
+
+<div class="case-info">
+
+<div class="info-box">
+<span>CONTINUITY</span>
+<strong style="color:var(--orange)">58%</strong>
+</div>
+
+<div class="info-box">
+<span>EMPLEADOS</span>
+<strong>62</strong>
+</div>
+
+<div class="info-box">
+<span>EXPOSICIÓN</span>
+<strong>$1.1M</strong>
+</div>
+
+</div>
+
+</div>
+
+<div class="case">
+
+<div class="case-top">
+<div class="company">Manufactura Industrial MX</div>
+<div class="badge medium">PRESIÓN</div>
+</div>
+
+<div style="color:var(--muted);font-size:13px;">
+Burn rate elevado · Riesgo operativo moderado
+</div>
+
+<div class="case-info">
+
+<div class="info-box">
+<span>CONTINUITY</span>
+<strong style="color:var(--cyan)">71%</strong>
+</div>
+
+<div class="info-box">
+<span>EMPLEADOS</span>
+<strong>95</strong>
+</div>
+
+<div class="info-box">
+<span>EXPOSICIÓN</span>
+<strong>$740K</strong>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div>
+
+<div class="card">
+
+<div class="sidebar-title">
+WAR ROOM STATUS
+</div>
+
+<div class="timeline">
+
+<div class="step">
+<div class="step-dot"></div>
+<div class="step-content">
+<h4>Stripe Monetization</h4>
+<p>Unicode latin-1 issue pendiente de corrección.</p>
+</div>
+</div>
+
+<div class="step">
+<div class="step-dot"></div>
+<div class="step-content">
+<h4>CRM Enterprise</h4>
+<p>Dashboard operativo conectado al execution router.</p>
+</div>
+</div>
+
+<div class="step">
+<div class="step-dot"></div>
+<div class="step-content">
+<h4>Legal Engines</h4>
+<p>5 módulos pendientes para fase comercial.</p>
+</div>
+</div>
+
+<div class="step">
+<div class="step-dot"></div>
+<div class="step-content">
+<h4>Commercial Layer</h4>
+<p>WhatsApp enterprise + funnel CEO pendiente.</p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<aside class="right-panel">
+
+<div class="analysis-title">
+ANÁLISIS EN TIEMPO REAL
+</div>
+
+<div class="analysis-box">
+
+<div class="score red">32%</div>
+
+<div style="
+font-size:18px;
+font-weight:600;
+margin-bottom:12px;
+">
+Grupo Maquilador Frontera
+</div>
+
+<div class="analysis-sub">
+El sistema detecta deterioro acelerado en continuidad operativa debido a exposición REPSE + presión SAT + plantilla parcialmente fuera de IMSS.
+</div>
+
+<div class="alert">
+⚠ Riesgo de interrupción operativa dentro de los próximos 90 días si no se activa protocolo financiero y laboral.
+</div>
+
+</div>
+
+<div class="analysis-box">
+
+<div class="sidebar-title">
+ACCIONES CEO
+</div>
+
+<div class="timeline">
+
+<div class="step">
+<div class="step-dot"></div>
+<div class="step-content">
+<h4>30 días</h4>
+<p>Contención de flujo y blindaje laboral.</p>
+</div>
+</div>
+
+<div class="step">
+<div class="step-dot"></div>
+<div class="step-content">
+<h4>60 días</h4>
+<p>Reestructura operativa y fiscal.</p>
+</div>
+</div>
+
+<div class="step">
+<div class="step-dot"></div>
+<div class="step-content">
+<h4>90 días</h4>
+<p>Protección de activos y continuidad.</p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</aside>
+
+</div>
+
+</body>
+</html>
