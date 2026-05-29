@@ -1,56 +1,94 @@
-# pro/pagos.py
-import os
+# pro/pagos.py -- MESAN Omega Pagos v1.1
 import stripe
+import os
 import logging
+from datetime import datetime
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import JSONResponse
 
-router = APIRouter(prefix="/pro", tags=["Pagos"])
-
+router = APIRouter()
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-WEBHOOK_SECRET  = os.getenv("STRIPE_WEBHOOK_SECRET")
-SUCCESS_URL     = os.getenv("STRIPE_SUCCESS_URL", "https://mesanomega.com/success.html")
-CANCEL_URL      = os.getenv("STRIPE_CANCEL_URL",  "https://mesanomega.com")
-PRICE_ID        = os.getenv("STRIPE_PRICE_ID",    "price_mesan_pro")
 
 
-@router.post("/crear-sesion")
-async def crear_sesion(data: dict):
+@router.post("/pro/crear-sesion")
+async def crear_sesion_pago(data: dict):
     try:
+        monto = data.get("monto", 299)
+        cliente_id = data.get("cliente_id", "anonimo")
+        indice = data.get("indice", 0)
+
+        monto = max(299, int(monto))
+
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
-            line_items=[{"price": PRICE_ID, "quantity": 1}],
+            line_items=[{
+                "price_data": {
+                    "currency": "mxn",
+                    "product_data": {
+                        "name": "MESAN Omega - Dictamen CEO Enterprise",
+                        "description": f"Nivel de riesgo: {indice}. Diagnostico ejecutivo completo."
+                    },
+                    "unit_amount": int(monto * 100),
+                },
+                "quantity": 1,
+            }],
             mode="payment",
-            success_url=SUCCESS_URL + "?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url=CANCEL_URL,
+            success_url="https://mesanomega.com/demo_enterprise.html?pago=exitoso",
+            cancel_url="https://mesanomega.com/demo_enterprise.html?pago=cancelado",
             metadata={
-                "email":    data.get("email", ""),
-                "nombre":   data.get("nombre", ""),
-                "telefono": data.get("telefono", "")
+                "cliente_id": str(cliente_id),
+                "indice": str(indice)
             }
         )
-        return {"ok": True, "url": session.url, "session_id": session.id}
+
+        return {"url": session.url}
+
     except Exception as e:
         logging.error(f"Stripe error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/webhook-stripe")
-async def webhook_stripe(request: Request):
-    payload   = await request.body()
+@router.post("/pro/webhook-stripe")
+async def webhook(request: Request):
+    payload = await request.body()
     sig_header = request.headers.get("stripe-signature")
 
     try:
-        event = stripe.Webhook.construct_event(payload, sig_header, WEBHOOK_SECRET)
-    except stripe.error.SignatureVerificationError:
-        raise HTTPException(status_code=400, detail="Firma invalida")
+        event = stripe.Webhook.construct_event(
+            payload,
+            sig_header,
+            os.getenv("STRIPE_WEBHOOK_SECRET")
+        )
+    except Exception:
+        raise HTTPException(status_code=400, detail="Webhook invalido")
 
     if event["type"] == "checkout.session.completed":
-        session  = event["data"]["object"]
-        metadata = session.get("metadata", {})
-        email    = metadata.get("email")
-        logging.info(f"Pago completado: {email} | {session['id']}")
-        # Aqui activar acceso PRO en base de datos
+        session = event["data"]["object"]
+        cliente_id = session["metadata"].get("cliente_id")
+        logging.info(f"Pago completado: {cliente_id}")
+        activar_cliente(cliente_id)
 
-    return JSONResponse({"ok": True})
-  
+    return {"status": "ok"}
+
+
+def activar_cliente(cliente_id: str):
+    try:
+        from database import SessionLocal
+        from models import Lead
+        db = SessionLocal()
+        lead = db.query(Lead).filter(Lead.id == cliente_id).first()
+        if lead:
+            lead.estatus = "pagado"
+            db.commit()
+            logging.info(f"Lead {cliente_id} marcado como pagado")
+        db.close()
+    except Exception as e:
+        logging.error(f"Error activando cliente: {e}")
+
+
+def puede_ver_pdf(lead: dict) -> bool:
+    if not lead.get("pagado"):
+        return False
+    expiracion = lead.get("fecha_expiracion")
+    if expiracion and expiracion < datetime.utcnow():
+        return False
+    return True
