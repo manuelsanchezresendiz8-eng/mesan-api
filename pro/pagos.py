@@ -1,26 +1,32 @@
-# pro/pagos.py -- MESAN Omega Pagos v1.4
+# pro/pagos.py -- MESAN Omega Pagos v1.5
 import stripe
 import os
 import logging
+import re
 from datetime import datetime
 from fastapi import APIRouter, Request, HTTPException
 
 router = APIRouter()
+
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+stripe.enable_telemetry = False
+stripe.set_app_info("MESAN", version="1.0")
 
 
-def sanitize_ascii(value):
+def strict_ascii(value):
     if value is None:
         return ""
-    return str(value).encode("ascii", "ignore").decode()
+    value = str(value)
+    value = re.sub(r"[^\x00-\x7F]+", "", value)
+    return value.strip()
 
 
 @router.post("/pro/crear-sesion")
 async def crear_sesion_pago(data: dict):
     try:
         monto      = max(299, int(data.get("monto", 799)))
-        cliente_id = sanitize_ascii(data.get("cliente_id", "tenant_1"))
-        indice     = sanitize_ascii(data.get("indice", 0))
+        cliente_id = strict_ascii(data.get("cliente_id", "tenant_1"))
+        indice     = strict_ascii(data.get("indice", 0))
 
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
@@ -29,28 +35,24 @@ async def crear_sesion_pago(data: dict):
                 "price_data": {
                     "currency": "mxn",
                     "product_data": {
-                        "name": sanitize_ascii("MESAN CEO Report")
+                        "name": "MESAN CEO Report"
                     },
                     "unit_amount": int(monto * 100),
                 },
                 "quantity": 1,
             }],
-            success_url=sanitize_ascii(
-                "https://mesanomega.com/demo_enterprise.html?pago=exitoso"
-            ),
-            cancel_url=sanitize_ascii(
-                "https://mesanomega.com/demo_enterprise.html?pago=cancelado"
-            ),
+            success_url="https://mesanomega.com/demo_enterprise.html?pago=exitoso",
+            cancel_url="https://mesanomega.com/demo_enterprise.html?pago=cancelado",
             metadata={
-                "cliente_id": sanitize_ascii(cliente_id),
-                "indice": sanitize_ascii(indice)
+                "cliente_id": cliente_id,
+                "indice": indice
             }
         )
 
         return {"url": session.url}
 
     except Exception:
-        logging.error("Stripe session error", exc_info=True)
+        logging.exception("Stripe session error")
         raise HTTPException(status_code=500, detail="Stripe session error")
 
 
