@@ -1,0 +1,639 @@
+<!-- landing.html -- MESAN Omega Enterprise Landing v1.0 -->
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8" />
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+/>
+
+<title>
+MESAN Omega Enterprise
+</title>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+
+:root{
+  --bg:#050816;
+  --surface:#0B1220;
+  --surface2:#111827;
+  --cyan:#00D4FF;
+  --blue:#38BDF8;
+  --green:#00FF9D;
+  --red:#FF4D4D;
+  --orange:#FF8C42;
+  --text:#F3F6FA;
+  --muted:#7C8A9A;
+  --border:rgba(255,255,255,.08);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:
+    radial-gradient(circle at top right,
+    rgba(0,212,255,.08),
+    transparent 25%),
+
+    radial-gradient(circle at bottom left,
+    rgba(255,77,77,.06),
+    transparent 25%),
+
+    var(--bg);
+
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;
+}
+
+.topbar{
+
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+
+  z-index:999;
+
+  padding:16px 32px;
+
+  backdrop-filter:blur(12px);
+
+  background:rgba(5,8,22,.88);
+
+  border-bottom:1px solid var(--border);
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+
+  font-family:'JetBrains Mono',monospace;
+
+  font-size:13px;
+  font-weight:700;
+
+  letter-spacing:2px;
+
+  color:var(--cyan);
+}
+
+.nav{
+  display:flex;
+  gap:20px;
+}
+
+.nav a{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:13px;
+  transition:.25s;
+}
+
+.nav a:hover{
+  color:var(--cyan);
+}
+
+.hero{
+
+  min-height:100vh;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:120px 24px 80px;
+}
+
+.hero-container{
+
+  width:100%;
+  max-width:1200px;
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  gap:60px;
+  align-items:center;
+}
+
+.hero-left h1{
+
+  font-size:clamp(3rem,7vw,6rem);
+
+  line-height:.95;
+
+  margin-bottom:20px;
+
+  font-weight:700;
+}
+
+.gradient{
+  background:linear-gradient(
+    135deg,
+    var(--cyan),
+    var(--blue)
+  );
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.hero-left p{
+
+  color:#B9C5D3;
+
+  font-size:18px;
+
+  line-height:1.7;
+
+  margin-bottom:32px;
+
+  max-width:560px;
+}
+
+.hero-buttons{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.btn-primary{
+
+  background:linear-gradient(
+    135deg,
+    var(--cyan),
+    var(--blue)
+  );
+
+  color:#001018;
+
+  padding:18px 26px;
+
+  border:none;
+  border-radius:14px;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+  text-decoration:none;
+
+  transition:.25s;
+}
+
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 40px rgba(0,212,255,.25);
+}
+
+.btn-secondary{
+
+  border:1px solid var(--border);
+
+  color:var(--text);
+
+  padding:18px 26px;
+
+  border-radius:14px;
+
+  text-decoration:none;
+
+  transition:.25s;
+}
+
+.btn-secondary:hover{
+  border-color:var(--cyan);
+  color:var(--cyan);
+}
+
+.hero-right{
+
+  background:linear-gradient(
+    135deg,
+    rgba(255,255,255,.03),
+    rgba(255,255,255,.01)
+  );
+
+  border:1px solid var(--border);
+
+  border-radius:24px;
+
+  padding:32px;
+}
+
+.metric{
+
+  background:rgba(255,255,255,.03);
+
+  border:1px solid rgba(255,255,255,.04);
+
+  border-radius:18px;
+
+  padding:20px;
+
+  margin-bottom:16px;
+}
+
+.metric h3{
+
+  color:var(--cyan);
+
+  font-size:38px;
+
+  margin-bottom:8px;
+}
+
+.metric p{
+  color:#A6B3C2;
+  font-size:14px;
+}
+
+.section{
+
+  padding:100px 24px;
+}
+
+.section-container{
+  max-width:1200px;
+  margin:auto;
+}
+
+.section-title{
+
+  text-align:center;
+
+  font-size:42px;
+
+  margin-bottom:18px;
+}
+
+.section-sub{
+
+  text-align:center;
+
+  color:#AAB7C6;
+
+  max-width:760px;
+
+  margin:auto auto 60px;
+
+  line-height:1.7;
+}
+
+.cards{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+
+  gap:24px;
+}
+
+.card{
+
+  background:var(--surface);
+
+  border:1px solid var(--border);
+
+  border-radius:20px;
+
+  padding:28px;
+
+  transition:.25s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(0,212,255,.2);
+}
+
+.card h3{
+
+  margin-bottom:14px;
+
+  color:var(--cyan);
+}
+
+.card p{
+
+  color:#A9B6C5;
+
+  line-height:1.7;
+
+  font-size:14px;
+}
+
+.cta{
+
+  text-align:center;
+
+  background:linear-gradient(
+    135deg,
+    rgba(0,212,255,.06),
+    rgba(255,77,77,.04)
+  );
+
+  border:1px solid var(--border);
+
+  border-radius:28px;
+
+  padding:60px 32px;
+}
+
+.cta h2{
+
+  font-size:44px;
+
+  margin-bottom:20px;
+}
+
+.cta p{
+
+  color:#AAB7C6;
+
+  max-width:720px;
+
+  margin:auto auto 30px;
+
+  line-height:1.8;
+}
+
+.footer{
+
+  padding:40px 24px;
+
+  text-align:center;
+
+  color:#6D7B8B;
+
+  font-size:13px;
+}
+
+@media(max-width:900px){
+
+  .hero-container{
+    grid-template-columns:1fr;
+  }
+
+  .hero{
+    text-align:center;
+  }
+
+  .hero-buttons{
+    justify-content:center;
+  }
+
+  .nav{
+    display:none;
+  }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topbar">
+
+  <div class="logo">
+    MESAN OMEGA
+  </div>
+
+  <div class="nav">
+
+    <a href="#platform">
+      Plataforma
+    </a>
+
+    <a href="#enterprise">
+      Enterprise
+    </a>
+
+    <a href="#diagnostic">
+      Diagnostico
+    </a>
+
+  </div>
+
+</div>
+
+<section class="hero">
+
+  <div class="hero-container">
+
+    <div class="hero-left">
+
+      <h1>
+        Enterprise
+        <span class="gradient">
+          Survival OS
+        </span>
+      </h1>
+
+      <p>
+
+        MESAN Omega detecta deterioro operativo,
+        riesgo financiero,
+        exposicion SAT,
+        IMSS,
+        REPSE
+        y continuidad empresarial antes del colapso operativo.
+
+      </p>
+
+      <div class="hero-buttons">
+
+        <a
+          href="/demo_enterprise.html"
+          class="btn-primary"
+        >
+          Ejecutar Diagnostico
+        </a>
+
+        <a
+          href="#platform"
+          class="btn-secondary"
+        >
+          Ver Plataforma
+        </a>
+
+      </div>
+
+    </div>
+
+    <div class="hero-right">
+
+      <div class="metric">
+        <h3>73%</h3>
+        <p>
+          Empresas Mid-Market LATAM no sobreviven crisis de liquidez + SAT + laboral
+        </p>
+      </div>
+
+      <div class="metric">
+        <h3>30/60/90</h3>
+        <p>
+          Roadmaps CEO de continuidad operativa y supervivencia empresarial
+        </p>
+      </div>
+
+      <div class="metric">
+        <h3>24/7</h3>
+        <p>
+          Monitoreo operativo, financiero y fiscal en tiempo real
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section
+  class="section"
+  id="platform"
+>
+
+  <div class="section-container">
+
+    <h2 class="section-title">
+      Plataforma Enterprise
+    </h2>
+
+    <p class="section-sub">
+
+      Diseñado para grupos empresariales,
+      manufactura,
+      logistica,
+      maquila,
+      exportacion,
+      retail
+      y empresas de alta presion operativa.
+
+    </p>
+
+    <div class="cards">
+
+      <div class="card">
+
+        <h3>
+          Continuity Engine
+        </h3>
+
+        <p>
+
+          Evalua continuidad empresarial,
+          burn rate,
+          DSCR,
+          severance pressure
+          y deterioro operativo.
+
+        </p>
+
+      </div>
+
+      <div class="card">
+
+        <h3>
+          SAT + IMSS Risk
+        </h3>
+
+        <p>
+
+          Detecta exposicion fiscal,
+          riesgo laboral,
+          REPSE,
+          opinion negativa
+          y vulnerabilidad operativa.
+
+        </p>
+
+      </div>
+
+      <div class="card">
+
+        <h3>
+          CEO War Room
+        </h3>
+
+        <p>
+
+          Genera protocolos de supervivencia,
+          contencion financiera
+          y roadmap ejecutivo 30/60/90.
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section
+  class="section"
+  id="enterprise"
+>
+
+  <div class="section-container">
+
+    <div class="cta">
+
+      <h2>
+        Survival Intelligence LATAM
+      </h2>
+
+      <p>
+
+        MESAN Omega combina analitica financiera,
+        inteligencia operativa,
+        riesgo laboral
+        y continuidad empresarial
+        para proteger empresas en escenarios de alta presion.
+
+      </p>
+
+      <a
+        href="/demo_enterprise.html"
+        class="btn-primary"
+      >
+        Iniciar Evaluacion Enterprise
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+<div class="footer">
+
+  MESAN Omega Enterprise OS · LATAM
+
+</div>
+
+</body>
+
+</html>
