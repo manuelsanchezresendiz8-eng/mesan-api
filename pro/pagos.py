@@ -1,4 +1,4 @@
-# pro/pagos.py -- MESAN Omega Pagos v1.2
+# pro/pagos.py -- MESAN Omega Pagos v1.3
 import stripe
 import os
 import logging
@@ -9,12 +9,16 @@ router = APIRouter()
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 
+def ascii_safe(value: str) -> str:
+    return str(value).encode("ascii", "ignore").decode()
+
+
 @router.post("/pro/crear-sesion")
 async def crear_sesion_pago(data: dict):
     try:
-        monto  = max(299, int(data.get("monto", 799)))
-        cliente_id = str(data.get("cliente_id", "tenant_1"))
-        indice = str(data.get("indice", 0))
+        monto      = max(299, int(data.get("monto", 799)))
+        cliente_id = ascii_safe(data.get("cliente_id", "tenant_1"))
+        indice     = ascii_safe(data.get("indice", 0))
 
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
@@ -39,8 +43,8 @@ async def crear_sesion_pago(data: dict):
 
         return {"url": session.url}
 
-    except Exception as e:
-        logging.error(f"Stripe error: {str(e)}")
+    except Exception:
+        logging.exception("Stripe session error")
         raise HTTPException(status_code=500, detail="Stripe session error")
 
 
@@ -78,8 +82,8 @@ def activar_cliente(cliente_id: str):
             db.commit()
             logging.info(f"Lead {cliente_id} marcado como pagado")
         db.close()
-    except Exception as e:
-        logging.error(f"Error activando cliente: {str(e)}")
+    except Exception:
+        logging.exception("Error activando cliente")
 
 
 def puede_ver_pdf(lead: dict) -> bool:
