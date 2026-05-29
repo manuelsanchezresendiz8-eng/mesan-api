@@ -1,4 +1,4 @@
-# pro/pagos.py -- MESAN Omega Pagos v1.3
+# pro/pagos.py -- MESAN Omega Pagos v1.4
 import stripe
 import os
 import logging
@@ -9,7 +9,9 @@ router = APIRouter()
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 
-def ascii_safe(value: str) -> str:
+def sanitize_ascii(value):
+    if value is None:
+        return ""
     return str(value).encode("ascii", "ignore").decode()
 
 
@@ -17,8 +19,8 @@ def ascii_safe(value: str) -> str:
 async def crear_sesion_pago(data: dict):
     try:
         monto      = max(299, int(data.get("monto", 799)))
-        cliente_id = ascii_safe(data.get("cliente_id", "tenant_1"))
-        indice     = ascii_safe(data.get("indice", 0))
+        cliente_id = sanitize_ascii(data.get("cliente_id", "tenant_1"))
+        indice     = sanitize_ascii(data.get("indice", 0))
 
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
@@ -27,24 +29,28 @@ async def crear_sesion_pago(data: dict):
                 "price_data": {
                     "currency": "mxn",
                     "product_data": {
-                        "name": "MESAN CEO Report"
+                        "name": sanitize_ascii("MESAN CEO Report")
                     },
                     "unit_amount": int(monto * 100),
                 },
                 "quantity": 1,
             }],
-            success_url="https://mesanomega.com/demo_enterprise.html?pago=exitoso",
-            cancel_url="https://mesanomega.com/demo_enterprise.html?pago=cancelado",
+            success_url=sanitize_ascii(
+                "https://mesanomega.com/demo_enterprise.html?pago=exitoso"
+            ),
+            cancel_url=sanitize_ascii(
+                "https://mesanomega.com/demo_enterprise.html?pago=cancelado"
+            ),
             metadata={
-                "cliente_id": cliente_id,
-                "indice": indice
+                "cliente_id": sanitize_ascii(cliente_id),
+                "indice": sanitize_ascii(indice)
             }
         )
 
         return {"url": session.url}
 
     except Exception:
-        logging.exception("Stripe session error")
+        logging.error("Stripe session error", exc_info=True)
         raise HTTPException(status_code=500, detail="Stripe session error")
 
 
@@ -83,7 +89,7 @@ def activar_cliente(cliente_id: str):
             logging.info(f"Lead {cliente_id} marcado como pagado")
         db.close()
     except Exception:
-        logging.exception("Error activando cliente")
+        logging.error("Error activando cliente", exc_info=True)
 
 
 def puede_ver_pdf(lead: dict) -> bool:
