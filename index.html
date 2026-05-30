@@ -1,263 +1,803 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Omega | Inteligencia Empresarial</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>MESAN Ω — Sistema de Prevención de Pérdidas Empresariales</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-    :root {
-        --bg: #020617;
-        --card-bg: rgba(11, 18, 32, 0.9);
-        --cyan: #22D3EE;
-        --red: #EF4444;
-        --orange: #F97316;
-        --yellow: #EAB308;
-        --green: #22C55E;
-        --green-wa: #25D366;
-        --border: rgba(34, 211, 238, 0.15);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-        background: var(--bg); color: #fff; font-family: 'DM Sans', sans-serif;
-        text-align: center; padding: 40px 20px;
-        background-image: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
-        min-height: 100vh;
-    }
-    .main-wrapper { max-width: 900px; margin: 0 auto; }
-    .brand { font-family: 'Syne', sans-serif; font-size: 26px; margin-bottom: 50px; font-weight: 800; color: #fff; }
-    .brand span { color: var(--cyan); }
-    h1 { font-family: 'Syne', sans-serif; font-size: clamp(30px, 5vw, 44px); line-height: 1.1; max-width: 700px; margin: 0 auto 15px auto; font-weight: 800; }
-    h1 span { color: var(--cyan); }
-    p.subtitle { opacity: 0.7; font-size: 16px; margin-bottom: 40px; font-weight: 300; }
 
-    .console-box {
-        max-width: 650px; margin: 0 auto; background: var(--card-bg);
-        padding: 30px; border-radius: 16px; border: 1px solid var(--border);
-        box-shadow: 0 0 60px rgba(34, 211, 238, 0.05);
-    }
-    textarea {
-        width: 100%; height: 130px; padding: 20px;
-        background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
-        color: #fff; border-radius: 10px; font-family: 'DM Sans', sans-serif;
-        font-size: 15px; resize: none; margin-bottom: 20px;
-    }
-    .btn-main {
-        width: 100%; padding: 18px;
-        background: var(--cyan); color: #000; border: none; border-radius: 50px;
-        cursor: pointer; font-weight: 700; font-size: 14px;
-        text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
-    }
-    .btn-main:hover { background: #fff; }
-    .btn-main:disabled { opacity: 0.6; cursor: not-allowed; }
-    .privacy-notice { margin-top: 15px; font-size: 11px; opacity: 0.5; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .privacy-notice a { color: var(--cyan); text-decoration: none; }
+:root{
+    --bg:#050816;
+    --surface:#0B1020;
+    --surface2:#121933;
+    --line:rgba(255,255,255,.08);
+    --blue:#0066FF;
+    --cyan:#00D4FF;
+    --green:#00FF9D;
+    --orange:#FF8A00;
+    --red:#FF3B30;
+    --text:#F5F7FA;
+    --muted:#92A0B5;
+    --shadow:0 0 40px rgba(0,102,255,.15);
+}
 
-    /* DASHBOARD */
-    .dash-results { display: none; max-width: 900px; margin: 50px auto; text-align: left; }
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 30px; }
-    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 30px 25px; }
-    .kpi-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; margin-bottom: 12px; }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-    .score-display { font-family: 'Syne', sans-serif; font-size: 64px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
-    .nivel-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
-    .nivel-CRITICO { background: rgba(239,68,68,0.2); color: #EF4444; }
-    .nivel-ALTO { background: rgba(249,115,22,0.2); color: #F97316; }
-    .nivel-MEDIO { background: rgba(234,179,8,0.2); color: #EAB308; }
-    .nivel-BAJO { background: rgba(34,197,94,0.2); color: #22C55E; }
+body{
+    background:
+    radial-gradient(circle at top right, rgba(0,102,255,.12), transparent 25%),
+    radial-gradient(circle at bottom left, rgba(0,212,255,.10), transparent 25%),
+    var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+}
 
-    .kpi-impacto { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 8px; }
-    .kpi-desc { font-size: 12px; opacity: 0.7; line-height: 1.5; }
+/* PARTICLES */
 
-    /* CAUSAS */
-    .causas-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
-    .causas-box h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; margin-bottom: 15px; }
-    .causa-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 13px; opacity: 0.85; }
-    .causa-item::before { content: "⚠"; color: var(--orange); flex-shrink: 0; }
+canvas{
+    position:fixed;
+    inset:0;
+    z-index:0;
+}
 
-    /* ANALISIS IA */
-    .analisis-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 30px; margin-bottom: 20px; }
-    .analisis-box h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; margin-bottom: 20px; }
-    .analisis-content {
-        font-size: 14px; line-height: 1.7; opacity: 0.9;
-        white-space: pre-wrap; overflow-wrap: break-word;
-        height: auto; max-height: none; text-align: left;
-    }
-    .analisis-content h2, .analisis-content h3 { color: var(--cyan); margin: 16px 0 8px 0; font-size: 13px; letter-spacing: 1px; }
+/* GLOBAL */
 
-    /* PLAN */
-    .plan-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
-    .plan-box h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; margin-bottom: 15px; }
-    .plan-item { display: flex; gap: 15px; margin-bottom: 12px; align-items: flex-start; }
-    .plan-num { background: var(--cyan); color: #000; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-    .plan-text { font-size: 13px; opacity: 0.85; padding-top: 4px; }
+.container{
+    width:min(1280px,92%);
+    margin:auto;
+    position:relative;
+    z-index:2;
+}
 
-    /* SOLUCIONES */
-    .solutions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; max-width: 900px; margin: 80px auto 40px auto; text-align: left; }
-    .sol-card { font-size: 13px; }
-    .sol-card i { color: var(--cyan); font-size: 24px; display: block; margin-bottom: 12px; font-style: normal; }
-    .sol-card h3 { color: var(--cyan); font-size: 15px; margin-bottom: 5px; font-family: 'Syne', sans-serif; }
-    .sol-card p { opacity: 0.6; line-height: 1.6; margin-top: 5px; }
+section{
+    padding:90px 0;
+}
 
-    .btn-wa { display: none; padding: 16px 40px; border-radius: 8px; background: var(--green-wa); color: #000; cursor: pointer; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin: 20px auto; border: none; }
-    .btn-wa:hover { background: #fff; }
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid rgba(0,212,255,.25);
+    background:rgba(0,212,255,.06);
+    color:var(--cyan);
+    padding:10px 16px;
+    border-radius:999px;
+    font-size:12px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin-bottom:22px;
+}
 
-    .footer { margin-top: 100px; font-size: 10px; opacity: 0.3; letter-spacing: 5px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px; }
+.grid{
+    display:grid;
+    gap:22px;
+}
+
+.card{
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    border:1px solid var(--line);
+    border-radius:24px;
+    padding:28px;
+    transition:.3s;
+    backdrop-filter:blur(12px);
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    border-color:rgba(0,102,255,.35);
+    box-shadow:var(--shadow);
+}
+
+/* HEADER */
+
+header{
+    position:sticky;
+    top:0;
+    z-index:99;
+    background:rgba(5,8,22,.72);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(255,255,255,.04);
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 0;
+}
+
+.logo{
+    font-weight:800;
+    font-size:22px;
+}
+
+.logo span{
+    color:var(--cyan);
+}
+
+.nav{
+    display:flex;
+    gap:26px;
+    align-items:center;
+}
+
+.nav a{
+    color:var(--muted);
+    text-decoration:none;
+    font-size:14px;
+    transition:.2s;
+}
+
+.nav a:hover{
+    color:#fff;
+}
+
+.btn{
+    border:none;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,var(--blue),var(--cyan));
+    color:#fff;
+    padding:14px 24px;
+    border-radius:14px;
+    font-weight:700;
+}
+
+.btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 35px rgba(0,102,255,.4);
+}
+
+.btn-dark{
+    background:transparent;
+    border:1px solid rgba(255,255,255,.08);
+    color:#fff;
+    padding:14px 22px;
+    border-radius:14px;
+}
+
+/* HERO */
+
+.hero{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+}
+
+.hero-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:50px;
+    align-items:center;
+}
+
+.hero h1{
+    font-size:clamp(3rem,7vw,6rem);
+    line-height:.95;
+    margin-bottom:28px;
+    font-weight:800;
+}
+
+.hero h1 span{
+    color:var(--cyan);
+}
+
+.hero p{
+    color:var(--muted);
+    font-size:18px;
+    line-height:1.8;
+    margin-bottom:32px;
+    max-width:700px;
+}
+
+.hero-actions{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+}
+
+.hero-panel{
+    background:linear-gradient(180deg, rgba(0,102,255,.14), rgba(255,255,255,.02));
+    border:1px solid rgba(0,102,255,.2);
+    border-radius:28px;
+    padding:34px;
+    box-shadow:0 0 60px rgba(0,102,255,.18);
+}
+
+.hero-panel h3{
+    margin-bottom:24px;
+    font-size:22px;
+}
+
+.risk-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.risk-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px;
+    border-radius:14px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.04);
+}
+
+.sem{
+    font-size:12px;
+    padding:7px 12px;
+    border-radius:999px;
+    font-weight:700;
+}
+
+.red{
+    background:rgba(255,59,48,.12);
+    color:#FF9A94;
+}
+
+.orange{
+    background:rgba(255,138,0,.12);
+    color:#FFB560;
+}
+
+.green{
+    background:rgba(0,255,157,.12);
+    color:#6CFFCB;
+}
+
+/* BLOCKS */
+
+.section-title{
+    font-size:52px;
+    line-height:1;
+    margin-bottom:18px;
+}
+
+.section-desc{
+    color:var(--muted);
+    max-width:760px;
+    line-height:1.8;
+    margin-bottom:50px;
+}
+
+/* SERVICES */
+
+.services{
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+}
+
+.service-icon{
+    font-size:40px;
+    margin-bottom:20px;
+}
+
+.service-title{
+    font-size:22px;
+    margin-bottom:12px;
+}
+
+.service-text{
+    color:var(--muted);
+    line-height:1.7;
+}
+
+/* SECTORS */
+
+.sectors{
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+}
+
+.sector{
+    text-align:center;
+    padding:24px;
+}
+
+/* MONETIZATION */
+
+.pricing{
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+}
+
+.price{
+    font-size:56px;
+    font-weight:800;
+    margin:16px 0;
+}
+
+.price span{
+    font-size:18px;
+    color:var(--muted);
+}
+
+.list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin:26px 0;
+}
+
+.list li{
+    list-style:none;
+    color:var(--muted);
+}
+
+/* LEGAL */
+
+.legal{
+    background:rgba(255,255,255,.02);
+    border-top:1px solid rgba(255,255,255,.06);
+}
+
+.legal p{
+    color:var(--muted);
+    line-height:1.8;
+    margin-bottom:18px;
+}
+
+/* FOOTER */
+
+footer{
+    padding:40px 0;
+    border-top:1px solid rgba(255,255,255,.06);
+}
+
+.footer-grid{
+    display:flex;
+    justify-content:space-between;
+    gap:30px;
+    flex-wrap:wrap;
+}
+
+.footer-links{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.footer-links a{
+    color:var(--muted);
+    text-decoration:none;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:980px){
+
+.hero-grid{
+    grid-template-columns:1fr;
+}
+
+.section-title{
+    font-size:40px;
+}
+
+.hero{
+    padding-top:70px;
+}
+
+}
+
 </style>
 </head>
+
 <body>
-<div class="main-wrapper">
-    <div class="brand">MESAN <span>Ω</span></div>
-    <h1>Detectamos riesgos antes de que te cuesten <span>millones.</span></h1>
-    <p class="subtitle">IA estratégica para CEOs que toman decisiones.</p>
 
-    <div class="console-box">
-        <textarea id="input" placeholder="Cuéntanos tu problema empresarial... (ej: IMSS bloqueó cuentas, sindicato amenaza huelga, SAT mandó requerimiento...)"></textarea>
-        <button class="btn-main" onclick="analizar()" id="btn-analizar">ANALIZAR CON IA</button>
-        <div class="privacy-notice">
-            <span>🔒 Tu información está protegida.</span>
-            <a href="privacidad.html">Aviso de Privacidad</a>
-        </div>
-    </div>
+<canvas id="particles"></canvas>
 
-    <div class="dash-results" id="dash">
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-lbl">MESAN Ω Risk Score</div>
-                <div class="score-display" id="score-val">--</div>
-                <div id="nivel-badge" class="nivel-badge">--</div>
-                <div class="kpi-desc" id="tendencia-val"></div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-lbl">Exposición Económica Estimada</div>
-                <div class="kpi-impacto" id="impacto-min">$0</div>
-                <div class="kpi-desc">— <span id="impacto-max">$0</span> MXN<br>Estimado según variables detectadas</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-lbl">Sector / Confianza</div>
-                <div class="kpi-impacto" id="confianza-val" style="font-size:42px;">--%</div>
-                <div class="kpi-desc" id="sector-val"></div>
-            </div>
-        </div>
+<header>
+<div class="container topbar">
 
-        <div class="causas-box" id="causas-box" style="display:none">
-            <h3>Causas Detectadas</h3>
-            <div id="causas-list"></div>
-        </div>
-
-        <div class="analisis-box" id="analisis-box" style="display:none">
-            <h3>🧠 Análisis Estratégico — MESAN Ω Intelligence Engine</h3>
-            <div class="analisis-content" id="analisis-content"></div>
-        </div>
-
-        <div class="plan-box" id="plan-box" style="display:none">
-            <h3>Plan de Acción 30 Días</h3>
-            <div id="plan-list"></div>
-        </div>
-    </div>
-
-    <div class="solutions-grid">
-        <div class="sol-card"><i>🛡️</i><h3>Blindaje Fiscal</h3><p>Protección ante SAT, IMSS e INFONAVIT mediante análisis de datos.</p></div>
-        <div class="sol-card"><i>⚖️</i><h3>Blindaje Laboral</h3><p>Cumplimiento REPSE, STPS, contratos colectivos y blindaje sindical.</p></div>
-        <div class="sol-card"><i>📈</i><h3>Inteligencia</h3><p>Modelado de flujos, liquidez y detección de riesgo de quiebra.</p></div>
-        <div class="sol-card"><i>🔐</i><h3>Soberanía</h3><p>Infraestructura privada y protección de activos intelectuales e INAI.</p></div>
-    </div>
-
-    <button class="btn-wa" id="btnWA" onclick="enviarWhats()">ESCRIBIR POR WHATSAPP →</button>
-    <div class="footer">MESAN OMEGA © 2026 — SISTEMA DE SOBERANÍA EMPRESARIAL</div>
+<div class="logo">
+MESAN <span>Ω</span>
 </div>
 
+<div class="nav">
+<a href="#soluciones">Soluciones</a>
+<a href="#sectores">Sectores</a>
+<a href="#planes">Planes</a>
+<a href="#legal">Legal</a>
+
+<button class="btn btn-primary">
+Solicitar Diagnóstico
+</button>
+</div>
+
+</div>
+</header>
+
+<section class="hero">
+
+<div class="container hero-grid">
+
+<div>
+
+<div class="badge">
+⚡ Sistema de Prevención de Pérdidas Empresariales
+</div>
+
+<h1>
+Evita que tu empresa <span>caiga en incumplimiento</span> con SAT, IMSS y autoridades regulatorias.
+</h1>
+
+<p>
+MESAN Ω analiza documentos empresariales, opiniones SAT, IMSS, REPSE, flujo financiero, nómina y exposición operativa para detectar riesgos antes de multas, bloqueos o colapso financiero.
+</p>
+
+<div class="hero-actions">
+<button class="btn btn-primary">
+INICIAR DIAGNÓSTICO GRATUITO
+</button>
+
+<button class="btn btn-dark">
+Hablar con Consultor
+</button>
+</div>
+
+</div>
+
+<div class="hero-panel">
+
+<h3>Semáforo Operativo Empresarial</h3>
+
+<div class="risk-list">
+
+<div class="risk-item">
+<span>Liquidez Operativa</span>
+<span class="sem orange">RIESGO MEDIO</span>
+</div>
+
+<div class="risk-item">
+<span>Opinión SAT</span>
+<span class="sem red">NEGATIVA</span>
+</div>
+
+<div class="risk-item">
+<span>Exposición IMSS</span>
+<span class="sem orange">PRESIÓN</span>
+</div>
+
+<div class="risk-item">
+<span>REPSE</span>
+<span class="sem red">SUSPENDIDO</span>
+</div>
+
+<div class="risk-item">
+<span>Continuidad Empresarial</span>
+<span class="sem green">ESTABLE</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<section id="soluciones">
+
+<div class="container">
+
+<div class="badge">
+PLATAFORMA ENTERPRISE
+</div>
+
+<h2 class="section-title">
+Diagnóstico + Solución + Monitoreo Continuo
+</h2>
+
+<p class="section-desc">
+No vendemos un cuestionario. MESAN Ω funciona como una plataforma de monitoreo empresarial preventivo para detectar riesgos fiscales, laborales y financieros en empresas mexicanas.
+</p>
+
+<div class="grid services">
+
+<div class="card">
+<div class="service-icon">🧠</div>
+<div class="service-title">Continuity Engine</div>
+<div class="service-text">
+Evalúa burn rate, continuidad operativa, DSCR, presión financiera y deterioro empresarial.
+</div>
+</div>
+
+<div class="card">
+<div class="service-icon">⚖</div>
+<div class="service-title">SAT + IMSS Risk</div>
+<div class="service-text">
+Detecta exposición fiscal, opinión negativa, diferencias IMSS, REPSE y vulnerabilidad operativa.
+</div>
+</div>
+
+<div class="card">
+<div class="service-icon">📂</div>
+<div class="service-title">Lectura Documental</div>
+<div class="service-text">
+Sube XML, opiniones SAT, SUA, REPSE y documentos para análisis automatizado.
+</div>
+</div>
+
+<div class="card">
+<div class="service-icon">🚨</div>
+<div class="service-title">War Room CEO</div>
+<div class="service-text">
+Protocolos 30/60/90 para supervivencia empresarial y contención financiera.
+</div>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<section id="sectores">
+
+<div class="container">
+
+<div class="badge">
+SECTORES ECONÓMICOS MÉXICO
+</div>
+
+<h2 class="section-title">
+Diseñado para empresas bajo presión operativa
+</h2>
+
+<p class="section-desc">
+MESAN Ω puede adaptarse a múltiples sectores empresariales mexicanos con exposición SAT, IMSS, laboral o financiera.
+</p>
+
+<div class="grid sectors">
+
+<div class="card sector">Manufactura</div>
+<div class="card sector">Maquila</div>
+<div class="card sector">Retail</div>
+<div class="card sector">Logística</div>
+<div class="card sector">Transporte</div>
+<div class="card sector">Construcción</div>
+<div class="card sector">Hospitales</div>
+<div class="card sector">Restaurantes</div>
+<div class="card sector">Exportación</div>
+<div class="card sector">Servicios</div>
+<div class="card sector">Agroindustria</div>
+<div class="card sector">Tecnología</div>
+
+</div>
+
+</div>
+
+</section>
+
+<section id="planes">
+
+<div class="container">
+
+<div class="badge">
+MONETIZACIÓN
+</div>
+
+<h2 class="section-title">
+Paquetes de Prevención Empresarial
+</h2>
+
+<p class="section-desc">
+Creamos presión → diagnosticamos → monetizamos solución → monitoreamos cumplimiento continuo.
+</p>
+
+<div class="grid pricing">
+
+<div class="card">
+
+<h3>Diagnóstico Inicial</h3>
+
+<div class="price">
+$299
+<span>MXN</span>
+</div>
+
+<ul class="list">
+<li>✓ Semáforo empresarial</li>
+<li>✓ Riesgo SAT / IMSS</li>
+<li>✓ Riesgo operativo</li>
+<li>✓ Recomendación inicial</li>
+</ul>
+
+<button class="btn btn-primary" style="width:100%">
+Comenzar
+</button>
+
+</div>
+
+<div class="card" style="border:1px solid rgba(0,212,255,.4)">
+
+<h3>MESAN Ω Monitoring</h3>
+
+<div class="price">
+$2,999
+<span>/ mes</span>
+</div>
+
+<ul class="list">
+<li>✓ Monitoreo mensual</li>
+<li>✓ Revisión SAT / IMSS</li>
+<li>✓ Alertas preventivas</li>
+<li>✓ Roadmap correctivo</li>
+<li>✓ Soporte ejecutivo</li>
+</ul>
+
+<button class="btn btn-primary" style="width:100%">
+Solicitar Demo
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>War Room CEO</h3>
+
+<div class="price">
+Enterprise
+</div>
+
+<ul class="list">
+<li>✓ Crisis financiera</li>
+<li>✓ Blindaje fiscal</li>
+<li>✓ Reestructura laboral</li>
+<li>✓ Protección operativa</li>
+</ul>
+
+<button class="btn btn-primary" style="width:100%">
+Contactar
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<section id="legal" class="legal">
+
+<div class="container">
+
+<div class="badge">
+LEGAL
+</div>
+
+<h2 class="section-title">
+Avisos y cumplimiento
+</h2>
+
+<p>
+MESAN Ω es un sistema tecnológico de monitoreo empresarial y prevención de pérdidas operativas. Los resultados mostrados son cálculos matemáticos informativos y no sustituyen asesoría legal, fiscal, laboral o financiera profesional.
+</p>
+
+<p>
+Dependiendo del diagnóstico obtenido, el usuario deberá consultar especialistas autorizados para implementar estrategias correctivas ante SAT, IMSS, REPSE u otras autoridades.
+</p>
+
+<p>
+Este sitio utiliza cookies y tecnologías de monitoreo para mejorar la experiencia de usuario y análisis operativo.
+</p>
+
+<p>
+MESAN Ω © 2026 · Todos los derechos reservados · Marca en proceso de protección comercial.
+</p>
+
+</div>
+
+</section>
+
+<footer>
+
+<div class="container footer-grid">
+
+<div>
+<div class="logo">
+MESAN <span>Ω</span>
+</div>
+
+<div style="margin-top:12px;color:var(--muted)">
+Sistema de Prevención de Pérdidas Empresariales
+</div>
+</div>
+
+<div class="footer-links">
+<a href="#">Aviso de Privacidad</a>
+<a href="#">Cookies</a>
+<a href="#">WhatsApp</a>
+<a href="#">Contacto</a>
+</div>
+
+</div>
+
+</footer>
+
 <script>
-const API = "https://mesan-api.onrender.com";
-let ultimoWA = "";
 
-function fmtMXN(n) {
-    return "$" + Math.round(n).toLocaleString("es-MX");
+/* PARTICLES */
+
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+
+let particles=[];
+
+function resize(){
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 }
 
-function colorScore(nivel) {
-    const map = { "CRITICO": "#EF4444", "ALTO": "#F97316", "MEDIO": "#EAB308", "BAJO": "#22C55E" };
-    return map[nivel] || "#22D3EE";
+function initParticles(){
+
+particles=[];
+
+const count=Math.floor(window.innerWidth*window.innerHeight/12000);
+
+for(let i=0;i<count;i++){
+
+particles.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*2,
+vx:(Math.random()-.5)*.3,
+vy:(Math.random()-.5)*.3,
+a:Math.random()*.5+.1
+});
+
 }
 
-async function analizar() {
-    const t = document.getElementById("input").value.trim();
-    if (!t) return;
-    const b = document.getElementById("btn-analizar");
-    b.innerText = "ANALIZANDO RIESGO...";
-    b.disabled = true;
-
-    try {
-        const r = await fetch(API + "/ai/diagnostico", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ texto: t, respuestas: {} })
-        });
-        const d = await r.json();
-
-        // KPIs
-        document.getElementById("dash").style.display = "block";
-        document.getElementById("btnWA").style.display = "block";
-
-        const score = d.indice_riesgo || 0;
-        const nivel = d.riesgo || "BAJO";
-        const color = colorScore(nivel);
-
-        document.getElementById("score-val").innerText = score + "%";
-        document.getElementById("score-val").style.color = color;
-
-        const badge = document.getElementById("nivel-badge");
-        badge.innerText = nivel;
-        badge.className = "nivel-badge nivel-" + nivel;
-
-        const tendencia = d.tendencia || "";
-        document.getElementById("tendencia-val").innerText = tendencia ? "Tendencia: " + tendencia : "";
-
-        document.getElementById("impacto-min").innerText = fmtMXN(d.impacto_min || 0);
-        document.getElementById("impacto-max").innerText = fmtMXN(d.impacto_max || 0);
-        document.getElementById("confianza-val").innerText = (d.confianza || 74) + "%";
-        document.getElementById("sector-val").innerText = "Sector: " + (d.industria || "GENERAL");
-
-        // Causas
-        if (d.causas && d.causas.length > 0) {
-            document.getElementById("causas-box").style.display = "block";
-            document.getElementById("causas-list").innerHTML = d.causas.map(c =>
-                `<div class="causa-item">${c}</div>`
-            ).join("");
-        }
-
-        // Análisis IA
-        if (d.analisis_ai) {
-            document.getElementById("analisis-box").style.display = "block";
-            const content = document.getElementById("analisis-content");
-            content.innerHTML = d.analisis_ai
-                .replace(/## (.*)/g, '<h2>$1</h2>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        }
-
-        // Plan 30 días
-        if (d.plan_30_dias && d.plan_30_dias.length > 0) {
-            document.getElementById("plan-box").style.display = "block";
-            document.getElementById("plan-list").innerHTML = d.plan_30_dias.map((p, i) =>
-                `<div class="plan-item"><div class="plan-num">S${i+1}</div><div class="plan-text">${p}</div></div>`
-            ).join("");
-        }
-
-        ultimoWA = d.whatsapp || "Hola, solicito apoyo para mi diagnóstico MESAN Omega.";
-        document.getElementById("dash").scrollIntoView({ behavior: "smooth" });
-
-    } catch (e) {
-        alert("Error al conectar con la IA. Intenta de nuevo.");
-        console.error(e);
-    } finally {
-        b.innerText = "ANALIZAR CON IA";
-        b.disabled = false;
-    }
 }
 
-function enviarWhats() {
-    window.open("https://wa.me/526861629643?text=" + encodeURIComponent(ultimoWA), "_blank");
+function animate(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+particles.forEach(p=>{
+
+ctx.beginPath();
+ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+ctx.fillStyle=`rgba(0,102,255,${p.a})`;
+ctx.fill();
+
+p.x+=p.vx;
+p.y+=p.vy;
+
+if(p.x<0)p.x=canvas.width;
+if(p.x>canvas.width)p.x=0;
+if(p.y<0)p.y=canvas.height;
+if(p.y>canvas.height)p.y=0;
+
+});
+
+requestAnimationFrame(animate);
+
 }
+
+resize();
+initParticles();
+animate();
+
+window.addEventListener('resize',()=>{
+resize();
+initParticles();
+});
+
 </script>
+
 </body>
 </html>
