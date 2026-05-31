@@ -1,17 +1,32 @@
-# pro/pagos.py -- MESAN Omega Pagos v2.7.0
+# pro/pagos.py -- MESAN Omega Pagos v2.8.0
 import os
 import re
 import logging
+import http.client
 import stripe
 from fastapi import APIRouter, Request, HTTPException
 
+# ============================================================
+# MONKEY PATCH — fuerza ASCII en todos los headers HTTP
+# Soluciona UnicodeEncodeError latin-1 interno de Stripe SDK
+# ============================================================
+_orig_putheader = http.client.HTTPConnection.putheader
+
+def _safe_putheader(self, header, *values):
+    safe = []
+    for v in values:
+        if isinstance(v, str):
+            v = v.encode("ascii", "ignore").decode("ascii")
+        safe.append(v)
+    return _orig_putheader(self, header, *safe)
+
+http.client.HTTPConnection.putheader = _safe_putheader
+
+# ============================================================
 router = APIRouter()
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
 BASE_URL = os.getenv("BASE_URL", "https://mesanomega.com")
-
-# Fix: forzar User-Agent ASCII puro
-stripe.default_http_client = stripe.HTTPXClient()
 
 
 def clean_ascii(value):
