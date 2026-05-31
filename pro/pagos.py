@@ -1,4 +1,4 @@
-# pro/pagos.py -- MESAN Omega Pagos v2.6.0
+# pro/pagos.py -- MESAN Omega Pagos v2.7.0
 import os
 import re
 import logging
@@ -9,6 +9,9 @@ router = APIRouter()
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
 BASE_URL = os.getenv("BASE_URL", "https://mesanomega.com")
+
+# Fix: forzar User-Agent ASCII puro
+stripe.default_http_client = stripe.HTTPXClient()
 
 
 def clean_ascii(value):
@@ -47,6 +50,26 @@ async def crear_sesion_pago(data: dict):
         raise HTTPException(status_code=500, detail="Stripe session error")
 
 
+@router.post("/pro/webhook-stripe")
+async def webhook(request: Request):
+    payload    = await request.body()
+    sig_header = request.headers.get("stripe-signature")
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header,
+            os.getenv("STRIPE_WEBHOOK_SECRET", "")
+        )
+    except Exception:
+        raise HTTPException(status_code=400, detail="Webhook invalido")
+
+    if event["type"] == "checkout.session.completed":
+        session    = event["data"]["object"]
+        cliente_id = clean_ascii(session["metadata"].get("cliente_id", ""))
+        logging.info(f"Pago completado: {cliente_id}")
+
+    return {"status": "ok"}
+
+
 @router.post("/pro/checkout")
 async def crear_checkout(data: dict):
     try:
@@ -76,26 +99,3 @@ async def crear_checkout(data: dict):
     except Exception:
         logging.exception("Stripe checkout error")
         return {"ok": False, "error": "Stripe checkout error"}
-
-
-@router.post("/pro/webhook-stripe")
-async def webhook(request: Request):
-    payload    = await request.body()
-    sig_header = request.headers.get("stripe-signature")
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header,
-            os.getenv("STRIPE_WEBHOOK_SECRET", "")
-        )
-    except Exception:
-        raise HTTPException(status_code=400, detail="Webhook invalido")
-
-    if event["type"] == "checkout.session.completed":
-        session    = event["data"]["object"]
-        cliente_id = clean_ascii(
-            session["metadata"].get("cliente_id") or
-            session["metadata"].get("lead_id") or ""
-        )
-        logging.info(f"Pago completado: {cliente_id}")
-
-    return {"status": "ok"}
