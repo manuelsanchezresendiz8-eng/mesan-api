@@ -1,5 +1,5 @@
-# core/auth/auth_middleware.py -- MESAN Omega v1.7
-import os
+# core/auth/auth_middleware.py -- MESAN Omega v1.9
+
 import logging
 
 from fastapi import Request
@@ -11,59 +11,94 @@ from core.auth.tenant_model import Tenant
 
 logger = logging.getLogger("mesan.auth")
 
+# ============================================
+# RUTAS PUBLICAS
+# ============================================
+
 PUBLIC_PATHS = {
     "/",
     "/health",
     "/ready",
+    "/info",
     "/docs",
+    "/redoc",
     "/openapi.json",
     "/execute",
-    "/analyze"
+    "/analyze",
+    "/pro/crear-sesion",
+    "/pro/checkout",
+    "/pro/webhook-stripe",
 }
 
+# Todo lo que empiece con estos prefijos será público
+PUBLIC_PREFIXES = (
+    "/api/leads",
+)
+
+# ============================================
+# AUTH MIDDLEWARE
+# ============================================
+
 async def auth_middleware(request: Request, call_next):
+
     clear_tenant()
 
     path = request.url.path
 
     try:
 
-        # =========================================================
-        # CORS PREFLIGHT
-        # =========================================================
-
+        # ------------------------------------
+        # CORS PRE-FLIGHT
+        # ------------------------------------
         if request.method == "OPTIONS":
             return await call_next(request)
 
-        # =========================================================
-        # PUBLIC ENDPOINTS
-        # =========================================================
+        # ------------------------------------
+        # PUBLIC ROUTES
+        # ------------------------------------
+        if (
+            path in PUBLIC_PATHS
+            or any(path.startswith(prefix) for prefix in PUBLIC_PREFIXES)
+        ):
 
-        if path in PUBLIC_PATHS:
             response = await call_next(request)
+
             clear_tenant()
+
             return response
 
-        # =========================================================
+        # ------------------------------------
         # AUTH HEADER
-        # =========================================================
-
+        # ------------------------------------
         auth_header = request.headers.get("Authorization")
 
-        if not auth_header or not auth_header.startswith("Bearer "):
+        if not auth_header:
             return JSONResponse(
                 status_code=401,
-                content={"error": "MISSING_OR_INVALID_AUTH_HEADER"}
+                content={
+                    "error": "MISSING_AUTHORIZATION_HEADER"
+                }
+            )
+
+        if not auth_header.startswith("Bearer "):
+            return JSONResponse(
+                status_code=401,
+                content={
+                    "error": "INVALID_AUTHORIZATION_FORMAT"
+                }
             )
 
         token = auth_header.split(" ", 1)[1]
 
-        # =========================================================
+        # ------------------------------------
         # DEV / CI FALLBACK
-        # =========================================================
-
+        # ------------------------------------
         if token.startswith("jwt_not_installed_"):
-            tenant_id = token.replace("jwt_not_installed_", "")
+
+            tenant_id = token.replace(
+                "jwt_not_installed_",
+                ""
+            )
 
             set_tenant(
                 Tenant(
@@ -74,29 +109,38 @@ async def auth_middleware(request: Request, call_next):
             )
 
             response = await call_next(request)
+
             clear_tenant()
 
             return response
 
-        # =========================================================
+        # ------------------------------------
         # JWT VALIDATION
-        # =========================================================
-
+        # ------------------------------------
         payload = verify_token(token)
 
         tenant_id = payload.get("tenant_id")
 
         if not tenant_id:
+
             return JSONResponse(
                 status_code=401,
-                content={"error": "INVALID_TOKEN_TENANT"}
+                content={
+                    "error": "INVALID_TOKEN_TENANT"
+                }
             )
 
         set_tenant(
             Tenant(
                 tenant_id=tenant_id,
-                name="RESOLVED_FROM_JWT",
-                plan=payload.get("plan", "FREE")
+                name=payload.get(
+                    "tenant_name",
+                    "RESOLVED_FROM_JWT"
+                ),
+                plan=payload.get(
+                    "plan",
+                    "FREE"
+                )
             )
         )
 
@@ -111,12 +155,14 @@ async def auth_middleware(request: Request, call_next):
         clear_tenant()
 
         logger.warning(
-            f"[AUTH] JWT error path={path} error={str(e)}"
+            f"[AUTH] JWT ERROR | path={path} | error={str(e)}"
         )
 
         return JSONResponse(
             status_code=401,
-            content={"error": str(e)}
+            content={
+                "error": str(e)
+            }
         )
 
     except Exception as e:
@@ -124,7 +170,7 @@ async def auth_middleware(request: Request, call_next):
         clear_tenant()
 
         logger.exception(
-            f"[AUTH] Middleware failure path={path}"
+            f"[AUTH] MIDDLEWARE FAILURE | path={path}"
         )
 
         return JSONResponse(
