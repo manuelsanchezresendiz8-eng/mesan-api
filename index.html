@@ -24,13 +24,14 @@ header{position:fixed;top:0;left:0;width:100%;z-index:999;background:rgba(10,11,
 .logo span{color:var(--gold);}
 .menu{display:flex;gap:35px;font-size:14px;text-transform:uppercase;letter-spacing:1px;}
 
-/* Integración de imagen en el Hero */
+/* IMAGEN INTEGRADA DE LA MESA HOLOGRÁFICA */
 .hero-war-room{
     position:relative;
     height:90vh;
-    background-image:url("1000023351.png");
-    background-size:cover;
-    background-position:center;
+    background-image: url('1000023351.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     display:flex;
     align-items:center;
     padding-left:8%;
@@ -44,8 +45,6 @@ header{position:fixed;top:0;left:0;width:100%;z-index:999;background:rgba(10,11,
 .btn-primary:hover{transform:translateY(-2px);}
 .btn-secondary{background:transparent;border:1px solid var(--gold);color:#EAEAEA;padding:18px 35px;margin-left:20px;text-transform:uppercase;letter-spacing:1px;display:inline-block;transition:.3s;cursor:pointer;}
 .hero-content{max-width:750px;}
-.hero h1{font-size:72px;line-height:1.1;margin-bottom:30px;}
-.hero p{font-size:22px;color:var(--muted);margin-bottom:40px;max-width:700px;}
 .section-title{font-size:52px;margin-bottom:20px;text-align:center;}
 .section-subtitle{max-width:800px;margin:auto;text-align:center;color:var(--muted);margin-bottom:60px;}
 .problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:25px;}
@@ -112,226 +111,19 @@ footer{background:#08090b;padding-top:80px;border-top:1px solid #252a31;}
 <section>
 <div class="container">
   <h2 class="section-title">¿Qué te preocupa hoy?</h2>
-  <p class="section-subtitle">Identificamos riesgos empresariales antes de que generen pérdidas económicas.</p>
   <div class="problem-grid">
-    <div class="problem-card"><h3>SAT</h3><p>Opinión negativa, adeudos, diferencias fiscales y exposición ante auditorías.</p></div>
-    <div class="problem-card"><h3>IMSS</h3><p>Riesgos laborales, diferencias SUA, afiliaciones y contingencias.</p></div>
-    <div class="problem-card"><h3>REPSE</h3><p>Suspensiones, incumplimientos y riesgo de pérdida de contratos.</p></div>
-    <div class="problem-card"><h3>Laboral</h3><p>Demandas laborales, contingencias patronales y conflictos internos.</p></div>
-    <div class="problem-card"><h3>Liquidez</h3><p>Flujo de efectivo, presión financiera y deterioro operativo.</p></div>
-    <div class="problem-card"><h3>Continuidad Operativa</h3><p>Identificación temprana de amenazas para la supervivencia empresarial.</p></div>
+    <div class="problem-card"><h3>SAT</h3><p>Opinión negativa, adeudos, diferencias fiscales.</p></div>
+    <div class="problem-card"><h3>IMSS</h3><p>Riesgos laborales, diferencias SUA.</p></div>
+    <div class="problem-card"><h3>REPSE</h3><p>Suspensiones, incumplimientos.</p></div>
   </div>
 </div>
 </section>
-
-<section id="sectores">
-<div class="container">
-  <h2 class="section-title">Sectores que protegemos</h2>
-  <p class="section-subtitle">MESAN Ω adapta el análisis de riesgo según la actividad económica de cada empresa.</p>
-  <div class="accordion">
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion(this)">Industria</button>
-      <div class="accordion-content" style="display:none">
-        <ul><li>Manufactura</li><li>Maquila</li><li>Automotriz</li><li>Agroindustria</li><li>Alimentos y Bebidas</li><li>Metal Mecánica</li><li>Exportación</li></ul>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion(this)">Comercio</button>
-      <div class="accordion-content" style="display:none">
-        <ul><li>Retail</li><li>Mayoreo</li><li>Distribución</li><li>Importación</li><li>Ecommerce</li><li>Franquicias</li></ul>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion(this)">Servicios</button>
-      <div class="accordion-content" style="display:none">
-        <ul><li>Logística</li><li>Transporte</li><li>Construcción</li><li>Salud</li><li>Corporativos</li><li>Tecnología</li><li>Servicios Industriales</li></ul>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-
-<section id="diagnostico">
-<div class="container">
-  <h2 class="section-title">Solicita tu Diagnóstico</h2>
-  <p class="section-subtitle">Obtén una evaluación preliminar de riesgos para tu empresa.</p>
-  <div class="diagnostic-box">
-    <form id="lead-form">
-      <div class="form-grid">
-        <input type="text" id="nombre" placeholder="Nombre completo" required>
-        <input type="text" id="empresa" placeholder="Empresa" required>
-        <input type="email" id="email" placeholder="Correo electrónico" required>
-        <input type="tel" id="telefono" placeholder="Teléfono / WhatsApp" required>
-        <select id="sector">
-          <option value="">Selecciona un sector</option>
-          <option>Manufactura</option><option>Maquila</option><option>Logística</option>
-          <option>Construcción</option><option>Servicios</option><option>Retail</option>
-          <option>Exportación</option><option>Agroindustria</option><option>Corporativos</option>
-        </select>
-        <select id="facturacion">
-          <option value="">Facturación anual</option>
-          <option>Menos de 5 MDP</option><option>5 a 20 MDP</option>
-          <option>20 a 100 MDP</option><option>Más de 100 MDP</option>
-        </select>
-      </div>
-      <textarea id="mensaje" placeholder="Describe brevemente tu principal preocupación" rows="5"></textarea>
-      <br><br>
-      <button type="submit" class="btn-primary" id="submit-btn">SOLICITAR DIAGNÓSTICO</button>
-      <div id="form-msg" style="margin-top:16px;color:var(--gold);display:none;"></div>
-    </form>
-  </div>
-</div>
-</section>
-
-<section id="planes">
-<div class="container">
-  <h2 class="section-title">Planes MESAN Ω</h2>
-  <p class="section-subtitle">Soluciones diseñadas para distintos niveles de exposición empresarial.</p>
-  <div class="plans-grid">
-    <div class="plan-card">
-      <h3>Diagnóstico Ejecutivo</h3>
-      <div class="price">$999 MXN</div>
-      <ul><li>Semáforo empresarial</li><li>Análisis preliminar</li><li>Riesgos prioritarios</li><li>Recomendaciones iniciales</li></ul>
-      <a href="#diagnostico" class="btn-primary">Contratar</a>
-    </div>
-    <div class="plan-card featured">
-      <h3>War Room</h3>
-      <div class="price">$4,900 MXN</div>
-      <ul><li>Revisión documental</li><li>Análisis SAT</li><li>Análisis IMSS</li><li>Análisis REPSE</li><li>Plan ejecutivo de acción</li></ul>
-      <a href="#diagnostico" class="btn-primary">Contratar</a>
-    </div>
-    <div class="plan-card">
-      <h3>Monitoreo Empresarial</h3>
-      <div class="price">$7,500 MXN / mes</div>
-      <ul><li>Monitoreo continuo</li><li>Alertas preventivas</li><li>Seguimiento ejecutivo</li><li>Actualizaciones regulatorias</li></ul>
-      <a href="#diagnostico" class="btn-primary">Solicitar</a>
-    </div>
-    <div class="plan-card">
-      <h3>Enterprise</h3>
-      <div class="price">Cotización</div>
-      <ul><li>Multiempresa</li><li>Corporativos</li><li>Operaciones regionales</li><li>Diseño personalizado</li></ul>
-      <a href="https://wa.me/526861234567" class="btn-primary" target="_blank">Hablar con Especialista</a>
-    </div>
-  </div>
-</div>
-</section>
-
-<section id="faq">
-<div class="container">
-  <h2 class="section-title">Preguntas Frecuentes</h2>
-  <p class="section-subtitle">Resolvemos las dudas más comunes sobre MESAN Ω.</p>
-  <div class="accordion">
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion(this)">¿Qué analiza MESAN Ω?</button>
-      <div class="accordion-content" style="display:none"><p>Analizamos riesgos SAT, IMSS, REPSE, laborales, financieros y de continuidad operativa.</p></div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion(this)">¿El diagnóstico es confidencial?</button>
-      <div class="accordion-content" style="display:none"><p>Sí. Toda la información se maneja bajo protocolos de confidencialidad empresarial.</p></div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion(this)">¿Trabajan con empresas de cualquier tamaño?</button>
-      <div class="accordion-content" style="display:none"><p>Sí. Desde empresas familiares hasta corporativos.</p></div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion(this)">¿Cuánto tarda el diagnóstico?</button>
-      <div class="accordion-content" style="display:none"><p>Normalmente entre 24 y 72 horas dependiendo del alcance.</p></div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion(this)">¿MESAN Ω sustituye a mi contador?</button>
-      <div class="accordion-content" style="display:none"><p>No. Complementa el trabajo de contadores, abogados y directores financieros.</p></div>
-    </div>
-  </div>
-</div>
-</section>
-
-<section id="contacto">
-<div class="container">
-  <div class="final-cta">
-    <h2>La prevención cuesta menos que la crisis.</h2>
-    <p>Solicita un diagnóstico y descubre los riesgos que hoy podrían estar afectando tu empresa.</p>
-    <a href="#diagnostico" class="btn-primary">SOLICITAR DIAGNÓSTICO</a>
-  </div>
-</div>
-</section>
-
-<footer>
-<div class="container footer-content">
-  <div>
-    <h3>MESAN Ω</h3>
-    <p>Centro de Prevención de Pérdidas Empresariales para México.</p>
-  </div>
-  <div>
-    <h4>Contacto</h4>
-    <p><a href="https://wa.me/526861234567">WhatsApp</a></p>
-    <p><a href="mailto:contacto@mesanomega.com">contacto@mesanomega.com</a></p>
-  </div>
-  <div>
-    <h4>Legal</h4>
-    <p>Aviso de Privacidad</p>
-    <p>Términos y Condiciones</p>
-    <p>Política de Cookies</p>
-  </div>
-</div>
-<div class="footer-bottom">© 2026 MESAN Ω — Todos los derechos reservados</div>
-</footer>
-
-<div class="legal-disclaimer">
-<div class="container">
-  <p>MESAN Ω proporciona análisis informativo basado en modelos matemáticos, operativos y regulatorios. Los resultados mostrados son estimaciones y no sustituyen asesoría legal, fiscal, laboral o financiera profesional. Para implementar estrategias correctivas, consulte especialistas autorizados.</p>
-</div>
-</div>
-
-<a href="https://wa.me/526861234567" class="whatsapp" target="_blank">WhatsApp</a>
 
 <script>
-const API = "https://mesan-api.onrender.com";
-
 function toggleAccordion(btn){
   const content = btn.nextElementSibling;
   content.style.display = content.style.display === "none" ? "block" : "none";
 }
-
-document.getElementById("lead-form").addEventListener("submit", async function(e){
-  e.preventDefault();
-  const btn = document.getElementById("submit-btn");
-  const msg = document.getElementById("form-msg");
-  btn.disabled = true;
-  btn.textContent = "Enviando...";
-  try{
-    const response = await fetch(`${API}/api/leads`, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        nombre:      document.getElementById("nombre").value,
-        empresa:     document.getElementById("empresa").value,
-        email:       document.getElementById("email").value,
-        telefono:    document.getElementById("telefono").value,
-        sector:      document.getElementById("sector").value,
-        facturacion: document.getElementById("facturacion").value,
-        mensaje:     document.getElementById("mensaje").value
-      })
-    });
-    const data = await response.json();
-    if(response.ok){
-      msg.style.display = "block";
-      msg.textContent = "Diagnóstico solicitado. Te contactaremos pronto.";
-      setTimeout(()=>{ window.location.href = "/demo_enterprise.html"; }, 2000);
-    } else {
-      msg.style.display = "block";
-      msg.style.color = "#FF3B30";
-      msg.textContent = "Error al enviar. Intenta nuevamente.";
-      btn.disabled = false;
-      btn.textContent = "SOLICITAR DIAGNÓSTICO";
-    }
-  }catch(err){
-    msg.style.display = "block";
-    msg.style.color = "#FF3B30";
-    msg.textContent = "Error de conexión. Intenta nuevamente.";
-    btn.disabled = false;
-    btn.textContent = "SOLICITAR DIAGNÓSTICO";
-  }
-});
 </script>
 </body>
 </html>
