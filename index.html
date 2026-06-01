@@ -1,372 +1,73 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | Centro de Prevención de Pérdidas Empresariales</title>
-<meta name="description" content="MESAN Ω identifica riesgos SAT, IMSS, REPSE, laborales y financieros antes de que se conviertan en pérdidas financieras para tu empresa.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-<style>
-:root{
-  --bg:#0A0B0D;
-  --surface:#111418;
-  --surface2:#1C2024;
-  --gold:#C5A059;
-  --gold-light:rgba(197,160,89,.12);
-  --text:#EAEAEA;
-  --muted:#7A8290;
-  --border:rgba(255,255,255,.06);
-  --radius:2px;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.7;overflow-x:hidden;}
-
-/* ── LAYOUT ── */
-.container{width:min(1280px,92%);margin:auto;}
-section{padding:110px 0;}
-
-/* ── TYPE ── */
-h1,h2,h3,h4{font-family:'Playfair Display',serif;font-weight:600;line-height:1.15;}
-.mono{font-family:'JetBrains Mono',monospace;}
-a{text-decoration:none;color:inherit;}
-ul{list-style:none;}
-
-/* ── BUTTONS ── */
-.btn{display:inline-block;font-weight:600;letter-spacing:.5px;transition:.25s;cursor:pointer;border:none;font-family:'Inter',sans-serif;}
-.btn-gold{background:var(--gold);color:#000;padding:17px 36px;font-size:13px;text-transform:uppercase;letter-spacing:1.5px;}
-.btn-gold:hover{background:#d4b06a;transform:translateY(-1px);}
-.btn-outline{background:transparent;border:1px solid rgba(197,160,89,.5);color:var(--gold);padding:16px 34px;font-size:13px;text-transform:uppercase;letter-spacing:1.5px;margin-left:16px;}
-.btn-outline:hover{border-color:var(--gold);background:var(--gold-light);}
-.btn-lg{padding:20px 44px;font-size:14px;}
-
-/* ── NAV ── */
-header{position:fixed;top:0;left:0;width:100%;z-index:999;background:rgba(10,11,13,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
-.navbar{height:76px;display:flex;align-items:center;justify-content:space-between;}
-.logo{font-family:'Playfair Display',serif;font-size:22px;letter-spacing:3px;font-weight:700;}
-.logo span{color:var(--gold);}
-.logo-sub{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);margin-top:2px;display:block;}
-.nav-links{display:flex;gap:32px;align-items:center;}
-.nav-links a{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);transition:.2s;}
-.nav-links a:hover{color:var(--text);}
-.nav-cta{background:var(--gold);color:#000;padding:11px 22px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
-
-/* ── HERO ── */
-.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;background:var(--bg);padding-top:76px;}
-.hero-bg{position:absolute;inset:0;background-image:url("https://images.unsplash.com/photo-1581092160607-ee22530dd83a?q=80&w=2070&auto=format&fit=crop");background-size:cover;background-position:center 30%;}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(105deg,rgba(10,11,13,.96) 0%,rgba(10,11,13,.82) 55%,rgba(10,11,13,.4) 100%);}
-.hero-content{position:relative;z-index:2;max-width:780px;}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;background:var(--gold-light);border:1px solid rgba(197,160,89,.2);padding:9px 18px;margin-bottom:32px;}
-.hero-eyebrow span{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;}
-.hero-eyebrow-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:blink 2s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hero h1{font-size:clamp(2.8rem,5.5vw,5rem);line-height:1.08;margin-bottom:18px;color:var(--text);}
-.hero h1 em{font-style:italic;color:var(--gold);}
-.hero-tagline{font-size:16px;color:var(--muted);margin-bottom:14px;letter-spacing:.5px;}
-.hero-domains{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px;}
-.domain-tag{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 12px;border:1px solid var(--border);color:var(--muted);letter-spacing:1px;}
-.hero-actions{display:flex;flex-wrap:wrap;gap:0;align-items:center;}
-
-/* ── METRICS BAR ── */
-.metrics-strip{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.metrics-inner{display:grid;grid-template-columns:repeat(4,1fr);}
-.metric-cell{padding:36px 28px;border-right:1px solid var(--border);text-align:center;}
-.metric-cell:last-child{border-right:none;}
-.metric-num{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;color:var(--gold);line-height:1;margin-bottom:8px;}
-.metric-desc{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;}
-
-/* ── SECTION LABELS ── */
-.section-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:block;}
-.section-title{font-size:clamp(2rem,4vw,3.2rem);margin-bottom:20px;color:var(--text);}
-.section-sub{color:var(--muted);max-width:680px;font-size:16px;line-height:1.8;margin-bottom:56px;}
-.section-sub-center{text-align:center;margin-left:auto;margin-right:auto;}
-.text-center{text-align:center;}
-
-/* ── DIVIDER ── */
-.gold-line{width:48px;height:2px;background:var(--gold);margin:20px 0 40px;}
-.gold-line-center{margin-left:auto;margin-right:auto;}
-
-/* ── QUOTE SECTION ── */
-.quote-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:80px 0;}
-.quote-inner{max-width:900px;margin:auto;text-align:center;}
-.quote-text{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,3vw,2.1rem);font-style:italic;color:var(--text);line-height:1.5;margin-bottom:24px;}
-.quote-attribution{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
-
-/* ── RISK CARDS ── */
-.risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
-.risk-card{background:var(--bg);padding:36px 32px;transition:.25s;}
-.risk-card:hover{background:var(--surface);}
-.risk-card:hover .risk-icon{color:var(--gold);}
-.risk-icon{font-size:28px;margin-bottom:16px;display:block;transition:.25s;}
-.risk-card h3{font-size:18px;margin-bottom:10px;color:var(--text);}
-.risk-card p{font-size:14px;color:var(--muted);line-height:1.7;}
-
-/* ── SECTORS ── */
-.sector-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:48px;}
-.sector-tab{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;padding:16px 32px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Inter',sans-serif;}
-.sector-tab.active,.sector-tab:hover{color:var(--gold);border-bottom-color:var(--gold);}
-.sector-panel{display:none;}
-.sector-panel.active{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
-.sector-item{padding:16px 20px;border:1px solid var(--border);font-size:14px;color:var(--muted);transition:.2s;}
-.sector-item:hover{border-color:rgba(197,160,89,.3);color:var(--text);}
-
-/* ── CTA INLINE ── */
-.inline-cta{background:var(--gold-light);border:1px solid rgba(197,160,89,.2);padding:48px;text-align:center;margin:56px 0 0;}
-.inline-cta p{color:var(--muted);margin-bottom:24px;}
-
-/* ── CONSEQUENCES ── */
-.consequence-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-.consequence-card{padding:32px;border:1px solid var(--border);position:relative;overflow:hidden;}
-.consequence-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);opacity:.4;}
-.consequence-card:hover::before{opacity:1;}
-.consequence-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;display:block;}
-.consequence-card h4{font-size:17px;margin-bottom:10px;}
-.consequence-card p{font-size:13px;color:var(--muted);line-height:1.7;}
-
-/* ── PLANS ── */
-.plans-wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);}
-.plan-block{padding:40px 32px;border-right:1px solid var(--border);display:flex;flex-direction:column;}
-.plan-block:last-child{border-right:none;}
-.plan-block.featured{background:var(--surface);border-top:2px solid var(--gold);}
-.plan-level{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
-.plan-block h3{font-size:20px;margin-bottom:8px;}
-.plan-price{font-family:'Playfair Display',serif;font-size:2rem;color:var(--gold);margin:20px 0 4px;line-height:1;}
-.plan-period{font-size:12px;color:var(--muted);margin-bottom:28px;}
-.plan-features{flex:1;}
-.plan-features li{font-size:13px;color:var(--muted);padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;}
-.plan-features li::before{content:'—';color:var(--gold);flex-shrink:0;font-size:12px;margin-top:2px;}
-.plan-cta{margin-top:32px;}
-
-/* ── FORM ── */
-.form-section{background:var(--surface);border-top:1px solid var(--border);}
-.form-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
-.form-intro h2{margin-bottom:16px;}
-.form-intro p{color:var(--muted);margin-bottom:32px;font-size:15px;line-height:1.8;}
-.form-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);padding:10px 16px;margin-bottom:40px;}
-.form-badge span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
-.field{margin-bottom:16px;}
-.field label{display:block;font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-family:'JetBrains Mono',monospace;}
-.field input,.field select,.field textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px 16px;font-family:'Inter',sans-serif;font-size:14px;transition:.2s;}
-.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:rgba(197,160,89,.4);}
-.field select option{background:var(--bg);}
-.field textarea{resize:none;}
-.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.form-msg-box{margin-top:16px;padding:14px;background:var(--gold-light);border:1px solid rgba(197,160,89,.3);font-size:13px;color:var(--gold);display:none;}
-
-/* ── FAQ ── */
-.faq-item{border-bottom:1px solid var(--border);}
-.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;padding:22px 0;background:none;border:none;color:var(--text);font-size:16px;font-family:'Inter',sans-serif;text-align:left;cursor:pointer;}
-.faq-q:hover{color:var(--gold);}
-.faq-icon{font-size:20px;color:var(--gold);flex-shrink:0;transition:.2s;}
-.faq-a{padding:0 0 20px;color:var(--muted);font-size:15px;line-height:1.8;display:none;}
-
-/* ── FINAL CTA ── */
-.final-cta-section{background:var(--surface);border-top:1px solid var(--border);}
-.final-cta-inner{text-align:center;max-width:760px;margin:auto;}
-.final-cta-inner h2{font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:24px;}
-.final-cta-inner p{color:var(--muted);font-size:16px;margin-bottom:40px;}
-
-/* ── FOOTER ── */
-footer{background:#07080A;padding:64px 0 0;border-top:1px solid var(--border);}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding-bottom:56px;}
-.footer-brand h3{font-family:'Playfair Display',serif;font-size:20px;letter-spacing:2px;margin-bottom:6px;}
-.footer-brand .tagline{font-size:12px;color:var(--muted);margin-bottom:4px;}
-.footer-brand .tagline2{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:1px;}
-.footer-col h4{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;font-family:'JetBrains Mono',monospace;}
-.footer-col a,.footer-col p{font-size:13px;color:var(--muted);display:block;margin-bottom:10px;transition:.2s;}
-.footer-col a:hover{color:var(--text);}
-.footer-bottom{border-top:1px solid var(--border);padding:24px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
-.footer-bottom p{font-size:12px;color:var(--muted);}
-.disclaimer{padding:24px 0;border-top:1px solid var(--border);}
-.disclaimer p{font-size:11px;color:#3a3f45;line-height:1.8;text-align:center;max-width:900px;margin:auto;}
-
-/* ── WHATSAPP ── */
-.wa-btn{position:fixed;bottom:28px;right:28px;background:var(--gold);color:#000;padding:14px 22px;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;z-index:999;transition:.2s;}
-.wa-btn:hover{background:#d4b06a;}
-
-/* ── RESPONSIVE ── */
-@media(max-width:1100px){
-  .plans-wrap{grid-template-columns:1fr 1fr;}
-  .plan-block{border-bottom:1px solid var(--border);}
-  .footer-grid{grid-template-columns:1fr 1fr;}
-}
-@media(max-width:900px){
-  .risk-grid{grid-template-columns:1fr;}
-  .consequence-grid{grid-template-columns:1fr;}
-  .metrics-inner{grid-template-columns:repeat(2,1fr);}
-  .metric-cell:nth-child(2){border-right:none;}
-  .metric-cell:nth-child(3){border-top:1px solid var(--border);}
-  .form-inner{grid-template-columns:1fr;}
-  .nav-links{display:none;}
-  .sector-panel.active{grid-template-columns:repeat(2,1fr);}
-  .plans-wrap{grid-template-columns:1fr;}
-  .footer-grid{grid-template-columns:1fr;}
-}
-@media(max-width:640px){
-  .hero h1{font-size:2.4rem;}
-  .hero-actions{flex-direction:column;align-items:flex-start;}
-  .btn-outline{margin-left:0;margin-top:12px;}
-  .form-grid-2{grid-template-columns:1fr;}
-  .metrics-inner{grid-template-columns:1fr;}
-  .metric-cell{border-right:none;border-bottom:1px solid var(--border);}
-}
-</style>
-</head>
-<body>
-
-<!-- NAV -->
-<header>
-<div class="container navbar">
-  <div class="logo">
-    MESAN <span>Ω</span>
-    <span class="logo-sub">Centro de Prevención de Pérdidas Empresariales</span>
-  </div>
-  <nav class="nav-links">
-    <a href="#sectores">Sectores</a>
-    <a href="#evaluacion">Evaluación</a>
-    <a href="#planes">Planes</a>
-    <a href="#faq">FAQ</a>
-    <a href="#evaluacion" class="nav-cta btn">Solicitar Evaluación</a>
-  </nav>
-</div>
-</header>
-
-<!-- HERO -->
-<section class="hero">
-<div class="hero-bg"></div>
-<div class="hero-overlay"></div>
-<div class="container">
-  <div class="hero-content">
-    <div class="hero-eyebrow">
-      <div class="hero-eyebrow-dot"></div>
-      <span>Sistema activo · México y LATAM</span>
-    </div>
-    <h1>Identificamos riesgos empresariales<br>antes de que se conviertan en<br><em>pérdidas financieras.</em></h1>
-    <p class="hero-tagline">SAT · IMSS · REPSE · Laboral · Financiero · Continuidad Operativa</p>
-    <div class="hero-domains">
-      <span class="domain-tag">Manufactura</span>
-      <span class="domain-tag">Maquila</span>
-      <span class="domain-tag">Logística</span>
-      <span class="domain-tag">Exportación</span>
-      <span class="domain-tag">Construcción</span>
-      <span class="domain-tag">Corporativos</span>
-    </div>
-    <div class="hero-actions">
-      <a href="#evaluacion" class="btn btn-gold btn-lg">DIAGNOSTICAR MI EMPRESA</a>
-      <a href="https://wa.me/526861234567" class="btn btn-outline btn-lg" target="_blank">SOLICITAR WAR ROOM EJECUTIVO</a>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- METRICS -->
-<div class="metrics-strip">
-<div class="container">
-  <div class="metrics-inner">
-    <div class="metric-cell">
-      <div class="metric-num">+247</div>
-      <div class="metric-desc">Diagnósticos Realizados</div>
-    </div>
-    <div class="metric-cell">
-      <div class="metric-num">$82M</div>
-      <div class="metric-desc">Exposición Detectada MXN</div>
-    </div>
-    <div class="metric-cell">
-      <div class="metric-num">$31M</div>
-      <div class="metric-desc">Pérdidas Evitadas MXN</div>
-    </div>
-    <div class="metric-cell">
-      <div class="metric-num">98%</div>
-      <div class="metric-desc">Casos con Riesgo Detectado</div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- QUOTE -->
-<div class="quote-section">
-<div class="container">
-  <div class="quote-inner">
-    <p class="quote-text">"Lo que no se mide, termina costando."</p>
-    <span class="quote-attribution mono">— Principio MESAN Ω · Inteligencia de Riesgo Empresarial</span>
-  </div>
-</div>
-</div>
-
-<!-- RIESGOS QUE DETECTAMOS -->
-<section>
-<div class="container">
-  <span class="section-eyebrow">Lo que detectamos</span>
-  <h2 class="section-title">Inteligencia aplicada a cada<br>dimensión de riesgo empresarial</h2>
-  <div class="gold-line"></div>
-  <div class="risk-grid">
-    <div class="risk-card">
-      <span class="risk-icon">⊕</span>
-      <h3>Riesgo SAT</h3>
-      <p>Opinión negativa, adeudos fiscales, diferencias de IVA, exposición a auditorías y riesgo de crédito fiscal.</p>
-    </div>
-    <div class="risk-card">
-      <span class="risk-icon">⊕</span>
-      <h3>Riesgo IMSS</h3>
-      <p>Diferencias SUA, trabajadores no integrados, capital constitutivo y contingencias de auditoría del IMSS.</p>
-    </div>
-    <div class="risk-card">
-      <span class="risk-icon">⊕</span>
-      <h3>Riesgo REPSE</h3>
-      <p>Suspensión, incumplimientos documentales y riesgo de pérdida de contratos con clientes corporativos.</p>
-    </div>
-    <div class="risk-card">
-      <span class="risk-icon">⊕</span>
-      <h3>Riesgo Laboral</h3>
-      <p>Demandas activas, severance exposure, rotación crítica y vulnerabilidades en contratos individuales.</p>
-    </div>
-    <div class="risk-card">
-      <span class="risk-icon">⊕</span>
-      <h3>Riesgo Financiero</h3>
-      <p>Burn rate elevado, presión de flujo de caja, DSCR comprometido y deterioro de liquidez operativa.</p>
-    </div>
-    <div class="risk-card">
-      <span class="risk-icon">⊕</span>
-      <h3>Continuidad Operativa</h3>
-      <p>Evaluación integral de amenazas a la supervivencia empresarial y activación de protocolos preventivos.</p>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- CTA INLINE 1 -->
-<div class="container">
-<div class="inline-cta">
-  <p class="mono" style="font-size:12px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:12px;">Evaluación sin costo inicial</p>
-  <h3 style="font-size:1.6rem;margin-bottom:16px;">¿Tu empresa tiene riesgos que aún no conoces?</h3>
-  <p>El 98% de las empresas que evaluamos presentan al menos un riesgo fiscal, laboral o financiero no detectado.</p>
-  <a href="#evaluacion" class="btn btn-gold" style="margin-top:8px;">INICIAR DIAGNÓSTICO</a>
-</div>
-</div>
-
-<!-- SECTORES -->
-<section id="sectores">
-<div class="container">
-  <span class="section-eyebrow">Sectores protegidos</span>
-  <h2 class="section-title">Especialización por sector económico</h2>
-  <div class="gold-line"></div>
-  <p class="section-sub">MESAN Ω adapta el análisis de riesgo a las características regulatorias y operativas de cada sector en México.</p>
-  <div class="sector-tabs">
-    <button class="sector-tab active" onclick="showSector('industria',this)">Industria</button>
-    <button class="sector-tab" onclick="showSector('comercio',this)">Comercio</button>
-    <button class="sector-tab" onclick="showSector('servicios',this)">Servicios</button>
-  </div>
-  <div id="sector-industria" class="sector-panel active">
-    <div class="sector-item">Manufactura</div>
-    <div class="sector-item">Maquila / Maquiladora</div>
-    <div class="sector-item">Automotriz</div>
-    <div class="sector-item">Agroindustria</div>
-    <div class="sector-item">Alimentos y Bebidas</div>
-    <div class="sector-item">Metal Mecánica</div>
-    <div class="sector-item">Exportación</div>
-    <div class="sector-item">Industria Química</div>
-  </div>
-  <div id="sector-comercio" class=
+routes/
+manuelsanchezresendiz8-eng
+manuelsanchezresendiz8-eng
+Create leads_routes.py
+03e5f4e
+ · 
+yesterday
+mesan-api
+/routes/
+Name	Last commit message	Last commit date
+..
+analisis.py
+Create analisis.py
+last month
+chat_ai.py
+Update chat_ai.py
+2 weeks ago
+consultar.py
+Create consultar.py
+last month
+crm.py
+Create crm.py
+last month
+dashboard.py
+Update dashboard.py
+last month
+documentos.py
+Create documentos.py
+last month
+enterprise_audit.py
+Create enterprise_audit.py
+2 weeks ago
+evaluar.py
+MESAN-Omega v2.0
+2 months ago
+execution_routes.py
+Update execution_routes.py
+5 days ago
+financiero.py
+Create financiero.py
+last month
+gobierno.py
+Update gobierno.py
+last month
+ia_diagnostico.py
+Update ia_diagnostico.py
+2 weeks ago
+leads_routes.py
+Create leads_routes.py
+yesterday
+mesan.py
+Create mesan.py
+last month
+pagos_omega.py
+Create pagos_omega.py
+last month
+predictivo_ptu.py
+Create predictivo_ptu.py
+2 weeks ago
+pro.py
+Create pro.py
+last month
+ptu_routes.py
+Create ptu_routes.py
+2 weeks ago
+verificar.py
+MESAN-Omega v2.0
+2 months ago
+webhook.py
+Update webhook.py
+last month
+whatsapp.py
+Create whatsapp.py
