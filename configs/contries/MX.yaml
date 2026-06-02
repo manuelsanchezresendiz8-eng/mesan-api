@@ -1,0 +1,186 @@
+pack:
+  id: "MX_ENTERPRISE"
+  version: "1.1"
+  release_date: "2026-06-01"
+  maintainer: "MESAN_OMEGA"
+
+metadata:
+  version: "1.1"
+  schema_version: "1.0"
+  framework: "MESAN_OMEGA"
+  country_pack: "MX_ENTERPRISE"
+
+iso:
+  alpha2: "MX"
+  alpha3: "MEX"
+  numeric: "484"
+
+locale:
+  timezone: "America/Mexico_City"
+  date_format: "%Y-%m-%d"
+  datetime_format: "%Y-%m-%d %H:%M:%S"
+
+currency_config:
+  code: "MXN"
+  symbol: "$"
+  decimals: 2
+
+country: "MX"
+name: "México"
+currency: "MXN"
+language: "es"
+
+regulatory_bodies:
+  fiscal: "SAT"
+  social_security: "IMSS"
+  labor: "STPS"
+  subcontracting: "REPSE"
+  corporate: "SE"
+
+thresholds:
+  exposicion_critica: 1000000
+  exposicion_alta: 500000
+  exposicion_media: 250000
+
+company_size:
+  pyme_empleados_max: 250
+  mediana_facturacion_max: 20000000
+
+fiscal:
+  regimes:
+    - "RESICO"
+    - "Régimen General"
+    - "Persona Moral"
+    - "Persona Física con Actividad Empresarial"
+
+  declaraciones:
+    - "mensual"
+    - "anual"
+    - "informativa"
+
+  riesgo_opinion_negativa: true
+  credito_fiscal_umbral: 100000
+
+social_security:
+  instituto: "IMSS"
+  capital_constitutivo: true
+  riesgo_diferencias_patronales: true
+
+laboral:
+  ley: "LFT"
+  reparto_utilidades: true
+  contratos_obligatorios: true
+
+subcontratacion:
+  regulada_por_repse: true
+
+repse:
+  obligatorio: true
+  renovacion_anual: true
+  riesgo_suspension: true
+
+governance:
+  risk_threshold: 70
+
+  weights:
+    fiscal: 0.30
+    compliance: 0.20
+    laboral: 0.20
+    contractual: 0.15
+    financiero: 0.15
+
+  confidence:
+    minimum: 40
+    penalty_per_risk_dimension: 7
+    concentration_penalty: 0.10
+
+  risk_index:
+    governance_weight: 0.60
+    concentration_weight: 0.15
+    max_exposure_factor: 25
+
+  war_room:
+    score_threshold: 50
+    dimensions_threshold: 3
+    exposure_threshold: 1000000
+
+events:
+  critical_risk_index: 80
+  warning_risk_index: 60
+
+alerts:
+  red: 80
+  orange: 60
+  yellow: 40
+
+benchmark:
+  top_5: 90
+  top_10: 85
+  top_25: 75
+  promedio: 60
+  riesgo_elevado: 0
+
+maturity:
+  world_class: 90
+  advanced: 80
+  controlled: 70
+  reactive: 50
+  fragile: 0
+
+governance_status:
+  best_in_class: 90
+  healthy: 80
+  stable: 70
+  at_risk: 50
+  critical: 0
+
+health_index:
+  governance_weight: 0.40
+  survival_weight: 0.40
+  confidence_weight: 0.20
+
+sales:
+  priority:
+    A_PLUS: 2000000
+    A: 1000000
+    B: 500000
+
+risk_flags:
+  opinion_cumplimiento_negativa: true
+  efos_edos: true
+  diferencias_imss: true
+  incumplimiento_repse: true
+  contingencia_laboral: true
+
+validation:
+  required_scores:
+    - fiscal
+    - compliance
+    - laboral
+    - contractual
+    - financiero
+
+  score_min: 0
+  score_max: 100
+
+features:
+  governance: true
+  fiscal: true
+  laboral: true
+  compliance: true
+  repse: true
+  benchmarking: true
+  war_room: true
+  trend_analysis: true
+
+compatibility:
+  governance_engine: ">=3.1"
+  schema_version: "1.x"
+
+audit:
+  enabled: true
+  retain_days: 365
+
+integrity:
+  checksum: "AUTO_GENERATED"
+  
