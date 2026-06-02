@@ -1,12 +1,13 @@
 pack:
   id: "MX_ENTERPRISE"
-  version: "1.1"
+  version: "2.0"
+  maturity: "ENTERPRISE"
   release_date: "2026-06-01"
   maintainer: "MESAN_OMEGA"
 
 metadata:
-  version: "1.1"
-  schema_version: "1.0"
+  version: "2.0"
+  schema_version: "2.0"
   framework: "MESAN_OMEGA"
   country_pack: "MX_ENTERPRISE"
 
@@ -151,6 +152,56 @@ risk_flags:
   diferencias_imss: true
   incumplimiento_repse: true
   contingencia_laboral: true
+  empresa_fachada: true
+  lavado_activos: true
+  riesgo_reputacional: true
+
+kpis:
+  governance_target: 85
+  health_target: 80
+  confidence_target: 85
+  survival_target: 80
+
+trend_analysis:
+  enabled: true
+  periods:
+    - mensual
+    - trimestral
+    - anual
+
+benchmarking:
+  enabled: true
+  compare_by:
+    - sector
+    - tamaño
+    - pais
+
+industry_profiles:
+  manufactura: true
+  maquila: true
+  construccion: true
+  servicios: true
+  retail: true
+  tecnologia: true
+  financiero: true
+  salud: true
+  logistica: true
+  agroindustria: true
+
+ai:
+  recommendations: true
+  executive_insights: true
+  anomaly_detection: true
+  predictive_risk: true
+
+audit:
+  enabled: true
+  retain_days: 365
+
+security:
+  multi_tenant: true
+  audit_trail: true
+  immutable_logs: true
 
 validation:
   required_scores:
@@ -172,15 +223,13 @@ features:
   benchmarking: true
   war_room: true
   trend_analysis: true
+  predictive_risk: true
+  executive_ai: true
+  country_comparison: true
 
 compatibility:
   governance_engine: ">=3.1"
-  schema_version: "1.x"
-
-audit:
-  enabled: true
-  retain_days: 365
+  schema_version: "2.x"
 
 integrity:
   checksum: "AUTO_GENERATED"
-  
