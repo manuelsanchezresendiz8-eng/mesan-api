@@ -1,0 +1,227 @@
+pack:
+  id: "CL_ENTERPRISE"
+  version: "2.0"
+  maturity: "ENTERPRISE"
+  release_date: "2026-06-01"
+  maintainer: "MESAN_OMEGA"
+
+metadata:
+  version: "2.0"
+  schema_version: "2.0"
+  framework: "MESAN_OMEGA"
+  country_pack: "CL_ENTERPRISE"
+
+iso:
+  alpha2: "CL"
+  alpha3: "CHL"
+  numeric: "152"
+
+locale:
+  timezone: "America/Santiago"
+  date_format: "%Y-%m-%d"
+  datetime_format: "%Y-%m-%d %H:%M:%S"
+
+currency_config:
+  code: "CLP"
+  symbol: "$"
+  decimals: 0
+
+country: "CL"
+name: "Chile"
+currency: "CLP"
+language: "es"
+
+regulatory_bodies:
+  fiscal: "SII"
+  labor: "DT"
+  social_security: "AFP"
+  salud: "FONASA"
+  corporate: "CMF"
+
+thresholds:
+  exposicion_critica: 800000000
+  exposicion_alta: 400000000
+  exposicion_media: 200000000
+
+company_size:
+  pyme_empleados_max: 200
+  mediana_facturacion_max: 2400000000
+
+fiscal:
+  regimes:
+    - "Regimen Pro PYME"
+    - "Regimen General"
+    - "14 A"
+    - "14 D"
+
+  declaraciones:
+    - "mensual_F29"
+    - "anual_F22"
+
+  iva_mensual: true
+  boleta_electronica: true
+  riesgo_fiscalizacion: true
+
+social_security:
+  afp_obligatoria: true
+  isapre_fonasa: true
+  riesgo_mora_previsional: true
+
+laboral:
+  ley: "Codigo_del_Trabajo"
+  feriado_legal: 15
+  finiquito_obligatorio: true
+  indemnizacion_anios_servicio: true
+  contratos_obligatorios: true
+
+governance:
+  risk_threshold: 70
+
+  weights:
+    fiscal: 0.30
+    compliance: 0.20
+    laboral: 0.20
+    contractual: 0.15
+    financiero: 0.15
+
+  confidence:
+    minimum: 40
+    penalty_per_risk_dimension: 7
+    concentration_penalty: 0.10
+
+  risk_index:
+    governance_weight: 0.60
+    concentration_weight: 0.15
+    max_exposure_factor: 25
+
+  war_room:
+    score_threshold: 50
+    dimensions_threshold: 3
+    exposure_threshold: 800000000
+
+events:
+  critical_risk_index: 80
+  warning_risk_index: 60
+
+alerts:
+  red: 80
+  orange: 60
+  yellow: 40
+
+benchmark:
+  top_5: 90
+  top_10: 85
+  top_25: 75
+  promedio: 60
+  riesgo_elevado: 0
+
+maturity:
+  world_class: 90
+  advanced: 80
+  controlled: 70
+  reactive: 50
+  fragile: 0
+
+governance_status:
+  best_in_class: 90
+  healthy: 80
+  stable: 70
+  at_risk: 50
+  critical: 0
+
+health_index:
+  governance_weight: 0.40
+  survival_weight: 0.40
+  confidence_weight: 0.20
+
+sales:
+  priority:
+    A_PLUS: 1600000000
+    A: 800000000
+    B: 400000000
+
+risk_flags:
+  mora_sii: true
+  diferencias_afp: true
+  contingencia_laboral: true
+  riesgo_fiscalizacion: true
+  empresa_fachada: true
+  lavado_activos: true
+  riesgo_reputacional: true
+
+kpis:
+  governance_target: 85
+  health_target: 80
+  confidence_target: 85
+  survival_target: 80
+
+trend_analysis:
+  enabled: true
+  periods:
+    - mensual
+    - trimestral
+    - anual
+
+benchmarking:
+  enabled: true
+  compare_by:
+    - sector
+    - tamaño
+    - pais
+
+industry_profiles:
+  manufactura: true
+  construccion: true
+  servicios: true
+  retail: true
+  tecnologia: true
+  financiero: true
+  salud: true
+  logistica: true
+  mineria: true
+  agroindustria: true
+
+ai:
+  recommendations: true
+  executive_insights: true
+  anomaly_detection: true
+  predictive_risk: true
+
+audit:
+  enabled: true
+  retain_days: 365
+
+security:
+  multi_tenant: true
+  audit_trail: true
+  immutable_logs: true
+
+validation:
+  required_scores:
+    - fiscal
+    - compliance
+    - laboral
+    - contractual
+    - financiero
+
+  score_min: 0
+  score_max: 100
+
+features:
+  governance: true
+  fiscal: true
+  laboral: true
+  compliance: true
+  benchmarking: true
+  war_room: true
+  trend_analysis: true
+  predictive_risk: true
+  executive_ai: true
+  country_comparison: true
+
+compatibility:
+  governance_engine: ">=3.1"
+  schema_version: "2.x"
+
+integrity:
+  checksum: "AUTO_GENERATED"
