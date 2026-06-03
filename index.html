@@ -1,500 +1,389 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MESAN Ω | Centro de Prevención de Pérdidas Empresariales</title>
-  <meta name="description" content="MESAN Ω identifica riesgos SAT, IMSS, REPSE, laborales y financieros antes de que se conviertan en pérdidas económicas.">
-  <meta property="og:title" content="MESAN Ω — Prevención de Pérdidas Empresariales"/>
-  <meta property="og:description" content="El único sistema en México que detecta bloqueo bancario SAT antes de que ocurra."/>
+<meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MESAN Ω | Sistema Operativo de Inteligencia Empresarial</title>
+  <meta name="description" content="Plataforma de inteligencia operativa y gestión de riesgo empresarial. Supervisión fiscal, laboral, operativa y financiera para dirección general. México y LATAM."/>
+  <meta name="robots" content="index, follow"/>
+  <meta name="theme-color" content="#05060a"/>
+  <meta property="og:title" content="MESAN Ω — Inteligencia Operativa Empresarial"/>
+  <meta property="og:description" content="Plataforma que gobierna el riesgo operativo, regulatorio y financiero de su empresa en tiempo real."/>
   <meta property="og:type" content="website"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0A0B0D;
-      --surface: #1C2024;
-      --gold: #C5A059;
-      --accent: #00d4ff;
-      --red: #ff3b5c;
-      --green: #00ff9d;
-      --text: #EAEAEA;
-      --muted: #9DA3A9;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; line-height:1.7; }
-    h1,h2,h3 { font-family:'Playfair Display',serif; font-weight:600; }
-    a { text-decoration:none; color:inherit; }
+  <meta property="og:image" content="./assets/images/watermarked_img_13351919239569379463.png"/>
+  <meta property="og:locale" content="es_MX"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="MESAN Ω — Inteligencia Operativa Empresarial"/>
+  <meta name="twitter:description" content="Supervisión fiscal, laboral, operativa y financiera para dirección general."/>
+  <!-- Preload imagen hero crítica -->
+  <link rel="preload" as="image" href="./assets/images/watermarked_img_13351919239569379463.webp" type="image/webp"/>
+  <!-- Fonts con display=swap para performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --n:#05060a;
+  --s:#0b0c10;
+  --s2:#0f1014;
+  --t:#e0ddd8;
+  --d:rgba(224,221,216,.42);
+  --o:#C5A059;
+  --ob:rgba(197,160,89,.09);
+  --g:#00c876;
+  --r:#e05252;
+  --c:#4ab8d4;
+}
+/* Skip link accesibilidad */
+.skip-link{position:absolute;top:-100%;left:0;background:var(--o);color:var(--n);padding:8px 16px;font-size:12px;letter-spacing:1px;z-index:9999;transition:top .2s;}
+.skip-link:focus{top:0;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--n);color:var(--t);font-family:'Inter',sans-serif;font-weight:300;line-height:1.8;-webkit-font-smoothing:antialiased;}
 
-    /* NAV */
-    header {
-      position:fixed; top:0; left:0; right:0;
-      background:rgba(10,11,13,0.96);
-      backdrop-filter:blur(12px);
-      z-index:1000;
-      border-bottom:1px solid rgba(197,160,89,0.15);
-    }
-    .navbar {
-      max-width:1400px; margin:0 auto;
-      height:85px;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:0 50px;
-    }
-    .logo { font-size:28px; font-weight:700; letter-spacing:5px; }
-    .logo span { color:var(--gold); }
-    .menu { display:flex; gap:40px; font-size:14px; text-transform:uppercase; letter-spacing:1.5px; }
-    .menu a { color:var(--text); transition:color 0.3s; }
-    .menu a:hover { color:var(--gold); }
-    .menu-cta {
-      padding:10px 24px;
-      border:1px solid var(--gold);
-      color:var(--gold);
-      font-size:13px;
-      letter-spacing:1px;
-      text-transform:uppercase;
-      transition:all 0.3s;
-    }
-    .menu-cta:hover { background:var(--gold); color:#0A0B0D; }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:72px;padding:0 80px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,6,10,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--ob);}
+.logo{font-family:'Cormorant Garamond',serif;font-size:19px;letter-spacing:6px;}
+.logo em{font-style:normal;color:var(--o);}
+.nav-r{display:flex;align-items:center;gap:48px;}
+.nav-r a{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--d);text-decoration:none;transition:color .3s;}
+.nav-r a:hover{color:var(--t);}
+.nav-btn{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--n);background:var(--o);text-decoration:none;padding:10px 28px;transition:opacity .3s;}
+.nav-btn:hover{opacity:.85;}
 
-    .hero {
-      position:relative;
-      height:100vh;
-      overflow:hidden;
-      background:#050505;
-    }
-    .hero-bg {
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-    }
-    .hero::after {
-      content:'';
-      position:absolute; bottom:0; left:0; right:0; height:180px;
-      background:linear-gradient(transparent, var(--bg));
-      pointer-events:none; z-index:6;
-    }
-    .hero-content {
-      position:relative;
-      z-index:10;
-      max-width:700px;
-      padding-top:14vh;
-      padding-left:8%;
-    }
-    .hero h1 {
-      font-size:clamp(42px,5vw,72px);
-      line-height:1.05;
-      color:#fff;
-      font-family:'Playfair Display',serif;
-    }
-    .hero h1 em { font-style:normal; color:var(--gold); }
-    .hero-tag {
-      color:var(--gold);
-      letter-spacing:4px;
-      text-transform:uppercase;
-      font-size:12px;
-      display:block;
-      margin-bottom:20px;
-    }
-    .hero p {
-      margin:30px 0;
-      font-size:18px;
-      color:#ddd;
-      max-width:550px;
-      line-height:1.7;
-    }
-    .hero-btns { display:flex; gap:16px; flex-wrap:wrap; }
-      z-index:10;
-      position:relative;
-    }
-    .hero-tag {
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:4px;
-      color:var(--gold);
-      margin-bottom:20px;
-      display:flex; align-items:center; gap:12px;
-    }
-    .hero-tag::before { content:''; width:28px; height:1px; background:var(--gold); }
-    .hero h1 {
-      font-size:clamp(2.4rem,4.5vw,3.8rem);
-      line-height:1.12;
-      margin-bottom:24px;
-    }
-    .hero h1 em { font-style:normal; color:var(--gold); }
-    .hero p {
-      font-size:1.2rem;
-      color:rgba(234,234,234,0.85);
-      margin-bottom:40px;
-      max-width:600px;
-    }
-    .hero-btns { display:flex; gap:16px; flex-wrap:wrap; }
-    .btn {
-      padding:16px 36px; font-size:15px; font-weight:600;
-      display:inline-block; transition:all 0.3s;
-    }
-    .btn-primary {
-      background:linear-gradient(90deg,var(--gold),#e8c07a);
-      color:#0A0B0D;
-      border-radius:6px;
-    }
-    .btn-secondary {
-      background:transparent;
-      border:1px solid rgba(197,160,89,0.5);
-      color:var(--gold);
-      border-radius:6px;
-    }
-    .btn:hover { transform:translateY(-3px); box-shadow:0 12px 28px rgba(197,160,89,0.25); }
+/* HERO */
+.hero{height:100vh;position:relative;display:flex;align-items:flex-end;overflow:hidden;}
+.hero-img{
+  position:absolute;inset:0;z-index:0;
+  filter:brightness(.38) contrast(1.1);
+  overflow:hidden;
+}
+.hero-img img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  display:block;
+}
+.hero-velo{position:absolute;inset:0;z-index:1;background:linear-gradient(to top,rgba(5,6,10,.98) 0%,rgba(5,6,10,.4) 55%,rgba(5,6,10,.08) 100%);}
+.hero-body{position:relative;z-index:2;width:100%;max-width:1280px;margin:0 auto;padding:0 80px 88px;}
+.hero-tag{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--o);margin-bottom:26px;display:flex;align-items:center;gap:14px;}
+.hero-tag::before{content:'';width:28px;height:1px;background:var(--o);}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(52px,6.5vw,88px);font-weight:300;line-height:1.04;max-width:760px;margin-bottom:24px;}
+.hero-sub{font-size:15px;color:var(--d);max-width:520px;line-height:1.9;margin-bottom:40px;}
+.hero-cta{display:inline-block;padding:15px 48px;background:var(--o);color:var(--n);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:opacity .3s;margin-bottom:52px;}
+.hero-cta:hover{opacity:.85;}
 
-    /* TICKER */
-    .ticker {
-      background:rgba(255,59,92,0.07);
-      border-top:1px solid rgba(255,59,92,0.2);
-      border-bottom:1px solid rgba(255,59,92,0.2);
-      padding:11px 0;
-      overflow:hidden;
-      display:flex; align-items:center; gap:20px;
-    }
-    .ticker-badge {
-      background:var(--red); color:white;
-      font-size:10px; font-weight:700;
-      letter-spacing:2px; text-transform:uppercase;
-      padding:4px 14px; white-space:nowrap;
-      flex-shrink:0; margin-left:20px;
-    }
-    .ticker-track {
-      display:flex; gap:60px;
-      animation:scroll 28s linear infinite;
-      white-space:nowrap;
-    }
-    .ticker-track span { font-size:12px; color:var(--muted); letter-spacing:1px; }
-    @keyframes scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+/* DASHBOARD HERO */
+.hero-dash{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(197,160,89,.1);max-width:680px;border:1px solid rgba(197,160,89,.12);}
+.dash-item{background:rgba(5,6,10,.88);padding:16px 20px;backdrop-filter:blur(8px);}
+.dash-area{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--d);margin-bottom:6px;}
+.dash-estado{font-size:11px;letter-spacing:1px;display:flex;align-items:center;gap:7px;}
+.dash-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.dot-ok{background:var(--g);}
+.dot-w{background:#f0b942;}
 
-    /* STATS */
-    .stats {
-      display:grid; grid-template-columns:repeat(4,1fr);
-      border-bottom:1px solid rgba(197,160,89,0.1);
-    }
-    .stat {
-      padding:36px 50px;
-      border-right:1px solid rgba(197,160,89,0.1);
-    }
-    .stat:last-child { border-right:none; }
-    .stat-n {
-      font-family:'Playfair Display',serif;
-      font-size:42px; font-weight:700; color:white;
-    }
-    .stat-n span { color:var(--gold); }
-    .stat-l { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-top:4px; }
+/* DIVISOR */
+hr{border:none;border-top:1px solid var(--ob);}
 
-    /* SECTIONS */
-    .section { padding:110px 50px; max-width:1400px; margin:0 auto; }
-    .s-tag { font-size:11px; color:var(--gold); text-transform:uppercase; letter-spacing:4px; margin-bottom:14px; }
-    .s-title { font-size:clamp(1.8rem,3vw,2.8rem); margin-bottom:16px; }
-    .s-sub { font-size:15px; color:var(--muted); max-width:520px; line-height:1.8; margin-bottom:60px; }
+/* CONTENEDOR */
+.c{max-width:1280px;margin:0 auto;padding:112px 80px;}
 
-    /* ALERT */
-    .alert-box {
-      border:1px solid rgba(255,59,92,0.3);
-      background:rgba(255,59,92,0.05);
-      padding:28px 36px;
-      display:flex; gap:20px; align-items:flex-start;
-      margin-bottom:56px;
-    }
-    .alert-box h4 { color:var(--red); font-family:'Playfair Display',serif; font-size:17px; margin-bottom:6px; }
-    .alert-box p { color:var(--muted); font-size:13px; line-height:1.7; }
+/* ETIQUETA */
+.tag{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--o);margin-bottom:16px;}
 
-    /* FTI SCALE */
-    .fti-split { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
-    .fti-scale { font-size:13px; line-height:2.2; font-family:'Inter',monospace; }
-    .fti-scale span { display:inline-block; width:80px; font-weight:600; }
+/* TÍTULO */
+.h2{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,3.8vw,56px);font-weight:300;line-height:1.1;}
+.h2 em{font-style:italic;color:var(--o);}
 
-    /* ENGINES */
-    .engines-wrap { background:var(--surface); border-top:1px solid rgba(197,160,89,0.1); border-bottom:1px solid rgba(197,160,89,0.1); }
-    .engines-grid {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
-      gap:1px; background:rgba(197,160,89,0.08);
-    }
-    .eng {
-      background:var(--bg); padding:30px 28px;
-      transition:background 0.2s;
-      border-left:3px solid transparent;
-    }
-    .eng:hover { background:#131619; border-left-color:var(--gold); }
-    .eng-code { font-size:10px; color:var(--gold); letter-spacing:3px; text-transform:uppercase; margin-bottom:8px; }
-    .eng-name { font-family:'Playfair Display',serif; font-size:17px; color:white; margin-bottom:8px; }
-    .eng-desc { font-size:13px; color:var(--muted); line-height:1.6; }
-    .eng-v {
-      float:right; margin-top:-30px;
-      font-size:10px; color:rgba(197,160,89,0.6);
-      border:1px solid rgba(197,160,89,0.2);
-      padding:2px 8px; letter-spacing:1px;
-    }
+/* LO QUE PROTEGEMOS */
+.prot-grid{display:grid;grid-template-columns:repeat(4,1fr);margin-top:60px;border-top:1px solid var(--ob);}
+.prot-item{padding:48px 36px;border-right:1px solid var(--ob);transition:background .3s;}
+.prot-item:last-child{border-right:none;}
+.prot-item:hover{background:rgba(197,160,89,.03);}
+.prot-n{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:rgba(197,160,89,.3);margin-bottom:24px;}
+.prot-item h3{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;margin-bottom:12px;}
+.prot-item p{font-size:13px;color:var(--d);line-height:1.8;}
 
-    /* PRICING */
-    .pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; }
-    .price-card {
-      background:var(--surface);
-      border:1px solid rgba(197,160,89,0.1);
-      padding:40px 32px;
-      position:relative;
-    }
-    .price-card.featured { border-color:var(--gold); }
-    .feat-badge {
-      position:absolute; top:-1px; right:24px;
-      background:var(--gold); color:#0A0B0D;
-      font-size:10px; font-weight:700; letter-spacing:2px;
-      padding:4px 12px; text-transform:uppercase;
-    }
-    .price-plan { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:3px; margin-bottom:16px; }
-    .price-amount { font-family:'Playfair Display',serif; font-size:48px; color:white; margin-bottom:4px; }
-    .price-amount sub { font-size:18px; color:var(--muted); font-family:'Inter',sans-serif; }
-    .price-note { font-size:12px; color:var(--muted); margin-bottom:32px; }
-    .price-list { list-style:none; margin-bottom:32px; }
-    .price-list li {
-      font-size:13px; color:var(--muted);
-      padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.04);
-      display:flex; gap:10px; align-items:flex-start;
-    }
-    .price-list li::before { content:'→'; color:var(--gold); flex-shrink:0; }
-    .price-btn {
-      display:block; text-align:center;
-      padding:14px; font-weight:600; font-size:13px;
-      letter-spacing:1px; text-transform:uppercase;
-      transition:all 0.3s;
-    }
-    .price-btn.solid { background:linear-gradient(90deg,var(--gold),#e8c07a); color:#0A0B0D; }
-    .price-btn.outline { border:1px solid rgba(197,160,89,0.4); color:var(--gold); }
-    .price-btn:hover { transform:translateY(-2px); }
+/* ENGINES */
+.eng-section{background:var(--s);}
+.eng-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:56px;}
+.eng-version{font-family:'Cormorant Garamond',serif;font-size:13px;color:rgba(197,160,89,.4);letter-spacing:2px;}
+.eng-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(197,160,89,.07);}
+.eng{background:var(--s);padding:36px 28px;transition:background .3s;position:relative;overflow:hidden;}
+.eng:hover{background:var(--s2);}
+.eng::before{content:'';position:absolute;top:0;left:0;width:2px;height:0;background:var(--o);transition:height .4s;}
+.eng:hover::before{height:100%;}
+.eng-code{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(197,160,89,.4);margin-bottom:12px;}
+.eng-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;margin-bottom:10px;}
+.eng-desc{font-size:12px;color:var(--d);line-height:1.7;}
+.eng-status{margin-top:16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--g);display:flex;align-items:center;gap:6px;}
+.eng-status::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--g);flex-shrink:0;}
 
-    /* FORM */
-    .cta-wrap { text-align:center; padding:110px 50px; }
-    .cta-wrap h2 { font-size:clamp(2rem,3.5vw,3rem); margin-bottom:14px; }
-    .cta-wrap p { color:var(--muted); font-size:16px; max-width:560px; margin:0 auto 48px; line-height:1.8; }
-    .diag-form {
-      max-width:520px; margin:0 auto;
-      display:flex; flex-direction:column; gap:12px;
-    }
-    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .diag-form input, .diag-form select {
-      width:100%; padding:14px 18px;
-      background:var(--surface);
-      border:1px solid rgba(197,160,89,0.15);
-      color:var(--text);
-      font-family:'Inter',sans-serif; font-size:14px;
-      outline:none; border-radius:6px;
-      transition:border-color 0.2s;
-    }
-    .diag-form input:focus, .diag-form select:focus { border-color:var(--gold); }
-    .diag-form input::placeholder { color:var(--muted); }
-    .diag-form select option { background:var(--surface); }
-    .form-submit {
-      padding:16px; font-size:15px; font-weight:700;
-      font-family:'Inter',sans-serif;
-      letter-spacing:1px; text-transform:uppercase;
-      background:linear-gradient(90deg,var(--gold),#e8c07a);
-      color:#0A0B0D; border:none; border-radius:6px;
-      cursor:pointer; transition:all 0.3s;
-    }
-    .form-submit:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(197,160,89,0.3); }
+/* DECLARACIÓN */
+.decl{border-left:2px solid var(--o);padding-left:52px;max-width:800px;}
+.decl blockquote{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3vw,46px);font-weight:300;font-style:italic;line-height:1.22;margin-bottom:28px;}
+.decl p{font-size:14px;color:var(--d);line-height:1.9;max-width:540px;}
 
-    /* FOOTER */
-    footer {
-      text-align:center; padding:60px 20px;
-      background:#08090b;
-      border-top:1px solid rgba(197,160,89,0.1);
-    }
-    .footer-logo { font-family:'Playfair Display',serif; font-size:22px; color:var(--gold); letter-spacing:4px; margin-bottom:12px; }
-    footer p { font-size:13px; color:var(--muted); }
+/* ÁREAS */
+.areas-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--ob);margin-top:56px;}
+.area{background:var(--n);padding:44px 32px;transition:background .3s;}
+.area:hover{background:var(--s);}
+.area-bar{width:24px;height:1px;background:var(--o);margin-bottom:24px;}
+.area h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;margin-bottom:12px;}
+.area p{font-size:12px;color:var(--d);line-height:1.7;}
 
-    /* RESPONSIVE */
-    @media(max-width:768px){
-      .navbar{padding:0 20px;}
-      .menu{display:none;}
-      .hero-content{margin-left:5%;}
-      .stats{grid-template-columns:1fr 1fr;}
-      .stat{padding:24px 20px;}
-      .section{padding:60px 20px;}
-      .fti-split{grid-template-columns:1fr;}
-      .cta-wrap{padding:60px 20px;}
-      .form-row{grid-template-columns:1fr;}
-    }
-  </style>
+/* WAR ROOM */
+.wr-section{background:var(--s);border-top:1px solid var(--ob);border-bottom:1px solid var(--ob);}
+.wr-inner{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center;}
+.wr-left h2{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,3.5vw,54px);font-weight:300;line-height:1.1;margin-bottom:20px;}
+.wr-left p{font-size:14px;color:var(--d);line-height:1.9;max-width:420px;}
+.wr-tiempo{margin-top:32px;display:flex;align-items:center;gap:16px;padding:18px 24px;border:1px solid rgba(197,160,89,.15);max-width:260px;}
+.wr-h{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:var(--o);line-height:1;}
+.wr-hlbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--d);}
+.wr-eventos{display:flex;flex-direction:column;gap:1px;background:rgba(197,160,89,.07);}
+.wr-ev{background:var(--s);padding:18px 24px;display:flex;align-items:center;gap:16px;border-left:2px solid transparent;transition:all .3s;}
+.wr-ev:hover{background:var(--s2);border-left-color:var(--o);}
+.wr-ev-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.wr-ev-name{font-size:13px;}
+.wr-ev-state{margin-left:auto;font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+
+/* MAPA DE MADUREZ */
+.madurez-track{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--ob);margin-top:56px;}
+.mad{background:var(--n);padding:40px 28px;position:relative;transition:background .3s;}
+.mad:hover{background:var(--s);}
+.mad-nivel{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:var(--d);margin-bottom:16px;}
+.mad-num{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;line-height:1;margin-bottom:12px;}
+.mad-name{font-size:14px;font-weight:400;margin-bottom:10px;}
+.mad-desc{font-size:12px;color:var(--d);line-height:1.7;}
+.mad-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--o);}
+.mad.active{background:var(--s2);}
+.mad.active .mad-num{color:var(--o);}
+
+/* METODOLOGÍA */
+.met-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--ob);margin-top:56px;}
+.met{background:var(--n);padding:48px 40px;}
+.met-n{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:rgba(197,160,89,.12);line-height:1;margin-bottom:18px;}
+.met h3{font-size:15px;font-weight:400;margin-bottom:10px;}
+.met p{font-size:13px;color:var(--d);line-height:1.8;}
+
+/* DIAGNÓSTICO */
+.diag-wrap{display:grid;grid-template-columns:1fr 1fr;gap:120px;align-items:start;}
+.diag-left .h2{margin-bottom:22px;}
+.diag-left p{font-size:14px;color:var(--d);line-height:1.9;max-width:400px;}
+.diag-precio{margin-top:32px;font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:2px;color:var(--o);}
+
+/* FORM */
+.form{display:flex;flex-direction:column;gap:12px;}
+.form-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form input,.form select{background:var(--s);border:none;border-bottom:1px solid rgba(197,160,89,.15);color:var(--t);padding:14px 0;font-family:'Inter',sans-serif;font-size:13px;font-weight:300;outline:none;width:100%;transition:border-color .3s;}
+.form input::placeholder{color:var(--d);}
+.form select option{background:var(--s);}
+.form input:focus,.form select:focus{border-bottom-color:var(--o);}
+.form-btn{background:var(--o);color:var(--n);border:none;padding:16px;font-family:'Inter',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:opacity .3s;margin-top:6px;}
+.form-btn:hover{opacity:.85;}
+.form-nota{font-size:11px;color:var(--d);}
+
+/* FOOTER */
+footer{border-top:1px solid var(--ob);padding:44px 80px;display:flex;justify-content:space-between;align-items:center;}
+.foot-logo{font-family:'Cormorant Garamond',serif;font-size:17px;letter-spacing:5px;color:var(--o);}
+footer p{font-size:11px;color:var(--d);}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .eng-grid{grid-template-columns:repeat(3,1fr);}
+  .wr-inner{grid-template-columns:1fr;gap:56px;}
+  .prot-grid{grid-template-columns:1fr 1fr;}
+  .madurez-track{grid-template-columns:1fr 1fr;}
+  .diag-wrap{grid-template-columns:1fr;gap:64px;}
+}
+@media(max-width:768px){
+  nav{padding:0 24px;}
+  .nav-r a{display:none;}
+  .hero-body{padding:0 24px 72px;}
+  .hero-dash{grid-template-columns:1fr 1fr;}
+  .c{padding:72px 24px;}
+  .prot-grid{grid-template-columns:1fr;}
+  .prot-item{border-right:none;border-bottom:1px solid var(--ob);}
+  .eng-grid{grid-template-columns:1fr 1fr;}
+  .areas-row{grid-template-columns:1fr;}
+  .area{border-bottom:1px solid var(--ob);}
+  .madurez-track{grid-template-columns:1fr;}
+  .met-grid{grid-template-columns:1fr;}
+  .form-2{grid-template-columns:1fr;}
+  footer{flex-direction:column;gap:14px;padding:36px 24px;text-align:center;}
+}
+</style>
 </head>
 <body>
+<a href="#diagnostico" class="skip-link">Ir al contenido principal</a>
 
 <!-- NAV -->
-<header>
-  <div class="navbar">
-    <div class="logo">MESAN <span>Ω</span></div>
-    <nav class="menu">
-      <a href="#escudo">Fiscal Shield</a>
-      <a href="#motores">Motores</a>
-      <a href="#precios">Precios</a>
-      <a href="#diagnostico">Diagnóstico</a>
-    </nav>
-    <a class="menu-cta" href="#diagnostico">Iniciar</a>
+<nav>
+  <div class="logo">MESAN <em>Ω</em></div>
+  <div class="nav-r">
+    <a href="#engines">Engines</a>
+    <a href="#warroom">War Room</a>
+    <a href="#madurez">Madurez</a>
+    <a href="#diagnostico">Diagnóstico</a>
+    <a class="nav-btn" href="#diagnostico">Activar Evaluación Ω</a>
   </div>
-</header>
+</nav>
 
 <!-- HERO -->
 <section class="hero">
-  <svg class="hero-bg" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#050505"/>
-        <stop offset="100%" stop-color="#111111"/>
-      </linearGradient>
-      <radialGradient id="goldGlow">
-        <stop offset="0%" stop-color="#C5A059" stop-opacity=".4"/>
-        <stop offset="100%" stop-color="#C5A059" stop-opacity="0"/>
-      </radialGradient>
-      <filter id="blur"><feGaussianBlur stdDeviation="20"/></filter>
-    </defs>
-
-    <!-- Fondo -->
-    <rect width="1920" height="1080" fill="url(#bg)"/>
-
-    <!-- Luz ambiente dorada -->
-    <circle cx="1300" cy="350" r="500" fill="url(#goldGlow)" filter="url(#blur)"/>
-
-    <!-- Ventanales rascacielos -->
-    <rect x="1100" y="80" width="700" height="550" fill="#242424" opacity=".35"/>
-    <line x1="1270" y1="80" x2="1270" y2="630" stroke="#555"/>
-    <line x1="1450" y1="80" x2="1450" y2="630" stroke="#555"/>
-    <line x1="1630" y1="80" x2="1630" y2="630" stroke="#555"/>
-
-    <!-- Skyline CDMX -->
-    <rect x="1180" y="350" width="40" height="280" fill="#333"/>
-    <rect x="1240" y="280" width="50" height="350" fill="#444"/>
-    <rect x="1320" y="320" width="60" height="310" fill="#2f2f2f"/>
-    <rect x="1400" y="250" width="70" height="380" fill="#444"/>
-    <rect x="1510" y="290" width="60" height="340" fill="#2b2b2b"/>
-
-    <!-- Mesa ejecutiva -->
-    <polygon points="400,760 1500,760 1750,980 250,980" fill="#0f0f0f" stroke="#2e2e2e" stroke-width="2"/>
-    <polygon points="500,790 1450,790 1600,940 350,940" fill="#171717" opacity=".5"/>
-
-    <!-- Dashboard holográfico -->
-    <circle cx="980" cy="770" r="16" fill="#C5A059"/>
-    <circle cx="700" cy="610" r="10" fill="#C5A059"/>
-    <circle cx="1250" cy="560" r="10" fill="#C5A059"/>
-    <circle cx="1450" cy="700" r="10" fill="#C5A059"/>
-    <line x1="980" y1="770" x2="700" y2="610" stroke="#C5A059" stroke-width="4"/>
-    <line x1="980" y1="770" x2="1250" y2="560" stroke="#C5A059" stroke-width="4"/>
-    <line x1="980" y1="770" x2="1450" y2="700" stroke="#C5A059" stroke-width="4"/>
-
-    <!-- Gráfica cyan -->
-    <polyline points="760,700 820,650 900,670 980,600 1080,620 1160,560" fill="none" stroke="#00D4FF" stroke-width="5"/>
-
-    <!-- Mano ejecutiva -->
-    <ellipse cx="1460" cy="610" rx="190" ry="65" fill="#B89F8B" opacity=".65" transform="rotate(-20 1460 610)"/>
-
-    <!-- Brillo central -->
-    <circle cx="980" cy="770" r="60" fill="url(#goldGlow)"/>
-  </svg>
-
-  <div class="hero-content">
-    <span class="hero-tag">MESAN Ω — Sistema de Inteligencia Empresarial</span>
-    <h1>Centro de Prevención<br/>de <em>Pérdidas</em><br/>Empresariales</h1>
-    <p>Detecta riesgos fiscales, laborales y financieros antes de que generen pérdidas. El SAT puede bloquear tu cuenta sin orden judicial — nosotros lo detectamos primero.</p>
-    <div class="hero-btns">
-      <a href="#diagnostico" class="btn btn-primary">Diagnóstico Empresarial — $999 MXN</a>
-      <a href="#motores" class="btn btn-secondary">Ver Motores Ω</a>
+  <div class="hero-img" role="img" aria-label="Sala de juntas ejecutiva MESAN Ω">
+    <picture>
+      <source
+        srcset="./assets/images/watermarked_img_13351919239569379463.webp"
+        type="image/webp"/>
+      <img
+        src="./assets/images/watermarked_img_13351919239569379463.png"
+        alt="Sala de juntas ejecutiva"
+        fetchpriority="high"
+        decoding="async"
+        width="1920" height="1080"/>
+    </picture>
+  </div>
+  <div class="hero-velo"></div>
+  <div class="hero-body">
+    <div class="hero-tag">Sistema Operativo de Inteligencia Empresarial</div>
+    <h1>Decisiones con información.<br/>Operaciones bajo control.</h1>
+    <p class="hero-sub">MESAN Ω es la plataforma que gobierna el riesgo operativo, regulatorio y financiero de su empresa en tiempo real.</p>
+    <a class="hero-cta" href="#diagnostico">Activar Evaluación Ω — $999 MXN</a>
+    <div class="hero-dash">
+      <div class="dash-item">
+        <div class="dash-area">Fiscal</div>
+        <div class="dash-estado"><span class="dash-dot dot-ok"></span>Monitoreado</div>
+      </div>
+      <div class="dash-item">
+        <div class="dash-area">Laboral</div>
+        <div class="dash-estado"><span class="dash-dot dot-ok"></span>Monitoreado</div>
+      </div>
+      <div class="dash-item">
+        <div class="dash-area">Operativo</div>
+        <div class="dash-estado"><span class="dash-dot dot-ok"></span>Monitoreado</div>
+      </div>
+      <div class="dash-item">
+        <div class="dash-area">Continuidad</div>
+        <div class="dash-estado"><span class="dash-dot dot-w"></span>Estable</div>
+      </div>
     </div>
   </div>
 </section>
 
-  <div class="hero-content">
-    <div class="hero-tag">Sistema de Inteligencia Empresarial — México y LATAM</div>
-    <h1>¿Cuánto dinero puede perder<br/>tu empresa <em>sin saberlo?</em></h1>
-    <p>MESAN Ω detecta riesgos SAT, IMSS, REPSE, laborales y financieros antes de que se conviertan en pérdidas. El SAT puede bloquear tu cuenta sin orden judicial. Nosotros lo detectamos primero.</p>
-    <div class="hero-btns">
-      <a class="btn btn-primary" href="#diagnostico">Diagnóstico Empresarial — $999 MXN</a>
-      <a class="btn btn-secondary" href="#motores">Ver Motores Ω</a>
-    </div>
-  </div>
-</div>
+<hr/>
 
-<!-- TICKER -->
-<div class="ticker">
-  <div class="ticker-badge">⚠ Alerta</div>
-  <div class="ticker-track">
-    <span>SAT puede bloquear cuentas sin orden judicial</span>
-    <span>·</span>
-    <span>EFOS/EDOS detectados en cadena de proveedores</span>
-    <span>·</span>
-    <span>Opinión negativa SAT = riesgo de bloqueo inmediato</span>
-    <span>·</span>
-    <span>REPSE vence sin aviso</span>
-    <span>·</span>
-    <span>Diferencias ISR generan créditos fiscales automáticos</span>
-    <span>·</span>
-    <span>SAT puede bloquear cuentas sin orden judicial</span>
-    <span>·</span>
-    <span>EFOS/EDOS detectados en cadena de proveedores</span>
-    <span>·</span>
-    <span>Opinión negativa SAT = riesgo de bloqueo inmediato</span>
-    <span>·</span>
-    <span>REPSE vence sin aviso</span>
-    <span>·</span>
-    <span>Diferencias ISR generan créditos fiscales automáticos</span>
-  </div>
-</div>
-
-<!-- STATS -->
-<div class="stats">
-  <div class="stat">
-    <div class="stat-n">10<span>+</span></div>
-    <div class="stat-l">Motores de Inteligencia</div>
-  </div>
-  <div class="stat">
-    <div class="stat-n">4 <span>países</span></div>
-    <div class="stat-l">MX · CO · PE · CL</div>
-  </div>
-  <div class="stat">
-    <div class="stat-n">72<span>h</span></div>
-    <div class="stat-l">Protocolo de Crisis</div>
-  </div>
-  <div class="stat">
-    <div class="stat-n">0<span>s</span></div>
-    <div class="stat-l">Intervención Manual</div>
-  </div>
-</div>
-
-<!-- FISCAL SHIELD -->
-<div id="escudo" class="section">
-  <div class="s-tag">// Fiscal Shield v2.1</div>
-  <h2 class="s-title">El único sistema que detecta<br/>bloqueo bancario antes de que ocurra</h2>
-  <p class="s-sub">Mientras otros sistemas reportan lo que ya pasó, MESAN Ω predice lo que va a pasar en los próximos 30, 60, 90 y 180 días.</p>
-
-  <div class="alert-box">
-    <div>⚠</div>
-    <div>
-      <h4>Cambio regulatorio — México 2024</h4>
-      <p>El SAT ahora puede bloquear cuentas bancarias sin necesidad de orden judicial. Solo necesita detectar inconsistencias en declaraciones o una opinión negativa de cumplimiento. Tiempo de reacción de la empresa: menos de 72 horas.</p>
-    </div>
-  </div>
-
-  <div class="fti-split">
-    <div>
-      <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:white;margin-bottom:16px;">Fiscal Threat Index (FTI)</h3>
-      <p style="color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:28px;">Escala 0–100 que mide tu probabilidad real de contingencia fiscal. Calcula opinión SAT, EFOS/EDOS, créditos fiscales, diferencias IVA/ISR y buzón tributario.</p>
-      <div class="fti-scale">
-        <div><span style="color:#00ff9d;">0–20</span> CONTROLADO</div>
-        <div><span style="color:#00d4ff;">21–40</span> OBSERVACIÓN</div>
-        <div><span style="color:#ffb800;">41–60</span> VULNERABLE</div>
-        <div><span style="color:#ff7a00;">61–80</span> ALTO RIESGO</div>
-        <div><span style="color:#ff3b5c;">81–100</span> BLOQUEO INMINENTE</div>
+<!-- LO QUE PROTEGEMOS -->
+<section id="protege">
+  <div class="c">
+    <div class="tag">Lo que protegemos</div>
+    <h2 class="h2">Cuatro dimensiones de<br/><em>control empresarial</em></h2>
+    <div class="prot-grid">
+      <div class="prot-item">
+        <div class="prot-n">01</div>
+        <h3>Continuidad Operativa</h3>
+        <p>Supervisión de los factores que pueden interrumpir la operación. Identificación temprana y respuesta estructurada.</p>
+      </div>
+      <div class="prot-item">
+        <div class="prot-n">02</div>
+        <h3>Cumplimiento Regulatorio</h3>
+        <p>Monitoreo de obligaciones fiscales, laborales y de seguridad social. Control preventivo antes de que surjan observaciones.</p>
+      </div>
+      <div class="prot-item">
+        <div class="prot-n">03</div>
+        <h3>Protección Patrimonial</h3>
+        <p>Análisis de exposición financiera y contractual. Identificación de condiciones que afectan el patrimonio empresarial.</p>
+      </div>
+      <div class="prot-item">
+        <div class="prot-n">04</div>
+        <h3>Gobierno Corporativo</h3>
+        <p>Evaluación de la madurez de gobernanza. Indicadores ejecutivos para decisiones en junta directiva.</p>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-      <div style="background:var(--surface);border:1px solid rgba(197,160,89,0.1);padding:24px;">
-        <div style="font-family:'Playfair Display',serif;font-size:32px;color:var(--red);">FTI</div>
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:8px;">Fiscal Threat Index</div>
+  </div>
+</section>
+
+<hr/>
+
+<!-- OMEGA ENGINES -->
+<section id="engines" class="eng-section">
+  <div class="c">
+    <div class="eng-header">
+      <div>
+        <div class="tag">Omega Engines</div>
+        <h2 class="h2">Diez motores de<br/><em>inteligencia activa</em></h2>
       </div>
-      <div style="background:var(--surface);border:1px solid rgba(197,160,89,0.1);padding:24px;">
-        <div style="font-family:'Playfair Display',serif;font-size:32px;color:#ffb800;">BFR</div>
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:8px;">Bank Freeze Risk</div>
+      <div class="eng-version">MESAN Ω v3.1 — 10 engines activos</div>
+    </div>
+    <div class="eng-grid">
+      <div class="eng">
+        <div class="eng-code">SAT_INTELLIGENCE</div>
+        <div class="eng-name">SAT Intelligence Engine</div>
+        <div class="eng-desc">Supervisión de cumplimiento fiscal, opiniones SAT y cadena de valor regulatoria en tiempo real.</div>
+        <div class="eng-status">Activo</div>
       </div>
-      <div style="background:var(--surface);border:1px solid rgba(197,160,89,0.1);padding:24px;">
-        <div style="font-family:'Playfair Display',serif;font-size:32px;colo
+      <div class="eng">
+        <div class="eng-code">COMPLIANCE</div>
+        <div class="eng-name">Compliance Engine</div>
+        <div class="eng-desc">Verificación normativa multi-dimensional. Matriz de control con priorización automática.</div>
+        <div class="eng-status">Activo</div>
+      </div>
+      <div class="eng">
+        <div class="eng-code">LABOR</div>
+        <div class="eng-name">Labor Engine</div>
+        <div class="eng-desc">Monitoreo de obligaciones patronales, IMSS, REPSE y STPS. Supervisión de expedientes laborales.</div>
+        <div class="eng-status">Activo</div>
+      </div>
+      <div class="eng">
+        <div class="eng-code">RISK</div>
+        <div class="eng-name">Risk Engine</div>
+        <div class="eng-desc">Governance Score multi-dimensional. Análisis de riesgo concentrado por área de exposición.</div>
+        <div class="eng-status">Activo</div>
+      </div>
+      <div class="eng">
+        <div class="eng-code">CONTINUITY</div>
+        <div class="eng-name">Continuity Engine</div>
+        <div class="eng-desc">Evaluación de resiliencia operativa. Liquidez, concentración bancaria y dependencia de proveedores.</div>
+        <div class="eng-status">Activo</div>
+      </div>
+      <div class="eng">
+        <div class="eng-code">PREDICTIVE</div>
+        <div class="eng-name">Predictive Engine</div>
+        <div class="eng-desc">Proyección de escenarios a 30, 60, 90 y 180 días. Anticipación de condiciones regulatorias y operativas.</div>
+        <div class="eng-status">Activo</div>
+      </div>
+      <div class="eng">
+        <div class="eng-code">WAR_ROOM</div>
+        <div class="eng-name">War Room Engine</div>
+        <div class="eng-desc">Activación automática ante eventos críticos. Protocolo estructurado con tiempos y responsables definidos.</div>
+        <div class="eng-status">Activo</div>
+      </div>
+      <div class="eng">
+        <div class="eng-code">CONTRACT</div>
+        <div class="eng-name">Contract Engine</div>
+        <div class="eng-desc">Revisión de cláusulas críticas, vencimientos y condiciones que generan exposición patrimonial.</div>
+        <div class="eng-status">Activo</div>
+      </div>
+      <div class="eng">
+        <div class="eng-code">FINANCIAL_EXPOSURE</div>
+        <div class="eng-name">Financial Exposure Engine</div>
+        <div class="eng-desc">Análisis de exposición económica y monitoreo de indicadores de continuidad financiera empresarial.</div>
+        <div class="eng-status">Activo</div>
+      </div>
+      <div class="eng">
+        <div class="eng-code">SUPPLIER_INTEL</div>
+        <div class="eng-name">Supplier Intelligence Engine</div>
+        <div class="eng-desc">Supervisión de la cadena de proveedores. Detección de concentración y riesgo de contagio operativo.</div>
+        <div class="eng-status">Activo</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr/>
+
+<!-- DECLARACIÓN -->
+<section>
+  <div class="c">
+    <div class="decl">
+      <blockquote>"Las decisiones críticas no se toman cuando llega la situación. Se toman antes."</blockquote>
+      <p>La mayoría de las exposiciones empresariales no surgen de un evento único. Se acumulan gradualmente: una obligación no monitoreada, una cláusula no revisada, una señal regulat
