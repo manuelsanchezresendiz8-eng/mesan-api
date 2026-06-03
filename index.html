@@ -8,9 +8,7 @@
   <meta property="og:title" content="MESAN Ω — Prevención de Pérdidas Empresariales"/>
   <meta property="og:description" content="El único sistema en México que detecta bloqueo bancario SAT antes de que ocurra."/>
   <meta property="og:type" content="website"/>
-  
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
   <style>
     :root {
       --bg: #0A0B0D;
@@ -57,21 +55,19 @@
     }
     .menu-cta:hover { background:var(--gold); color:#0A0B0D; }
 
-    /* HERO - Imagen integrada */
+    /* HERO */
     .hero {
-      height:100vh; 
-      min-height:850px;
+      height:100vh; min-height:850px;
       background:
-        linear-gradient(rgba(10,11,13,0.55), rgba(10,11,13,0.85)),
-        url('https://i.imgur.com/jNaph.png') center/cover no-repeat;
-      display:flex; 
-      align-items:center;
+        linear-gradient(rgba(10,11,13,0.60), rgba(10,11,13,0.88)),
+        url('1000023351_3.png') center/cover no-repeat;
+      display:flex; align-items:center;
       position:relative;
       overflow:hidden;
     }
     .hero::after {
       content:'';
-      position:absolute; bottom:0; left:0; right:0; height:140px;
+      position:absolute; bottom:0; left:0; right:0; height:120px;
       background:linear-gradient(transparent, var(--bg));
     }
     .hero-content {
@@ -96,33 +92,201 @@
     .hero h1 em { font-style:normal; color:var(--gold); }
     .hero p {
       font-size:1.2rem;
-      color:rgba(234,234,234,0.9);
+      color:rgba(234,234,234,0.85);
       margin-bottom:40px;
-      max-width:620px;
+      max-width:600px;
     }
     .hero-btns { display:flex; gap:16px; flex-wrap:wrap; }
     .btn {
-      padding:16px 36px; 
-      font-size:15px; 
-      font-weight:600;
-      display:inline-block; 
-      transition:all 0.3s;
-      border-radius:6px;
+      padding:16px 36px; font-size:15px; font-weight:600;
+      display:inline-block; transition:all 0.3s;
     }
     .btn-primary {
       background:linear-gradient(90deg,var(--gold),#e8c07a);
       color:#0A0B0D;
+      border-radius:6px;
     }
     .btn-secondary {
       background:transparent;
-      border:1px solid rgba(197,160,89,0.6);
+      border:1px solid rgba(197,160,89,0.5);
       color:var(--gold);
+      border-radius:6px;
     }
-    .btn:hover { transform:translateY(-3px); box-shadow:0 12px 28px rgba(197,160,89,0.3); }
+    .btn:hover { transform:translateY(-3px); box-shadow:0 12px 28px rgba(197,160,89,0.25); }
 
-    /* El resto de tu CSS se mantiene igual (ticker, stats, sections, etc.) */
-    /* ... (mantengo todo tu código original para no alargar demasiado) ... */
+    /* TICKER */
+    .ticker {
+      background:rgba(255,59,92,0.07);
+      border-top:1px solid rgba(255,59,92,0.2);
+      border-bottom:1px solid rgba(255,59,92,0.2);
+      padding:11px 0;
+      overflow:hidden;
+      display:flex; align-items:center; gap:20px;
+    }
+    .ticker-badge {
+      background:var(--red); color:white;
+      font-size:10px; font-weight:700;
+      letter-spacing:2px; text-transform:uppercase;
+      padding:4px 14px; white-space:nowrap;
+      flex-shrink:0; margin-left:20px;
+    }
+    .ticker-track {
+      display:flex; gap:60px;
+      animation:scroll 28s linear infinite;
+      white-space:nowrap;
+    }
+    .ticker-track span { font-size:12px; color:var(--muted); letter-spacing:1px; }
+    @keyframes scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
+    /* STATS */
+    .stats {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      border-bottom:1px solid rgba(197,160,89,0.1);
+    }
+    .stat {
+      padding:36px 50px;
+      border-right:1px solid rgba(197,160,89,0.1);
+    }
+    .stat:last-child { border-right:none; }
+    .stat-n {
+      font-family:'Playfair Display',serif;
+      font-size:42px; font-weight:700; color:white;
+    }
+    .stat-n span { color:var(--gold); }
+    .stat-l { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-top:4px; }
+
+    /* SECTIONS */
+    .section { padding:110px 50px; max-width:1400px; margin:0 auto; }
+    .s-tag { font-size:11px; color:var(--gold); text-transform:uppercase; letter-spacing:4px; margin-bottom:14px; }
+    .s-title { font-size:clamp(1.8rem,3vw,2.8rem); margin-bottom:16px; }
+    .s-sub { font-size:15px; color:var(--muted); max-width:520px; line-height:1.8; margin-bottom:60px; }
+
+    /* ALERT */
+    .alert-box {
+      border:1px solid rgba(255,59,92,0.3);
+      background:rgba(255,59,92,0.05);
+      padding:28px 36px;
+      display:flex; gap:20px; align-items:flex-start;
+      margin-bottom:56px;
+    }
+    .alert-box h4 { color:var(--red); font-family:'Playfair Display',serif; font-size:17px; margin-bottom:6px; }
+    .alert-box p { color:var(--muted); font-size:13px; line-height:1.7; }
+
+    /* FTI SCALE */
+    .fti-split { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+    .fti-scale { font-size:13px; line-height:2.2; font-family:'Inter',monospace; }
+    .fti-scale span { display:inline-block; width:80px; font-weight:600; }
+
+    /* ENGINES */
+    .engines-wrap { background:var(--surface); border-top:1px solid rgba(197,160,89,0.1); border-bottom:1px solid rgba(197,160,89,0.1); }
+    .engines-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+      gap:1px; background:rgba(197,160,89,0.08);
+    }
+    .eng {
+      background:var(--bg); padding:30px 28px;
+      transition:background 0.2s;
+      border-left:3px solid transparent;
+    }
+    .eng:hover { background:#131619; border-left-color:var(--gold); }
+    .eng-code { font-size:10px; color:var(--gold); letter-spacing:3px; text-transform:uppercase; margin-bottom:8px; }
+    .eng-name { font-family:'Playfair Display',serif; font-size:17px; color:white; margin-bottom:8px; }
+    .eng-desc { font-size:13px; color:var(--muted); line-height:1.6; }
+    .eng-v {
+      float:right; margin-top:-30px;
+      font-size:10px; color:rgba(197,160,89,0.6);
+      border:1px solid rgba(197,160,89,0.2);
+      padding:2px 8px; letter-spacing:1px;
+    }
+
+    /* PRICING */
+    .pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; }
+    .price-card {
+      background:var(--surface);
+      border:1px solid rgba(197,160,89,0.1);
+      padding:40px 32px;
+      position:relative;
+    }
+    .price-card.featured { border-color:var(--gold); }
+    .feat-badge {
+      position:absolute; top:-1px; right:24px;
+      background:var(--gold); color:#0A0B0D;
+      font-size:10px; font-weight:700; letter-spacing:2px;
+      padding:4px 12px; text-transform:uppercase;
+    }
+    .price-plan { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:3px; margin-bottom:16px; }
+    .price-amount { font-family:'Playfair Display',serif; font-size:48px; color:white; margin-bottom:4px; }
+    .price-amount sub { font-size:18px; color:var(--muted); font-family:'Inter',sans-serif; }
+    .price-note { font-size:12px; color:var(--muted); margin-bottom:32px; }
+    .price-list { list-style:none; margin-bottom:32px; }
+    .price-list li {
+      font-size:13px; color:var(--muted);
+      padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.04);
+      display:flex; gap:10px; align-items:flex-start;
+    }
+    .price-list li::before { content:'→'; color:var(--gold); flex-shrink:0; }
+    .price-btn {
+      display:block; text-align:center;
+      padding:14px; font-weight:600; font-size:13px;
+      letter-spacing:1px; text-transform:uppercase;
+      transition:all 0.3s;
+    }
+    .price-btn.solid { background:linear-gradient(90deg,var(--gold),#e8c07a); color:#0A0B0D; }
+    .price-btn.outline { border:1px solid rgba(197,160,89,0.4); color:var(--gold); }
+    .price-btn:hover { transform:translateY(-2px); }
+
+    /* FORM */
+    .cta-wrap { text-align:center; padding:110px 50px; }
+    .cta-wrap h2 { font-size:clamp(2rem,3.5vw,3rem); margin-bottom:14px; }
+    .cta-wrap p { color:var(--muted); font-size:16px; max-width:560px; margin:0 auto 48px; line-height:1.8; }
+    .diag-form {
+      max-width:520px; margin:0 auto;
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .diag-form input, .diag-form select {
+      width:100%; padding:14px 18px;
+      background:var(--surface);
+      border:1px solid rgba(197,160,89,0.15);
+      color:var(--text);
+      font-family:'Inter',sans-serif; font-size:14px;
+      outline:none; border-radius:6px;
+      transition:border-color 0.2s;
+    }
+    .diag-form input:focus, .diag-form select:focus { border-color:var(--gold); }
+    .diag-form input::placeholder { color:var(--muted); }
+    .diag-form select option { background:var(--surface); }
+    .form-submit {
+      padding:16px; font-size:15px; font-weight:700;
+      font-family:'Inter',sans-serif;
+      letter-spacing:1px; text-transform:uppercase;
+      background:linear-gradient(90deg,var(--gold),#e8c07a);
+      color:#0A0B0D; border:none; border-radius:6px;
+      cursor:pointer; transition:all 0.3s;
+    }
+    .form-submit:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(197,160,89,0.3); }
+
+    /* FOOTER */
+    footer {
+      text-align:center; padding:60px 20px;
+      background:#08090b;
+      border-top:1px solid rgba(197,160,89,0.1);
+    }
+    .footer-logo { font-family:'Playfair Display',serif; font-size:22px; color:var(--gold); letter-spacing:4px; margin-bottom:12px; }
+    footer p { font-size:13px; color:var(--muted); }
+
+    /* RESPONSIVE */
+    @media(max-width:768px){
+      .navbar{padding:0 20px;}
+      .menu{display:none;}
+      .hero-content{margin-left:5%;}
+      .stats{grid-template-columns:1fr 1fr;}
+      .stat{padding:24px 20px;}
+      .section{padding:60px 20px;}
+      .fti-split{grid-template-columns:1fr;}
+      .cta-wrap{padding:60px 20px;}
+      .form-row{grid-template-columns:1fr;}
+    }
   </style>
 </head>
 <body>
@@ -141,7 +305,7 @@
   </div>
 </header>
 
-<!-- HERO con la imagen integrada correctamente -->
+<!-- HERO -->
 <div class="hero">
   <div class="hero-content">
     <div class="hero-tag">Sistema de Inteligencia Empresarial — México y LATAM</div>
@@ -154,8 +318,126 @@
   </div>
 </div>
 
-<!-- El resto de tu contenido (Ticker, Stats, Fiscal Shield, Motores, Pricing, etc.) se mantiene igual -->
-<!-- ... (puedes copiar y pegar el resto de tu HTML original a partir de aquí) ... -->
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-badge">⚠ Alerta</div>
+  <div class="ticker-track">
+    <span>SAT puede bloquear cuentas sin orden judicial</span>
+    <span>·</span>
+    <span>EFOS/EDOS detectados en cadena de proveedores</span>
+    <span>·</span>
+    <span>Opinión negativa SAT = riesgo de bloqueo inmediato</span>
+    <span>·</span>
+    <span>REPSE vence sin aviso</span>
+    <span>·</span>
+    <span>Diferencias ISR generan créditos fiscales automáticos</span>
+    <span>·</span>
+    <span>SAT puede bloquear cuentas sin orden judicial</span>
+    <span>·</span>
+    <span>EFOS/EDOS detectados en cadena de proveedores</span>
+    <span>·</span>
+    <span>Opinión negativa SAT = riesgo de bloqueo inmediato</span>
+    <span>·</span>
+    <span>REPSE vence sin aviso</span>
+    <span>·</span>
+    <span>Diferencias ISR generan créditos fiscales automáticos</span>
+  </div>
+</div>
 
-</body>
-</html>
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-n">10<span>+</span></div>
+    <div class="stat-l">Motores de Inteligencia</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">4 <span>países</span></div>
+    <div class="stat-l">MX · CO · PE · CL</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">72<span>h</span></div>
+    <div class="stat-l">Protocolo de Crisis</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">0<span>s</span></div>
+    <div class="stat-l">Intervención Manual</div>
+  </div>
+</div>
+
+<!-- FISCAL SHIELD -->
+<div id="escudo" class="section">
+  <div class="s-tag">// Fiscal Shield v2.1</div>
+  <h2 class="s-title">El único sistema que detecta<br/>bloqueo bancario antes de que ocurra</h2>
+  <p class="s-sub">Mientras otros sistemas reportan lo que ya pasó, MESAN Ω predice lo que va a pasar en los próximos 30, 60, 90 y 180 días.</p>
+
+  <div class="alert-box">
+    <div>⚠</div>
+    <div>
+      <h4>Cambio regulatorio — México 2024</h4>
+      <p>El SAT ahora puede bloquear cuentas bancarias sin necesidad de orden judicial. Solo necesita detectar inconsistencias en declaraciones o una opinión negativa de cumplimiento. Tiempo de reacción de la empresa: menos de 72 horas.</p>
+    </div>
+  </div>
+
+  <div class="fti-split">
+    <div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:white;margin-bottom:16px;">Fiscal Threat Index (FTI)</h3>
+      <p style="color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:28px;">Escala 0–100 que mide tu probabilidad real de contingencia fiscal. Calcula opinión SAT, EFOS/EDOS, créditos fiscales, diferencias IVA/ISR y buzón tributario.</p>
+      <div class="fti-scale">
+        <div><span style="color:#00ff9d;">0–20</span> CONTROLADO</div>
+        <div><span style="color:#00d4ff;">21–40</span> OBSERVACIÓN</div>
+        <div><span style="color:#ffb800;">41–60</span> VULNERABLE</div>
+        <div><span style="color:#ff7a00;">61–80</span> ALTO RIESGO</div>
+        <div><span style="color:#ff3b5c;">81–100</span> BLOQUEO INMINENTE</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="background:var(--surface);border:1px solid rgba(197,160,89,0.1);padding:24px;">
+        <div style="font-family:'Playfair Display',serif;font-size:32px;color:var(--red);">FTI</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:8px;">Fiscal Threat Index</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid rgba(197,160,89,0.1);padding:24px;">
+        <div style="font-family:'Playfair Display',serif;font-size:32px;color:#ffb800;">BFR</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:8px;">Bank Freeze Risk</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid rgba(197,160,89,0.1);padding:24px;">
+        <div style="font-family:'Playfair Display',serif;font-size:32px;color:var(--green);">+43</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:8px;">Survival Days</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid rgba(197,160,89,0.1);padding:24px;">
+        <div style="font-family:'Playfair Display',serif;font-size:32px;color:var(--accent);">90d</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:8px;">Predictive Risk</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOTORES -->
+<div id="motores" class="engines-wrap">
+  <div class="section">
+    <div class="s-tag">// 10 Engines Activos</div>
+    <h2 class="s-title">Motores de Inteligencia Ω</h2>
+    <p class="s-sub">Cada motor analiza una dimensión crítica. Juntos generan una visión 360° de tu exposición operativa.</p>
+    <div class="engines-grid">
+      <div class="eng"><div class="eng-v">v2.1</div><div class="eng-code">FISCAL_SHIELD</div><div class="eng-name">Fiscal Shield</div><div class="eng-desc">Detecta riesgo de bloqueo bancario SAT. FTI, Bank Freeze Risk y Survival Days Engine.</div></div>
+      <div class="eng"><div class="eng-v">v1.0</div><div class="eng-code">FISCAL_SENTINEL</div><div class="eng-name">Fiscal Sentinel</div><div class="eng-desc">Monitoreo continuo SAT, créditos fiscales y diferencias IVA/ISR en tiempo real.</div></div>
+      <div class="eng"><div class="eng-v">v3.1</div><div class="eng-code">GOVERNANCE</div><div class="eng-name">Governance Engine</div><div class="eng-desc">Score de gobernanza 0–100 con risk breakdown, benchmark y trend histórico.</div></div>
+      <div class="eng"><div class="eng-v">v3.1</div><div class="eng-code">LABOR_SHIELD</div><div class="eng-name">Labor Shield</div><div class="eng-desc">Auditoría IMSS, REPSE y LFT. Contingencias laborales antes de demandas.</div></div>
+      <div class="eng"><div class="eng-v">v2.0</div><div class="eng-code">COMPLIANCE_VERIFY</div><div class="eng-name">Compliance Verify</div><div class="eng-desc">Verificación normativa multi-dimensional con acciones priorizadas.</div></div>
+      <div class="eng"><div class="eng-v">v4.4</div><div class="eng-code">CONTRACTUAL_RISK</div><div class="eng-name">Contractual Risk</div><div class="eng-desc">Análisis de contratos críticos, vencimientos y cláusulas de exposición.</div></div>
+      <div class="eng"><div class="eng-v">v3.4</div><div class="eng-code">REMEDIATION</div><div class="eng-name">Remediation Engine</div><div class="eng-desc">Plan de remediación priorizado por impacto económico con seguimiento.</div></div>
+      <div class="eng"><div class="eng-v">v1.0</div><div class="eng-code">CONTINUITY</div><div class="eng-name">Continuity Engine</div><div class="eng-desc">Continuidad operativa. Resiliencia bancaria, concentración y liquidez.</div></div>
+      <div class="eng"><div class="eng-v">v2.0</div><div class="eng-code">POLICY_AUDIT</div><div class="eng-name">Policy Audit</div><div class="eng-desc">Auditoría de políticas internas y cumplimiento de marcos regulatorios.</div></div>
+      <div class="eng"><div class="eng-v">AI</div><div class="eng-code">EXECUTIVE_NARRATIVE</div><div class="eng-name">Executive Narrative</div><div class="eng-desc">Reportes ejecutivos automáticos con lenguaje CFO para juntas directivas.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div id="precios" class="section">
+  <div class="s-tag">// Inversión</div>
+  <h2 class="s-title">Protección Empresarial</h2>
+  <p class="s-sub">Una contingencia fiscal no detectada puede costar entre $500,000 y $5,000,000 MXN. El diagnóstico cuesta $999.</p>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-plan">Diagnóstico</div>
+      <
