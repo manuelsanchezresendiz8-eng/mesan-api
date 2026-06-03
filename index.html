@@ -441,3 +441,118 @@
     <div class="price-card">
       <div class="price-plan">Diagnóstico</div>
       <
+<div class="price-amount">$999 <sub>MXN</sub></div>
+      <div class="price-note">Pago único · Entrega 24 horas</div>
+      <ul class="price-list">
+        <li>Fiscal Threat Index completo</li>
+        <li>Bank Freeze Risk Score</li>
+        <li>Governance Score 360°</li>
+        <li>Reporte ejecutivo PDF</li>
+        <li>Plan de acción priorizado</li>
+      </ul>
+      <a class="price-btn solid" href="#diagnostico">Solicitar Diagnóstico</a>
+    </div>
+    <div class="price-card featured">
+      <div class="feat-badge">Recomendado</div>
+      <div class="price-plan">Monitoreo Mensual</div>
+      <div class="price-amount">$2,999 <sub>MXN</sub></div>
+      <div class="price-note">Por mes · Sin contratos anuales</div>
+      <ul class="price-list">
+        <li>Todo del plan Diagnóstico</li>
+        <li>Monitoreo continuo 30 días</li>
+        <li>Alertas SAT en tiempo real</li>
+        <li>Predictive Risk 90 días</li>
+        <li>War Room automático</li>
+        <li>Soporte ejecutivo directo</li>
+      </ul>
+      <a class="price-btn solid" href="#diagnostico">Activar Monitoreo</a>
+    </div>
+    <div class="price-card">
+      <div class="price-plan">Enterprise</div>
+      <div class="price-amount" style="font-size:32px;padding-top:8px;">A consulta</div>
+      <div class="price-note">Multi-empresa · LATAM</div>
+      <ul class="price-list">
+        <li>Múltiples empresas</li>
+        <li>Country Packs CO · PE · CL</li>
+        <li>Dashboard ejecutivo</li>
+        <li>Score Bancario Empresarial</li>
+        <li>Integración API directa</li>
+      </ul>
+      <a class="price-btn outline" href="mailto:contacto@mesanomega.com">Contactar</a>
+    </div>
+  </div>
+</div>
+
+<!-- CTA + FORM -->
+<div id="diagnostico" class="cta-wrap">
+  <div class="s-tag" style="justify-content:center;display:flex;">// Iniciar Diagnóstico</div>
+  <h2>¿Tu empresa está blindada<br/>o en riesgo?</h2>
+  <p>Completa el formulario. En 24 horas recibes tu diagnóstico con Fiscal Threat Index, Governance Score y plan de acción.</p>
+  <form class="diag-form" id="diagForm">
+    <div class="form-row">
+      <input type="text" name="nombre" placeholder="Nombre completo" required/>
+      <input type="text" name="empresa" placeholder="Empresa" required/>
+    </div>
+    <input type="email" name="email" placeholder="Correo empresarial" required/>
+    <input type="tel" name="whatsapp" placeholder="WhatsApp"/>
+    <select name="sector">
+      <option value="" disabled selected>Sector de tu empresa</option>
+      <option>Manufactura</option><option>Maquila</option><option>Construcción</option>
+      <option>Servicios</option><option>Retail / Comercio</option><option>Tecnología</option>
+      <option>Logística</option><option>Financiero</option><option>Salud</option><option>Otro</option>
+    </select>
+    <select name="empleados">
+      <option value="" disabled selected>Número de empleados</option>
+      <option>1–10</option><option>11–50</option><option>51–200</option>
+      <option>201–500</option><option>500+</option>
+    </select>
+    <button type="submit" class="form-submit">Solicitar Diagnóstico — $999 MXN →</button>
+  </form>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">MESAN Ω</div>
+  <p>© 2026 MESAN Omega · Centro de Prevención de Pérdidas Empresariales</p>
+  <p style="margin-top:8px;">México y LATAM · Inteligencia Regulatoria Empresarial</p>
+</footer>
+
+<script>
+document.getElementById('diagForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = this.querySelector('button[type="submit"]');
+  const orig = btn.textContent;
+  btn.textContent = 'Procesando...';
+  btn.disabled = true;
+
+  const payload = {
+    nombre:    this.nombre.value,
+    empresa:   this.empresa.value,
+    email:     this.email.value,
+    whatsapp:  this.whatsapp.value,
+    sector:    this.sector.value,
+    empleados: this.empleados.value,
+  };
+
+  try {
+    const res = await fetch('https://mesan-api.onrender.com/api/leads', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      btn.textContent = '✓ Solicitud recibida — te contactamos en 24h';
+      btn.style.background = '#00ff9d';
+      btn.style.color = '#000';
+      this.reset();
+    } else { throw new Error(); }
+  } catch {
+    btn.textContent = 'Error — intenta de nuevo';
+    btn.style.background = '#ff3b5c';
+    btn.disabled = false;
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; }, 3000);
+  }
+});
+</script>
+</body>
+</html>
