@@ -58,69 +58,37 @@
     /* HERO */
     .hero {
       height:100vh; min-height:850px;
-      background:
-        radial-gradient(ellipse 80% 60% at 65% 45%, rgba(197,160,89,0.13) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 50% at 80% 15%, rgba(0,212,255,0.07) 0%, transparent 55%),
-        linear-gradient(160deg, #0f1015 0%, #0A0B0D 50%, #0d0a06 100%);
       display:flex; align-items:center;
       position:relative;
       overflow:hidden;
+      background:var(--bg);
     }
-    .hero::before {
+    .hero-visual-layer {
+      position:absolute;
+      inset:0;
+      z-index:1;
+      background-image:url('watermarked_img_13351919239569379463.png');
+      background-size:cover;
+      background-position:center;
+      filter:brightness(0.55) contrast(1.1);
+    }
+    .hero-visual-layer::after {
       content:'';
-      position:absolute; inset:0;
-      background-image:
-        linear-gradient(rgba(197,160,89,0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(197,160,89,0.035) 1px, transparent 1px);
-      background-size:80px 80px;
-      pointer-events:none;
+      position:absolute;
+      inset:0;
+      background:linear-gradient(90deg, rgba(10,11,13,0.75) 0%, rgba(10,11,13,0.3) 60%, rgba(10,11,13,0.1) 100%);
     }
     .hero::after {
       content:'';
-      position:absolute; bottom:0; left:0; right:0; height:160px;
+      position:absolute; bottom:0; left:0; right:0; height:200px;
       background:linear-gradient(transparent, var(--bg));
-      pointer-events:none;
+      pointer-events:none; z-index:5;
     }
-    .hero-orb {
-      position:absolute; right:7%; top:50%;
-      transform:translateY(-50%);
-      width:480px; height:480px; border-radius:50%;
-      background:radial-gradient(circle, rgba(197,160,89,0.12) 0%, rgba(197,160,89,0.04) 40%, transparent 70%);
-      border:1px solid rgba(197,160,89,0.1);
-      z-index:1;
-    }
-    .hero-orb::before {
-      content:''; position:absolute; inset:50px;
-      border-radius:50%; border:1px solid rgba(197,160,89,0.07);
-    }
-    .hero-orb::after {
-      content:''; position:absolute; inset:120px;
-      border-radius:50%;
-      background:radial-gradient(circle, rgba(0,212,255,0.09) 0%, transparent 60%);
-      border:1px solid rgba(0,212,255,0.06);
-    }
-    .hero-metrics {
-      position:absolute; right:7%; top:50%;
-      transform:translateY(-50%);
-      width:480px; height:480px; z-index:2;
-    }
-    .hm {
-      position:absolute;
-      background:rgba(15,16,21,0.9);
-      border:1px solid rgba(197,160,89,0.18);
-      padding:14px 20px;
-      backdrop-filter:blur(8px);
-    }
-    .hm-val { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; line-height:1; }
-    .hm-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-top:5px; }
-    .hm1 { top:12%; left:8%; }
-    .hm2 { top:40%; right:3%; }
-    .hm3 { bottom:25%; left:3%; }
-    .hm4 { bottom:12%; right:10%; }
     .hero-content {
-      max-width:760px;
+      max-width:660px;
       margin-left:8%;
-      z-index:2;
+      z-index:10;
+      position:relative;
     }
     .hero-tag {
       font-size:12px;
@@ -354,13 +322,8 @@
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-orb"></div>
-  <div class="hero-metrics">
-    <div class="hm hm1"><div class="hm-val" style="color:var(--red);">87</div><div class="hm-lbl">Fiscal Threat Index</div></div>
-    <div class="hm hm2"><div class="hm-val" style="color:var(--gold);">78%</div><div class="hm-lbl">Bank Freeze Risk</div></div>
-    <div class="hm hm3"><div class="hm-val" style="color:var(--green);">43d</div><div class="hm-lbl">Survival Days</div></div>
-    <div class="hm hm4"><div class="hm-val" style="color:var(--accent);">ALTO</div><div class="hm-lbl">Predictive 90d</div></div>
-  </div>
+  <div class="hero-visual-layer"></div>
+
   <div class="hero-content">
     <div class="hero-tag">Sistema de Inteligencia Empresarial — México y LATAM</div>
     <h1>¿Cuánto dinero puede perder<br/>tu empresa <em>sin saberlo?</em></h1>
@@ -473,109 +436,12 @@
     <p class="s-sub">Cada motor analiza una dimensión crítica. Juntos generan una visión 360° de tu exposición operativa.</p>
     <div class="engines-grid">
       <div class="eng"><div class="eng-v">v2.1</div><div class="eng-code">FISCAL_SHIELD</div><div class="eng-name">Fiscal Shield</div><div class="eng-desc">Detecta riesgo de bloqueo bancario SAT. FTI, Bank Freeze Risk y Survival Days Engine.</div></div>
-      <div class="eng"><div class="eng-v">v1.0</div><div class="eng-code">FISCAL_SENTINEL</div><div class="eng-name">Fiscal Sentinel</div><div class="eng-desc">Monito
-        </div>
-    <div class="price-card featured">
-      <div class="feat-badge">Recomendado</div>
-      <div class="price-plan">Monitoreo Mensual</div>
-      <div class="price-amount">$2,999 <sub>MXN</sub></div>
-      <div class="price-note">Por mes · Sin contratos anuales</div>
-      <ul class="price-list">
-        <li>Todo del plan Diagnóstico</li>
-        <li>Monitoreo continuo 30 días</li>
-        <li>Alertas SAT en tiempo real</li>
-        <li>Predictive Risk 90 días</li>
-        <li>War Room automático</li>
-        <li>Soporte ejecutivo directo</li>
-      </ul>
-      <a class="price-btn solid" href="#diagnostico">Activar Monitoreo</a>
-    </div>
-    <div class="price-card">
-      <div class="price-plan">Enterprise</div>
-      <div class="price-amount" style="font-size:32px;padding-top:8px;">A consulta</div>
-      <div class="price-note">Multi-empresa · LATAM</div>
-      <ul class="price-list">
-        <li>Múltiples empresas</li>
-        <li>Country Packs CO · PE · CL</li>
-        <li>Dashboard ejecutivo</li>
-        <li>Score Bancario Empresarial</li>
-        <li>Integración API directa</li>
-      </ul>
-      <a class="price-btn outline" href="mailto:contacto@mesanomega.com">Contactar</a>
-    </div>
-  </div>
-</div>
-
-<!-- CTA + FORM -->
-<div id="diagnostico" class="cta-wrap">
-  <div class="s-tag" style="justify-content:center;display:flex;">// Iniciar Diagnóstico</div>
-  <h2>¿Tu empresa está blindada<br/>o en riesgo?</h2>
-  <p>Completa el formulario. En 24 horas recibes tu diagnóstico con Fiscal Threat Index, Governance Score y plan de acción.</p>
-  <form class="diag-form" id="diagForm">
-    <div class="form-row">
-      <input type="text" name="nombre" placeholder="Nombre completo" required/>
-      <input type="text" name="empresa" placeholder="Empresa" required/>
-    </div>
-    <input type="email" name="email" placeholder="Correo empresarial" required/>
-    <input type="tel" name="whatsapp" placeholder="WhatsApp"/>
-    <select name="sector">
-      <option value="" disabled selected>Sector de tu empresa</option>
-      <option>Manufactura</option><option>Maquila</option><option>Construcción</option>
-      <option>Servicios</option><option>Retail / Comercio</option><option>Tecnología</option>
-      <option>Logística</option><option>Financiero</option><option>Salud</option><option>Otro</option>
-    </select>
-    <select name="empleados">
-      <option value="" disabled selected>Número de empleados</option>
-      <option>1–10</option><option>11–50</option><option>51–200</option>
-      <option>201–500</option><option>500+</option>
-    </select>
-    <button type="submit" class="form-submit">Solicitar Diagnóstico — $999 MXN →</button>
-  </form>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">MESAN Ω</div>
-  <p>© 2026 MESAN Omega · Centro de Prevención de Pérdidas Empresariales</p>
-  <p style="margin-top:8px;">México y LATAM · Inteligencia Regulatoria Empresarial</p>
-</footer>
-
-<script>
-document.getElementById('diagForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const btn = this.querySelector('button[type="submit"]');
-  const orig = btn.textContent;
-  btn.textContent = 'Procesando...';
-  btn.disabled = true;
-
-  const payload = {
-    nombre:    this.nombre.value,
-    empresa:   this.empresa.value,
-    email:     this.email.value,
-    whatsapp:  this.whatsapp.value,
-    sector:    this.sector.value,
-    empleados: this.empleados.value,
-  };
-
-  try {
-    const res = await fetch('https://mesan-api.onrender.com/api/leads', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-    if (res.ok) {
-      btn.textContent = '✓ Solicitud recibida — te contactamos en 24h';
-      btn.style.background = '#00ff9d';
-      btn.style.color = '#000';
-      this.reset();
-    } else { throw new Error(); }
-  } catch {
-    btn.textContent = 'Error — intenta de nuevo';
-    btn.style.background = '#ff3b5c';
-    btn.disabled = false;
-    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; }, 3000);
-  }
-});
-</script>
-</body>
-</html>
+      <div class="eng"><div class="eng-v">v1.0</div><div class="eng-code">FISCAL_SENTINEL</div><div class="eng-name">Fiscal Sentinel</div><div class="eng-desc">Monitoreo continuo SAT, créditos fiscales y diferencias IVA/ISR en tiempo real.</div></div>
+      <div class="eng"><div class="eng-v">v3.1</div><div class="eng-code">GOVERNANCE</div><div class="eng-name">Governance Engine</div><div class="eng-desc">Score de gobernanza 0–100 con risk breakdown, benchmark y trend histórico.</div></div>
+      <div class="eng"><div class="eng-v">v3.1</div><div class="eng-code">LABOR_SHIELD</div><div class="eng-name">Labor Shield</div><div class="eng-desc">Auditoría IMSS, REPSE y LFT. Contingencias laborales antes de demandas.</div></div>
+      <div class="eng"><div class="eng-v">v2.0</div><div class="eng-code">COMPLIANCE_VERIFY</div><div class="eng-name">Compliance Verify</div><div class="eng-desc">Verificación normativa multi-dimensional con acciones priorizadas.</div></div>
+      <div class="eng"><div class="eng-v">v4.4</div><div class="eng-code">CONTRACTUAL_RISK</div><div class="eng-name">Contractual Risk</div><div class="eng-desc">Análisis de contratos críticos, vencimientos y cláusulas de exposición.</div></div>
+      <div class="eng"><div class="eng-v">v3.4</div><div class="eng-code">REMEDIATION</div><div class="eng-name">Remediation Engine</div><div class="eng-desc">Plan de remediación priorizado por impacto económico con seguimiento.</div></div>
+      <div class="eng"><div class="eng-v">v1.0</div><div class="eng-code">CONTINUITY</div><div class="eng-name">Continuity Engine</div><div class="eng-desc">Continuidad operativa. Resiliencia bancaria, concentración y liquidez.</div></div>
+      <div class="eng"><div class="eng-v">v2.0</div><div class="eng-code">POLICY_AUDIT</div><div class="eng-name">Policy Audit</div><div class="eng-desc">Auditoría de políticas internas y cumplimiento de marcos regulatorios.</div></div>
+      <div class="eng"><div class="eng-v">AI</div><div class="eng-code">EXECUTIVE_NARRATIVE</div><div class="eng-name">Executive Narrative</div><div class="eng-desc">Reportes ejecutivos automáticos
