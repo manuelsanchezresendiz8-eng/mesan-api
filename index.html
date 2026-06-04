@@ -1,68 +1,327 @@
-
-
-Ir al contenido
-Cómo usar Gmail con lectores de pantalla
-Conversaciones
-Se usó el 4% de 15 GB
-Condiciones · Privacidad · Políticas de programa
-Última actividad de la cuenta: hace 0 minutos
-Se está utilizando en 1 ubicación más · Detalles
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESAN Ω | War Room</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MESAN Ω | Sistema de Inteligencia Empresarial</title>
+<meta name="description" content="Plataforma de inteligencia operativa y gestión de riesgo empresarial para dirección general. México y LATAM."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 :root{
---bg:#040507;--gold:#C5A059;--text:#ddd9d0;
+  --negro:#040507;
+  --carb:#08090d;
+  --sup:#0e1017;
+  --oro:#C5A059;
+  --oro2:#d4b06a;
+  --borde:rgba(197,160,89,.12);
+  --texto:#ddd9d0;
+  --tenue:rgba(221,217,208,.42);
+  --rojo:#b03a2e;
+  --verde:#1a7a4a;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-.hero{
-position:relative;height:100vh;min-height:780px;
-display:flex;align-items:center;
-background:
-linear-gradient(180deg,rgba(3,4,6,.3),rgba(3,4,6,.7),rgba(3,4,6,.96)),
-url('hero.jpg');
-background-size:cover;background-position:center;
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--negro);color:var(--texto);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.75;-webkit-font-smoothing:antialiased;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:68px;padding:0 64px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(4,5,7,.93);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--borde);
 }
-.hero-content{max-width:760px;padding-left:8%;z-index:2}
-.hero-tag{color:var(--gold);letter-spacing:4px;font-size:11px;margin-bottom:20px}
-.hero h1{font-size:72px;line-height:1.05;font-weight:300}
-.hero p{margin-top:24px;max-width:620px;color:#bbb}
-.btn{display:inline-block;margin-top:30px;padding:16px 32px;background:var(--gold);color:#000;text-decoration:none}
-.omega-panel{
-position:absolute;right:8%;bottom:10%;
-width:340px;padding:28px;
-background:rgba(8,9,13,.55);
-border:1px solid rgba(197,160,89,.15);
-backdrop-filter:blur(24px);
+.logo{font-family:'Cormorant Garamond',serif;font-size:19px;letter-spacing:6px;font-weight:400;}
+.logo b{color:var(--oro);font-weight:400;}
+.nav-links{display:flex;gap:44px;}
+.nav-links a{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--tenue);text-decoration:none;transition:color .3s;}
+.nav-links a:hover{color:var(--texto);}
+.nav-accion{
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--negro);background:var(--oro);
+  text-decoration:none;padding:9px 26px;
+  transition:background .3s;
 }
-.omega-score{font-size:72px;color:var(--gold)}
+.nav-accion:hover{background:var(--oro2);}
+
+/* ── HERO ── */
+.hero {
+    height: 100vh;
+    min-height: 720px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--negro);
+}
+.hero-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid #C5A059;
+    background: linear-gradient(180deg, rgba(5,6,10,0.7) 0%, rgba(5,6,10,0.9) 100%),
+                url('hero.jpg') no-repeat center center / cover;
+}
+
+/* ── DIVISOR ── */
+hr{border:none;border-top:1px solid var(--borde);}
+
+/* ── CONTENEDOR ── */
+.c{max-width:1280px;margin:0 auto;padding:108px 64px;}
+
+/* ── ETIQUETA SECCIÓN ── */
+.etiq{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--oro);margin-bottom:14px;}
+
+/* ── TÍTULO SECCIÓN ── */
+.titulo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(34px,3.8vw,56px);font-weight:300;line-height:1.1;
+}
+.titulo i{font-style:italic;color:var(--oro);}
+
+/* ── ÁREAS ── */
+.areas{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:1px;background:var(--borde);
+  margin-top:52px;
+  border:1px solid var(--borde);
+}
+.area{
+  background:var(--negro);padding:44px 28px;
+  transition:background .3s;
+  border-left:2px solid transparent;
+}
+.area:hover{background:var(--sup);border-left-color:var(--oro);}
+.area-lin{width:20px;height:1px;background:var(--oro);margin-bottom:20px;}
+.area h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;margin-bottom:10px;}
+.area p{font-size:12px;color:var(--tenue);line-height:1.75;}
+
+/* ── PROCESO ── */
+.proc-fondo{background:var(--carb);border-top:1px solid var(--borde);border-bottom:1px solid var(--borde);}
+.proc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--borde);margin-top:52px;}
+.proc{background:var(--carb);padding:44px 36px;}
+.proc-n{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:rgba(197,160,89,.1);line-height:1;margin-bottom:16px;}
+.proc h3{font-size:14px;font-weight:500;letter-spacing:.5px;margin-bottom:10px;}
+.proc p{font-size:12px;color:var(--tenue);line-height:1.75;}
+
+/* ── DIAGNÓSTICO ── */
+.diag{display:grid;grid-template-columns:1fr 1fr;gap:96px;align-items:start;}
+.diag-txt .titulo{margin-bottom:18px;}
+.diag-txt p{font-size:14px;color:var(--tenue);line-height:1.85;max-width:400px;}
+.precio{margin-top:28px;font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:2px;color:var(--oro);}
+
+/* ── FORM ── */
+.form{display:flex;flex-direction:column;gap:10px;}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form input,.form select{
+  background:var(--sup);border:none;
+  border-bottom:1px solid rgba(197,160,89,.15);
+  color:var(--texto);padding:13px 0;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;
+  outline:none;width:100%;transition:border-color .3s;
+}
+.form input::placeholder{color:var(--tenue);}
+.form select option{background:var(--sup);}
+.form input:focus,.form select:focus{border-bottom-color:var(--oro);}
+.form-btn{
+  background:var(--oro);color:var(--negro);border:none;
+  padding:15px;font-family:'DM Sans',sans-serif;
+  font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;transition:background .3s;margin-top:4px;
+}
+.form-btn:hover{background:var(--oro2);}
+.form-nota{font-size:11px;color:var(--tenue);}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--borde);
+  padding:40px 64px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.foot-logo{font-family:'Cormorant Garamond',serif;font-size:17px;letter-spacing:5px;color:var(--oro);}
+footer p{font-size:11px;color:var(--tenue);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .ventanas-panel{width:55%;}
+  .areas{grid-template-columns:1fr 1fr;}
+  .proc-grid{grid-template-columns:1fr 1fr;}
+  .diag{grid-template-columns:1fr;gap:52px;}
+}
+@media(max-width:768px){
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .hero-cuerpo{padding:0 20px 72px;}
+  .hero-indicadores{display:none;}
+  .ventanas-panel{width:100%;top:0;height:45%;border-left:none;}
+  .c{padding:72px 20px;}
+  .areas{grid-template-columns:1fr;}
+  .area{border-left:none;border-bottom:2px solid transparent;}
+  .area:hover{border-bottom-color:var(--oro);}
+  .proc-grid{grid-template-columns:1fr;}
+  .f2{grid-template-columns:1fr;}
+  footer{flex-direction:column;gap:12px;padding:32px 20px;text-align:center;}
+}
+.hero-acciones{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:8px;}.hero-precio{font-family:"Cormorant Garamond",serif;font-size:22px;color:var(--oro);letter-spacing:2px;font-weight:400;}
 </style>
 </head>
 <body>
 
-<section class="hero">
-<div class="hero-content">
-<div class="hero-tag">INTELIGENCIA EMPRESARIAL · MÉXICO Y LATAM</div>
-<h1>La visibilidad que necesita para anticipar el riesgo.</h1>
-<p>MESAN Ω identifica riesgos fiscales, laborales, operativos y financieros antes de que afecten la continuidad de su organización.</p>
-<a class="btn" href="#diagnostico">ACTIVAR EVALUACIÓN Ω</a>
-</div>
+<!-- NAV -->
+<nav>
+  <div class="logo">MESAN <b>Ω</b></div>
+  <div class="nav-links">
+    <a href="#areas">Áreas de supervisión</a>
+    <a href="#proceso">Proceso</a>
+    <a href="#diagnostico">Diagnóstico</a>
+  </div>
+  <a class="nav-accion" href="#diagnostico">Activar Evaluación Ω</a>
+</nav>
 
-<div class="omega-panel">
-<div>ENTERPRISE RISK SCORE</div>
-<div class="omega-score">87</div>
-<div>Fiscal 94%</div>
-<div>Laboral 87%</div>
-<div>Operativo 71%</div>
-<div>Continuidad 62%</div>
-</div>
+<!-- HERO -->
+<section class="hero hero-container">
+  <div class="hero-escena">
+    <!-- Partículas -->
+    <div class="particulas">
+      <div class="particula"></div><div class="particula"></div>
+      <div class="particula"></div><div class="particula"></div>
+      <div class="particula"></div>
+    </div>
+    <!-- Ventanas con skyline -->
+    <div class="ventanas-panel">
+      <div class="ventana v1"></div>
+      <div class="ventana v2"></div>
+      <div class="ventana v3"></div>
+    </div>
+    <div class="reflejo"></div>
+    <!-- Luz ambiente -->
+    <div class="luz-amb"></div>
+    <!-- Mesa ejecutiva -->
+    <div class="mesa-wrap"><div class="mesa"></div></div>
+    <!-- Piso -->
+    <div class="piso"></div>
+  </div>
+
+  <div class="hero-overlay"></div>
+
+  <!-- Indicadores estado -->
+  <div class="hero-indicadores">
+    <div class="ind"><span class="ind-dot ok"></span>Fiscal</div>
+    <div class="ind"><span class="ind-dot ok"></span>Laboral</div>
+    <div class="ind"><span class="ind-dot ok"></span>Operativo</div>
+    <div class="ind"><span class="ind-dot warn"></span>Continuidad</div>
+  </div>
+
+  <div class="hero-cuerpo">
+    <div class="hero-etiq">Inteligencia Empresarial — México y LATAM</div>
+    <h1>Decisiones con información.<br/><i>Operaciones bajo control.</i></h1>
+    <p class="hero-desc">MESAN Ω identifica riesgos operativos, regulatorios y financieros antes de que afecten su negocio.</p>
+    <div class="hero-acciones">
+      <a class="btn-principal" href="#diagnostico">Activar Evaluación Ω</a>
+      <span class="hero-precio">$999 MXN</span>
+    </div>
+  </div>
 </section>
 
+<hr/>
+
+<!-- ÁREAS -->
+<section id="areas">
+  <div class="c">
+    <div class="etiq">Áreas de supervisión</div>
+    <h2 class="titulo">Cinco frentes bajo<br/><i>monitoreo permanente</i></h2>
+    <div class="areas">
+      <div class="area"><div class="area-lin"></div><h3>Fiscal</h3><p>Supervisión de cumplimiento ante el SAT. Monitoreo preventivo antes de que surjan observaciones.</p></div>
+      <div class="area"><div class="area-lin"></div><h3>Laboral</h3><p>Control de obligaciones patronales, IMSS, REPSE y STPS. Prevención antes de que escalen.</p></div>
+      <div class="area"><div class="area-lin"></div><h3>Operativo</h3><p>Evaluación de resiliencia: liquidez, concentración bancaria y dependencia de proveedores.</p></div>
+      <div class="area"><div class="area-lin"></div><h3>Financiero</h3><p>Análisis de exposición económica y proyección de indicadores de continuidad financiera.</p></div>
+      <div class="area"><div class="area-lin"></div><h3>Contractual</h3><p>Revisión de cláusulas críticas, vencimientos y condiciones que generan exposición patrimonial.</p></div>
+    </div>
+  </div>
+</section>
+
+<hr/>
+
+<!-- PROCESO -->
+<section id="proceso" class="proc-fondo">
+  <div class="c">
+    <div class="etiq">Proceso</div>
+    <h2 class="titulo">Cómo opera <i>MESAN Ω</i></h2>
+    <div class="proc-grid">
+      <div class="proc"><div class="proc-n">01</div><h3>Evaluación inicial</h3><p>Análisis estructurado de las principales áreas de exposición. Situación actual con impacto estimado.</p></div>
+      <div class="proc"><div class="proc-n">02</div><h3>Reporte ejecutivo</h3><p>Entrega en 24 horas con semáforo de situación y acciones ordenadas por prioridad para dirección general.</p></div>
+      <div class="proc"><div class="proc-n">03</div><h3>Monitoreo activo</h3><p>Seguimiento continuo con alertas preventivas ante cambios en el entorno regulatorio y operativo.</p></div>
+      <div class="proc"><div class="proc-n">04</div><h3>Inteligencia predictiva</h3><p>Proyección de escenarios a 30, 60, 90 y 180 días para anticipar condiciones relevantes.</p></div>
+      <div class="proc"><div class="proc-n">05</div><h3>War Room</h3><p>Activación ante eventos críticos con plan estructurado, responsables y tiempos definidos.</p></div>
+      <div class="proc"><div class="proc-n">06</div><h3>Gobierno del riesgo</h3><p>Indicadores para junta directiva. Información ejecutiva para decisiones de alto impacto.</p></div>
+    </div>
+  </div>
+</section>
+
+<hr/>
+
+<!-- DIAGNÓSTICO -->
+<section id="diagnostico">
+  <div class="c">
+    <div class="diag">
+      <div class="diag-txt">
+        <div class="etiq">Evaluación Ω</div>
+        <h2 class="titulo">¿Su empresa opera con<br/><i>visibilidad completa?</i></h2>
+        <p>Evaluación ejecutiva en menos de 24 horas. Semáforo de situación, nivel de madurez y plan de acción para dirección general.</p>
+        <div class="precio">Inversión: $999 MXN — Sin contratos. Sin compromisos.</div>
+      </div>
+      <form class="form" id="diagForm">
+        <div class="f2">
+          <input type="text" name="nombre" placeholder="Nombre completo" required/>
+          <input type="text" name="empresa" placeholder="Empresa" required/>
+        </div>
+        <input type="email" name="email" placeholder="Correo corporativo" required/>
+        <input type="tel" name="whatsapp" placeholder="WhatsApp"/>
+        <select name="sector">
+          <option value="" disabled selected>Sector</option>
+          <option>Manufactura</option><option>Maquila</option><option>Construcción</option>
+          <option>Servicios</option><option>Comercio</option><option>Logística</option>
+          <option>Tecnología</option><option>Financiero</option><option>Salud</option><option>Otro</option>
+        </select>
+        <select name="empleados">
+          <option value="" disabled selected>Número de empleados</option>
+          <option>1 – 10</option><option>11 – 50</option><option>51 – 200</option>
+          <option>201 – 500</option><option>Más de 500</option>
+        </select>
+        <button type="submit" class="form-btn">Activar Evaluación Ω — $999 MXN</button>
+        <p class="form-nota">Sus datos son confidenciales y no son compartidos con terceros.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-logo">MESAN Ω</div>
+  <p>© 2026 MESAN Omega · Inteligencia Operativa Empresarial · México y LATAM</p>
+</footer>
+
+<script>
+document.getElementById('diagForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=this.querySelector('button[type="submit"]');
+  const orig=btn.textContent;
+  btn.textContent='Procesando...';btn.disabled=true;
+  const payload={nombre:this.nombre.value,empresa:this.empresa.value,email:this.email.value,whatsapp:this.whatsapp.value,sector:this.sector.value,empleados:this.empleados.value};
+  try{
+    const res=await fetch('https://mesan-api.onrender.com/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(res.ok){btn.textContent='✓ Recibido — le contactamos en 24 horas';btn.style.cssText='background:#0d2018;color:#2ecc71;';this.reset();}
+    else throw new Error();
+  }catch{
+    btn.textContent='Error — intente de nuevo';btn.style.cssText='background:#1a0808;color:#e74c3c;';btn.disabled=false;
+    setTimeout(()=>{btn.textContent=orig;btn.style.cssText='';},3000);
+  }
+});
+</script>
 </body>
 </html>
-MESAN_Omega_Landing-1.html
-Mostrando MESAN_Omega_Landing-1.html
