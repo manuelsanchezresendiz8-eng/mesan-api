@@ -1,160 +1,280 @@
-# core/circuit_breaker.py -- MESAN Omega Circuit Breaker v1.0
+# core/circuit_breaker.py -- MESAN Omega v1.2 Enterprise
 """
-Enterprise Circuit Breaker MESAN Ω
-- Thread-safe via RLock
-- Estados tipados (CLOSED / OPEN / HALF_OPEN)
-- Half-Open single-probe control
-- Métricas integradas
-- Excepción específica CircuitOpenError
+Circuit Breaker de grado producción para MESAN Ω.
+
+Diseñado para operar en:
+- FastAPI (async, múltiples workers)
+- Celery (workers concurrentes)
+- Integración directa con engines MESAN Ω
+
+Estados: CLOSED → OPEN → HALF_OPEN → CLOSED
 """
 
 import time
 import logging
+import threading
 from enum import Enum
-from threading import RLock
-from typing import Any, Callable
+from typing import Callable, Any, Optional
 
 logger = logging.getLogger("mesan.circuit_breaker")
 
 
+# ── Estados ───────────────────────────────────────────────────────────────────
+
 class CircuitState(str, Enum):
-    CLOSED    = "CLOSED"
-    OPEN      = "OPEN"
-    HALF_OPEN = "HALF_OPEN"
+    CLOSED    = "CLOSED"      # Operación normal
+    OPEN      = "OPEN"        # Fallo activo — rechaza llamadas
+    HALF_OPEN = "HALF_OPEN"   # Probando recuperación
 
 
-class CircuitOpenError(Exception):
-    """Se lanza cuando el Circuit Breaker está OPEN."""
-    pass
+# ── Excepción ─────────────────────────────────────────────────────────────────
 
+class CircuitBreakerError(Exception):
+    """Se lanza cuando el circuito está OPEN y bloquea la llamada."""
+    def __init__(self, name: str, state: CircuitState):
+        self.name  = name
+        self.state = state
+        super().__init__(f"CircuitBreaker '{name}' está {state.value} — llamada bloqueada")
+
+
+# ── Circuit Breaker ───────────────────────────────────────────────────────────
 
 class CircuitBreaker:
     """
-    Circuit Breaker empresarial para engines MESAN Ω.
+    Circuit Breaker thread-safe para motores MESAN Ω.
 
-    Estados:
-      CLOSED    → operación normal
-      OPEN      → rechaza llamadas hasta que expire timeout
-      HALF_OPEN → permite una sola llamada de prueba
+    Parámetros:
+        name               : Identificador del motor protegido
+        failure_threshold  : Fallos consecutivos para abrir el circuito
+        recovery_timeout   : Segundos en OPEN antes de intentar HALF_OPEN
+        success_threshold  : Éxitos consecutivos en HALF_OPEN para cerrar
     """
 
     def __init__(
         self,
-        name:      str,
-        threshold: int   = 5,
-        timeout:   float = 30.0,
-    ) -> None:
-        self.name      = name
-        self.threshold = threshold
-        self.timeout   = timeout
+        name: str,
+        failure_threshold: int   = 3,
+        recovery_timeout:  float = 30.0,
+        success_threshold: int   = 2,
+    ):
+        self.name              = name
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout  = recovery_timeout
+        self.success_threshold = success_threshold
 
-        self._state:          CircuitState = CircuitState.CLOSED
-        self._failures:       int          = 0
-        self._opened_at:      float | None = None
-        self._half_open_probe: bool        = False
-        self._lock = RLock()
+        # Estado interno — solo mutable a través de métodos explícitos
+        self._state:             CircuitState   = CircuitState.CLOSED
+        self._failure_count:     int            = 0
+        self._success_count:     int            = 0
+        self._last_failure_time: Optional[float] = None
 
-        # Métricas
-        self._total_calls:    int = 0
-        self._total_failures: int = 0
-        self._total_successes: int = 0
-        self._open_events:    int = 0
+        # Thread safety — RLock permite reentrada desde el mismo thread
+        self._lock = threading.RLock()
 
-        logger.info("[CircuitBreaker] Initialized: %s | threshold=%d | timeout=%.1fs",
-                    name, threshold, timeout)
+        # Métricas internas observables
+        self._metrics = {
+            "success_count": 0,
+            "failure_count": 0,
+            "open_events":   0,
+            "close_events":  0,
+        }
 
-    # ── CORE EXECUTION ────────────────────────────────────────────────────────
+    # ── Lectura de estado (sin side effects) ──────────────────────────────────
 
-    def execute(self, fn: Callable, *args: Any, **kwargs: Any) -> Any:
+    def get_state(self) -> CircuitState:
+        """Retorna el estado actual. No muta nada."""
+        with self._lock:
+            return self._state
+
+    def is_open(self) -> bool:
+        return self.get_state() == CircuitState.OPEN
+
+    def is_closed(self) -> bool:
+        return self.get_state() == CircuitState.CLOSED
+
+    def is_half_open(self) -> bool:
+        return self.get_state() == CircuitState.HALF_OPEN
+
+    # ── Transición por timeout (mutación explícita) ───────────────────────────
+
+    def _try_recovery_transition(self):
         """
-        Ejecuta fn bajo protección del circuit breaker.
-        Lanza CircuitOpenError si el circuito está OPEN.
+        Evalúa si el circuito OPEN debe pasar a HALF_OPEN.
+        Solo se llama desde call() — mutación explícita bajo lock.
+        """
+        if self._state != CircuitState.OPEN:
+            return
+        if not self._last_failure_time:
+            return
+        elapsed = time.time() - self._last_failure_time
+        if elapsed >= self.recovery_timeout:
+            logger.info("[CB:%s] OPEN → HALF_OPEN (elapsed=%.1fs)", self.name, elapsed)
+            self._state         = CircuitState.HALF_OPEN
+            self._success_count = 0
+
+    # ── Ejecución protegida ───────────────────────────────────────────────────
+
+    def call(self, func: Callable, *args, **kwargs) -> Any:
+        """
+        Ejecuta func bajo protección del circuit breaker.
+        Lanza CircuitBreakerError si el circuito está OPEN
+        y el timeout de recuperación aún no se cumplió.
         """
         with self._lock:
-            self._total_calls += 1
-            self._check_state()
-
+            self._try_recovery_transition()
             if self._state == CircuitState.OPEN:
-                raise CircuitOpenError(
-                    f"Circuit '{self.name}' is OPEN — calls rejected"
-                )
+                logger.warning("[CB:%s] Llamada bloqueada — circuito OPEN", self.name)
+                raise CircuitBreakerError(self.name, self._state)
 
-            if self._state == CircuitState.HALF_OPEN:
-                if self._half_open_probe:
-                    raise CircuitOpenError(
-                        f"Circuit '{self.name}' is HALF_OPEN — probe in progress"
-                    )
-                self._half_open_probe = True
-
+        # Ejecución fuera del lock para no bloquear otros threads
         try:
-            result = fn(*args, **kwargs)
-            self._on_success()
+            result = func(*args, **kwargs)
+            self._record_success()
             return result
+
+        except CircuitBreakerError:
+            raise  # Re-lanzar sin registrar como fallo del motor
+
         except Exception as exc:
-            self._on_failure()
+            self._record_failure(exc)
             raise
 
-    # ── STATE TRANSITIONS ─────────────────────────────────────────────────────
+    # ── Registro de éxito (mutación explícita) ────────────────────────────────
 
-    def _check_state(self) -> None:
-        """Transiciona OPEN → HALF_OPEN si expiró el timeout."""
-        if (
-            self._state == CircuitState.OPEN
-            and self._opened_at is not None
-            and (time.monotonic() - self._opened_at) >= self.timeout
-        ):
-            self._state           = CircuitState.HALF_OPEN
-            self._half_open_probe = False
-            logger.info("[CircuitBreaker] %s → HALF_OPEN", self.name)
-
-    def _on_success(self) -> None:
+    def _record_success(self):
         with self._lock:
-            self._total_successes += 1
-            if self._state in (CircuitState.HALF_OPEN, CircuitState.CLOSED):
-                self._failures        = 0
-                self._half_open_probe = False
-                self._state           = CircuitState.CLOSED
-                logger.debug("[CircuitBreaker] %s → CLOSED", self.name)
+            self._metrics["success_count"] += 1
 
-    def _on_failure(self) -> None:
-        with self._lock:
-            self._total_failures += 1
-            self._failures       += 1
-
-            if (
-                self._state == CircuitState.HALF_OPEN
-                or self._failures >= self.threshold
-            ):
-                self._state           = CircuitState.OPEN
-                self._opened_at       = time.monotonic()
-                self._half_open_probe = False
-                self._open_events    += 1
-                logger.warning(
-                    "[CircuitBreaker] %s → OPEN | failures=%d | open_events=%d",
-                    self.name, self._failures, self._open_events
+            if self._state == CircuitState.HALF_OPEN:
+                self._success_count += 1
+                logger.info(
+                    "[CB:%s] Éxito en HALF_OPEN (%d/%d)",
+                    self.name, self._success_count, self.success_threshold,
                 )
+                if self._success_count >= self.success_threshold:
+                    self._transition_to_closed()
+            else:
+                # CLOSED: resetear contador de fallos en racha positiva
+                self._failure_count = 0
 
-    # ── OBSERVABILITY ─────────────────────────────────────────────────────────
+    # ── Registro de fallo (mutación explícita) ────────────────────────────────
 
-    def status(self) -> dict[str, Any]:
+    def _record_failure(self, exc: Exception):
+        with self._lock:
+            self._metrics["failure_count"] += 1
+            self._last_failure_time = time.time()
+
+            if self._state == CircuitState.HALF_OPEN:
+                logger.warning("[CB:%s] Fallo en HALF_OPEN → OPEN: %s", self.name, exc)
+                self._transition_to_open()
+                return
+
+            self._failure_count += 1
+            logger.warning(
+                "[CB:%s] Fallo %d/%d: %s",
+                self.name, self._failure_count, self.failure_threshold, exc,
+            )
+            if self._failure_count >= self.failure_threshold:
+                self._transition_to_open()
+
+    # ── Transiciones de estado (mutación explícita, siempre bajo lock) ────────
+
+    def _transition_to_open(self):
+        self._state = CircuitState.OPEN
+        self._metrics["open_events"] += 1
+        logger.error("[CB:%s] → OPEN (motor en fallo)", self.name)
+
+    def _transition_to_closed(self):
+        self._state         = CircuitState.CLOSED
+        self._failure_count = 0
+        self._success_count = 0
+        self._metrics["close_events"] += 1
+        logger.info("[CB:%s] → CLOSED (motor recuperado)", self.name)
+
+    # ── Reset manual ──────────────────────────────────────────────────────────
+
+    def reset(self):
+        """Reset manual del circuito. Útil en reinicio de motor o tests."""
+        with self._lock:
+            prev = self._state
+            self._state             = CircuitState.CLOSED
+            self._failure_count     = 0
+            self._success_count     = 0
+            self._last_failure_time = None
+            logger.info("[CB:%s] Reset manual desde %s → CLOSED", self.name, prev.value)
+
+    # ── Observabilidad ────────────────────────────────────────────────────────
+
+    def status(self) -> dict:
+        """Snapshot del estado actual. Lectura pura — no muta."""
         with self._lock:
             return {
-                "name":            self.name,
-                "state":           self._state.value,
-                "failures":        self._failures,
-                "threshold":       self.threshold,
-                "timeout":         self.timeout,
-                "total_calls":     self._total_calls,
-                "total_failures":  self._total_failures,
-                "total_successes": self._total_successes,
-                "open_events":     self._open_events,
+                "name":              self.name,
+                "state":             self._state.value,
+                "failure_count":     self._failure_count,
+                "failure_threshold": self.failure_threshold,
+                "recovery_timeout":  self.recovery_timeout,
+                "success_threshold": self.success_threshold,
+                "last_failure_at":   self._last_failure_time,
+                "metrics":           dict(self._metrics),
             }
 
-    def reset(self) -> None:
-        """Resetea el circuit breaker a CLOSED."""
+    def __repr__(self) -> str:
+        return f"<CircuitBreaker name={self.name!r} state={self._state.value}>"
+
+
+# ── Registry ──────────────────────────────────────────────────────────────────
+
+class CircuitBreakerRegistry:
+    """
+    Registro centralizado de circuit breakers por motor MESAN Ω.
+
+    Uso en engines:
+        from core.circuit_breaker import circuit_registry
+        cb = circuit_registry.get_or_create("FiscalSentinel")
+        cb.call(mi_funcion, arg1, arg2)
+    """
+
+    def __init__(self):
+        self._breakers: dict[str, CircuitBreaker] = {}
+        self._lock = threading.RLock()
+
+    def get_or_create(
+        self,
+        name: str,
+        failure_threshold: int   = 3,
+        recovery_timeout:  float = 30.0,
+        success_threshold: int   = 2,
+    ) -> CircuitBreaker:
         with self._lock:
-            self._state           = CircuitState.CLOSED
-            self._failures        = 0
-            self._opened_at       = None
-            self._half_open_probe = False
-        logger.info("[CircuitBreaker] %s reset to CLOSED", self.name)
+            if name not in self._breakers:
+                self._breakers[name] = CircuitBreaker(
+                    name=name,
+                    failure_threshold=failure_threshold,
+                    recovery_timeout=recovery_timeout,
+                    success_threshold=success_threshold,
+                )
+                logger.debug("[CBRegistry] Registrado: %s", name)
+            return self._breakers[name]
+
+    def get(self, name: str) -> Optional[CircuitBreaker]:
+        with self._lock:
+            return self._breakers.get(name)
+
+    def reset_all(self):
+        with self._lock:
+            for cb in self._breakers.values():
+                cb.reset()
+            logger.info("[CBRegistry] Reset global completado")
+
+    def all_status(self) -> dict:
+        with self._lock:
+            return {name: cb.status() for name, cb in self._breakers.items()}
+
+    def open_count(self) -> int:
+        with self._lock:
+            return sum(1 for cb in self._breakers.values() if cb.is_open())
+
+
+# ── Instancia global ──────────────────────────────────────────────────────────
+circuit_registry = CircuitBreakerRegistry()
