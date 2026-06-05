@@ -1,199 +1,297 @@
-# core/logger.py -- MESAN Omega v1.2
+# core/circuit_breaker.py -- MESAN Omega v2.1
 """
-Observability Layer — Logger enterprise MESAN Ω.
+Circuit Breaker enterprise para MESAN Ω.
 
-v1.2 — Merge Fase 1:
-- Agrega clear_context() — evita contaminación entre requests
-  en workers reutilizados (FastAPI, Celery, uvicorn multi-worker)
-- Mantiene compatibilidad completa con v1.1
+v2.1 — Merge Fase 1:
+- listener_count agregado a status()
+- API pública compatible: call(), reset(), status()
+- Arquitectura de listeners nativa (sin monkey patching)
+- Eventos: OPEN, HALF_OPEN, CLOSED
 """
 
-import os
+import time
 import logging
-import contextvars
-from typing import Optional, Any
+import threading
+from enum import Enum
+from typing import Callable, Any, Dict, List, Optional
 
-# ── Configuración ─────────────────────────────────────────────────────────────
-
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
-ENV       = os.getenv("ENV", "production")
-
-_LEVEL_MAP = {
-    "DEBUG":    logging.DEBUG,
-    "INFO":     logging.INFO,
-    "WARNING":  logging.WARNING,
-    "ERROR":    logging.ERROR,
-    "CRITICAL": logging.CRITICAL,
-}
-
-# ── Context propagation global (async-safe) ───────────────────────────────────
-
-trace_context:  contextvars.ContextVar[Optional[str]] = contextvars.ContextVar("trace_id",  default=None)
-tenant_context: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar("tenant_id", default=None)
-engine_context: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar("engine_id", default=None)
+logger = logging.getLogger("mesan.circuit_breaker")
 
 
-def set_trace_id(trace_id: str):
-    trace_context.set(trace_id)
+# ══════════════════════════════════════════════════════════════════════════════
+# ESTADOS Y EVENTOS
+# ══════════════════════════════════════════════════════════════════════════════
 
-def set_tenant_id(tenant_id: str):
-    tenant_context.set(tenant_id)
+class CircuitState(str, Enum):
+    CLOSED    = "CLOSED"
+    OPEN      = "OPEN"
+    HALF_OPEN = "HALF_OPEN"
 
-def set_engine_id(engine_id: str):
-    engine_context.set(engine_id)
 
-def get_trace_id() -> Optional[str]:
-    return trace_context.get()
+class CircuitEvent(str, Enum):
+    OPENED    = "OPEN"
+    CLOSED    = "CLOSED"
+    HALF_OPEN = "HALF_OPEN"
 
-def get_tenant_id() -> Optional[str]:
-    return tenant_context.get()
 
-def clear_context():
+# ══════════════════════════════════════════════════════════════════════════════
+# EXCEPCIÓN
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CircuitBreakerError(Exception):
+    def __init__(self, name: str, state: CircuitState):
+        self.name  = name
+        self.state = state
+        super().__init__(f"CircuitBreaker '{name}' está {state.value} — llamada bloqueada")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CIRCUIT BREAKER
+# ══════════════════════════════════════════════════════════════════════════════
+
+CircuitListener = Callable[["CircuitBreaker", CircuitEvent, dict], None]
+
+
+class CircuitBreaker:
     """
-    Limpia los 3 contextvars del worker actual.
+    Circuit Breaker thread-safe con listener nativo.
 
-    CRÍTICO para workers reutilizados. Sin esta llamada, el trace_id /
-    tenant_id / engine_id de un request anterior contamina el siguiente
-    request en el mismo worker.
+    Firma de listener:
+        def handler(cb: CircuitBreaker, event: CircuitEvent, payload: dict): ...
+    """
 
-    Uso en FastAPI:
-        @app.middleware("http")
-        async def context_cleanup(request, call_next):
+    def __init__(
+        self,
+        name:              str,
+        failure_threshold: int   = 3,
+        recovery_timeout:  float = 30.0,
+        success_threshold: int   = 2,
+    ):
+        self.name              = name
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout  = recovery_timeout
+        self.success_threshold = success_threshold
+
+        self._state:             CircuitState    = CircuitState.CLOSED
+        self._failure_count:     int             = 0
+        self._success_count:     int             = 0
+        self._last_failure_time: Optional[float] = None
+
+        self._lock      = threading.RLock()
+        self._listeners: List[CircuitListener] = []
+
+        self._metrics = {
+            "success_count": 0,
+            "failure_count": 0,
+            "open_events":   0,
+            "close_events":  0,
+            "half_events":   0,
+        }
+
+    # ── Listener API ──────────────────────────────────────────────────────────
+
+    def add_listener(self, listener: CircuitListener):
+        with self._lock:
+            self._listeners.append(listener)
+            logger.debug("[CB:%s] Listener registrado: %s", self.name, listener.__name__)
+
+    def remove_listener(self, listener: CircuitListener):
+        with self._lock:
+            if listener in self._listeners:
+                self._listeners.remove(listener)
+
+    def _notify(self, event: CircuitEvent, payload: dict):
+        with self._lock:
+            listeners = list(self._listeners)
+        for listener in listeners:
             try:
-                return await call_next(request)
-            finally:
-                clear_context()
+                listener(self, event, payload)
+            except Exception as exc:
+                logger.error("[CB:%s] Error en listener %s: %s",
+                             self.name, listener.__name__, exc)
 
-    Uso en Celery:
-        @task_postrun.connect
-        def cleanup(sender, **kwargs):
-            clear_context()
-    """
-    trace_context.set(None)
-    tenant_context.set(None)
-    engine_context.set(None)
+    # ── Lectura de estado ─────────────────────────────────────────────────────
+
+    def get_state(self) -> CircuitState:
+        with self._lock:
+            return self._state
+
+    def is_open(self)      -> bool: return self.get_state() == CircuitState.OPEN
+    def is_closed(self)    -> bool: return self.get_state() == CircuitState.CLOSED
+    def is_half_open(self) -> bool: return self.get_state() == CircuitState.HALF_OPEN
+
+    # ── Transición por timeout ────────────────────────────────────────────────
+
+    def _try_recovery_transition(self):
+        if self._state != CircuitState.OPEN:
+            return
+        if not self._last_failure_time:
+            return
+        elapsed = time.time() - self._last_failure_time
+        if elapsed >= self.recovery_timeout:
+            logger.info("[CB:%s] OPEN → HALF_OPEN (elapsed=%.1fs)", self.name, elapsed)
+            self._state         = CircuitState.HALF_OPEN
+            self._success_count = 0
+            self._metrics["half_events"] += 1
+            self._pending_notify = (CircuitEvent.HALF_OPEN, {"elapsed_seconds": elapsed})
+
+    # ── Ejecución protegida ───────────────────────────────────────────────────
+
+    def call(self, func: Callable, *args, **kwargs) -> Any:
+        self._pending_notify = None
+        with self._lock:
+            self._try_recovery_transition()
+            if self._state == CircuitState.OPEN:
+                logger.warning("[CB:%s] Llamada bloqueada — OPEN", self.name)
+                raise CircuitBreakerError(self.name, self._state)
+
+        if self._pending_notify:
+            self._notify(*self._pending_notify)
+            self._pending_notify = None
+
+        try:
+            result = func(*args, **kwargs)
+            self._record_success()
+            return result
+        except CircuitBreakerError:
+            raise
+        except Exception as exc:
+            self._record_failure(exc)
+            raise
+
+    # ── Éxito / Fallo ─────────────────────────────────────────────────────────
+
+    def _record_success(self):
+        notify = None
+        with self._lock:
+            self._metrics["success_count"] += 1
+            if self._state == CircuitState.HALF_OPEN:
+                self._success_count += 1
+                logger.info("[CB:%s] Éxito HALF_OPEN (%d/%d)",
+                            self.name, self._success_count, self.success_threshold)
+                if self._success_count >= self.success_threshold:
+                    self._transition_to_closed()
+                    notify = (CircuitEvent.CLOSED, {"recovered": True})
+            else:
+                self._failure_count = 0
+        if notify:
+            self._notify(*notify)
+
+    def _record_failure(self, exc: Exception):
+        notify = None
+        with self._lock:
+            self._metrics["failure_count"] += 1
+            self._last_failure_time = time.time()
+            if self._state == CircuitState.HALF_OPEN:
+                logger.warning("[CB:%s] Fallo HALF_OPEN → OPEN: %s", self.name, exc)
+                self._transition_to_open()
+                notify = (CircuitEvent.OPENED, {
+                    "reason": "half_open_failure", "error": str(exc),
+                    "failure_count": self._failure_count,
+                })
+            else:
+                self._failure_count += 1
+                logger.warning("[CB:%s] Fallo %d/%d: %s",
+                               self.name, self._failure_count, self.failure_threshold, exc)
+                if self._failure_count >= self.failure_threshold:
+                    self._transition_to_open()
+                    notify = (CircuitEvent.OPENED, {
+                        "reason": "threshold_reached", "error": str(exc),
+                        "failure_count": self._failure_count,
+                    })
+        if notify:
+            self._notify(*notify)
+
+    # ── Transiciones ──────────────────────────────────────────────────────────
+
+    def _transition_to_open(self):
+        self._state = CircuitState.OPEN
+        self._metrics["open_events"] += 1
+        logger.error("[CB:%s] → OPEN", self.name)
+
+    def _transition_to_closed(self):
+        self._state         = CircuitState.CLOSED
+        self._failure_count = 0
+        self._success_count = 0
+        self._metrics["close_events"] += 1
+        logger.info("[CB:%s] → CLOSED (recuperado)", self.name)
+
+    # ── Reset ─────────────────────────────────────────────────────────────────
+
+    def reset(self):
+        with self._lock:
+            prev = self._state
+            self._state             = CircuitState.CLOSED
+            self._failure_count     = 0
+            self._success_count     = 0
+            self._last_failure_time = None
+            logger.info("[CB:%s] Reset: %s → CLOSED", self.name, prev.value)
+
+    # ── Status ────────────────────────────────────────────────────────────────
+
+    def status(self) -> dict:
+        with self._lock:
+            return {
+                "name":              self.name,
+                "state":             self._state.value,
+                "failure_count":     self._failure_count,
+                "failure_threshold": self.failure_threshold,
+                "recovery_timeout":  self.recovery_timeout,
+                "success_threshold": self.success_threshold,
+                "last_failure_at":   self._last_failure_time,
+                "listener_count":    len(self._listeners),   # NUEVO v2.1
+                "metrics":           dict(self._metrics),
+            }
+
+    def __repr__(self) -> str:
+        return f"<CircuitBreaker name={self.name!r} state={self._state.value}>"
 
 
-# ── Formatters ────────────────────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════════
+# REGISTRY
+# ══════════════════════════════════════════════════════════════════════════════
 
-class MesanFormatter(logging.Formatter):
-    """Formatter con color para desarrollo. Resolución: LogRecord → contextvars → '-'"""
-
-    LEVEL_COLORS = {
-        logging.DEBUG:    "\x1b[38;5;244m",
-        logging.INFO:     "\x1b[38;5;39m",
-        logging.WARNING:  "\x1b[38;5;220m",
-        logging.ERROR:    "\x1b[38;5;196m",
-        logging.CRITICAL: "\x1b[1;38;5;196m",
-    }
-    GREY  = "\x1b[38;5;244m"
-    CYAN  = "\x1b[38;5;51m"
-    RESET = "\x1b[0m"
-
-    def format(self, record: logging.LogRecord) -> str:
-        color  = self.LEVEL_COLORS.get(record.levelno, self.RESET)
-        level  = f"{color}{record.levelname:<8}{self.RESET}"
-        name   = f"{self.CYAN}{record.name}{self.RESET}"
-
-        trace  = getattr(record, "trace_id", None) or trace_context.get()  or "-"
-        engine = getattr(record, "engine",   None) or engine_context.get() or "-"
-        tenant = getattr(record, "tenant",   None) or tenant_context.get() or "-"
-
-        parts = []
-        if trace  != "-": parts.append(f"trace={trace[:8]}")
-        if engine != "-": parts.append(f"engine={engine}")
-        if tenant != "-": parts.append(f"tenant={tenant}")
-        context = f" [{', '.join(parts)}]" if parts else ""
-
-        ts = self.formatTime(record, "%Y-%m-%d %H:%M:%S")
-        return f"{self.GREY}{ts}{self.RESET} {level} {name}{context}: {record.getMessage()}"
-
-
-class StructuredFormatter(logging.Formatter):
-    """Formatter plano para producción. Compatible con ELK / Datadog / Loki."""
-
-    def format(self, record: logging.LogRecord) -> str:
-        trace  = getattr(record, "trace_id", None) or trace_context.get()  or "-"
-        engine = getattr(record, "engine",   None) or engine_context.get() or "-"
-        tenant = getattr(record, "tenant",   None) or tenant_context.get() or "-"
-        ts     = self.formatTime(record, "%Y-%m-%dT%H:%M:%SZ")
-        return (
-            f"ts={ts} level={record.levelname} logger={record.name} "
-            f"trace_id={trace} engine={engine} tenant={tenant} "
-            f"msg={record.getMessage()}"
-        )
-
-
-# ── Setup global ──────────────────────────────────────────────────────────────
-
-def setup_logging():
-    root      = logging.getLogger()
-    level     = _LEVEL_MAP.get(LOG_LEVEL, logging.INFO)
-    formatter = MesanFormatter() if ENV != "production" else StructuredFormatter()
-    root.setLevel(level)
-    if root.handlers:
-        for h in root.handlers:
-            h.setFormatter(formatter)
-        return
-    handler = logging.StreamHandler()
-    handler.setLevel(level)
-    handler.setFormatter(formatter)
-    root.addHandler(handler)
-    for noisy in ("uvicorn.access", "uvicorn.error", "httpx"):
-        logging.getLogger(noisy).setLevel(logging.WARNING)
-
-
-# ── Factories ─────────────────────────────────────────────────────────────────
-
-def get_logger(name: str) -> logging.Logger:
-    return logging.getLogger(f"mesan.{name}")
-
-
-class EngineLogger:
-
-    def __init__(self, engine_name: str, tenant_id: Optional[str] = None):
-        self._logger   = logging.getLogger(f"mesan.engine.{engine_name.lower()}")
-        self._engine   = engine_name
-        self._tenant   = tenant_id or "global"
-        self._trace_id: Optional[str] = None
-
-    def _extra(self, extra: Optional[dict] = None) -> dict:
-        base: dict[str, Any] = {"engine": self._engine, "tenant": self._tenant}
-        if self._trace_id:
-            base["trace_id"] = self._trace_id
-        if extra:
-            base.update(extra)
-        return base
-
-    def debug(self,    msg, *a, extra=None, **kw): self._logger.debug(msg,    *a, extra=self._extra(extra), **kw)
-    def info(self,     msg, *a, extra=None, **kw): self._logger.info(msg,     *a, extra=self._extra(extra), **kw)
-    def warning(self,  msg, *a, extra=None, **kw): self._logger.warning(msg,  *a, extra=self._extra(extra), **kw)
-    def error(self,    msg, *a, extra=None, **kw): self._logger.error(msg,    *a, extra=self._extra(extra), **kw)
-    def critical(self, msg, *a, extra=None, **kw): self._logger.critical(msg, *a, extra=self._extra(extra), **kw)
-    def exception(self,msg, *a, extra=None, **kw): self._logger.exception(msg,*a, extra=self._extra(extra), **kw)
-
-    def with_trace(self, trace_id: str) -> "EngineLogger":
-        child = EngineLogger(self._engine, self._tenant)
-        child._trace_id = trace_id
-        return child
-
-
-class AuditLogger:
+class CircuitBreakerRegistry:
 
     def __init__(self):
-        self._logger = logging.getLogger("mesan.audit")
+        self._breakers: Dict[str, CircuitBreaker] = {}
+        self._lock = threading.RLock()
 
-    def log_event(self, event: str, tenant: str = "global",
-                  trace_id: str = "-", data: Optional[dict] = None):
-        self._logger.info("AUDIT", extra={
-            "event": event, "tenant": tenant,
-            "trace_id": trace_id, "engine": "AUDIT", "data": data or {},
-        })
+    def get_or_create(
+        self,
+        name:              str,
+        failure_threshold: int   = 3,
+        recovery_timeout:  float = 30.0,
+        success_threshold: int   = 2,
+    ) -> CircuitBreaker:
+        with self._lock:
+            if name not in self._breakers:
+                self._breakers[name] = CircuitBreaker(
+                    name=name,
+                    failure_threshold=failure_threshold,
+                    recovery_timeout=recovery_timeout,
+                    success_threshold=success_threshold,
+                )
+                logger.debug("[CBRegistry] Registrado: %s", name)
+            return self._breakers[name]
+
+    def get(self, name: str) -> Optional[CircuitBreaker]:
+        with self._lock:
+            return self._breakers.get(name)
+
+    def reset_all(self):
+        with self._lock:
+            for cb in self._breakers.values():
+                cb.reset()
+            logger.info("[CBRegistry] Reset global completado")
+
+    def all_status(self) -> dict:
+        with self._lock:
+            return {name: cb.status() for name, cb in self._breakers.items()}
+
+    def open_count(self) -> int:
+        with self._lock:
+            return sum(1 for cb in self._breakers.values() if cb.is_open())
 
 
-# ── Instancias globales ───────────────────────────────────────────────────────
-
-audit_logger = AuditLogger()
-
-def get_engine_logger(engine_name: str, tenant_id: Optional[str] = None) -> EngineLogger:
-    return EngineLogger(engine_name, tenant_id)
+circuit_registry = CircuitBreakerRegistry()
