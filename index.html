@@ -1,327 +1,2945 @@
+
+
+Ir al contenido
+Cómo usar Gmail con lectores de pantalla
+Conversaciones
+Se usó el 4% de 15 GB
+Condiciones · Privacidad · Políticas de programa
+Última actividad de la cuenta: hace 4 minutos
+Detalles
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MESAN Ω | Sistema de Inteligencia Empresarial</title>
-<meta name="description" content="Plataforma de inteligencia operativa y gestión de riesgo empresarial para dirección general. México y LATAM."/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-<style>
-:root{
-  --negro:#040507;
-  --carb:#08090d;
-  --sup:#0e1017;
-  --oro:#C5A059;
-  --oro2:#d4b06a;
-  --borde:rgba(197,160,89,.12);
-  --texto:#ddd9d0;
-  --tenue:rgba(221,217,208,.42);
-  --rojo:#b03a2e;
-  --verde:#1a7a4a;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:var(--negro);color:var(--texto);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.75;-webkit-font-smoothing:antialiased;}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MESAN Ω — Sistema Operativo Empresarial</title>
 
-/* ── NAV ── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:200;
-  height:68px;padding:0 64px;
-  display:flex;align-items:center;justify-content:space-between;
-  background:rgba(4,5,7,.93);
-  backdrop-filter:blur(24px);
-  border-bottom:1px solid var(--borde);
-}
-.logo{font-family:'Cormorant Garamond',serif;font-size:19px;letter-spacing:6px;font-weight:400;}
-.logo b{color:var(--oro);font-weight:400;}
-.nav-links{display:flex;gap:44px;}
-.nav-links a{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--tenue);text-decoration:none;transition:color .3s;}
-.nav-links a:hover{color:var(--texto);}
-.nav-accion{
-  font-size:11px;letter-spacing:2px;text-transform:uppercase;
-  color:var(--negro);background:var(--oro);
-  text-decoration:none;padding:9px 26px;
-  transition:background .3s;
-}
-.nav-accion:hover{background:var(--oro2);}
+  <!-- SEO -->
+  <meta name="description" content="MESAN Ω es el Sistema Operativo Empresarial de inteligencia continua para gobierno corporativo, riesgo fiscal, laboral y operativo. Nivel Consejo de Administración." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://mesan-api.onrender.com/" />
 
-/* ── HERO ── */
-.hero {
-    height: 100vh;
-    min-height: 720px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    background: var(--negro);
-}
-.hero-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-bottom: 2px solid #C5A059;
-    background: linear-gradient(180deg, rgba(5,6,10,0.7) 0%, rgba(5,6,10,0.9) 100%),
-                url('hero.jpg') no-repeat center center / cover;
-}
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mesan-api.onrender.com/" />
+  <meta property="og:title" content="MESAN Ω — Sistema Operativo Empresarial" />
+  <meta property="og:description" content="Inteligencia continua para gobierno corporativo, riesgo y supervisión ejecutiva. La plataforma que ve lo que su organización no puede ver." />
+  <meta property="og:image" content="https://mesan-api.onrender.com/hero.jpg" />
 
-/* ── DIVISOR ── */
-hr{border:none;border-top:1px solid var(--borde);}
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MESAN Ω — Sistema Operativo Empresarial" />
+  <meta name="twitter:description" content="Gobierno corporativo. Riesgo en tiempo real. War Room ejecutivo." />
+  <meta name="twitter:image" content="https://mesan-api.onrender.com/hero.jpg" />
 
-/* ── CONTENEDOR ── */
-.c{max-width:1280px;margin:0 auto;padding:108px 64px;}
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "MESAN Ω",
+    "url": "https://mesan-api.onrender.com",
+    "description": "Sistema Operativo Empresarial de inteligencia continua para gobierno corporativo y gestión de riesgo",
+    "foundingLocation": { "@type": "Place", "addressCountry": "MX" },
+    "serviceType": ["Gobierno Corporativo", "Gestión de Riesgo Empresarial", "Inteligencia Fiscal", "Cumplimiento Normativo"]
+  }
+  </script>
 
-/* ── ETIQUETA SECCIÓN ── */
-.etiq{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--oro);margin-bottom:14px;}
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=IBM+Plex+Mono:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-/* ── TÍTULO SECCIÓN ── */
-.titulo{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(34px,3.8vw,56px);font-weight:300;line-height:1.1;
-}
-.titulo i{font-style:italic;color:var(--oro);}
+  <style>
+    /* ============================================================
+       VARIABLES & RESET
+    ============================================================ */
+    :root {
+      --bg-void:     #010508;
+      --bg-deep:     #020a10;
+      --bg-panel:    #071523;
+      --bg-card:     #0a1e30;
+      --bg-hover:    #0d2840;
 
-/* ── ÁREAS ── */
-.areas{
-  display:grid;grid-template-columns:repeat(5,1fr);
-  gap:1px;background:var(--borde);
-  margin-top:52px;
-  border:1px solid var(--borde);
-}
-.area{
-  background:var(--negro);padding:44px 28px;
-  transition:background .3s;
-  border-left:2px solid transparent;
-}
-.area:hover{background:var(--sup);border-left-color:var(--oro);}
-.area-lin{width:20px;height:1px;background:var(--oro);margin-bottom:20px;}
-.area h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;margin-bottom:10px;}
-.area p{font-size:12px;color:var(--tenue);line-height:1.75;}
+      --cyan:        #00d4ff;
+      --cyan-dim:    rgba(0,212,255,0.12);
+      --cyan-mid:    rgba(0,212,255,0.25);
+      --amber:       #ff9500;
+      --amber-dim:   rgba(255,149,0,0.12);
+      --green:       #00e87a;
+      --green-dim:   rgba(0,232,122,0.12);
+      --red:         #ff3055;
+      --red-dim:     rgba(255,48,85,0.12);
+      --gold:        #d4a843;
 
-/* ── PROCESO ── */
-.proc-fondo{background:var(--carb);border-top:1px solid var(--borde);border-bottom:1px solid var(--borde);}
-.proc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--borde);margin-top:52px;}
-.proc{background:var(--carb);padding:44px 36px;}
-.proc-n{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:rgba(197,160,89,.1);line-height:1;margin-bottom:16px;}
-.proc h3{font-size:14px;font-weight:500;letter-spacing:.5px;margin-bottom:10px;}
-.proc p{font-size:12px;color:var(--tenue);line-height:1.75;}
+      --text-prime:  #ddeef5;
+      --text-body:   #8ab0c0;
+      --text-dim:    #3d6070;
+      --text-muted:  #1d3545;
 
-/* ── DIAGNÓSTICO ── */
-.diag{display:grid;grid-template-columns:1fr 1fr;gap:96px;align-items:start;}
-.diag-txt .titulo{margin-bottom:18px;}
-.diag-txt p{font-size:14px;color:var(--tenue);line-height:1.85;max-width:400px;}
-.precio{margin-top:28px;font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:2px;color:var(--oro);}
+      --border:      rgba(0,212,255,0.08);
+      --border-mid:  rgba(0,212,255,0.18);
+      --border-hi:   rgba(0,212,255,0.40);
 
-/* ── FORM ── */
-.form{display:flex;flex-direction:column;gap:10px;}
-.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.form input,.form select{
-  background:var(--sup);border:none;
-  border-bottom:1px solid rgba(197,160,89,.15);
-  color:var(--texto);padding:13px 0;
-  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;
-  outline:none;width:100%;transition:border-color .3s;
-}
-.form input::placeholder{color:var(--tenue);}
-.form select option{background:var(--sup);}
-.form input:focus,.form select:focus{border-bottom-color:var(--oro);}
-.form-btn{
-  background:var(--oro);color:var(--negro);border:none;
-  padding:15px;font-family:'DM Sans',sans-serif;
-  font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;
-  cursor:pointer;transition:background .3s;margin-top:4px;
-}
-.form-btn:hover{background:var(--oro2);}
-.form-nota{font-size:11px;color:var(--tenue);}
+      --font-display: 'Orbitron', monospace;
+      --font-mono:    'IBM Plex Mono', monospace;
+      --font-body:    'DM Sans', sans-serif;
 
-/* ── FOOTER ── */
-footer{
-  border-top:1px solid var(--borde);
-  padding:40px 64px;
-  display:flex;justify-content:space-between;align-items:center;
-}
-.foot-logo{font-family:'Cormorant Garamond',serif;font-size:17px;letter-spacing:5px;color:var(--oro);}
-footer p{font-size:11px;color:var(--tenue);}
+      --radius-sm: 2px;
+      --radius:    4px;
+      --radius-md: 8px;
 
-/* ── RESPONSIVE ── */
-@media(max-width:1024px){
-  .ventanas-panel{width:55%;}
-  .areas{grid-template-columns:1fr 1fr;}
-  .proc-grid{grid-template-columns:1fr 1fr;}
-  .diag{grid-template-columns:1fr;gap:52px;}
-}
-@media(max-width:768px){
-  nav{padding:0 20px;}
-  .nav-links{display:none;}
-  .hero-cuerpo{padding:0 20px 72px;}
-  .hero-indicadores{display:none;}
-  .ventanas-panel{width:100%;top:0;height:45%;border-left:none;}
-  .c{padding:72px 20px;}
-  .areas{grid-template-columns:1fr;}
-  .area{border-left:none;border-bottom:2px solid transparent;}
-  .area:hover{border-bottom-color:var(--oro);}
-  .proc-grid{grid-template-columns:1fr;}
-  .f2{grid-template-columns:1fr;}
-  footer{flex-direction:column;gap:12px;padding:32px 20px;text-align:center;}
-}
-.hero-acciones{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:8px;}.hero-precio{font-family:"Cormorant Garamond",serif;font-size:22px;color:var(--oro);letter-spacing:2px;font-weight:400;}
-</style>
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: var(--bg-void);
+      color: var(--text-prime);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: var(--cyan);
+      color: var(--bg-void);
+    }
+
+    /* ============================================================
+       CUSTOM CURSOR
+    ============================================================ */
+    #cursor-dot {
+      position: fixed;
+      width: 6px; height: 6px;
+      background: var(--cyan);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+    }
+    #cursor-ring {
+      position: fixed;
+      width: 28px; height: 28px;
+      border: 1px solid rgba(0,212,255,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s linear, width 0.2s, height 0.2s, border-color 0.2s;
+    }
+    body:has(a:hover, button:hover) #cursor-dot { width: 10px; height: 10px; background: var(--amber); }
+    body:has(a:hover, button:hover) #cursor-ring { width: 40px; height: 40px; border-color: var(--amber); }
+
+    /* ============================================================
+       GLOBAL NOISE OVERLAY
+    ============================================================ */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9990;
+      opacity: 0.6;
+    }
+
+    /* ============================================================
+       NAVIGATION
+    ============================================================ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      height: 60px;
+      background: rgba(1,5,8,0.85);
+      backdrop-filter: blur(20px) saturate(1.5);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo-mark {
+      width: 32px; height: 32px;
+      border: 1.5px solid var(--cyan);
+      display: grid; place-items: center;
+      font-family: var(--font-display);
+      font-size: 14px; font-weight: 700;
+      color: var(--cyan);
+      position: relative;
+    }
+    .nav-logo-mark::before {
+      content: '';
+      position: absolute; inset: 3px;
+      background: var(--cyan-dim);
+    }
+    .nav-logo-text {
+      font-family: var(--font-display);
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--text-prime);
+    }
+    .nav-logo-text span { color: var(--cyan); }
+
+    .nav-status {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--green);
+      letter-spacing: 0.1em;
+    }
+    .nav-status-dot {
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-link {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--text-body);
+      text-decoration: none;
+      padding: 6px 12px;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      text-transform: uppercase;
+    }
+    .nav-link:hover {
+      color: var(--cyan);
+      border-color: var(--border-mid);
+      background: var(--cyan-dim);
+    }
+    .nav-cta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--bg-void);
+      background: var(--cyan);
+      border: none;
+      padding: 8px 20px;
+      cursor: none;
+      font-weight: 600;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: var(--transition);
+      display: inline-block;
+    }
+    .nav-cta:hover { background: #33ddff; transform: translateY(-1px); }
+
+    /* ============================================================
+       SECTION BASE
+    ============================================================ */
+    section { position: relative; }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-tag::before {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--cyan);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      color: var(--text-prime);
+    }
+
+    .section-subtitle {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-body);
+      max-width: 540px;
+      line-height: 1.7;
+    }
+
+    /* ============================================================
+       HERO — COMMAND CENTER
+    ============================================================ */
+    #hero {
+      position: relative;
+      height: 100vh; min-height: 700px;
+      display: flex; align-items: center;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('hero.jpg') center center / cover no-repeat;
+      transform: scale(1.05);
+      animation: hero-zoom 30s ease-in-out infinite alternate;
+    }
+
+    @keyframes hero-zoom {
+      from { transform: scale(1.05); }
+      to   { transform: scale(1.12); }
+    }
+
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to right, rgba(1,5,8,0.97) 38%, rgba(1,5,8,0.70) 65%, rgba(1,5,8,0.40) 100%),
+        linear-gradient(to top, rgba(1,5,8,0.90) 0%, transparent 50%);
+    }
+
+    /* Scanlines */
+    .hero-scanlines {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.04) 3px,
+        rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* Grid */
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 0 60px;
+      max-width: 680px;
+      animation: fade-up 1.2s ease forwards;
+      opacity: 0;
+      animation-delay: 0.3s;
+    }
+
+    .hero-system-id {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .hero-system-id::before {
+      content: '▸';
+      color: var(--cyan);
+    }
+    .blink { animation: blink 1.2s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: 0.02em;
+      color: var(--text-prime);
+      margin-bottom: 20px;
+    }
+    .hero-headline em {
+      font-style: normal;
+      color: var(--cyan);
+    }
+
+    .hero-sub {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--text-body);
+      line-height: 1.75;
+      margin-bottom: 36px;
+      max-width: 500px;
+    }
+
+    .hero-actions {
+      display: flex; align-items: center; gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .btn-primary {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--bg-void);
+      background: var(--cyan);
+      border: none;
+      padding: 14px 32px;
+      cursor: none;
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 10px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .btn-primary:hover::before { left: 100%; }
+    .btn-primary:hover { background: #22e8ff; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,212,255,0.3); }
+
+    .btn-secondary {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-body);
+      background: transparent;
+      border: 1px solid var(--border-mid);
+      padding: 13px 28px;
+      cursor: none;
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 10px;
+      transition: var(--transition);
+    }
+    .btn-secondary:hover { color: var(--cyan); border-color: var(--cyan); background: var(--cyan-dim); }
+
+    /* HERO INDICATORS BAR */
+    .hero-indicators {
+      display: flex; align-items: center; gap: 24px;
+      flex-wrap: wrap;
+    }
+    .hero-ind {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+    .hero-ind-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+    }
+    .hero-ind-dot.active { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse-dot 2s infinite; }
+    .hero-ind-dot.warn   { background: var(--amber); box-shadow: 0 0 6px var(--amber); animation: pulse-dot 3s infinite; }
+    .hero-ind-dot.alert  { background: var(--red); box-shadow: 0 0 6px var(--red); animation: pulse-dot 1.5s infinite; }
+
+    /* FLOATING RISK PANEL */
+    .hero-risk-panel {
+      position: absolute;
+      right: 80px; top: 50%;
+      transform: translateY(-50%);
+      width: 300px;
+      background: rgba(7,21,35,0.92);
+      border: 1px solid var(--border-mid);
+      backdrop-filter: blur(24px);
+      z-index: 3;
+      animation: fade-left 1.4s ease forwards;
+      opacity: 0;
+      animation-delay: 0.7s;
+    }
+
+    .risk-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .risk-panel-title {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+    .risk-panel-live {
+      display: flex; align-items: center; gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--green);
+      letter-spacing: 0.1em;
+    }
+    .risk-panel-live::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    /* Big Score */
+    .risk-score-big {
+      padding: 24px 18px 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .score-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .score-number {
+      font-family: var(--font-display);
+      font-size: 3.6rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--amber);
+      text-shadow: 0 0 40px rgba(255,149,0,0.4);
+    }
+    .score-max {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .score-status {
+      margin-top: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--amber);
+      text-transform: uppercase;
+    }
+
+    /* Dimension bars */
+    .risk-dimensions {
+      padding: 16px 18px;
+    }
+    .risk-dim {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .risk-dim:last-child { margin-bottom: 0; }
+    .risk-dim-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--text-body);
+      text-transform: uppercase;
+      width: 78px; flex-shrink: 0;
+    }
+    .risk-dim-bar {
+      flex: 1;
+      height: 3px;
+      background: var(--bg-void);
+      position: relative;
+      overflow: hidden;
+    }
+    .risk-dim-fill {
+      position: absolute; top: 0; left: 0; bottom: 0;
+      transition: width 1.8s cubic-bezier(0.4,0,0.2,1);
+      width: 0;
+    }
+    .risk-dim-fill.c-amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+    .risk-dim-fill.c-red   { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+    .risk-dim-fill.c-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .risk-dim-fill.c-cyan  { background: var(--cyan);  box-shadow: 0 0 6px var(--cyan); }
+    .risk-dim-val {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-body);
+      width: 26px; text-align: right; flex-shrink: 0;
+    }
+
+    .risk-panel-footer {
+      padding: 10px 18px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ============================================================
+       ANIMATIONS
+    ============================================================ */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade-left {
+      from { opacity: 0; transform: translate(30px, -50%); }
+      to   { opacity: 1; transform: translate(0, -50%); }
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    @keyframes scan-line {
+      0%   { top: 0; opacity: 0.6; }
+      100% { top: 100%; opacity: 0; }
+    }
+    @keyframes rotate-ring {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes counter-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================================
+       EXECUTIVE DASHBOARD
+    ============================================================ */
+    #dashboard {
+      padding: 100px 60px;
+      background: var(--bg-deep);
+      position: relative;
+    }
+
+    #dashboard::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0,212,255,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .dashboard-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 48px;
+      flex-wrap: wrap; gap: 20px;
+    }
+
+    .dashboard-meta {
+      display: flex; align-items: center; gap: 20px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+    .dashboard-meta span { color: var(--text-body); }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .score-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: default;
+    }
+    .score-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .score-card.c-amber::before { background: linear-gradient(90deg, var(--amber), transparent); }
+    .score-card.c-red::before   { background: linear-gradient(90deg, var(--red),   transparent); }
+    .score-card.c-green::before { background: linear-gradient(90deg, var(--green), transparent); }
+    .score-card.c-cyan::before  { background: linear-gradient(90deg, var(--cyan),  transparent); }
+    .score-card.c-gold::before  { background: linear-gradient(90deg, var(--gold),  transparent); }
+
+    .score-card:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-mid);
+      transform: translateY(-2px);
+    }
+
+    /* scan line on hover */
+    .score-card::after {
+      content: '';
+      position: absolute; left: 0; right: 0;
+      height: 1px;
+      background: rgba(0,212,255,0.15);
+      top: -100%;
+      animation: none;
+    }
+    .score-card:hover::after {
+      animation: scan-line 1s linear;
+    }
+
+    .card-domain {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-domain-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+    }
+    .c-amber .card-domain-dot { background: var(--amber); }
+    .c-red   .card-domain-dot { background: var(--red); }
+    .c-green .card-domain-dot { background: var(--green); }
+    .c-cyan  .card-domain-dot { background: var(--cyan); }
+    .c-gold  .card-domain-dot { background: var(--gold); }
+
+    .card-score {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 8px;
+      transition: var(--transition);
+    }
+    .c-amber .card-score { color: var(--amber); }
+    .c-red   .card-score { color: var(--red); }
+    .c-green .card-score { color: var(--green); }
+    .c-cyan  .card-score { color: var(--cyan); }
+    .c-gold  .card-score { color: var(--gold); }
+
+    .card-label {
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-prime);
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-body);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .card-trend {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+    }
+    .card-trend-badge {
+      padding: 2px 8px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .badge-warn  { background: var(--amber-dim); color: var(--amber); }
+    .badge-crit  { background: var(--red-dim);   color: var(--red); }
+    .badge-ok    { background: var(--green-dim); color: var(--green); }
+    .badge-info  { background: var(--cyan-dim);  color: var(--cyan); }
+
+    .card-bar {
+      margin-top: 16px;
+      height: 2px;
+      background: var(--text-muted);
+      position: relative;
+      overflow: hidden;
+    }
+    .card-bar-fill {
+      position: absolute; top: 0; left: 0; bottom: 0;
+      transition: width 2s cubic-bezier(0.4,0,0.2,1);
+      width: 0;
+    }
+    .c-amber .card-bar-fill { background: var(--amber); }
+    .c-red   .card-bar-fill { background: var(--red); }
+    .c-green .card-bar-fill { background: var(--green); }
+    .c-cyan  .card-bar-fill { background: var(--cyan); }
+    .c-gold  .card-bar-fill { background: var(--gold); }
+
+    /* ============================================================
+       INTELLIGENCE ENGINES
+    ============================================================ */
+    #engines {
+      padding: 100px 60px;
+      background: var(--bg-void);
+      position: relative;
+    }
+    #engines::before {
+      content: '';
+      position: absolute; left: 0; right: 0; top: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-mid), transparent);
+    }
+
+    .engines-header {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: end;
+      margin-bottom: 60px;
+    }
+
+    .engine-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .engine-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 24px 20px;
+      position: relative;
+      transition: var(--transition);
+      overflow: hidden;
+    }
+    .engine-card:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-mid);
+    }
+    .engine-card:hover .engine-corner { opacity: 1; }
+
+    .engine-corner {
+      position: absolute; top: 8px; right: 8px;
+      width: 12px; height: 12px;
+      border-top: 1px solid var(--cyan);
+      border-right: 1px solid var(--cyan);
+      opacity: 0;
+      transition: var(--transition);
+    }
+    .engine-corner-bl {
+      position: absolute; bottom: 8px; left: 8px;
+      width: 12px; height: 12px;
+      border-bottom: 1px solid var(--cyan);
+      border-left: 1px solid var(--cyan);
+      opacity: 0;
+      transition: var(--transition);
+    }
+    .engine-card:hover .engine-corner-bl { opacity: 1; }
+
+    .engine-status-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .engine-status {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      color: var(--green);
+      text-transform: uppercase;
+    }
+    .engine-status::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+    .engine-id {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    .engine-name {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text-prime);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .engine-metrics {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .engine-metric {
+      background: var(--bg-void);
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+    }
+    .engine-metric-val {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--cyan);
+      line-height: 1;
+    }
+    .engine-metric-val.warn  { color: var(--amber); }
+    .engine-metric-val.crit  { color: var(--red); }
+    .engine-metric-val.ok    { color: var(--green); }
+    .engine-metric-label {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .engine-desc {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-body);
+      line-height: 1.6;
+    }
+
+    /* Span 2 for special engine card */
+    .engine-card.span-2 { grid-column: span 2; }
+    .engine-card.span-2 .engine-metrics { grid-template-columns: repeat(4, 1fr); }
+
+    /* ============================================================
+       ARCHITECTURE
+    ============================================================ */
+    #architecture {
+      padding: 100px 60px;
+      background: var(--bg-deep);
+      position: relative;
+      overflow: hidden;
+    }
+    #architecture::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,212,255,0.03) 0%, transparent 70%);
+    }
+
+    .arch-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .arch-header .section-tag { justify-content: center; }
+    .arch-header .section-tag::before { display: none; }
+    .arch-header .section-tag::after {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--cyan);
+    }
+
+    .arch-diagram {
+      position: relative;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Vertical connector line */
+    .arch-connector {
+      position: absolute;
+      left: 50%; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--border-mid), transparent);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .arch-layer {
+      display: flex; align-items: stretch;
+      margin-bottom: 3px;
+      position: relative;
+      gap: 3px;
+      animation: fade-up 0.6s ease forwards;
+      opacity: 0;
+    }
+    .arch-layer:nth-child(1) { animation-delay: 0.1s; }
+    .arch-layer:nth-child(2) { animation-delay: 0.2s; }
+    .arch-layer:nth-child(3) { animation-delay: 0.3s; }
+    .arch-layer:nth-child(4) { animation-delay: 0.4s; }
+    .arch-layer:nth-child(5) { animation-delay: 0.5s; }
+    .arch-layer:nth-child(6) { animation-delay: 0.6s; }
+
+    .arch-layer-label {
+      width: 160px; flex-shrink: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 16px 16px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .arch-layer-name {
+      font-family: var(--font-display);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--text-prime);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .arch-layer-sub {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    .arch-layer-nodes {
+      flex: 1;
+      display: flex; gap: 3px;
+    }
+
+    .arch-node {
+      flex: 1;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 14px 14px;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 4px;
+      transition: var(--transition);
+      cursor: default;
+    }
+    .arch-node:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-mid);
+    }
+    .arch-node-name {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-prime);
+      letter-spacing: 0.08em;
+    }
+    .arch-node-detail {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-dim);
+    }
+    .arch-node-status {
+      display: flex; align-items: center; gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--green);
+      letter-spacing: 0.08em;
+    }
+    .arch-node-status::before {
+      content: '';
+      width: 4px; height: 4px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+
+    /* WAR status nodes */
+    .arch-node.war-node {
+      border-color: rgba(255,48,85,0.2);
+    }
+    .arch-node.war-node .arch-node-status { color: var(--red); }
+    .arch-node.war-node .arch-node-status::before { background: var(--red); animation: pulse-dot 1s infinite; }
+
+    /* ============================================================
+       WAR ROOM
+    ============================================================ */
+    #warroom {
+      padding: 100px 60px;
+      background: var(--bg-void);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Red glow background */
+    #warroom::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(255,48,85,0.04) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .warroom-header {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: end;
+      margin-bottom: 60px;
+    }
+
+    .warroom-tagline {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-body);
+      line-height: 1.8;
+      margin-top: 16px;
+    }
+
+    .warroom-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .wr-stat {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 20px 18px;
+    }
+    .wr-stat-val {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--red);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .wr-stat-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    /* Timeline */
+    .warroom-timeline {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 2px;
+      position: relative;
+      margin-bottom: 48px;
+    }
+
+    /* Connecting line */
+    .warroom-timeline::before {
+      content: '';
+      position: absolute;
+      top: 40px; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-mid), transparent);
+      z-index: 0;
+    }
+
+    .wt-step {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 20px 16px;
+      position: relative;
+      z-index: 1;
+      transition: var(--transition);
+    }
+    .wt-step:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-mid);
+    }
+
+    .wt-step-num {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .wt-step-active .wt-step-num { color: var(--red); }
+
+    .wt-step-icon {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .wt-step-name {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--text-prime);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .wt-step-desc {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-body);
+      line-height: 1.6;
+    }
+    .wt-step-status {
+      margin-top: 12px;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .wt-step-active .wt-step-status { color: var(--red); }
+    .wt-step .wt-step-status { color: var(--text-dim); }
+
+    /* Event Feed */
+    .warroom-feed {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 0;
+      overflow: hidden;
+    }
+    .feed-header {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .feed-title {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+    .feed-live {
+      display: flex; align-items: center; gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--red);
+      letter-spacing: 0.1em;
+    }
+    .feed-live::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: pulse-dot 1s infinite;
+    }
+
+    .feed-item {
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: baseline; gap: 16px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      animation: feed-in 0.4s ease forwards;
+      opacity: 0;
+    }
+    @keyframes feed-in {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .feed-time {
+      color: var(--text-dim);
+      font-size: 9px;
+      flex-shrink: 0;
+      width: 50px;
+    }
+    .feed-tag {
+      font-size: 8px;
+      padding: 1px 6px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      flex-shrink: 0;
+    }
+    .feed-tag.crit  { background: var(--red-dim);   color: var(--red); }
+    .feed-tag.warn  { background: var(--amber-dim); color: var(--amber); }
+    .feed-tag.info  { background: var(--cyan-dim);  color: var(--cyan); }
+    .feed-tag.ok    { background: var(--green-dim); color: var(--green); }
+    .feed-text { color: var(--text-body); }
+
+    /* ============================================================
+       SECTORS
+    ============================================================ */
+    #sectors {
+      padding: 100px 60px;
+      background: var(--bg-deep);
+      position: relative;
+    }
+    #sectors::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .sectors-header {
+      display: flex; align-items: end; justify-content: space-between;
+      margin-bottom: 48px;
+    }
+
+    .sector-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+
+    .sector-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 24px 20px;
+      position: relative;
+      transition: var(--transition);
+      overflow: hidden;
+    }
+    .sector-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 0;
+      background: linear-gradient(to top, var(--cyan-dim), transparent);
+      transition: height var(--transition);
+    }
+    .sector-card:hover { border-color: var(--border-mid); }
+    .sector-card:hover::after { height: 60%; }
+
+    .sector-icon {
+      font-size: 1.8rem;
+      margin-bottom: 14px;
+    }
+    .sector-name {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text-prime);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .sector-coverage {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+    .sector-status {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--green);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .sector-status::before {
+      content: '';
+      width: 4px; height: 4px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+
+    /* ============================================================
+       DIAGNOSIS FORM
+    ============================================================ */
+    #diagnostico {
+      padding: 100px 60px;
+      background: var(--bg-void);
+      position: relative;
+      overflow: hidden;
+    }
+    #diagnostico::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(0,212,255,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .diag-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .diag-left { position: relative; padding-top: 8px; }
+
+    .diag-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      color: var(--text-prime);
+      margin-bottom: 20px;
+    }
+    .diag-title span { color: var(--cyan); }
+
+    .diag-subtitle {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-body);
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    .diag-features {
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .diag-feat {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 16px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--cyan);
+    }
+    .diag-feat-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .diag-feat-text { font-family: var(--font-mono); font-size: 11px; color: var(--text-body); line-height: 1.6; }
+    .diag-feat-text strong { color: var(--text-prime); display: block; margin-bottom: 2px; font-size: 12px; }
+
+    /* Form */
+    .diag-form-wrap {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-mid);
+      padding: 40px;
+      position: relative;
+    }
+    .diag-form-wrap::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), transparent);
+    }
+
+    .form-header {
+      margin-bottom: 28px;
+    }
+    .form-header-title {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--text-prime);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .form-header-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .form-input, .form-select {
+      width: 100%;
+      background: var(--bg-void);
+      border: 1px solid var(--border-mid);
+      color: var(--text-prime);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 12px 14px;
+      outline: none;
+      transition: var(--transition);
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .form-input:focus, .form-select:focus {
+      border-color: var(--cyan);
+      background: rgba(0,212,255,0.04);
+      box-shadow: 0 0 0 1px var(--cyan);
+    }
+    .form-input::placeholder { color: var(--text-muted); }
+    .form-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a7a8a'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    .form-select option { background: var(--bg-deep); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--cyan);
+      border: none;
+      color: var(--bg-void);
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 16px 32px;
+      cursor: pointer;
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-submit::before {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .btn-submit:hover::before { left: 100%; }
+    .btn-submit:hover { background: #22e8ff; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,212,255,0.3); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    #form-message {
+      margin-top: 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-align: center;
+      min-height: 20px;
+    }
+    #form-message.success { color: var(--green); }
+    #form-message.error   { color: var(--red); }
+
+    .form-privacy {
+      margin-top: 14px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      text-align: center;
+      line-height: 1.6;
+      letter-spacing: 0.05em;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--bg-deep);
+      border-top: 1px solid var(--border);
+      padding: 60px 60px 32px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand-name {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text-prime);
+      margin-bottom: 4px;
+    }
+    .footer-brand-name span { color: var(--cyan); }
+    .footer-brand-sub {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .footer-brand-desc {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-body);
+      line-height: 1.8;
+      max-width: 300px;
+    }
+
+    .footer-col-title {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .footer-links { list-style: none; }
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    .footer-links a {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-body);
+      text-decoration: none;
+      transition: var(--transition);
+      letter-spacing: 0.05em;
+    }
+    .footer-links a:hover { color: var(--cyan); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+    .footer-status {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--green);
+      letter-spacing: 0.1em;
+    }
+    .footer-status::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+
+    /* ============================================================
+       REVEAL ON SCROLL
+    ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Stagger children */
+    .stagger > * { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .stagger.visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0s; }
+    .stagger.visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.08s; }
+    .stagger.visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.16s; }
+    .stagger.visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.24s; }
+    .stagger.visible > *:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.32s; }
+    .stagger.visible > *:nth-child(6) { opacity: 1; transform: none; transition-delay: 0.40s; }
+    .stagger.visible > *:nth-child(7) { opacity: 1; transform: none; transition-delay: 0.48s; }
+    .stagger.visible > *:nth-child(8) { opacity: 1; transform: none; transition-delay: 0.56s; }
+    .stagger.visible > *:nth-child(9) { opacity: 1; transform: none; transition-delay: 0.64s; }
+
+    /* ============================================================
+       DIVIDERS
+    ============================================================ */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-mid), transparent);
+    }
+
+    /* ============================================================
+       RESPONSIVE — TABLET
+    ============================================================ */
+    @media (max-width: 1024px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+
+      #hero { height: auto; min-height: 100vh; padding: 100px 0 60px; }
+      .hero-content { padding: 0 28px; max-width: 100%; }
+      .hero-risk-panel {
+        position: relative;
+        right: auto; top: auto;
+        transform: none;
+        animation: fade-up 1.4s ease forwards;
+        animation-delay: 0.7s;
+        width: calc(100% - 56px);
+        margin: 32px 28px 0;
+      }
+
+      #dashboard,
+      #engines,
+      #architecture,
+      #warroom,
+      #sectors,
+      #diagnostico { padding: 64px 28px; }
+
+      .dashboard-grid { grid-template-columns: 1fr 1fr; }
+      .engine-grid    { grid-template-columns: 1fr 1fr; }
+      .engine-card.span-2 { grid-column: span 2; }
+      .engine-card.span-2 .engine-metrics { grid-template-columns: repeat(2, 1fr); }
+      .warroom-timeline { grid-template-columns: repeat(3, 1fr); }
+      .sector-grid { grid-template-columns: repeat(2, 1fr); }
+      .diag-grid { grid-template-columns: 1fr; gap: 48px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+
+      .arch-layer { flex-direction: column; }
+      .arch-layer-label { width: 100%; }
+    }
+
+    /* ============================================================
+       RESPONSIVE — MOBILE
+    ============================================================ */
+    @media (max-width: 640px) {
+      .hero-headline { font-size: 2rem; }
+      .hero-actions { flex-direction: column; align-items: flex-start; }
+      .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+
+      .dashboard-header { flex-direction: column; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .engine-grid { grid-template-columns: 1fr; }
+      .engine-card.span-2 { grid-column: span 1; }
+      .warroom-header { grid-template-columns: 1fr; }
+      .warroom-timeline { grid-template-columns: 1fr 1fr; }
+      .sector-grid { grid-template-columns: 1fr 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+
+      #dashboard,
+      #engines,
+      #architecture,
+      #warroom,
+      #sectors,
+      #diagnostico { padding: 48px 16px; }
+      footer { padding: 40px 16px 24px; }
+      nav { padding: 0 16px; }
+      .hero-content { padding: 0 16px; }
+      .hero-risk-panel { width: calc(100% - 32px); margin: 24px 16px 0; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- Custom Cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ============================================================
+     NAVIGATION
+============================================================ -->
 <nav>
-  <div class="logo">MESAN <b>Ω</b></div>
-  <div class="nav-links">
-    <a href="#areas">Áreas de supervisión</a>
-    <a href="#proceso">Proceso</a>
-    <a href="#diagnostico">Diagnóstico</a>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">Ω</div>
+    <div class="nav-logo-text">MESAN <span>Ω</span></div>
+  </a>
+
+  <div class="nav-status">
+    <div class="nav-status-dot"></div>
+    SISTEMAS ACTIVOS
   </div>
-  <a class="nav-accion" href="#diagnostico">Activar Evaluación Ω</a>
+
+  <div class="nav-links">
+    <a href="#dashboard"   class="nav-link">Dashboard</a>
+    <a href="#engines"     class="nav-link">Motores</a>
+    <a href="#warroom"     class="nav-link">War Room</a>
+    <a href="#sectores"    class="nav-link">Sectores</a>
+    <a href="#diagnostico" class="nav-cta">Activar Evaluación Ω</a>
+  </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero hero-container">
-  <div class="hero-escena">
-    <!-- Partículas -->
-    <div class="particulas">
-      <div class="particula"></div><div class="particula"></div>
-      <div class="particula"></div><div class="particula"></div>
-      <div class="particula"></div>
-    </div>
-    <!-- Ventanas con skyline -->
-    <div class="ventanas-panel">
-      <div class="ventana v1"></div>
-      <div class="ventana v2"></div>
-      <div class="ventana v3"></div>
-    </div>
-    <div class="reflejo"></div>
-    <!-- Luz ambiente -->
-    <div class="luz-amb"></div>
-    <!-- Mesa ejecutiva -->
-    <div class="mesa-wrap"><div class="mesa"></div></div>
-    <!-- Piso -->
-    <div class="piso"></div>
-  </div>
-
+<!-- ============================================================
+     HERO — COMMAND CENTER
+============================================================ -->
+<section id="hero">
+  <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
+  <div class="hero-scanlines"></div>
+  <div class="hero-grid"></div>
 
-  <!-- Indicadores estado -->
-  <div class="hero-indicadores">
-    <div class="ind"><span class="ind-dot ok"></span>Fiscal</div>
-    <div class="ind"><span class="ind-dot ok"></span>Laboral</div>
-    <div class="ind"><span class="ind-dot ok"></span>Operativo</div>
-    <div class="ind"><span class="ind-dot warn"></span>Continuidad</div>
-  </div>
-
-  <div class="hero-cuerpo">
-    <div class="hero-etiq">Inteligencia Empresarial — México y LATAM</div>
-    <h1>Decisiones con información.<br/><i>Operaciones bajo control.</i></h1>
-    <p class="hero-desc">MESAN Ω identifica riesgos operativos, regulatorios y financieros antes de que afecten su negocio.</p>
-    <div class="hero-acciones">
-      <a class="btn-principal" href="#diagnostico">Activar Evaluación Ω</a>
-      <span class="hero-precio">$999 MXN</span>
+  <div class="hero-content">
+    <div class="hero-system-id">
+      MESAN-OS v2.6 &nbsp;/&nbsp; NÚCLEO OPERATIVO &nbsp;/&nbsp; <span class="blink">█</span>
     </div>
-  </div>
-</section>
 
-<hr/>
+    <h1 class="hero-headline">
+      La inteligencia<br>
+      que <em>anticipa</em><br>
+      el riesgo.
+    </h1>
 
-<!-- ÁREAS -->
-<section id="areas">
-  <div class="c">
-    <div class="etiq">Áreas de supervisión</div>
-    <h2 class="titulo">Cinco frentes bajo<br/><i>monitoreo permanente</i></h2>
-    <div class="areas">
-      <div class="area"><div class="area-lin"></div><h3>Fiscal</h3><p>Supervisión de cumplimiento ante el SAT. Monitoreo preventivo antes de que surjan observaciones.</p></div>
-      <div class="area"><div class="area-lin"></div><h3>Laboral</h3><p>Control de obligaciones patronales, IMSS, REPSE y STPS. Prevención antes de que escalen.</p></div>
-      <div class="area"><div class="area-lin"></div><h3>Operativo</h3><p>Evaluación de resiliencia: liquidez, concentración bancaria y dependencia de proveedores.</p></div>
-      <div class="area"><div class="area-lin"></div><h3>Financiero</h3><p>Análisis de exposición económica y proyección de indicadores de continuidad financiera.</p></div>
-      <div class="area"><div class="area-lin"></div><h3>Contractual</h3><p>Revisión de cláusulas críticas, vencimientos y condiciones que generan exposición patrimonial.</p></div>
+    <p class="hero-sub">
+      Sistema Operativo Empresarial de supervisión continua. Gobierno corporativo, riesgo fiscal, laboral y operativo — en tiempo real, al nivel del Consejo de Administración.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#diagnostico" class="btn-primary">
+        ▸ Activar Evaluación Ω
+      </a>
+      <a href="#dashboard" class="btn-secondary">
+        Ver Dashboard Ejecutivo →
+      </a>
     </div>
-  </div>
-</section>
 
-<hr/>
-
-<!-- PROCESO -->
-<section id="proceso" class="proc-fondo">
-  <div class="c">
-    <div class="etiq">Proceso</div>
-    <h2 class="titulo">Cómo opera <i>MESAN Ω</i></h2>
-    <div class="proc-grid">
-      <div class="proc"><div class="proc-n">01</div><h3>Evaluación inicial</h3><p>Análisis estructurado de las principales áreas de exposición. Situación actual con impacto estimado.</p></div>
-      <div class="proc"><div class="proc-n">02</div><h3>Reporte ejecutivo</h3><p>Entrega en 24 horas con semáforo de situación y acciones ordenadas por prioridad para dirección general.</p></div>
-      <div class="proc"><div class="proc-n">03</div><h3>Monitoreo activo</h3><p>Seguimiento continuo con alertas preventivas ante cambios en el entorno regulatorio y operativo.</p></div>
-      <div class="proc"><div class="proc-n">04</div><h3>Inteligencia predictiva</h3><p>Proyección de escenarios a 30, 60, 90 y 180 días para anticipar condiciones relevantes.</p></div>
-      <div class="proc"><div class="proc-n">05</div><h3>War Room</h3><p>Activación ante eventos críticos con plan estructurado, responsables y tiempos definidos.</p></div>
-      <div class="proc"><div class="proc-n">06</div><h3>Gobierno del riesgo</h3><p>Indicadores para junta directiva. Información ejecutiva para decisiones de alto impacto.</p></div>
-    </div>
-  </div>
-</section>
-
-<hr/>
-
-<!-- DIAGNÓSTICO -->
-<section id="diagnostico">
-  <div class="c">
-    <div class="diag">
-      <div class="diag-txt">
-        <div class="etiq">Evaluación Ω</div>
-        <h2 class="titulo">¿Su empresa opera con<br/><i>visibilidad completa?</i></h2>
-        <p>Evaluación ejecutiva en menos de 24 horas. Semáforo de situación, nivel de madurez y plan de acción para dirección general.</p>
-        <div class="precio">Inversión: $999 MXN — Sin contratos. Sin compromisos.</div>
+    <div class="hero-indicators">
+      <div class="hero-ind">
+        <div class="hero-ind-dot active"></div>
+        9 Motores Activos
       </div>
-      <form class="form" id="diagForm">
-        <div class="f2">
-          <input type="text" name="nombre" placeholder="Nombre completo" required/>
-          <input type="text" name="empresa" placeholder="Empresa" required/>
-        </div>
-        <input type="email" name="email" placeholder="Correo corporativo" required/>
-        <input type="tel" name="whatsapp" placeholder="WhatsApp"/>
-        <select name="sector">
-          <option value="" disabled selected>Sector</option>
-          <option>Manufactura</option><option>Maquila</option><option>Construcción</option>
-          <option>Servicios</option><option>Comercio</option><option>Logística</option>
-          <option>Tecnología</option><option>Financiero</option><option>Salud</option><option>Otro</option>
-        </select>
-        <select name="empleados">
-          <option value="" disabled selected>Número de empleados</option>
-          <option>1 – 10</option><option>11 – 50</option><option>51 – 200</option>
-          <option>201 – 500</option><option>Más de 500</option>
-        </select>
-        <button type="submit" class="form-btn">Activar Evaluación Ω — $999 MXN</button>
-        <p class="form-nota">Sus datos son confidenciales y no son compartidos con terceros.</p>
-      </form>
+      <div class="hero-ind">
+        <div class="hero-ind-dot warn"></div>
+        Alertas: 3
+      </div>
+      <div class="hero-ind">
+        <div class="hero-ind-dot alert"></div>
+        Exposición Crítica
+      </div>
+      <div class="hero-ind">
+        <div class="hero-ind-dot active"></div>
+        Uptime 99.97%
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Risk Panel -->
+  <div class="hero-risk-panel">
+    <div class="risk-panel-header">
+      <div class="risk-panel-title">Enterprise Risk Score</div>
+      <div class="risk-panel-live">Live</div>
+    </div>
+
+    <div class="risk-score-big">
+      <div class="score-label">Índice de Exposición Global</div>
+      <div class="score-number" id="hero-score">0</div>
+      <div class="score-max">/100</div>
+      <div class="score-status">Riesgo Moderado-Alto</div>
+    </div>
+
+    <div class="risk-dimensions">
+      <div class="risk-dim">
+        <div class="risk-dim-label">Fiscal</div>
+        <div class="risk-dim-bar"><div class="risk-dim-fill c-amber" data-width="78"></div></div>
+        <div class="risk-dim-val">78</div>
+      </div>
+      <div class="risk-dim">
+        <div class="risk-dim-label">Laboral</div>
+        <div class="risk-dim-bar"><div class="risk-dim-fill c-red" data-width="62"></div></div>
+        <div class="risk-dim-val">62</div>
+      </div>
+      <div class="risk-dim">
+        <div class="risk-dim-label">Operativo</div>
+        <div class="risk-dim-bar"><div class="risk-dim-fill c-amber" data-width="55"></div></div>
+        <div class="risk-dim-val">55</div>
+      </div>
+      <div class="risk-dim">
+        <div class="risk-dim-label">Financiero</div>
+        <div class="risk-dim-bar"><div class="risk-dim-fill c-green" data-width="38"></div></div>
+        <div class="risk-dim-val">38</div>
+      </div>
+      <div class="risk-dim">
+        <div class="risk-dim-label">Continuidad</div>
+        <div class="risk-dim-bar"><div class="risk-dim-fill c-cyan" data-width="44"></div></div>
+        <div class="risk-dim-val">44</div>
+      </div>
+    </div>
+
+    <div class="risk-panel-footer">
+      <span>Actualizado: <span id="panel-time">--:--:--</span></span>
+      <span>Tenant: Enterprise</span>
     </div>
   </div>
 </section>
 
+<!-- ============================================================
+     EXECUTIVE DASHBOARD
+============================================================ -->
+<section id="dashboard">
+  <div class="dashboard-header reveal">
+    <div>
+      <div class="section-tag">Control Plane Ω</div>
+      <h2 class="section-title">Dashboard Ejecutivo</h2>
+    </div>
+    <div class="dashboard-meta">
+      <span>Período: <span>Q2 2026</span></span>
+      <span>Empresa: <span>—</span></span>
+      <span>Nivel: <span>CEO / Consejo</span></span>
+    </div>
+  </div>
+
+  <div class="dashboard-grid stagger" id="dashboard-grid">
+
+    <div class="score-card c-amber">
+      <div class="card-domain"><div class="card-domain-dot"></div>Dominio Fiscal</div>
+      <div class="card-score counter" data-target="78">0</div>
+      <div class="card-label">Riesgo Fiscal</div>
+      <div class="card-desc">Exposición tributaria activa. 3 contingencias identificadas. ISR e IVA en revisión diferida.</div>
+      <div class="card-trend">
+        <span class="card-trend-badge badge-warn">Moderado-Alto</span>
+        <span style="color:var(--text-dim);font-size:9px;font-family:var(--font-mono)">↑ +4pts vs. mes anterior</span>
+      </div>
+      <div class="card-bar"><div class="card-bar-fill" data-width="78"></div></div>
+    </div>
+
+    <div class="score-card c-red">
+      <div class="card-domain"><div class="card-domain-dot"></div>Dominio Laboral</div>
+      <div class="card-score counter" data-target="62">0</div>
+      <div class="card-label">Riesgo Laboral</div>
+      <div class="card-desc">Contingencias IMSS activas. Contratos de outsourcing pendientes de validación fiscal.</div>
+      <div class="card-trend">
+        <span class="card-trend-badge badge-crit">Alto</span>
+        <span style="color:var(--text-dim);font-size:9px;font-family:var(--font-mono)">↑ +8pts — Alerta activa</span>
+      </div>
+      <div class="card-bar"><div class="card-bar-fill" data-width="62"></div></div>
+    </div>
+
+    <div class="score-card c-amber">
+      <div class="card-domain"><div class="card-domain-dot"></div>Dominio Operativo</div>
+      <div class="card-score counter" data-target="55">0</div>
+      <div class="card-label">Riesgo Operativo</div>
+      <div class="card-desc">Procesos críticos sin continuidad documentada. 2 proveedores clave en zona de riesgo.</div>
+      <div class="card-trend">
+        <span class="card-trend-badge badge-warn">Moderado</span>
+        <span style="color:var(--text-dim);font-size:9px;font-family:var(--font-mono)">→ Estable vs. mes anterior</span>
+      </div>
+      <div class="card-bar"><div class="card-bar-fill" data-width="55"></div></div>
+    </div>
+
+    <div class="score-card c-green">
+      <div class="card-domain"><div class="card-domain-dot"></div>Dominio Financiero</div>
+      <div class="card-score counter" data-target="38">0</div>
+      <div class="card-label">Riesgo Financiero</div>
+      <div class="card-desc">Liquidez adecuada. Ratios de cobertura dentro de parámetros. Sin alertas estructurales.</div>
+      <div class="card-trend">
+        <span class="card-trend-badge badge-ok">Bajo</span>
+        <span style="color:var(--text-dim);font-size:9px;font-family:var(--font-mono)">↓ −2pts — Mejora continua</span>
+      </div>
+      <div class="card-bar"><div class="card-bar-fill" data-width="38"></div></div>
+    </div>
+
+    <div class="score-card c-cyan">
+      <div class="card-domain"><div class="card-domain-dot"></div>Dominio Continuidad</div>
+      <div class="card-score counter" data-target="44">0</div>
+      <div class="card-label">Riesgo de Continuidad</div>
+      <div class="card-desc">Plan de continuidad desactualizado. Escenarios de crisis sin validación ejecutiva reciente.</div>
+      <div class="card-trend">
+        <span class="card-trend-badge badge-warn">Moderado</span>
+        <span style="color:var(--text-dim);font-size:9px;font-family:var(--font-mono)">→ En revisión activa</span>
+      </div>
+      <div class="card-bar"><div class="card-bar-fill" data-width="44"></div></div>
+    </div>
+
+    <div class="score-card c-gold">
+      <div class="card-domain"><div class="card-domain-dot"></div>Gobierno Corporativo</div>
+      <div class="card-score counter" data-target="91">0</div>
+      <div class="card-label">Índice de Gobierno</div>
+      <div class="card-desc">Estructura de gobierno robusta. Órganos de supervisión operativos. Reportes al Consejo al día.</div>
+      <div class="card-trend">
+        <span class="card-trend-badge badge-ok">Óptimo</span>
+        <span style="color:var(--text-dim);font-size:9px;font-family:var(--font-mono)">↑ +1pt — Fortalecido</span>
+      </div>
+      <div class="card-bar"><div class="card-bar-fill" data-width="91"></div></div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================================
+     INTELLIGENCE ENGINES Ω
+============================================================ -->
+<section id="engines">
+  <div class="engines-header reveal">
+    <div>
+      <div class="section-tag">Intelligence Layer</div>
+      <h2 class="section-title">Motores Ω</h2>
+    </div>
+    <div>
+      <p class="section-subtitle">9 motores de inteligencia operando en paralelo. Supervisión continua, alertas en tiempo real y análisis predictivo para cada dimensión del riesgo empresarial.</p>
+    </div>
+  </div>
+
+  <div class="engine-grid stagger">
+
+    <!-- Fiscal Sentinel -->
+    <div class="engine-card">
+      <div class="engine-corner"></div>
+      <div class="engine-corner-bl"></div>
+      <div class="engine-status-row">
+        <div class="engine-status">Activo</div>
+        <div class="engine-id">ENG-001</div>
+      </div>
+      <div class="engine-name">Fiscal Sentinel</div>
+      <div class="engine-metrics">
+        <div class="engine-metric">
+          <div class="engine-metric-val warn">3</div>
+          <div class="engine-metric-label">Alertas</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val crit">$1.2M</div>
+          <div class="engine-metric-label">Exposición</div>
+        </div>
+      </div>
+      <div class="engine-desc">Monitoreo fiscal continuo de ISR, IVA y IMSS. Detección anticipada de contingencias tributarias con cuantificación de exposición.</div>
+    </div>
+
+    <!-- Compliance Verify -->
+    <div class="engine-card">
+      <div class="engine-corner"></div>
+      <div class="engine-corner-bl"></div>
+      <div class="engine-status-row">
+        <div class="engine-status">Activo</div>
+        <div class="engine-id">ENG-002</div>
+      </div>
+      <div class="engine-name">Compliance Verify</div>
+      <div class="engine-metrics">
+        <div class="engine-metric">
+          <div class="engine-metric-val ok">94%</div>
+          <div class="engine-metric-label">Cumplimiento</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val warn">6</div>
+          <div class="engine-metric-label">Gaps</div>
+        </div>
+      </div>
+      <div class="engine-desc">Verificación automatizada de cumplimiento normativo. Mapeo de brechas regulatorias y priorización por impacto operativo.</div>
+    </div>
+
+    <!-- Labor Shield -->
+    <div class="engine-card">
+      <div class="engine-corner"></div>
+      <div class="engine-corner-bl"></div>
+      <div class="engine-status-row">
+        <div class="engine-status">Activo</div>
+        <div class="engine-id">ENG-003</div>
+      </div>
+      <div class="engine-name">Labor Shield</div>
+      <div class="engine-metrics">
+        <div class="engine-metric">
+          <div class="engine-metric-val warn">2</div>
+          <div class="engine-metric-label">Contingencias</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val ok">87%</div>
+          <div class="engine-metric-label">Cobertura</div>
+        </div>
+      </div>
+      <div class="engine-desc">Supervisión de relaciones laborales, IMSS e INFONAVIT. Gestión preventiva de litigios y cumplimiento de obligaciones patronales.</div>
+    </div>
+
+    <!-- Contractual Risk -->
+    <div class="engine-card">
+      <div class="engine-corner"></div>
+      <div class="engine-corner-bl"></div>
+      <div class="engine-status-row">
+        <div class="engine-status">Activo</div>
+        <div class="engine-id">ENG-004</div>
+      </div>
+      <div class="engine-name">Contractual Risk</div>
+      <div class="engine-metrics">
+        <div class="engine-metric">
+          <div class="engine-metric-val crit">4</div>
+          <div class="engine-metric-label">Contratos críticos</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val warn">12</div>
+          <div class="engine-metric-label">En revisión</div>
+        </div>
+      </div>
+      <div class="engine-desc">Análisis y vigilancia de contratos clave. Identificación de cláusulas de alto riesgo y vencimientos estratégicos.</div>
+    </div>
+
+    <!-- Governance -->
+    <div class="engine-card">
+      <div class="engine-corner"></div>
+      <div class="engine-corner-bl"></div>
+      <div class="engine-status-row">
+        <div class="engine-status">Activo</div>
+        <div class="engine-id">ENG-005</div>
+      </div>
+      <div class="engine-name">Governance</div>
+      <div class="engine-metrics">
+        <div class="engine-metric">
+          <div class="engine-metric-val ok">91%</div>
+          <div class="engine-metric-label">Score</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val ok">0</div>
+          <div class="engine-metric-label">Alertas</div>
+        </div>
+      </div>
+      <div class="engine-desc">Evaluación continua de estructura de gobierno corporativo. Seguimiento de actas, resoluciones y compromisos del Consejo.</div>
+    </div>
+
+    <!-- Continuity -->
+    <div class="engine-card">
+      <div class="engine-corner"></div>
+      <div class="engine-corner-bl"></div>
+      <div class="engine-status-row">
+        <div class="engine-status">Monitoreando</div>
+        <div class="engine-id">ENG-006</div>
+      </div>
+      <div class="engine-name">Continuity</div>
+      <div class="engine-metrics">
+        <div class="engine-metric">
+          <div class="engine-metric-val warn">72%</div>
+          <div class="engine-metric-label">Plan activo</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val warn">3</div>
+          <div class="engine-metric-label">Escenarios</div>
+        </div>
+      </div>
+      <div class="engine-desc">Supervisión de planes de continuidad operacional. Validación de protocolos de respuesta y escenarios de crisis documentados.</div>
+    </div>
+
+    <!-- Remediation -->
+    <div class="engine-card">
+      <div class="engine-corner"></div>
+      <div class="engine-corner-bl"></div>
+      <div class="engine-status-row">
+        <div class="engine-status">Activo</div>
+        <div class="engine-id">ENG-007</div>
+      </div>
+      <div class="engine-name">Remediation</div>
+      <div class="engine-metrics">
+        <div class="engine-metric">
+          <div class="engine-metric-val ok">8</div>
+          <div class="engine-metric-label">Acciones cerradas</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val warn">3</div>
+          <div class="engine-metric-label">En progreso</div>
+        </div>
+      </div>
+      <div class="engine-desc">Gestión y seguimiento de planes de remediación. Cierre formal de hallazgos con trazabilidad ejecutiva completa.</div>
+    </div>
+
+    <!-- Narrative -->
+    <div class="engine-card">
+      <div class="engine-corner"></div>
+      <div class="engine-corner-bl"></div>
+      <div class="engine-status-row">
+        <div class="engine-status">Activo</div>
+        <div class="engine-id">ENG-008</div>
+      </div>
+      <div class="engine-name">Narrative</div>
+      <div class="engine-metrics">
+        <div class="engine-metric">
+          <div class="engine-metric-val ok">2</div>
+          <div class="engine-metric-label">Reportes emitidos</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val ok">100%</div>
+          <div class="engine-metric-label">Consejo</div>
+        </div>
+      </div>
+      <div class="engine-desc">Generación automática de narrativas ejecutivas para el Consejo. Síntesis de riesgo lista para presentación directiva sin preparación adicional.</div>
+    </div>
+
+    <!-- Fiscal Shield — span 2 -->
+    <div class="engine-card span-2">
+      <div class="engine-corner"></div>
+      <div class="engine-corner-bl"></div>
+      <div class="engine-status-row">
+        <div class="engine-status">Activo — Modo Blindaje</div>
+        <div class="engine-id">ENG-009 / PRIORITY</div>
+      </div>
+      <div class="engine-name">Fiscal Shield</div>
+      <div class="engine-metrics">
+        <div class="engine-metric">
+          <div class="engine-metric-val ok">$0</div>
+          <div class="engine-metric-label">Exposición protegida</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val ok">5</div>
+          <div class="engine-metric-label">Estructuras activas</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val warn">2</div>
+          <div class="engine-metric-label">Revisiones SAT</div>
+        </div>
+        <div class="engine-metric">
+          <div class="engine-metric-val ok">100%</div>
+          <div class="engine-metric-label">Respuestas en tiempo</div>
+        </div>
+      </div>
+      <div class="engine-desc">Motor de blindaje fiscal integral. Gestión activa de auditorías, requerimientos SAT y defensa técnica de estructuras tributarias. Intervención preventiva antes de que la contingencia escale al Consejo.</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================================
+     ARCHITECTURE MESAN Ω
+============================================================ -->
+<section id="architecture">
+  <div class="arch-header reveal">
+    <div class="section-tag">Sistema</div>
+    <h2 class="section-title">Arquitectura MESAN Ω</h2>
+    <p class="section-subtitle" style="margin: 12px auto 0; text-align:center;">Plataforma de inteligencia empresarial construida en capas. Cada capa opera de forma independiente y en sincronía con el núcleo de control.</p>
+  </div>
+
+  <div class="arch-diagram">
+    <div class="arch-connector"></div>
+
+    <!-- Interface Layer -->
+    <div class="arch-layer">
+      <div class="arch-layer-label">
+        <div class="arch-layer-name">Interface Layer</div>
+        <div class="arch-layer-sub">Consejo / CEO / CFO</div>
+      </div>
+      <div class="arch-layer-nodes">
+        <div class="arch-node">
+          <div class="arch-node-name">Executive Dashboard</div>
+          <div class="arch-node-detail">Scorecards en tiempo real</div>
+          <div class="arch-node-status">Online</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">War Room Console</div>
+          <div class="arch-node-detail">Centro de comando</div>
+          <div class="arch-node-status">Online</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">CRM Enterprise</div>
+          <div class="arch-node-detail">Gestión de clientes</div>
+          <div class="arch-node-status">Online</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Panel Estratégico</div>
+          <div class="arch-node-detail">Toma de decisiones</div>
+          <div class="arch-node-status">Online</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Control Plane -->
+    <div class="arch-layer">
+      <div class="arch-layer-label">
+        <div class="arch-layer-name">Control Plane</div>
+        <div class="arch-layer-sub">Núcleo Ω</div>
+      </div>
+      <div class="arch-layer-nodes">
+        <div class="arch-node">
+          <div class="arch-node-name">Orchestrator</div>
+          <div class="arch-node-detail">Coordinación de motores</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Risk Engine Core</div>
+          <div class="arch-node-detail">Cálculo de índices</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Policy Manager</div>
+          <div class="arch-node-detail">Reglas corporativas</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Alert Router</div>
+          <div class="arch-node-detail">Distribución de alertas</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intelligence Engines -->
+    <div class="arch-layer">
+      <div class="arch-layer-label" style="border-left: 2px solid var(--cyan);">
+        <div class="arch-layer-name">Intelligence</div>
+        <div class="arch-layer-sub">9 Motores Ω</div>
+      </div>
+      <div class="arch-layer-nodes">
+        <div class="arch-node">
+          <div class="arch-node-name">Fiscal Sentinel</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Labor Shield</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Compliance Verify</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Governance + 6 más</div>
+          <div class="arch-node-status">Activos</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observability -->
+    <div class="arch-layer">
+      <div class="arch-layer-label">
+        <div class="arch-layer-name">Observability</div>
+        <div class="arch-layer-sub">Monitoreo 24/7</div>
+      </div>
+      <div class="arch-layer-nodes">
+        <div class="arch-node">
+          <div class="arch-node-name">Audit Trail</div>
+          <div class="arch-node-detail">Trazabilidad completa</div>
+          <div class="arch-node-status">Registrando</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Metrics Collector</div>
+          <div class="arch-node-detail">KPIs en tiempo real</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Log Aggregator</div>
+          <div class="arch-node-detail">Eventos del sistema</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Alerting System</div>
+          <div class="arch-node-detail">Notificaciones críticas</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tenant Layer -->
+    <div class="arch-layer">
+      <div class="arch-layer-label">
+        <div class="arch-layer-name">Tenant Layer</div>
+        <div class="arch-layer-sub">Multi-empresa</div>
+      </div>
+      <div class="arch-layer-nodes">
+        <div class="arch-node">
+          <div class="arch-node-name">Tenant Isolation</div>
+          <div class="arch-node-detail">Aislamiento de datos</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Config Store</div>
+          <div class="arch-node-detail">Parámetros por empresa</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Auth Gateway</div>
+          <div class="arch-node-detail">Acceso por rol</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-node-name">Data Vault</div>
+          <div class="arch-node-detail">Almacén cifrado</div>
+          <div class="arch-node-status">Activo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- War Room -->
+    <div class="arch-layer">
+      <div class="arch-layer-label" style="border-left: 2px solid var(--red);">
+        <div class="arch-layer-name" style="color:var(--red)">War Room</div>
+        <div class="arch-layer-sub">Crisis Command</div>
+      </div>
+      <div class="arch-layer-nodes">
+        <div class="arch-node war-node">
+          <div class="arch-node-name">Crisis Detector</div>
+          <div class="arch-node-status">Vigilando</div>
+        </div>
+        <div class="arch-node war-node">
+          <div class="arch-node-name">Response Playbooks</div>
+          <div class="arch-node-status">Listos</div>
+        </div>
+        <div class="arch-node war-node">
+          <div class="arch-node-name">Escalation Engine</div>
+          <div class="arch-node-status">Standby</div>
+        </div>
+        <div class="arch-node war-node">
+          <div class="arch-node-name">Executive Briefing</div>
+          <div class="arch-node-status">Standby</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================================
+     WAR ROOM Ω
+============================================================ -->
+<section id="warroom">
+  <div class="warroom-header reveal">
+    <div>
+      <div class="section-tag">Crisis Command Center</div>
+      <h2 class="section-title">War Room Ω</h2>
+      <p class="warroom-tagline">Cuando el riesgo se convierte en crisis, MESAN Ω activa el protocolo de respuesta ejecutiva. Cada segundo cuenta. Cada decisión queda documentada.</p>
+    </div>
+    <div class="warroom-stats stagger">
+      <div class="wr-stat">
+        <div class="wr-stat-val counter" data-target="3">0</div>
+        <div class="wr-stat-label">Incidentes activos</div>
+      </div>
+      <div class="wr-stat">
+        <div class="wr-stat-val" style="color:var(--amber)">14m</div>
+        <div class="wr-stat-label">Tiempo promedio respuesta</div>
+      </div>
+      <div class="wr-stat">
+        <div class="wr-stat-val" style="color:var(--green)" >98%</div>
+        <div class="wr-stat-label">Resolución en ciclo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline Flow -->
+  <div class="warroom-timeline stagger">
+    <div class="wt-step wt-step-active">
+      <div class="wt-step-num">01</div>
+      <div class="wt-step-icon">⚡</div>
+      <div class="wt-step-name">Detección</div>
+      <div class="wt-step-desc">Motor Ω identifica anomalía o umbral crítico superado en tiempo real.</div>
+      <div class="wt-step-status">● Activo ahora</div>
+    </div>
+    <div class="wt-step">
+      <div class="wt-step-num">02</div>
+      <div class="wt-step-icon">🔬</div>
+      <div class="wt-step-name">Análisis</div>
+      <div class="wt-step-desc">Diagnóstico automatizado. Causa raíz, dimensión de impacto y tiempo de escalada.</div>
+      <div class="wt-step-status">En cola</div>
+    </div>
+    <div class="wt-step">
+      <div class="wt-step-num">03</div>
+      <div class="wt-step-icon">📊</div>
+      <div class="wt-step-name">Impacto</div>
+      <div class="wt-step-desc">Cuantificación financiera, legal y reputacional del incidente detectado.</div>
+      <div class="wt-step-status">En cola</div>
+    </div>
+    <div class="wt-step">
+      <div class="wt-step-num">04</div>
+      <div class="wt-step-icon">🎯</div>
+      <div class="wt-step-name">Respuesta</div>
+      <div class="wt-step-desc">Activación de playbook ejecutivo. Asignación de responsables y comunicación al Consejo.</div>
+      <div class="wt-step-status">En cola</div>
+    </div>
+    <div class="wt-step">
+      <div class="wt-step-num">05</div>
+      <div class="wt-step-icon">🛡️</div>
+      <div class="wt-step-name">Remediación</div>
+      <div class="wt-step-desc">Ejecución de acciones correctivas. Seguimiento con trazabilidad completa.</div>
+      <div class="wt-step-status">En cola</div>
+    </div>
+    <div class="wt-step">
+      <div class="wt-step-num">06</div>
+      <div class="wt-step-icon">📋</div>
+      <div class="wt-step-name">Seguimiento</div>
+      <div class="wt-step-desc">Cierre formal del incidente. Informe ejecutivo al Consejo. Lección aprendida documentada.</div>
+      <div class="wt-step-status">En cola</div>
+    </div>
+  </div>
+
+  <!-- Live Event Feed -->
+  <div class="warroom-feed reveal">
+    <div class="feed-header">
+      <div class="feed-title">Event Feed — War Room</div>
+      <div class="feed-live">Transmisión en vivo</div>
+    </div>
+    <div id="event-feed">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================================
+     SECTORS
+============================================================ -->
+<section id="sectores">
+  <div class="sectors-header reveal">
+    <div>
+      <div class="section-tag">Cobertura Sectorial</div>
+      <h2 class="section-title">Sectores Activos</h2>
+    </div>
+    <p class="section-subtitle">MESAN Ω opera con parámetros específicos para cada industria. La lógica de riesgo se adapta al marco normativo de su sector.</p>
+  </div>
+
+  <div class="sector-grid stagger">
+
+    <div class="sector-card">
+      <div class="sector-icon">🏭</div>
+      <div class="sector-name">Manufactura</div>
+      <div class="sector-coverage">NOM, STPS, IMSS patronal, contratos colectivos, cumplimiento ambiental.</div>
+      <div class="sector-status">Cobertura total</div>
+    </div>
+
+    <div class="sector-card">
+      <div class="sector-icon">🔧</div>
+      <div class="sector-name">Maquila</div>
+      <div class="sector-coverage">IMMEX, drawback, Programa de Maquila, regulación de exportación y mano de obra.</div>
+      <div class="sector-status">Cobertura total</div>
+    </div>
+
+    <div class="sector-card">
+      <div class="sector-icon">🏗️</div>
+      <div class="sector-name">Construcción</div>
+      <div class="sector-coverage">Contratistas, subcontratistas, REPSE, contratos de obra y responsabilidad solidaria.</div>
+      <div class="sector-status">Cobertura total</div>
+    </div>
+
+    <div class="sector-card">
+      <div class="sector-icon">🚛</div>
+      <div class="sector-name">Logística</div>
+      <div class="sector-coverage">SCT, normativa de transporte, contratos de operación y riesgo de cadena de suministro.</div>
+      <div class="sector-status">Cobertura total</div>
+    </div>
+
+    <div class="sector-card">
+      <div class="sector-icon">⚙️</div>
+      <div class="sector-name">Servicios</div>
+      <div class="sector-coverage">REPSE, contratos de prestación, cumplimiento de servicios especializados y outsourcing.</div>
+      <div class="sector-status">Cobertura total</div>
+    </div>
+
+    <div class="sector-card">
+      <div class="sector-icon">💻</div>
+      <div class="sector-name">Tecnología</div>
+      <div class="sector-coverage">Privacidad de datos, LFPDPPP, contratos de desarrollo, SLAs y propiedad intelectual.</div>
+      <div class="sector-status">Cobertura total</div>
+    </div>
+
+    <div class="sector-card">
+      <div class="sector-icon">🏦</div>
+      <div class="sector-name">Financiero</div>
+      <div class="sector-coverage">CNBV, Banxico, antilavado, cumplimiento FATCA/CRS y gobierno de riesgo financiero.</div>
+      <div class="sector-status">Cobertura total</div>
+    </div>
+
+    <div class="sector-card">
+      <div class="sector-icon">🏥</div>
+      <div class="sector-name">Salud</div>
+      <div class="sector-coverage">COFEPRIS, NOM-035, normativa de dispositivos médicos y cumplimiento hospitalario.</div>
+      <div class="sector-status">Cobertura total</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================================
+     DIAGNÓSTICO Ω
+============================================================ -->
+<section id="diagnostico">
+  <div class="diag-grid">
+    <div class="diag-left reveal">
+      <div class="section-tag">Activación</div>
+      <h2 class="diag-title">Activar<br>Evaluación <span>Ω</span></h2>
+      <p class="diag-subtitle">
+        En menos de 48 horas, su empresa tendrá su primer Enterprise Risk Score y un mapa de exposición real. Sin costo. Sin compromiso inicial.
+      </p>
+
+      <div class="diag-features">
+        <div class="diag-feat">
+          <div class="diag-feat-icon">🔍</div>
+          <div class="diag-feat-text">
+            <strong>Diagnóstico Ejecutivo Exprés</strong>
+            Evaluación completa de las 5 dimensiones de riesgo de su empresa en 48 horas.
+          </div>
+        </div>
+        <div class="diag-feat">
+          <div class="diag-feat-icon">📊</div>
+          <div class="diag-feat-text">
+            <strong>Enterprise Risk Score inicial</strong>
+            Índice cuantitativo de exposición con desglose por dominio y recomendaciones prioritarias.
+          </div>
+        </div>
+        <div class="diag-feat">
+          <div class="diag-feat-icon">🎯</div>
+          <div class="diag-feat-text">
+            <strong>Presentación al Consejo</strong>
+            Reporte ejecutivo listo para presentar ante el Consejo de Administración o Dirección General.
+          </div>
+        </div>
+        <div class="diag-feat">
+          <div class="diag-feat-icon">🛡️</div>
+          <div class="diag-feat-text">
+            <strong>Confidencialidad garantizada</strong>
+            Toda la información se procesa bajo acuerdo de confidencialidad ejecutivo desde el primer contacto.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="animation-delay:0.2s">
+      <div class="diag-form-wrap">
+        <div class="form-header">
+          <div class="form-header-title">Evaluación Ω — Inicio</div>
+          <div class="form-header-sub">PROTOCOLO DE ACTIVACIÓN / TIEMPO EST. 3 MIN</div>
+        </div>
+
+        <div id="diag-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nombre *</label>
+              <input class="form-input" type="text" id="f-nombre" placeholder="Nombre completo" autocomplete="name" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Empresa *</label>
+              <input class="form-input" type="text" id="f-empresa" placeholder="Razón social" autocomplete="organization" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Correo corporativo *</label>
+              <input class="form-input" type="email" id="f-correo" placeholder="ceo@empresa.com" autocomplete="email" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">WhatsApp *</label>
+              <input class="form-input" type="tel" id="f-whatsapp" placeholder="+52 55 0000 0000" autocomplete="tel" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Sector *</label>
+              <select class="form-select" id="f-sector" required>
+                <option value="" disabled selected>Seleccionar sector</option>
+                <option>Manufactura</option>
+                <option>Maquila</option>
+                <option>Construcción</option>
+                <option>Logística</option>
+                <option>Servicios</option>
+                <option>Tecnología</option>
+                <option>Financiero</option>
+                <option>Salud</option>
+                <option>Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Número de empleados *</label>
+              <select class="form-select" id="f-empleados" required>
+                <option value="" disabled selected>Tamaño de empresa</option>
+                <option>1 – 50 empleados</option>
+                <option>51 – 200 empleados</option>
+                <option>201 – 500 empleados</option>
+                <option>501 – 1,000 empleados</option>
+                <option>Más de 1,000 empleados</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-submit" id="submit-btn" onclick="submitDiagnostico()">
+            <span>▸ Activar Evaluación Ω</span>
+          </button>
+          <div id="form-message"></div>
+          <div class="form-privacy">
+            Sus datos están protegidos bajo NDA ejecutivo. Sin spam. Sin ventas no solicitadas.<br>
+            Respuesta en menos de 24 horas por vía directa.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
 <footer>
-  <div class="foot-logo">MESAN Ω</div>
-  <p>© 2026 MESAN Omega · Inteligencia Operativa Empresarial · México y LATAM</p>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">MESAN <span>Ω</span></div>
+      <div class="footer-brand-sub">Sistema Operativo Empresarial</div>
+      <p class="footer-brand-desc">Plataforma de inteligencia continua para gobierno corporativo, gestión de riesgo y supervisión ejecutiva. Diseñado para el Consejo de Administración.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Plataforma</div>
+      <ul class="footer-links">
+        <li><a href="#dashboard">Dashboard Ejecutivo</a></li>
+        <li><a href="#engines">Motores Ω</a></li>
+        <li><a href="#architecture">Arquitectura</a></li>
+        <li><a href="#warroom">War Room Ω</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Sectores</div>
+      <ul class="footer-links">
+        <li><a href="#sectores">Manufactura</a></li>
+        <li><a href="#sectores">Construcción</a></li>
+        <li><a href="#sectores">Logística</a></li>
+        <li><a href="#sectores">Financiero</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Acceso</div>
+      <ul class="footer-links">
+        <li><a href="/admin.html">Panel Administrativo</a></li>
+        <li><a href="/diagnostico.html">Diagnóstico Ω</a></li>
+        <li><a href="/crm_enterprise.html">CRM Enterprise</a></li>
+        <li><a href="/panel_estrategico.html">Panel Estratégico</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 MESAN Ω — Sistema Operativo Empresarial. Todos los derechos reservados. México.</div>
+    <div class="footer-status">Todos los sistemas operativos</div>
+  </div>
 </footer>
 
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
 <script>
-document.getElementById('diagForm').addEventListener('submit',async function(e){
-  e.preventDefault();
-  const btn=this.querySelector('button[type="submit"]');
-  const orig=btn.textContent;
-  btn.textContent='Procesando...';btn.disabled=true;
-  const payload={nombre:this.nombre.value,empresa:this.empresa.value,email:this.email.value,whatsapp:this.whatsapp.value,sector:this.sector.value,empleados:this.empleados.value};
-  try{
-    const res=await fetch('https://mesan-api.onrender.com/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    if(res.ok){btn.textContent='✓ Recibido — le contactamos en 24 horas';btn.style.cssText='background:#0d2018;color:#2ecc71;';this.reset();}
-    else throw new Error();
-  }catch{
-    btn.textContent='Error — intente de nuevo';btn.style.cssText='background:#1a0808;color:#e74c3c;';btn.disabled=false;
-    setTimeout(()=>{btn.textContent=orig;btn.style.cssText='';},3000);
+// ─────────────────────────────────────────────
+// CURSOR
+// ─────────────────────────────────────────────
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+function animateCursor() {
+  dot.style.left  = mx + 'px';
+  dot.style.top   = my + 'px';
+  rx += (mx - rx) * 0.18;
+  ry += (my - ry) * 0.18;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+// ─────────────────────────────────────────────
+// CLOCK
+// ─────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const t = now.toLocaleTimeString('es-MX', { hour12: false });
+  const el = document.getElementById('panel-time');
+  if (el) el.textContent = t;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ─────────────────────────────────────────────
+// HERO SCORE COUNTER
+// ─────────────────────────────────────────────
+function animateHeroScore() {
+  const el = document.getElementById('hero-score');
+  const target = 67;
+  let current = 0;
+  const duration = 2000;
+  const start = performance.now();
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    current = Math.round(ease * target);
+    el.textContent = current;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// Animate risk bars in hero panel
+function animateHeroBars() {
+  document.querySelectorAll('.risk-dim-fill').forEach(el => {
+    const w = el.dataset.width;
+    setTimeout(() => { el.style.width = w + '%'; }, 600);
+  });
+}
+
+window.addEventListener('load', () => {
+  setTimeout(animateHeroScore, 800);
+  setTimeout(animateHeroBars, 1000);
+});
+
+// ─────────────────────────────────────────────
+// INTERSECTION OBSERVER — SCROLL REVEALS
+// ─────────────────────────────────────────────
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal, .stagger').forEach(el => revealObserver.observe(el));
+
+// ─────────────────────────────────────────────
+// COUNTER ANIMATION
+// ─────────────────────────────────────────────
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = parseInt(el.dataset.target, 10);
+    const duration = 1600;
+    const start = performance.now();
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(ease * target);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+    counterObserver.unobserve(el);
+  });
+}, { threshold: 0.4 });
+
+document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+// ─────────────────────────────────────────────
+// CARD BARS — SCROLL TRIGGER
+// ─────────────────────────────────────────────
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.querySelectorAll('.card-bar-fill').forEach(bar => {
+      const w = bar.dataset.width;
+      setTimeout(() => { bar.style.width = w + '%'; }, 300);
+    });
+    barObserver.unobserve(entry.target);
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('.score-card').forEach(card => barObserver.observe(card));
+
+// ─────────────────────────────────────────────
+// LIVE EVENT FEED
+// ─────────────────────────────────────────────
+const feedEvents = [
+  { time: '12:47', tag: 'CRIT',  text: 'Fiscal Sentinel — Requerimiento SAT detectado. Exposición estimada $1.2M' },
+  { time: '12:43', tag: 'WARN',  text: 'Labor Shield — Contrato de outsourcing sin validación REPSE activa' },
+  { time: '12:38', tag: 'WARN',  text: 'Compliance Verify — 2 obligaciones normativas próximas a vencer en 5 días' },
+  { time: '12:31', tag: 'INFO',  text: 'Governance — Reporte Consejo Q2 generado automáticamente' },
+  { time: '12:20', tag: 'OK',    text: 'Fiscal Shield — Respuesta SAT enviada en tiempo. Expediente cerrado' },
+  { time: '12:15', tag: 'WARN',  text: 'Continuity — Plan de continuidad requiere revisión ejecutiva' },
+  { time: '12:08', tag: 'INFO',  text: 'Narrative Engine — Briefing ejecutivo disponible para descarga' },
+  { time: '11:55', tag: 'OK',    text: 'Remediation — 3 acciones de mejora cerradas en ciclo' },
+];
+
+function populateFeed() {
+  const container = document.getElementById('event-feed');
+  if (!container) return;
+  feedEvents.forEach((ev, i) => {
+    const item = document.createElement('div');
+    item.className = 'feed-item';
+    item.style.animationDelay = (i * 0.12) + 's';
+    item.innerHTML = `
+      <span class="feed-time">${ev.time}</span>
+      <span class="feed-tag ${ev.tag.toLowerCase()}">${ev.tag}</span>
+      <span class="feed-text">${ev.text}</span>
+    `;
+    container.appendChild(item);
+  });
+}
+
+const feedObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      populateFeed();
+      feedObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+const feedEl = document.getElementById('event-feed');
+if (feedEl) feedObserver.observe(feedEl);
+
+// Simulate live feed additions
+let feedInterval;
+function startLiveFeed() {
+  const liveEvents = [
+    { tag: 'INFO', text: 'Sistema Ω — Ciclo de análisis completado. 9 motores activos' },
+    { tag: 'WARN', text: 'Contractual Risk — Contrato proveedor clave vence en 30 días' },
+    { tag: 'OK',   text: 'Labor Shield — Obligaciones IMSS del mes verificadas' },
+    { tag: 'INFO', text: 'Governance — Acta de Consejo procesada y archivada' },
+  ];
+  let idx = 0;
+  feedInterval = setInterval(() => {
+    const container = document.getElementById('event-feed');
+    if (!container || container.children.length === 0) return;
+    const ev = liveEvents[idx % liveEvents.length];
+    const now = new Date();
+    const t = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+    const item = document.createElement('div');
+    item.className = 'feed-item';
+    item.innerHTML = `
+      <span class="feed-time">${t}</span>
+      <span class="feed-tag ${ev.tag.toLowerCase()}">${ev.tag}</span>
+      <span class="feed-text">${ev.text}</span>
+    `;
+    container.insertBefore(item, container.firstChild);
+    if (container.children.length > 10) container.removeChild(container.lastChild);
+    idx++;
+  }, 8000);
+}
+setTimeout(startLiveFeed, 4000);
+
+// ─────────────────────────────────────────────
+// FORM SUBMIT — /api/leads
+// ─────────────────────────────────────────────
+async function submitDiagnostico() {
+  const btn = document.getElementById('submit-btn');
+  const msg = document.getElementById('form-message');
+
+  const nombre   = document.getElementById('f-nombre').value.trim();
+  const empresa  = document.getElementById('f-empresa').value.trim();
+  const correo   = document.getElementById('f-correo').value.trim();
+  const whatsapp = document.getElementById('f-whatsapp').value.trim();
+  const sector   = document.getElementById('f-sector').value;
+  const empleados = document.getElementById('f-empleados').value;
+
+  if (!nombre || !empresa || !correo || !whatsapp || !sector || !empleados) {
+    msg.className = 'error';
+    msg.textContent = '⚠ Complete todos los campos requeridos para activar la evaluación.';
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(correo)) {
+    msg.className = 'error';
+    msg.textContent = '⚠ Ingrese un correo electrónico válido.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span>Procesando...</span>';
+  msg.className = '';
+  msg.textContent = '';
+
+  const payload = {
+    nombre,
+    empresa,
+    correo,
+    whatsapp,
+    sector,
+    empleados,
+    fuente: 'landing_mesan_omega',
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    const response = await fetch('https://mesan-api.onrender.com/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      msg.className = 'success';
+      msg.textContent = '✓ Evaluación Ω activada. Recibirá respuesta en menos de 24 horas.';
+      btn.innerHTML = '<span>✓ Activación Confirmada</span>';
+      btn.style.background = 'var(--green)';
+      // Clear form
+      ['f-nombre','f-empresa','f-correo','f-whatsapp'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('f-sector').value = '';
+      document.getElementById('f-empleados').value = '';
+    } else {
+      throw new Error('Server error: ' + response.status);
+    }
+  } catch (err) {
+    msg.className = 'error';
+    msg.textContent = '⚠ Error al conectar. Intente de nuevo o contáctenos directamente.';
+    btn.disabled = false;
+    btn.innerHTML = '<span>▸ Activar Evaluación Ω</span>';
+    console.error('MESAN API error:', err);
+  }
+}
+
+// Allow Enter key on form inputs
+document.querySelectorAll('.form-input, .form-select').forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitDiagnostico();
+  });
+});
+
+// ─────────────────────────────────────────────
+// NAV SCROLL BEHAVIOR
+// ─────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 60) {
+    nav.style.background = 'rgba(1,5,8,0.97)';
+    nav.style.borderBottomColor = 'rgba(0,212,255,0.12)';
+  } else {
+    nav.style.background = 'rgba(1,5,8,0.85)';
+    nav.style.borderBottomColor = 'rgba(0,212,255,0.08)';
   }
 });
 </script>
+
 </body>
 </html>
+index (2).html
+Mostrando index (2).html
