@@ -1,20 +1,22 @@
-# core/observability_bus.py -- MESAN Omega v1.5
+# core/observability_bus.py -- MESAN Omega v1.6.1 Stable
 """
 Observability Bus Ω — Sistema central de inteligencia operacional.
 
-v1.5 — Fixes post-review ChatGPT (segunda ronda):
+v1.6 Stable — Congelado como Observability Bus definitivo de MESAN Ω:
 - _iso_now() usa una sola llamada datetime.now() — elimina inconsistencia de ms
 - _record_history() protegido con _history_lock
 - get_event_history() snapshot bajo _history_lock
 - Event.to_dict() usa datetime derivado de self.timestamp (sin código muerto)
 - complete_trace() con try/finally — trace siempre archivado aunque emit() falle
-- attach_circuit_breaker() idempotente — _attached_breakers evita listeners duplicados
+- attach_circuit_breaker() transaccional con rollback + WeakSet para _attached_breakers
+- compute_health_score() proporcional — penaliza latencia/fallos/circuitos con ventana temporal
 - API pública compatible: emit(), subscribe(), unsubscribe(), snapshot(), status()
 """
 
 import time
 import threading
 import logging
+import weakref
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -258,12 +260,36 @@ def compute_health_score(
     latency_threshold:     float = 500.0,
     recent_failure_window: float = 300.0,
 ) -> int:
+    """
+    Calcula health score de 0 a 100.
+
+    v1.6 — Penalización proporcional:
+    - Base: success_ratio * 100 (ya es proporcional a fallos reales)
+    - Latencia alta: penaliza proporcionalmente al exceso sobre el umbral,
+      máximo -15 pts (evita penalización binaria todo-o-nada)
+    - Circuit abierto recientemente: -15 pts solo si last_failure_at < ventana
+      (elimina penalización histórica permanente)
+    - Failure rate alta (>20%): penalización adicional proporcional, máximo -10 pts
+    """
     score = round(success_ratio * 100)
-    if circuit_open_count > 0:    score -= 15
-    if avg_latency_ms > latency_threshold: score -= 10
-    if last_failure_at and (time.time() - last_failure_at) < recent_failure_window:
-        score -= 10
-    if success_ratio < 0.90:      score -= 5
+
+    # Latencia — proporcional al exceso, máximo -15
+    if avg_latency_ms > latency_threshold:
+        excess_ratio = min((avg_latency_ms - latency_threshold) / latency_threshold, 1.0)
+        score -= round(excess_ratio * 15)
+
+    # Circuito abierto — solo penaliza si ocurrió dentro de la ventana temporal
+    # Elimina penalización histórica permanente de versiones anteriores
+    if circuit_open_count > 0 and last_failure_at:
+        age = time.time() - last_failure_at
+        if age < recent_failure_window:
+            score -= 15
+
+    # Failure rate alta — proporcional, máximo -10 pts
+    failure_ratio = 1.0 - success_ratio
+    if failure_ratio > 0.20:
+        score -= round(min(failure_ratio, 1.0) * 10)
+
     return max(0, min(100, score))
 
 
@@ -294,8 +320,9 @@ class ObservabilityBus:
         self._history_total: int = 0
         self._history_lock = threading.RLock()
 
-        # FIX v1.5: registro de circuit breakers adjuntos — evita listeners duplicados
-        self._attached_breakers: set = set()  # { id(circuit_breaker) }
+        # FIX v1.6: WeakSet — no retiene referencias a circuit breakers destruidos
+        # Si un CircuitBreaker es garbage-collected, se elimina automáticamente del set
+        self._attached_breakers: weakref.WeakSet = weakref.WeakSet()
 
     # ── Listener nativo para CircuitBreaker ───────────────────────────────────
 
@@ -319,21 +346,35 @@ class ObservabilityBus:
     def attach_circuit_breaker(self, circuit_breaker) -> None:
         """
         Conecta CircuitBreaker al bus via listener nativo. Sin monkey patching.
-        FIX v1.5: idempotente — ignora si el mismo CircuitBreaker ya fue adjuntado,
-        evitando listeners duplicados y eventos duplicados en OPEN/CLOSE/HALF_OPEN.
+
+        v1.6 — Transaccional + WeakSet:
+        - WeakSet: no retiene el CircuitBreaker si es destruido externamente
+        - Idempotente: segunda llamada con el mismo breaker es ignorada con warning
+        - Transaccional: si add_listener() falla, revierte el registro en WeakSet
+          evitando un estado inconsistente donde el breaker está "marcado" pero sin listener
         """
-        cb_id = id(circuit_breaker)
         with self._lock:
-            if cb_id in self._attached_breakers:
+            if circuit_breaker in self._attached_breakers:
                 logger.warning(
                     "[Bus] CircuitBreaker '%s' ya adjuntado — ignorando duplicado",
                     circuit_breaker.name,
                 )
                 return
-            self._attached_breakers.add(cb_id)
+            # Pre-registro bajo lock — se revierte si add_listener() falla
+            self._attached_breakers.add(circuit_breaker)
 
         listener = self.make_circuit_listener()
-        circuit_breaker.add_listener(listener)
+        try:
+            circuit_breaker.add_listener(listener)
+        except Exception as exc:
+            # ROLLBACK: revertir registro si la conexión falla
+            with self._lock:
+                self._attached_breakers.discard(circuit_breaker)
+            logger.error(
+                "[Bus] Fallo al adjuntar CircuitBreaker '%s' — revertido: %s",
+                circuit_breaker.name, exc,
+            )
+            raise
         logger.info("[Bus] CircuitBreaker '%s' conectado via listener nativo", circuit_breaker.name)
 
     # ── Hooks globales ────────────────────────────────────────────────────────
@@ -349,7 +390,19 @@ class ObservabilityBus:
     # ── Suscripción ───────────────────────────────────────────────────────────
 
     def subscribe(self, event_type: EventType, handler: Handler):
+        """
+        Registra handler para un EventType.
+        v1.6.1: idempotente — ignorar si el mismo handler ya está suscrito
+        para este event_type. Evita duplicación de eventos en re-inicializaciones
+        o llamadas repetidas durante el lifespan de FastAPI.
+        """
         with self._lock:
+            if handler in self._handlers[event_type]:
+                logger.warning(
+                    "[Bus] Handler '%s' ya suscrito a %s — ignorando duplicado",
+                    handler.__name__, event_type.value,
+                )
+                return
             self._handlers[event_type].append(handler)
             logger.debug("[Bus] Suscrito: %s → %s", event_type.value, handler.__name__)
 
