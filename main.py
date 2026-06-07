@@ -1,4 +1,4 @@
-# main.py -- MESAN Omega v3.1.0 Enterprise SaaS Platform
+# main.py -- MESAN Omega v3.2.0 Enterprise SaaS Platform
 import os
 import time
 import uuid
@@ -9,33 +9,40 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from core.container import Container
-from core.engine_factory import build_engines
+from core.container          import Container
+from core.engine_factory     import build_engines
 from core.context_middleware import context_middleware
 from core.auth.auth_middleware import auth_middleware
+from core.observability_bus  import omega_bus
+from core.circuit_breaker    import circuit_registry
+from core.self_healing_engine import SelfHealingEngine          # FASE 2
 
 from routes.execution_routes import router as execution_router
 from routes.leads_routes     import router as leads_router
 from routes.payment_routes   import router as payment_router
+from routes.warroom_routes   import router as warroom_router    # FASE 2
+from routes.omega_routes     import router as omega_router      # FASE 4
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("mesan.main")
 
 # ── Config ────────────────────────────────────────────────────────────────────
-VERSION    = "3.1.0"
+VERSION    = "3.3.0"
 ENV        = os.getenv("ENV", "production")
 START_TIME = time.time()
 
-# ── Feature Flags (sin dependencias externas) ─────────────────────────────────
+# ── Feature Flags ─────────────────────────────────────────────────────────────
 FEATURE_WAR_ROOM      = os.getenv("FEATURE_WAR_ROOM",      "true").lower()  == "true"
 FEATURE_BENCHMARKING  = os.getenv("FEATURE_BENCHMARKING",  "true").lower()  == "true"
 FEATURE_PREDICTIVE_AI = os.getenv("FEATURE_PREDICTIVE_AI", "false").lower() == "true"
+FEATURE_SELF_HEALING  = os.getenv("FEATURE_SELF_HEALING",  "true").lower()  == "true"   # FASE 2
 
 FEATURES = {
     "war_room":       FEATURE_WAR_ROOM,
     "benchmarking":   FEATURE_BENCHMARKING,
     "predictive_ai":  FEATURE_PREDICTIVE_AI,
+    "self_healing":   FEATURE_SELF_HEALING,
 }
 
 # ── Engines críticos requeridos para startup ──────────────────────────────────
@@ -48,7 +55,7 @@ CRITICAL_ENGINES = os.getenv(
 container = Container()
 
 
-# ── Engine Factory con Circuit Breaker básico ─────────────────────────────────
+# ── Engine Factory ────────────────────────────────────────────────────────────
 def build_engines_safe():
     try:
         engines = build_engines()
@@ -71,18 +78,42 @@ async def lifespan(app: FastAPI):
     logger.info("MESAN Ω v%s iniciando (ENV=%s)", VERSION, ENV)
     logger.info("Features: %s", FEATURES)
 
+    # Engines
     engines, errors = build_engines_safe()
-
     for name, engine in engines.items():
         container.register_engine(name, engine)
-
     container.engines  = engines
     container.degraded = errors
-    app.state.container = container
-
+    app.state.container  = container
     app.state.started_at = time.time()
+
+    # ── FASE 4 — OmegaOrchestrator en app.state ──────────────────────────────
+    from services.omega_orchestrator import omega_orchestrator
+    app.state.orchestrator = omega_orchestrator
+    logger.info("[Orchestrator] Registrado en app.state")
+
+    # ── FASE 2 — Self Healing Audit Mode ──────────────────────────────────────
+    if FEATURE_SELF_HEALING:
+        healing = SelfHealingEngine(
+            bus          = omega_bus,
+            cb_registry  = circuit_registry,
+        )
+        healing.start()
+        app.state.self_healing = healing
+        logger.info("[SelfHealing] Iniciado en AUDIT MODE")
+    else:
+        app.state.self_healing = None
+        logger.info("[SelfHealing] Deshabilitado por feature flag")
+    # ─────────────────────────────────────────────────────────────────────────
+
     logger.info("MESAN Ω v%s READY | engines=%s", VERSION, list(engines.keys()))
     yield
+
+    # ── Shutdown ──────────────────────────────────────────────────────────────
+    if getattr(app.state, "self_healing", None):
+        app.state.self_healing.stop()
+        logger.info("[SelfHealing] Detenido")
+
     logger.info("SHUTDOWN COMPLETE")
 
 
@@ -130,31 +161,41 @@ allow_origins = (
     ["https://mesanomega.com", "https://www.mesanomega.com"]
     if ENV == "production" else ["*"]
 )
-app.add_middleware(CORSMiddleware, allow_origins=allow_origins, allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Trace-Id","X-Latency-Ms"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allow_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["X-Trace-Id", "X-Latency-Ms"],
+)
 
 
 # ── Routers ───────────────────────────────────────────────────────────────────
-app.include_router(execution_router, tags=["Diagnóstico"])
-app.include_router(leads_router,     prefix="/api/leads", tags=["Leads"])
-app.include_router(payment_router,   prefix="/pro",       tags=["Pagos"])
+app.include_router(execution_router,              tags=["Diagnóstico"])
+app.include_router(leads_router,   prefix="/api/leads",  tags=["Leads"])
+app.include_router(payment_router, prefix="/pro",        tags=["Pagos"])
+app.include_router(warroom_router, prefix="/api/v1",     tags=["War Room"])   # FASE 2
+app.include_router(omega_router,   prefix="/api/v1",     tags=["Omega"])      # FASE 4
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
 @app.get("/health", tags=["Sistema"])
 def health(request: Request):
-    c       = getattr(request.app.state, "container", None)
-    engines = getattr(c, "engines", {}) or {}
+    c        = getattr(request.app.state, "container", None)
+    engines  = getattr(c, "engines",  {}) or {}
     degraded = getattr(c, "degraded", {}) or {}
+    healing  = getattr(request.app.state, "self_healing", None)
 
     return {
-        "status":           "DEGRADED" if degraded else "OK",
-        "version":          VERSION,
-        "env":              ENV,
-        "uptime_seconds":   round(time.time() - request.app.state.started_at, 2),
-        "engines_loaded":   len(engines),
-        "engines_degraded": len(degraded),
-        "features":         FEATURES,
-        "timestamp":        time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "status":              "DEGRADED" if degraded else "OK",
+        "version":             VERSION,
+        "env":                 ENV,
+        "uptime_seconds":      round(time.time() - request.app.state.started_at, 2),
+        "engines_loaded":      len(engines),
+        "engines_degraded":    len(degraded),
+        "features":            FEATURES,
+        "self_healing":        healing.status() if healing else None,   # FASE 2
+        "timestamp":           time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
 
 
@@ -163,7 +204,6 @@ def health(request: Request):
 def ready(request: Request):
     c       = getattr(request.app.state, "container", None)
     engines = getattr(c, "engines", {}) or {}
-
     missing = [e for e in CRITICAL_ENGINES if e not in engines]
 
     if missing or not c:
