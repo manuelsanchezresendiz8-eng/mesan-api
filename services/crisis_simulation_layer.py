@@ -33,6 +33,7 @@ from dataclasses import dataclass
 from typing import Dict, Optional
 
 from services.continuity_engine import ContinuityEngine, Empresa
+from core.risk_classification import risk_classifier
 from core.crisis_scenarios import (
     PANDEMIA, PERDIDA_CLIENTE, AUDITORIA_SAT, DEMANDA_LABORAL,
     CrisisScenario,
@@ -83,13 +84,6 @@ class CrisisSimulationLayer:
     def _recalcular_esi(self, empresa: Empresa) -> int:
         return self._engine.calcular_esi(empresa)["esi"]
 
-    def _clasificar_riesgo(self, esi: int) -> str:
-        if esi < 60:
-            return "CRITICO"
-        if esi < 75:
-            return "ALTO"
-        return "MEDIO"
-
     def _build_result(
         self,
         escenario:     str,
@@ -103,7 +97,7 @@ class CrisisSimulationLayer:
             esi_escenario = esi_nuevo,
             delta         = esi_nuevo - esi_base,
             clasificacion = self._engine.clasificar(esi_nuevo),
-            riesgo        = self._clasificar_riesgo(esi_nuevo),
+            riesgo        = risk_classifier.classify_risk_level(esi_nuevo),
         )
 
     # ── Escenario A — Pandemia ────────────────────────────────────────────────
