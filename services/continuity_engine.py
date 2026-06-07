@@ -28,6 +28,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import List, Optional
 
+from core.risk_classification import risk_classifier
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # DATACLASS EMPRESA
@@ -144,24 +146,10 @@ class ContinuityEngine:
 
     def clasificar(self, esi: int) -> str:
         """
-        Clasificación estándar MESAN Ω.
-        Alineada con EnterpriseSurvivalEngine y ObservabilityBus.
-
-        90-100 → ROBUSTA
-        80-89  → ESTABLE
-        70-79  → VIGILANCIA
-        60-69  → RIESGO_ELEVADO
-        0-59   → CRITICA
+        Delegado a RiskClassificationService — única fuente de verdad MESAN Ω.
+        Método mantenido por compatibilidad con consumidores existentes.
         """
-        if esi >= 90:
-            return "ROBUSTA"
-        if esi >= 80:
-            return "ESTABLE"
-        if esi >= 70:
-            return "VIGILANCIA"
-        if esi >= 60:
-            return "RIESGO_ELEVADO"
-        return "CRITICA"
+        return risk_classifier.classify_esi(esi)
 
     # ── Recomendaciones War Room ──────────────────────────────────────────────
 
