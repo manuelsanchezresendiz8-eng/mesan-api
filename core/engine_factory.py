@@ -1,10 +1,10 @@
-# core/engine_factory.py -- MESAN Omega Engine Factory v2.0
+# core/engine_factory.py -- MESAN Omega Engine Factory v2.1
 """
 MESAN Ω Engine Bootstrap
 - Lazy loading via factories
 - Error handling por engine
 - Metadata compatible con Container v2.0
-- Preparado para Self-Healing Control Plane
+- v2.1: eliminados imports de módulos inexistentes (fiscal_shield, executive_narrative)
 """
 
 import logging
@@ -21,51 +21,40 @@ from services.policy_audit_engine           import PolicyAuditEngine
 from services.governance_engine             import GovernanceEngine
 from services.continuity_engine             import ContinuityEngine
 from services.remediation_engine            import RemediationEngine
-from services.executive_narrative_generator import ExecutiveNarrativeGenerator
-from services.fiscal_shield_engine          import FiscalShieldEngine
 
 # ── ENGINE REGISTRY ───────────────────────────────────────────────────────────
-# Cada entry: (EngineClass, metadata)
 ENGINE_REGISTRY: Dict[str, Tuple[Any, Dict[str, Any]]] = {
-    FiscalSentinelEngine.ENGINE_NAME if hasattr(FiscalSentinelEngine, 'ENGINE_NAME') else "FiscalSentinel": (
+    "FiscalSentinel": (
         FiscalSentinelEngine,
         {"criticality": "HIGH", "enabled": True}
     ),
-    ComplianceVerifyEngine.ENGINE_NAME if hasattr(ComplianceVerifyEngine, 'ENGINE_NAME') else "ComplianceVerify": (
+    "ComplianceVerify": (
         ComplianceVerifyEngine,
         {"criticality": "HIGH", "enabled": True}
     ),
-    LaborShieldEngine.ENGINE_NAME if hasattr(LaborShieldEngine, 'ENGINE_NAME') else "LaborShield": (
+    "LaborShield": (
         LaborShieldEngine,
         {"criticality": "HIGH", "enabled": True}
     ),
-    ContractualRiskEngine.ENGINE_NAME if hasattr(ContractualRiskEngine, 'ENGINE_NAME') else "ContractualRisk": (
+    "ContractualRisk": (
         ContractualRiskEngine,
         {"criticality": "MEDIUM", "enabled": True}
     ),
-    PolicyAuditEngine.ENGINE_NAME if hasattr(PolicyAuditEngine, 'ENGINE_NAME') else "PolicyAudit": (
+    "PolicyAudit": (
         PolicyAuditEngine,
         {"criticality": "MEDIUM", "enabled": True}
     ),
-    GovernanceEngine.ENGINE_NAME if hasattr(GovernanceEngine, 'ENGINE_NAME') else "Governance": (
+    "Governance": (
         GovernanceEngine,
         {"criticality": "HIGH", "enabled": True}
     ),
-    ContinuityEngine.ENGINE_NAME if hasattr(ContinuityEngine, 'ENGINE_NAME') else "Continuity": (
+    "Continuity": (
         ContinuityEngine,
         {"criticality": "MEDIUM", "enabled": True}
     ),
-    RemediationEngine.ENGINE_NAME if hasattr(RemediationEngine, 'ENGINE_NAME') else "Remediation": (
+    "Remediation": (
         RemediationEngine,
         {"criticality": "MEDIUM", "enabled": True}
-    ),
-    ExecutiveNarrativeGenerator.ENGINE_NAME if hasattr(ExecutiveNarrativeGenerator, 'ENGINE_NAME') else "Narrative": (
-        ExecutiveNarrativeGenerator,
-        {"criticality": "LOW", "enabled": True}
-    ),
-    FiscalShieldEngine.ENGINE_NAME if hasattr(FiscalShieldEngine, 'ENGINE_NAME') else "FiscalShield": (
-        FiscalShieldEngine,
-        {"criticality": "HIGH", "enabled": True}
     ),
 }
 
@@ -100,10 +89,7 @@ def build_engines() -> Dict[str, Any]:
             )
         except Exception as exc:
             degraded[name] = str(exc)
-            logger.error(
-                "[EngineFactory] Failed to load: %s | error=%s",
-                name, exc
-            )
+            logger.error("[EngineFactory] Failed to load: %s | error=%s", name, exc)
             if name in CRITICAL_ENGINES:
                 raise RuntimeError(
                     f"Critical engine '{name}' failed to initialize: {exc}"
