@@ -1,9 +1,11 @@
-# core/engine_factory.py -- MESAN Omega Engine Factory v2.1
+# core/engine_factory.py -- MESAN Omega Engine Factory v2.2
 """
 MESAN Ω Engine Bootstrap
 - Lazy loading via factories
 - Error handling por engine
 - Metadata compatible con Container v2.0
+- v2.2: build_engines() retorna (engines, degraded)
+- metadata pasada a Container.register_engine()
 - v2.1: eliminados imports de módulos inexistentes (fiscal_shield, executive_narrative)
 """
 
@@ -21,6 +23,13 @@ from services.policy_audit_engine           import PolicyAuditEngine
 from services.governance_engine             import GovernanceEngine
 from services.continuity_engine             import ContinuityEngine
 from services.remediation_engine            import RemediationEngine
+from services.executive_narrative_generator import ExecutiveNarrativeGenerator
+
+# TODO P1:
+# Unificar registro de Financial engines en EngineFactory
+# cuando OmegaOrchestrator migre a dependencia por Container.
+# Actualmente FinancialIntelligenceEngine y V2 se instancian directamente
+# en OmegaOrchestrator fuera de este registry.
 
 # ── ENGINE REGISTRY ───────────────────────────────────────────────────────────
 ENGINE_REGISTRY: Dict[str, Tuple[Any, Dict[str, Any]]] = {
@@ -56,6 +65,10 @@ ENGINE_REGISTRY: Dict[str, Tuple[Any, Dict[str, Any]]] = {
         RemediationEngine,
         {"criticality": "MEDIUM", "enabled": True}
     ),
+    "Narrative": (
+        ExecutiveNarrativeGenerator,
+        {"criticality": "LOW", "enabled": True}
+    ),
 }
 
 CRITICAL_ENGINES = {
@@ -64,7 +77,7 @@ CRITICAL_ENGINES = {
 }
 
 
-def build_engines() -> Dict[str, Any]:
+def build_engines() -> Tuple[Dict[str, Any], Dict[str, str]]:
     """
     Instancia todos los engines con manejo de errores por engine.
     Engines críticos que fallen detienen el startup.
@@ -102,7 +115,7 @@ def build_engines() -> Dict[str, Any]:
         "[EngineFactory] Bootstrap complete | loaded=%d | degraded=%d",
         len(engines), len(degraded)
     )
-    return engines
+    return engines, degraded  # P0: degraded visible para observabilidad y health checks
 
 
 def get_engine_metadata(name: str) -> Dict[str, Any]:
