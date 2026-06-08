@@ -15,7 +15,7 @@ from core.context_middleware import context_middleware
 from core.auth.auth_middleware import auth_middleware
 from core.observability_bus  import omega_bus
 from core.circuit_breaker    import circuit_registry
-from core.self_healing_engine import SelfHealingEngine          # FASE 2
+# from core.self_healing_engine import SelfHealingEngine        # FASE 2 — pendiente
 
 from routes.execution_routes import router as execution_router
 from routes.leads_routes     import router as leads_router
@@ -93,17 +93,7 @@ async def lifespan(app: FastAPI):
     logger.info("[Orchestrator] Registrado en app.state")
 
     # ── FASE 2 — Self Healing Audit Mode ──────────────────────────────────────
-    if FEATURE_SELF_HEALING:
-        healing = SelfHealingEngine(
-            bus          = omega_bus,
-            cb_registry  = circuit_registry,
-        )
-        healing.start()
-        app.state.self_healing = healing
-        logger.info("[SelfHealing] Iniciado en AUDIT MODE")
-    else:
-        app.state.self_healing = None
-        logger.info("[SelfHealing] Deshabilitado por feature flag")
+    app.state.self_healing = None  # FASE 2 pendiente
     # ─────────────────────────────────────────────────────────────────────────
 
     logger.info("MESAN Ω v%s READY | engines=%s", VERSION, list(engines.keys()))
