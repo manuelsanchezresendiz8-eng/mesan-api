@@ -1,4 +1,4 @@
-# core/container.py -- MESAN Omega Service Container v2.0
+# core/container.py -- MESAN Omega Service Container v2.2
 """
 MESAN Ω Production Service Container
 - Service Registry
@@ -7,6 +7,12 @@ MESAN Ω Production Service Container
 - Engine Lifecycle Manager
 - Health Monitoring
 - Observability
+
+v2.1:
+- set_health() valida engine existente antes de actualizar
+- _health extendido con error_count, restart_count, circuit_state (Self-Healing ready)
+- diagnostics() incluye conteos healthy/degraded/unhealthy
+- TODO: migración de tenants a Redis/PostgreSQL documentada
 """
 
 import logging
@@ -20,19 +26,19 @@ logger = logging.getLogger("mesan.container")
 
 class Container:
     """
-    MESAN Ω Production Service Container
+    MESAN Ω Production Service Container v2.2
 
     Thread-safe, multi-tenant, observable.
     Compatible con FastAPI lifespan y MESAN Ω Self-Healing Control Plane.
     """
 
     def __init__(self):
-        self._engines:  Dict[str, Any]                  = {}
-        self._metadata: Dict[str, Dict[str, Any]]       = {}
-        self._health:   Dict[str, Dict[str, Any]]       = {}
-        self._tenants:  Dict[str, Dict[str, Any]]       = defaultdict(dict)
+        self._engines:  Dict[str, Any]            = {}
+        self._metadata: Dict[str, Dict[str, Any]] = {}
+        self._health:   Dict[str, Dict[str, Any]] = {}
+        self._tenants:  Dict[str, Dict[str, Any]] = defaultdict(dict)
         self._lock = RLock()
-        logger.info("[Container] Initialized — MESAN Ω Service Container v2.0")
+        logger.info("[Container] Initialized — MESAN Ω Service Container v2.2")
 
     # ── ENGINE REGISTRY ───────────────────────────────────────────────────────
 
@@ -56,10 +62,14 @@ class Container:
                 "owner":   "MESAN Ω",
                 "enabled": True,
             }
+            # v2.1: campos extendidos para Self-Healing Fase 2
             self._health[name] = {
-                "status":     "healthy",
-                "last_check": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "latency_ms": 0,
+                "status":        "healthy",
+                "last_check":    time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "latency_ms":    0,
+                "error_count":   0,      # incrementar en cada fallo del engine
+                "restart_count": 0,      # incrementar en cada reinicio por Self-Healing
+                "circuit_state": "CLOSED",  # CLOSED | OPEN | HALF_OPEN
             }
 
         logger.info("[Container] Engine registered: %s | version=%s",
@@ -117,14 +127,28 @@ class Container:
         self,
         name: str,
         status: str,
-        latency_ms: float = 0
+        latency_ms: float = 0,
     ) -> None:
-        """status: 'healthy' | 'degraded' | 'unhealthy'"""
+        """
+        status: 'healthy' | 'degraded' | 'unhealthy'
+
+        v2.1: valida que el engine exista antes de actualizar.
+        Evita estados fantasma y métricas inconsistentes.
+        """
         with self._lock:
+            # Fix v2.1: no permitir health para engines no registrados
+            if name not in self._engines:
+                raise KeyError(f"Engine '{name}' not found — cannot set health for unregistered engine")
+
+            current = self._health.get(name, {})
             self._health[name] = {
-                "status":     status,
-                "last_check": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "latency_ms": latency_ms,
+                "status":        status,
+                "last_check":    time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "latency_ms":    latency_ms,
+                # Preservar contadores acumulativos
+                "error_count":   current.get("error_count",   0),
+                "restart_count": current.get("restart_count", 0),
+                "circuit_state": current.get("circuit_state", "CLOSED"),
             }
 
     def get_health(self, name: str) -> Dict[str, Any]:
@@ -134,6 +158,18 @@ class Container:
     def get_all_health(self) -> Dict[str, Dict[str, Any]]:
         with self._lock:
             return {k: dict(v) for k, v in self._health.items()}
+
+    def increment_error_count(self, name: str) -> None:
+        """Incrementa error_count del engine. Para uso en Self-Healing Fase 2."""
+        with self._lock:
+            if name in self._health:
+                self._health[name]["error_count"] += 1
+
+    def increment_restart_count(self, name: str) -> None:
+        """Incrementa restart_count del engine. Para uso en Self-Healing Fase 2."""
+        with self._lock:
+            if name in self._health:
+                self._health[name]["restart_count"] += 1
 
     # ── TENANT CONFIGURATION ──────────────────────────────────────────────────
 
@@ -177,12 +213,26 @@ class Container:
     # ── DIAGNOSTICS ───────────────────────────────────────────────────────────
 
     def diagnostics(self) -> Dict[str, Any]:
+        """
+        v2.1: extendido con conteos por estado de salud.
+        Contrato backward compatible — solo se agregan campos nuevos.
+
+        TODO: migrar self._tenants a Redis/PostgreSQL cuando el número de
+        tenants supere capacidad razonable de almacenamiento en memoria.
+        Umbral sugerido: >1000 tenants activos simultáneos.
+        """
         with self._lock:
+            health_summary = {k: v["status"] for k, v in self._health.items()}
+            statuses = list(health_summary.values())
+
             return {
+                # Campos originales — sin cambios
                 "engines":        list(self._engines.keys()),
                 "engine_count":   len(self._engines),
                 "tenant_count":   len(self._tenants),
-                "health_summary": {
-                    k: v["status"] for k, v in self._health.items()
-                },
+                "health_summary": health_summary,
+                # Campos nuevos v2.1
+                "healthy_engines":   statuses.count("healthy"),
+                "degraded_engines":  statuses.count("degraded"),
+                "unhealthy_engines": statuses.count("unhealthy"),
             }
