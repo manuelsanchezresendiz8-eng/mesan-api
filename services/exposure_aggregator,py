@@ -1,218 +1,203 @@
-# services/score_normalizer.py -- MESAN Omega v1.0
+# services/exposure_aggregator.py -- MESAN Omega v1.0
 """
-Score Normalizer Ω
+Exposure Aggregator Ω
 
-Resuelve la inconsistencia semántica entre engines:
+Consolida la exposición financiera calculada individualmente
+por cada engine en un total único y verificable.
 
-  FiscalSentinelEngine  → score INVERTIDO (0=saludable, 100=crisis)
-  Todos los demás       → score DIRECTO   (100=saludable, 0=crisis)
+Elimina el patrón actual donde 4 engines calculan
+exposición con metodologías propias sin sumar el total.
 
-El normalizador expone una interfaz uniforme sin modificar los engines.
-
-Salida estándar por engine:
-    {
-        "health_score": 0-100,   # siempre: mayor = más saludable
-        "risk_score":   0-100,   # siempre: mayor = más riesgo
-        "raw_score":    int,     # valor original del engine
-        "engine":       str,
-        "inverted":     bool     # True solo para FiscalSentinel
-    }
+Alimenta:
+    - GovernanceEngine    (exposicion_total input)
+    - EnterpriseSurvivalEngine
+    - WarRoomEngine
+    - RemediationEngine
+    - OmegaOrchestrator   (sales_priority basada en total real)
 """
 
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import dataclass, field
+from typing import Dict, Optional
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# REGISTRO DE ENGINES Y SU SEMÁNTICA
-# ══════════════════════════════════════════════════════════════════════════════
-
-# True  = engine usa semántica INVERTIDA (mayor score = más riesgo)
-# False = engine usa semántica DIRECTA   (mayor score = más saludable)
-ENGINE_SEMANTICS: dict[str, bool] = {
-    "MESAN_FISCAL_SENTINEL":    True,   # score invertido — documentado en auditoría
-    "MESAN_COMPLIANCE_VERIFY":  False,
-    "MESAN_LABOR_SHIELD":       False,
-    "MESAN_CONTRACTUAL_RISK":   False,
-    "MESAN_POLICY_AUDIT":       False,
-    "MESAN_GOVERNANCE":         False,
-    "MESAN_REMEDIATION":        False,
-    "MESAN_ENTERPRISE_SURVIVAL":False,
-}
-
-# Claves de score por engine (pueden variar entre engines)
-ENGINE_SCORE_KEYS: dict[str, str] = {
-    "MESAN_FISCAL_SENTINEL":    "fiscal_score",       # alias — el engine lo retorna sin clave fija
-    "MESAN_COMPLIANCE_VERIFY":  "score_compliance",
-    "MESAN_LABOR_SHIELD":       "labor_score",
-    "MESAN_CONTRACTUAL_RISK":   "contractual_score",
-    "MESAN_POLICY_AUDIT":       "policy_score",
-    "MESAN_GOVERNANCE":         "governance_score",
-    "MESAN_REMEDIATION":        "score",
-    "MESAN_ENTERPRISE_SURVIVAL":"enterprise_survival_index",
-}
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# RESULTADO NORMALIZADO
+# RESULTADO DE EXPOSICIÓN
 # ══════════════════════════════════════════════════════════════════════════════
 
 @dataclass
-class NormalizedScore:
-    engine:       str
-    health_score: int    # mayor = más saludable (0-100)
-    risk_score:   int    # mayor = más riesgo    (0-100)
-    raw_score:    int    # valor original del engine
-    inverted:     bool   # True si el engine usa semántica invertida
+class ExposureResult:
+    """Exposición financiera consolidada de todos los engines."""
+
+    # Por dominio
+    fiscal:      float = 0.0
+    labor:       float = 0.0
+    contractual: float = 0.0
+    policy:      float = 0.0
+
+    # Campos adicionales opcionales para futuros engines
+    extra: Dict[str, float] = field(default_factory=dict)
+
+    @property
+    def total(self) -> float:
+        """Total consolidado incluyendo dominios extra."""
+        base = self.fiscal + self.labor + self.contractual + self.policy
+        return base + sum(self.extra.values())
+
+    @property
+    def total_rounded(self) -> float:
+        return round(self.total, 2)
+
+    def dominant_domain(self) -> str:
+        """Dominio con mayor exposición."""
+        domains = {
+            "fiscal":      self.fiscal,
+            "labor":       self.labor,
+            "contractual": self.contractual,
+            "policy":      self.policy,
+        }
+        domains.update(self.extra)
+        return max(domains, key=domains.get)
 
     def to_dict(self) -> dict:
         return {
-            "engine":       self.engine,
-            "health_score": self.health_score,
-            "risk_score":   self.risk_score,
-            "raw_score":    self.raw_score,
-            "inverted":     self.inverted,
+            "fiscal":            round(self.fiscal,      2),
+            "labor":             round(self.labor,       2),
+            "contractual":       round(self.contractual, 2),
+            "policy":            round(self.policy,      2),
+            "extra":             {k: round(v, 2) for k, v in self.extra.items()},
+            "total_exposure_mxn": self.total_rounded,
+            "dominant_domain":   self.dominant_domain(),
         }
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SCORE NORMALIZER
+# EXPOSURE AGGREGATOR
 # ══════════════════════════════════════════════════════════════════════════════
 
-class ScoreNormalizer:
+class ExposureAggregator:
     """
-    Normaliza scores de todos los engines a una semántica uniforme.
+    Consolida exposición financiera de todos los engines del pipeline.
 
     Uso:
-        normalizer = ScoreNormalizer()
+        agg = ExposureAggregator()
 
-        # Normalizar un engine individual
-        result = normalizer.normalize("MESAN_FISCAL_SENTINEL", raw_score=72)
-        # → NormalizedScore(health_score=28, risk_score=72, inverted=True)
+        exposure = agg.aggregate(
+            fiscal_result      = fiscal_result,
+            labor_result       = labor_result,
+            contractual_result = contractual_result,
+            policy_result      = policy_result,
+        )
 
-        # Normalizar resultado completo de un engine
-        result = normalizer.normalize_engine_result(fiscal_result)
-        # → NormalizedScore extraído automáticamente
-
-        # Normalizar todos los engines del pipeline
-        all_scores = normalizer.normalize_all(engine_results)
+        print(exposure.total_rounded)       # 1_600_000.0
+        print(exposure.dominant_domain())   # "contractual"
+        print(exposure.to_dict())
     """
 
-    # ── Normalización individual ──────────────────────────────────────────────
+    # ── Extracción de exposición por engine ───────────────────────────────────
 
-    def normalize(self, engine_name: str, raw_score: int) -> NormalizedScore:
+    @staticmethod
+    def _extract(result: Optional[dict], key: str = "exposicion_estimada_mxn") -> float:
+        """Extrae exposición de un resultado de engine de forma segura."""
+        if not result or not isinstance(result, dict):
+            return 0.0
+        value = result.get(key, 0)
+        try:
+            return max(0.0, float(value))
+        except (TypeError, ValueError):
+            return 0.0
+
+    # ── Agregación principal ──────────────────────────────────────────────────
+
+    def aggregate(
+        self,
+        fiscal_result:      Optional[dict] = None,
+        labor_result:       Optional[dict] = None,
+        contractual_result: Optional[dict] = None,
+        policy_result:      Optional[dict] = None,
+        extra:              Optional[Dict[str, float]] = None,
+    ) -> ExposureResult:
         """
-        Normaliza un score dado su engine.
+        Consolida exposición de los 4 dominios principales.
 
-        Para engines con semántica invertida (FiscalSentinel):
-            health_score = 100 - raw_score
-            risk_score   = raw_score
-
-        Para engines con semántica directa:
-            health_score = raw_score
-            risk_score   = 100 - raw_score
+        Cada engine usa su propia clave de exposición:
+            FiscalSentinel  → calculada como (iva + isr + deuda) * 1.35
+            LaborShield     → "exposicion_estimada_mxn"
+            ContractualRisk → "exposicion_estimada_mxn"
+            PolicyAudit     → "exposicion_estimada_mxn"
         """
-        inverted = ENGINE_SEMANTICS.get(engine_name, False)
-        raw      = max(0, min(100, int(raw_score)))
-
-        if inverted:
-            health = 100 - raw
-            risk   = raw
-        else:
-            health = raw
-            risk   = 100 - raw
-
-        return NormalizedScore(
-            engine       = engine_name,
-            health_score = health,
-            risk_score   = risk,
-            raw_score    = raw,
-            inverted     = inverted,
+        return ExposureResult(
+            fiscal      = self._extract_fiscal(fiscal_result),
+            labor       = self._extract(labor_result),
+            contractual = self._extract(contractual_result),
+            policy      = self._extract(policy_result),
+            extra       = extra or {},
         )
 
-    # ── Extracción automática desde resultado del engine ──────────────────────
-
-    def normalize_engine_result(self, engine_result: dict) -> NormalizedScore:
+    def _extract_fiscal(self, result: Optional[dict]) -> float:
         """
-        Extrae el score del resultado de un engine y lo normaliza.
-        Detecta automáticamente el engine y la clave de score.
+        FiscalSentinel no usa 'exposicion_estimada_mxn' como clave directa.
+        La calcula internamente como (iva + isr + deuda) * 1.35.
+        Intentamos extraerla del resultado o recalcularla.
         """
-        engine_name = engine_result.get("engine", "UNKNOWN")
-        score_key   = ENGINE_SCORE_KEYS.get(engine_name)
+        if not result:
+            return 0.0
+        # Intentar clave directa si se agregó en versiones futuras
+        direct = result.get("exposicion_estimada_mxn")
+        if direct is not None:
+            try:
+                return max(0.0, float(direct))
+            except (TypeError, ValueError):
+                pass
+        # Recalcular desde métricas si están disponibles
+        try:
+            iva   = float(result.get("iva",            0))
+            isr   = float(result.get("isr_retenido",   0))
+            deuda = float(result.get("deuda_mensual",  0))
+            return max(0.0, round((iva + isr + deuda) * 1.35, 2))
+        except (TypeError, ValueError):
+            return 0.0
 
-        # Intentar clave registrada primero, luego fallbacks comunes
-        raw_score = None
-        if score_key:
-            raw_score = engine_result.get(score_key)
+    # ── Desde resultados del Orchestrator ────────────────────────────────────
 
-        if raw_score is None:
-            for fallback in ("score", "fiscal_score", "labor_score",
-                             "contractual_score", "policy_score",
-                             "governance_score", "enterprise_survival_index"):
-                if fallback in engine_result:
-                    raw_score = engine_result[fallback]
-                    break
-
-        if raw_score is None:
-            raw_score = 50  # default neutral si no se encuentra
-
-        return self.normalize(engine_name, int(raw_score))
-
-    # ── Normalización del pipeline completo ───────────────────────────────────
-
-    def normalize_all(self, engine_results: dict) -> dict[str, NormalizedScore]:
+    def aggregate_from_pipeline(self, pipeline_results: dict) -> ExposureResult:
         """
-        Normaliza todos los resultados del pipeline de engines.
+        Consolida exposición desde el dict completo del pipeline.
 
         Args:
-            engine_results: { "fiscal": {...}, "compliance": {...}, ... }
-
-        Returns:
-            { "fiscal": NormalizedScore, "compliance": NormalizedScore, ... }
+            pipeline_results: {
+                "fiscal":      {...},
+                "labor":       {...},
+                "contractual": {...},
+                "policy":      {...},
+            }
         """
-        normalized = {}
-        for key, result in engine_results.items():
-            if isinstance(result, dict) and "engine" in result:
-                normalized[key] = self.normalize_engine_result(result)
-        return normalized
-
-    # ── Score compuesto del sistema ───────────────────────────────────────────
-
-    def omega_health_score(
-        self,
-        normalized_scores: dict[str, NormalizedScore],
-        weights: Optional[dict[str, float]] = None,
-    ) -> int:
-        """
-        Calcula el Omega Health Score como promedio ponderado
-        de los health_scores normalizados.
-
-        Pesos por defecto iguales si no se especifican.
-        """
-        if not normalized_scores:
-            return 0
-
-        default_weights = {k: 1.0 for k in normalized_scores}
-        w = weights or default_weights
-
-        total_weight = sum(w.get(k, 1.0) for k in normalized_scores)
-        if total_weight == 0:
-            return 0
-
-        weighted_sum = sum(
-            ns.health_score * w.get(key, 1.0)
-            for key, ns in normalized_scores.items()
+        return self.aggregate(
+            fiscal_result      = pipeline_results.get("fiscal"),
+            labor_result       = pipeline_results.get("labor"),
+            contractual_result = pipeline_results.get("contractual"),
+            policy_result      = pipeline_results.get("policy"),
         )
 
-        return round(weighted_sum / total_weight)
+    # ── Sales Priority desde exposición total ────────────────────────────────
 
-    def snapshot(self, normalized_scores: dict[str, NormalizedScore]) -> dict:
-        """Snapshot completo para diagnóstico y War Room."""
-        return {
-            key: ns.to_dict()
-            for key, ns in normalized_scores.items()
-        }
+    @staticmethod
+    def classify_sales_priority(total_exposure: float) -> str:
+        """
+        Clasifica la prioridad comercial basada en exposición total consolidada.
+        Fuente única para sales_priority en el Orchestrator.
+
+        A+  → ≥ $2,000,000 MXN
+        HOT → ≥ $1,000,000 MXN
+        A   → ≥ $500,000 MXN
+        B   → ≥ $250,000 MXN
+        C   → < $250,000 MXN
+        """
+        if total_exposure >= 2_000_000: return "A+"
+        if total_exposure >= 1_000_000: return "HOT"
+        if total_exposure >= 500_000:   return "A"
+        if total_exposure >= 250_000:   return "B"
+        return "C"
 
 
 # Instancia global
-score_normalizer = ScoreNormalizer()
+exposure_aggregator = ExposureAggregator()
