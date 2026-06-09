@@ -27,6 +27,7 @@ logger = logging.getLogger("mesan.container")
 ENGINE_INTERFACE_METHODS = (
     "ejecutar", "evaluate", "run", "analizar", "calcular",
     "generar_plan", "calcular_score", "auditar", "generar",
+    "calcular_esi",
 )
 
 
