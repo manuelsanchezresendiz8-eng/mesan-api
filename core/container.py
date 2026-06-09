@@ -1,4 +1,4 @@
-# core/container.py -- MESAN Omega Service Container v2.2
+# core/container.py -- MESAN Omega Service Container v2.3
 """
 MESAN Ω Production Service Container
 - Service Registry
@@ -23,10 +23,16 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("mesan.container")
 
+# Métodos operativos válidos para validación de interfaz de engines
+ENGINE_INTERFACE_METHODS = (
+    "ejecutar", "evaluate", "run", "analizar", "calcular",
+    "generar_plan", "calcular_score", "auditar", "generar",
+)
+
 
 class Container:
     """
-    MESAN Ω Production Service Container v2.2
+    MESAN Ω Production Service Container v2.3
 
     Thread-safe, multi-tenant, observable.
     Compatible con FastAPI lifespan y MESAN Ω Self-Healing Control Plane.
@@ -36,9 +42,11 @@ class Container:
         self._engines:  Dict[str, Any]            = {}
         self._metadata: Dict[str, Dict[str, Any]] = {}
         self._health:   Dict[str, Dict[str, Any]] = {}
+        # TODO P2: migrar a TenantRepository(PostgreSQL/Redis) antes de >1000 tenants
         self._tenants:  Dict[str, Dict[str, Any]] = defaultdict(dict)
         self._lock = RLock()
-        logger.info("[Container] Initialized — MESAN Ω Service Container v2.2")
+        self._degraded: dict = {}
+        logger.info("[Container] Initialized — MESAN Ω Service Container v2.3")
 
     # ── ENGINE REGISTRY ───────────────────────────────────────────────────────
 
@@ -51,6 +59,20 @@ class Container:
         """Registra un engine. Lanza ValueError si nombre vacío o duplicado."""
         if not name:
             raise ValueError("Engine name cannot be empty")
+
+        # P1-6: validar interfaz mínima del engine
+        # Fix obs-3: version opcional — asignar "unknown" si no existe (no romper engines legacy)
+        has_method = any(callable(getattr(engine, m, None)) for m in ENGINE_INTERFACE_METHODS)
+        if not has_method:
+            raise ValueError(
+                f"Engine '{name}' debe tener al menos un método operativo: {ENGINE_INTERFACE_METHODS}"
+            )
+        # Asignar version="unknown" si no existe — engines legacy compatibles
+        if not hasattr(engine, "version"):
+            try:
+                engine.version = "unknown"
+            except AttributeError:
+                pass  # frozen object — ignorar
 
         with self._lock:
             if name in self._engines:
@@ -131,6 +153,7 @@ class Container:
     ) -> None:
         """
         status: 'healthy' | 'degraded' | 'unhealthy'
+        # TODO obs-6: agregar soporte para UNHEALTHY en /health cuando unhealthy_engines > 0
 
         v2.1: valida que el engine exista antes de actualizar.
         Evita estados fantasma y métricas inconsistentes.
@@ -152,8 +175,11 @@ class Container:
             }
 
     def get_health(self, name: str) -> Dict[str, Any]:
+        """P1: raise KeyError si engine no existe — la ausencia es condición excepcional."""
         with self._lock:
-            return dict(self._health.get(name, {"status": "unknown"}))
+            if name not in self._health:
+                raise KeyError(f"Engine '{name}' not found in health registry")
+            return dict(self._health[name])
 
     def get_all_health(self) -> Dict[str, Dict[str, Any]]:
         with self._lock:
@@ -170,6 +196,32 @@ class Container:
         with self._lock:
             if name in self._health:
                 self._health[name]["restart_count"] += 1
+
+    def set_circuit_state(self, name: str, state: str) -> None:
+        """
+        P1-5: API explícita para circuit breaker.
+        state: 'CLOSED' | 'OPEN' | 'HALF_OPEN'
+        Evita modificar _health directamente desde Self-Healing Fase 2.
+        """
+        valid_states = {"CLOSED", "OPEN", "HALF_OPEN"}
+        if state not in valid_states:
+            raise ValueError(f"circuit_state inválido: '{state}'. Válidos: {valid_states}")
+        with self._lock:
+            if name not in self._health:
+                raise KeyError(f"Engine '{name}' not found")
+            self._health[name]["circuit_state"] = state
+
+    # ── DEGRADED ENGINE REGISTRY ──────────────────────────────────────────────
+
+    def set_degraded(self, degraded: dict) -> None:
+        """P0: reemplaza atributo dinámico container._degraded."""
+        with self._lock:
+            self._degraded = dict(degraded)
+
+    def get_degraded(self) -> dict:
+        """Retorna copia del dict de engines degradados."""
+        with self._lock:
+            return dict(getattr(self, "_degraded", {}))
 
     # ── TENANT CONFIGURATION ──────────────────────────────────────────────────
 
@@ -227,12 +279,14 @@ class Container:
 
             return {
                 # Campos originales — sin cambios
-                "engines":        list(self._engines.keys()),
-                "engine_count":   len(self._engines),
-                "tenant_count":   len(self._tenants),
-                "health_summary": health_summary,
+                "engines":           list(self._engines.keys()),
+                "engine_count":      len(self._engines),
+                "tenant_count":      len(self._tenants),
+                "health_summary":    health_summary,
                 # Campos nuevos v2.1
                 "healthy_engines":   statuses.count("healthy"),
                 "degraded_engines":  statuses.count("degraded"),
                 "unhealthy_engines": statuses.count("unhealthy"),
+                # P0-2: degraded_registry para soporte operativo
+                "degraded_registry": dict(self._degraded),
             }
