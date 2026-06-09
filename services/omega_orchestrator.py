@@ -1,4 +1,4 @@
-# services/omega_orchestrator.py -- MESAN Omega v1.5.0
+# services/omega_orchestrator.py -- MESAN Omega v1.5.1
 
 import logging
 import threading
@@ -9,12 +9,13 @@ from typing import Any, Dict, Optional
 
 from services.score_normalizer    import score_normalizer
 from services.exposure_aggregator import exposure_aggregator, ExposureAggregator
-from services.war_room_engine     import war_room_engine, WarRoomEngine
+from services.war_room_engine     import war_room_engine, WarRoomEngine, WarRoomResult, WarRoomSignals
 from schemas.omega_response       import OmegaResponse, OmegaResponseBuilder
 
 logger = logging.getLogger("mesan.orchestrator")
 
-ORCHESTRATOR_VERSION = "1.5.0"
+ORCHESTRATOR_VERSION = "1.5.1"
+MAX_GLOBAL_THREADS    = 20   # Límite global de CPU — evita thread saturation bajo carga
 
 
 class OmegaOrchestrator:
@@ -26,6 +27,10 @@ class OmegaOrchestrator:
         self._war_room       = war_room_engine
         self._engines_loaded = False
         self._load_lock      = threading.Lock()   # Fix P0-A2: thread-safe init
+
+    def load_engines(self) -> None:
+        """API pública para pre-calentar engines en startup. Evita cold start en primer request."""
+        self._load_engines()
 
     def _load_engines(self):
         if self._engines_loaded:
@@ -96,7 +101,14 @@ class OmegaOrchestrator:
         try:
             if v1 is not None and v2 is not None:
                 drift       = round(abs(float(v1) - float(v2)), 2)
-                drift_pct   = round((drift / float(v1)) * 100, 2) if float(v1) > 0 else None  # Fix P1-D1
+                try:
+                    if v1 and float(v1) > 0:
+                        drift_pct = round((drift / float(v1)) * 100, 2)
+                    else:
+                        drift_pct = None
+                        logger.debug("[DRIFT] v1=%s — drift_pct no calculable (v1 es 0 o None)", v1)
+                except (TypeError, ValueError, ZeroDivisionError):
+                    drift_pct = None
                 drift_level = "OK" if drift < 5 else "WARNING" if drift < 15 else "CRITICAL"
         except Exception:
             pass
@@ -128,7 +140,6 @@ class OmegaOrchestrator:
             war_result = self._war_room.evaluate(war_signals)
         except Exception as e:
             logger.critical("[WarRoom] FAILED — escalamiento conservador aplicado: %s", e)
-            from war_room_engine import WarRoomResult, WarRoomSignals
             war_result = WarRoomResult(
                 required = True,    # Fix P0-E1: conservador — ante duda, escalar
                 score    = 50,
@@ -221,7 +232,7 @@ class OmegaOrchestrator:
             "policy":       self._policy.auditar,
         }
 
-        with ThreadPoolExecutor(max_workers=len(parallel)) as ex:
+        with ThreadPoolExecutor(max_workers=MAX_GLOBAL_THREADS) as ex:  # límite fijo — no escala con engines
             futures = {ex.submit(fn, ctx): name for name, fn in parallel.items()}
             try:
                 for f in as_completed(futures, timeout=15):  # Fix P0-A1: timeout 15s
