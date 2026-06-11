@@ -83,6 +83,9 @@ class OmegaResponse:
     # ── Narrativa ejecutiva ───────────────────────────────────────────────────
     executive_summary: str = ""
 
+    # ── Model Drift (Financial v1 vs v2) ─────────────────────────────────────
+    model_drift: Dict[str, Any] = field(default_factory=dict)
+
     # ── Trazabilidad ──────────────────────────────────────────────────────────
     generated_at:  str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
@@ -126,6 +129,9 @@ class OmegaResponse:
             # Narrativa
             "executive_summary": self.executive_summary,
 
+            # Model Drift
+            "model_drift": self.model_drift,
+
             # Trazabilidad
             "generated_at":       self.generated_at,
             "pipeline_version":   self.pipeline_version,
@@ -154,6 +160,7 @@ class OmegaResponseBuilder:
         builder.set_engines(pipeline_results)
         builder.set_remediation(remediation_result)
         builder.set_summary(narrative)
+        builder.set_model_drift(model_drift)
         response = builder.build()
     """
 
@@ -237,6 +244,11 @@ class OmegaResponseBuilder:
 
     def set_summary(self, summary: str) -> "OmegaResponseBuilder":
         self._response.executive_summary = summary
+        return self
+
+    def set_model_drift(self, model_drift: dict) -> "OmegaResponseBuilder":
+        """Registra drift entre financial v1 y v2."""
+        self._response.model_drift = model_drift or {}
         return self
 
     def build(self) -> OmegaResponse:
