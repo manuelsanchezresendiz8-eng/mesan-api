@@ -1,4 +1,4 @@
-# routes/omega_routes.py -- MESAN Omega v1.0
+# routes/omega_routes.py -- MESAN Omega v1.1
 """
 Omega Evaluate Endpoint Ω
 
@@ -10,6 +10,9 @@ Primer endpoint que conecta datos reales con el pipeline completo.
 Mantiene compatibilidad con:
     GET /health
     GET /api/v1/warroom/status
+
+v1.1:
+    - tenant_id inyectado desde JWT context al pipeline
 """
 
 import logging
@@ -84,11 +87,10 @@ async def omega_evaluate(request: Request):
 
     # ── Ejecutar pipeline Ω ───────────────────────────────────────────────
     try:
-        container  = getattr(request.app.state, "container", None)
+        container    = getattr(request.app.state, "container", None)
         orchestrator = getattr(request.app.state, "orchestrator", None)
 
         if not orchestrator:
-            # Lazy init si no está en app.state
             from services.omega_orchestrator import omega_orchestrator
             orchestrator = omega_orchestrator
 
@@ -100,7 +102,17 @@ async def omega_evaluate(request: Request):
         except Exception:
             pass
 
-        data   = eval_request.to_orchestrator_dict()
+        # ── Fix v1.1: inyectar tenant_id desde JWT context ────────────────
+        data = eval_request.to_orchestrator_dict()
+        try:
+            from core.auth.tenant_context import get_tenant
+            tenant = get_tenant()
+            if tenant and tenant.tenant_id:
+                data["tenant_id"] = tenant.tenant_id
+                logger.info("[OmegaEvaluate] tenant=%s trace=%s", tenant.tenant_id, trace_id)
+        except Exception:
+            pass  # tenant_id permanece como DEFAULT si falla
+
         result = orchestrator.ejecutar(data, open_circuits=open_circuits)
 
     except Exception as exc:
