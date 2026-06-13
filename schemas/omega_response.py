@@ -86,6 +86,9 @@ class OmegaResponse:
     # ── Model Drift (Financial v1 vs v2) ─────────────────────────────────────
     model_drift: Dict[str, Any] = field(default_factory=dict)
 
+    # ── Performance Instrumentation (v1.6) ───────────────────────────────────
+    engine_latency_ms: Dict[str, float] = field(default_factory=dict)
+
     # ── Trazabilidad ──────────────────────────────────────────────────────────
     generated_at:  str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
@@ -131,6 +134,7 @@ class OmegaResponse:
 
             # Model Drift
             "model_drift": self.model_drift,
+            "engine_latency_ms": self.engine_latency_ms,
 
             # Trazabilidad
             "generated_at":       self.generated_at,
