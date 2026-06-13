@@ -1,4 +1,11 @@
-# services/omega_orchestrator.py -- MESAN Omega v1.5.1
+# services/omega_orchestrator.py -- MESAN Omega v1.6
+"""
+v1.6:
+    - Instrumentación de latencia por engine (engine_latency_ms)
+    - Mide tiempo de cada fase: compliance, paralelo (FASE A), governance,
+      survival, war_room, remediation, narrative, total
+    - No modifica lógica de negocio — solo agrega medición
+"""
 
 import logging
 import threading
@@ -14,7 +21,7 @@ from schemas.omega_response       import OmegaResponse, OmegaResponseBuilder
 
 logger = logging.getLogger("mesan.orchestrator")
 
-ORCHESTRATOR_VERSION = "1.5.1"
+ORCHESTRATOR_VERSION = "1.6"
 MAX_GLOBAL_THREADS    = 20   # Límite global de CPU — evita thread saturation bajo carga
 
 
@@ -66,13 +73,16 @@ class OmegaOrchestrator:
 
     def ejecutar(self, data: Dict[str, Any], open_circuits: int = 0) -> OmegaResponse:
 
-        start     = time.time()
+        start     = time.perf_counter()
         self._load_engines()
 
         tenant_id = data.get("tenant_id", "DEFAULT")
         trace_id  = data.get("trace_id",  str(uuid.uuid4()))
 
-        pipeline = self._run_pipeline(data, tenant_id, trace_id)
+        # v1.6: timing dict acumulado durante todo el ciclo
+        timings: Dict[str, float] = {}
+
+        pipeline = self._run_pipeline(data, tenant_id, trace_id, timings)
 
         # Fix: excluir claves internas del pipeline antes de normalizar
         pipeline_engines = {k: v for k, v in pipeline.items()
@@ -133,6 +143,7 @@ class OmegaOrchestrator:
         esi = pipeline.get("survival", {}).get("enterprise_survival_index", 0)
 
         # Fix P1: WarRoom protegido — si falla, pipeline no cae
+        _t = time.perf_counter()
         try:
             war_signals = WarRoomEngine.build_signals(
                 pipeline, esi, total_exposure, open_circuits,
@@ -147,6 +158,7 @@ class OmegaOrchestrator:
                 reasons  = [f"WarRoom evaluation failed — conservative escalation: {str(e)}"],
                 signals  = WarRoomSignals(),
             )
+        timings["war_room_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
         # ── Fix 2: Restaurar continuity_horizon ─────────────────────────────
         horizon = pipeline.get("survival", {}).get("continuity_horizon", {
@@ -154,6 +166,7 @@ class OmegaOrchestrator:
         })
 
         # ── Fix 1: Restaurar RemediationEngine ───────────────────────────
+        _t = time.perf_counter()
         remediation_input = {
             "tenant_id":               tenant_id,
             "trace_id":                trace_id,
@@ -169,8 +182,10 @@ class OmegaOrchestrator:
         except Exception as e:
             logger.error("[Orchestrator] Remediation failed: %s", e)
             remediation_result = {}
+        timings["remediation_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
         # ── Fix 3: Restaurar ExecutiveNarrativeGenerator ──────────────────
+        _t = time.perf_counter()
         narrative = self._generate_narrative(
             omega_score    = omega_score,
             esi            = esi,
@@ -179,6 +194,7 @@ class OmegaOrchestrator:
             exposure       = total_exposure,
             sales_priority = sales_priority,
         )
+        timings["narrative_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
         # Fix P2: dual contract seguro — sin dict() sobre objetos arbitrarios
         if hasattr(exposure_result, "to_dict"):
@@ -191,6 +207,8 @@ class OmegaOrchestrator:
                              "fiscal": 0, "labor": 0, "contractual": 0, "policy": 0}
         exposure_dict["sales_priority"] = sales_priority
 
+        # v1.6: build_response_ms + total_ms
+        _t = time.perf_counter()
         response = (
             OmegaResponseBuilder(tenant_id=tenant_id, trace_id=trace_id)
             .set_scores(omega_score, esi,
@@ -204,14 +222,27 @@ class OmegaOrchestrator:
             .set_model_drift(model_drift)
             .build()
         )
+        timings["response_build_ms"] = round((time.perf_counter() - _t) * 1000, 2)
+        timings["total_ms"] = round((time.perf_counter() - start) * 1000, 2)
+
+        # v1.6: adjuntar timings al response si el builder lo soporta
+        try:
+            if hasattr(response, "engine_latency_ms"):
+                response.engine_latency_ms = timings
+        except Exception:
+            pass
+
+        logger.info("[TIMING] tenant=%s total_ms=%s breakdown=%s",
+                    tenant_id, timings.get("total_ms"), timings)
 
         return response
 
-    def _run_pipeline(self, data: dict, tenant_id: str, trace_id: str) -> dict:
+    def _run_pipeline(self, data: dict, tenant_id: str, trace_id: str, timings: Dict[str, float]) -> dict:
         ctx     = {**data, "tenant_id": tenant_id, "trace_id": trace_id}
         results = {}
 
         # ── FASE A: Compliance primero ────────────────────────────────────
+        _t = time.perf_counter()
         try:
             results["compliance"] = self._compliance.calcular_score(
                 ctx.get("repse_vigente", True),
@@ -221,6 +252,7 @@ class OmegaOrchestrator:
             )
         except Exception as e:
             results["compliance"] = {"engine": "compliance", "error": str(e)}
+        timings["compliance_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
         # ── FASE A: Paralelo ──────────────────────────────────────────────
         parallel = {
@@ -232,8 +264,10 @@ class OmegaOrchestrator:
             "policy":       self._policy.auditar,
         }
 
+        _t_parallel = time.perf_counter()
         with ThreadPoolExecutor(max_workers=MAX_GLOBAL_THREADS) as ex:  # límite fijo — no escala con engines
-            futures = {ex.submit(fn, ctx): name for name, fn in parallel.items()}
+            futures = {ex.submit(self._timed_call, fn, ctx, name, timings): name
+                       for name, fn in parallel.items()}
             try:
                 for f in as_completed(futures, timeout=15):  # Fix P0-A1: timeout 15s
                     name = futures[f]
@@ -247,9 +281,12 @@ class OmegaOrchestrator:
                 for fut, name in futures.items():
                     if not fut.done():
                         results[name] = {"engine": name, "error": "timeout"}
+        timings["parallel_phase_ms"] = round((time.perf_counter() - _t_parallel) * 1000, 2)
 
         # ── FASE B: Exposure → Governance → ESI ──────────────────────────
+        _t = time.perf_counter()
         results["_exposure"] = self._exposure.aggregate_from_pipeline(results)
+        timings["exposure_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
         governance_input = {
             **ctx,
@@ -260,11 +297,14 @@ class OmegaOrchestrator:
             "score_financiero":  self._extract_score(results.get("financial")),
             "exposicion_total":  self._get_exposure_total(results["_exposure"]),
         }
+        _t = time.perf_counter()
         try:
             results["governance"] = self._governance.calcular(governance_input)
         except Exception as e:
             results["governance"] = {"engine": "governance", "error": str(e)}
+        timings["governance_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
+        _t = time.perf_counter()
         empresa = self._build_empresa(ctx)
         if empresa:
             try:
@@ -273,8 +313,18 @@ class OmegaOrchestrator:
                 results["survival"] = {"enterprise_survival_index": 0, "error": str(e)}
         else:
             results["survival"] = {"enterprise_survival_index": 0, "error": "build_empresa_failed"}
+        timings["survival_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
         return results
+
+    @staticmethod
+    def _timed_call(fn, ctx, name, timings):
+        """v1.6: ejecuta un engine y registra su latencia individual en ms."""
+        _t = time.perf_counter()
+        try:
+            return fn(ctx)
+        finally:
+            timings[f"{name}_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
     def _get_exposure_total(self, exposure) -> float:
         """Fix 2: contrato dual — ExposureResult.total o dict total_exposure_mxn."""
