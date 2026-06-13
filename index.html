@@ -1,12 +1,8 @@
+Gmail	Manuel Sanchez <serviciosmesanmexicali@gmail.com>
+(sin asunto)
+Manuel Sanchez <serviciosmesanmexicali@gmail.com>	13 de junio de 2026 a las 3:56 p.m.
+Para: Manuel Sanchez <serviciosmesanmexicali@gmail.com>
 
-
-Ir al contenido
-Cómo usar Gmail con lectores de pantalla
-Conversaciones
-Se usó el 4% de 15 GB
-Condiciones · Privacidad · Políticas de programa
-Última actividad de la cuenta: hace 4 minutos
-Detalles
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
@@ -286,6 +282,7 @@ Detalles
       position: relative;
       height: 100vh; min-height: 700px;
       display: flex; align-items: center;
+      padding-top: 60px; /* compensar nav fijo */
       overflow: hidden;
     }
 
@@ -1245,6 +1242,96 @@ Detalles
       background-size: 40px 40px;
     }
 
+    /* PROCESS FLOW SECTION */
+    .process-section {
+      padding: 80px 60px;
+      background: var(--bg-void);
+    }
+    .process-header { text-align: center; margin-bottom: 48px; }
+    .process-header .section-tag { justify-content: center; }
+    .process-header .section-tag::before { display: none; }
+    .process-flow {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+    .process-step {
+      flex: 1;
+      min-width: 150px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 20px 16px;
+      text-align: center;
+    }
+    .process-step-warn { border-color: rgba(255,48,85,0.3); }
+    .process-num {
+      font-family: var(--font-display);
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 0.2em;
+      margin-bottom: 8px;
+    }
+    .process-step-warn .process-num { color: var(--red); }
+    .process-name {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--text-prime);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .process-desc {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .process-arrow {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--cyan);
+      font-size: 16px;
+      padding: 0 6px;
+      flex-shrink: 0;
+    }
+
+    /* MEXICO COVERAGE SECTION */
+    .mx-section {
+      padding: 100px 60px;
+      background: var(--bg-deep);
+    }
+    .mx-header { text-align: center; margin-bottom: 48px; }
+    .mx-header .section-tag { justify-content: center; }
+    .mx-header .section-tag::before { display: none; }
+    .mx-header .section-subtitle { max-width: 720px; margin: 12px auto 0; text-align: center; }
+    .mx-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+    .mx-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 22px 20px;
+    }
+    .mx-item-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .mx-item-desc {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-body);
+      line-height: 1.7;
+    }
+
     .sectors-header {
       display: flex; align-items: end; justify-content: space-between;
       margin-bottom: 48px;
@@ -1504,9 +1591,20 @@ Detalles
 
     .footer-grid {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 48px;
-      margin-bottom: 48px;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    .footer-disclaimer {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      line-height: 1.8;
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+      max-width: 900px;
+      padding: 16px 0;
+      border-top: 1px solid var(--border);
+      margin-bottom: 16px;
     }
 
     .footer-brand-name {
@@ -1623,7 +1721,7 @@ Detalles
       nav { padding: 0 24px; }
       .nav-links { display: none; }
 
-      #hero { height: auto; min-height: 100vh; padding: 100px 0 60px; }
+      #hero { height: auto; min-height: 100vh; padding: 80px 0 60px; padding-top: calc(60px + 80px); }
       .hero-content { padding: 0 28px; max-width: 100%; }
       .hero-risk-panel {
         position: relative;
@@ -1648,8 +1746,14 @@ Detalles
       .engine-card.span-2 .engine-metrics { grid-template-columns: repeat(2, 1fr); }
       .warroom-timeline { grid-template-columns: repeat(3, 1fr); }
       .sector-grid { grid-template-columns: repeat(2, 1fr); }
+      .mx-grid { grid-template-columns: repeat(2, 1fr); }
+      .mx-section { padding: 64px 28px; }
+      .process-section { padding: 56px 28px; }
+      .process-flow { flex-direction: column; }
+      .process-arrow { transform: rotate(90deg); padding: 8px 0; }
       .diag-grid { grid-template-columns: 1fr; gap: 48px; }
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .footer-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+      .footer-disclaimer { font-size: 9px; }
 
       .arch-layer { flex-direction: column; }
       .arch-layer-label { width: 100%; }
@@ -1670,9 +1774,14 @@ Detalles
       .warroom-header { grid-template-columns: 1fr; }
       .warroom-timeline { grid-template-columns: 1fr 1fr; }
       .sector-grid { grid-template-columns: 1fr 1fr; }
+      .mx-grid { grid-template-columns: 1fr 1fr; }
+      .mx-section { padding: 48px 16px; }
+      .process-section { padding: 40px 16px; }
       .form-row { grid-template-columns: 1fr; }
       .footer-grid { grid-template-columns: 1fr; }
       .footer-bottom { flex-direction: column; align-items: flex-start; }
+      /* En mobile ocultar columnas de links — solo brand visible */
+      .footer-grid > div:not(:first-child) { display: none; }
 
       #dashboard,
       #engines,
@@ -1682,7 +1791,8 @@ Detalles
       #diagnostico { padding: 48px 16px; }
       footer { padding: 40px 16px 24px; }
       nav { padding: 0 16px; }
-      .hero-content { padding: 0 16px; }
+      #hero { padding-top: 60px; }
+      .hero-content { padding: 0 16px; padding-top: 20px; }
       .hero-risk-panel { width: calc(100% - 32px); margin: 24px 16px 0; }
     }
   </style>
@@ -1712,6 +1822,7 @@ Detalles
     <a href="#engines"     class="nav-link">Motores</a>
     <a href="#warroom"     class="nav-link">War Room</a>
     <a href="#sectores"    class="nav-link">Sectores</a>
+    <a href="mailto:contacto@mesanomega.com" class="nav-link">Contacto</a>
     <a href="#diagnostico" class="nav-cta">Activar Evaluación Ω</a>
   </div>
 </nav>
@@ -1737,7 +1848,7 @@ Detalles
     </h1>
 
     <p class="hero-sub">
-      Sistema Operativo Empresarial de supervisión continua. Gobierno corporativo, riesgo fiscal, laboral y operativo — en tiempo real, al nivel del Consejo de Administración.
+      Identificamos riesgos fiscales, laborales, contractuales y operativos antes de que se conviertan en pérdidas para su empresa. Sistema Operativo Empresarial de supervisión continua, al nivel del Consejo de Administración.
     </p>
 
     <div class="hero-actions">
@@ -1817,6 +1928,57 @@ Detalles
     </div>
   </div>
 </section>
+
+<!-- ============================================================
+     PROCESS FLOW
+============================================================ -->
+<section id="proceso" class="process-section">
+  <div class="process-header reveal">
+    <div class="section-tag">Cómo funciona</div>
+    <h2 class="section-title">El proceso Ω</h2>
+    <p class="section-subtitle" style="margin:12px auto 0; text-align:center;">Cada evaluación recorre el mismo flujo determinista. Sin pasos manuales, sin demoras de consultoría.</p>
+  </div>
+
+  <div class="process-flow stagger">
+    <div class="process-step">
+      <div class="process-num">01</div>
+      <div class="process-name">Diagnóstico Ω</div>
+      <div class="process-desc">Captura de datos de la empresa en 8–10 minutos.</div>
+    </div>
+    <div class="process-arrow">→</div>
+    <div class="process-step">
+      <div class="process-num">02</div>
+      <div class="process-name">Evaluación de Motores Ω</div>
+      <div class="process-desc">9 motores analizan fiscal, laboral, contractual, gobierno y operación en paralelo.</div>
+    </div>
+    <div class="process-arrow">→</div>
+    <div class="process-step">
+      <div class="process-num">03</div>
+      <div class="process-name">Enterprise Survival Index</div>
+      <div class="process-desc">Índice de sostenibilidad a 12, 24 y 36 meses.</div>
+    </div>
+    <div class="process-arrow">→</div>
+    <div class="process-step">
+      <div class="process-num">04</div>
+      <div class="process-name">Governance Score</div>
+      <div class="process-desc">Evaluación de estructura y madurez de gobierno corporativo.</div>
+    </div>
+    <div class="process-arrow">→</div>
+    <div class="process-step process-step-warn">
+      <div class="process-num">05</div>
+      <div class="process-name">War Room <span style="opacity:0.6;">(si aplica)</span></div>
+      <div class="process-desc">Activación automática ante riesgo crítico.</div>
+    </div>
+    <div class="process-arrow">→</div>
+    <div class="process-step">
+      <div class="process-num">06</div>
+      <div class="process-name">Plan de Remediación</div>
+      <div class="process-desc">Acciones prioritarias ordenadas por impacto.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
 
 <!-- ============================================================
      EXECUTIVE DASHBOARD
@@ -2417,6 +2579,29 @@ Detalles
 <div class="section-divider"></div>
 
 <!-- ============================================================
+     MÉXICO COVERAGE
+============================================================ -->
+<section id="mexico" class="mx-section">
+  <div class="mx-header reveal">
+    <div class="section-tag">Cumplimiento Local</div>
+    <h2 class="section-title">Diseñado para empresas mexicanas</h2>
+    <p class="section-subtitle" style="margin-top:12px;">MESAN Ω está construido sobre el marco regulatorio mexicano. No es una adaptación de un sistema extranjero — cada motor responde directamente a la normativa que enfrenta su empresa todos los días.</p>
+  </div>
+
+  <div class="mx-grid stagger">
+    <div class="mx-item"><div class="mx-item-tag">SAT</div><div class="mx-item-desc">ISR, IVA, opiniones de cumplimiento y contingencias fiscales activas.</div></div>
+    <div class="mx-item"><div class="mx-item-tag">IMSS</div><div class="mx-item-desc">Cuotas obrero-patronales, INFONAVIT y opinión de cumplimiento.</div></div>
+    <div class="mx-item"><div class="mx-item-tag">REPSE</div><div class="mx-item-desc">Vigencia del registro, validación de subcontratación especializada.</div></div>
+    <div class="mx-item"><div class="mx-item-tag">STPS</div><div class="mx-item-desc">NOM laborales, condiciones de seguridad e higiene en el trabajo.</div></div>
+    <div class="mx-item"><div class="mx-item-tag">Riesgo Laboral</div><div class="mx-item-desc">Demandas activas, liquidaciones estimadas y exposición por rotación.</div></div>
+    <div class="mx-item"><div class="mx-item-tag">Riesgo Contractual</div><div class="mx-item-desc">Cláusulas críticas, vencimientos y dependencia de contratos clave.</div></div>
+    <div class="mx-item"><div class="mx-item-tag">Gobierno Corporativo</div><div class="mx-item-desc">Estructura del Consejo, actas, resoluciones y reportes ejecutivos.</div></div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================================
      SECTORS
 ============================================================ -->
 <section id="sectores">
@@ -2497,39 +2682,39 @@ Detalles
 <section id="diagnostico">
   <div class="diag-grid">
     <div class="diag-left reveal">
-      <div class="section-tag">Activación</div>
-      <h2 class="diag-title">Activar<br>Evaluación <span>Ω</span></h2>
+      <div class="section-tag">Evaluación Ω</div>
+      <h2 class="diag-title">Evaluación <span>Ω</span></h2>
       <p class="diag-subtitle">
-        En menos de 48 horas, su empresa tendrá su primer Enterprise Risk Score y un mapa de exposición real. Sin costo. Sin compromiso inicial.
+        Complete la evaluación y obtenga automáticamente su Enterprise Risk Score Ω, Enterprise Survival Index Ω y horizonte estimado de continuidad empresarial.
       </p>
 
       <div class="diag-features">
         <div class="diag-feat">
-          <div class="diag-feat-icon">🔍</div>
+          <div class="diag-feat-icon">⚡</div>
           <div class="diag-feat-text">
-            <strong>Diagnóstico Ejecutivo Exprés</strong>
-            Evaluación completa de las 5 dimensiones de riesgo de su empresa en 48 horas.
+            <strong>Resultados automáticos — 8 a 10 minutos</strong>
+            MESAN Ω analiza gobierno corporativo, riesgo financiero, cumplimiento regulatorio, continuidad operativa y riesgo estratégico. Los resultados se generan de forma automática al concluir la evaluación.
           </div>
         </div>
         <div class="diag-feat">
           <div class="diag-feat-icon">📊</div>
           <div class="diag-feat-text">
-            <strong>Enterprise Risk Score inicial</strong>
-            Índice cuantitativo de exposición con desglose por dominio y recomendaciones prioritarias.
+            <strong>Resultados generados automáticamente:</strong>
+            ✓ Enterprise Survival Index &nbsp; ✓ Governance Score &nbsp; ✓ Riesgo Fiscal &nbsp; ✓ Riesgo Laboral &nbsp; ✓ Riesgo Contractual &nbsp; ✓ Recomendaciones Prioritarias
           </div>
         </div>
         <div class="diag-feat">
           <div class="diag-feat-icon">🎯</div>
           <div class="diag-feat-text">
-            <strong>Presentación al Consejo</strong>
-            Reporte ejecutivo listo para presentar ante el Consejo de Administración o Dirección General.
+            <strong>Riesgos críticos y recomendaciones prioritarias</strong>
+            El sistema identifica automáticamente los riesgos de mayor exposición y genera las recomendaciones iniciales ordenadas por impacto.
           </div>
         </div>
         <div class="diag-feat">
           <div class="diag-feat-icon">🛡️</div>
           <div class="diag-feat-text">
             <strong>Confidencialidad garantizada</strong>
-            Toda la información se procesa bajo acuerdo de confidencialidad ejecutivo desde el primer contacto.
+            Toda la información es tratada bajo criterios de confidencialidad ejecutiva desde el primer contacto.
           </div>
         </div>
       </div>
@@ -2538,8 +2723,8 @@ Detalles
     <div class="reveal" style="animation-delay:0.2s">
       <div class="diag-form-wrap">
         <div class="form-header">
-          <div class="form-header-title">Evaluación Ω — Inicio</div>
-          <div class="form-header-sub">PROTOCOLO DE ACTIVACIÓN / TIEMPO EST. 3 MIN</div>
+          <div class="form-header-title">Evaluación Ω</div>
+          <div class="form-header-sub">CÁLCULO AUTOMÁTICO / TIEMPO EST. 8–10 MIN</div>
         </div>
 
         <div id="diag-form">
@@ -2596,8 +2781,11 @@ Detalles
           </button>
           <div id="form-message"></div>
           <div class="form-privacy">
-            Sus datos están protegidos bajo NDA ejecutivo. Sin spam. Sin ventas no solicitadas.<br>
-            Respuesta en menos de 24 horas por vía directa.
+            Sus datos están protegidos bajo criterios de confidencialidad ejecutiva.<br>
+            Los resultados son generados mediante modelos cuantitativos de evaluación empresarial desarrollados por MESAN Ω.
+          </div>
+          <div class="form-privacy" style="margin-top:10px; opacity:0.6;">
+            Los resultados representan estimaciones cuantitativas y no constituyen auditoría legal, fiscal o financiera. Las organizaciones que requieran acompañamiento especializado podrán solicitar revisión con expertos asociados.
           </div>
         </div>
 
@@ -2635,18 +2823,30 @@ Detalles
       </ul>
     </div>
     <div>
-      <div class="footer-col-title">Acceso</div>
+      <div class="footer-col-title">Contacto</div>
       <ul class="footer-links">
-        <li><a href="/admin.html">Panel Administrativo</a></li>
-        <li><a href="/diagnostico.html">Diagnóstico Ω</a></li>
-        <li><a href="/crm_enterprise.html">CRM Enterprise</a></li>
-        <li><a href="/panel_estrategico.html">Panel Estratégico</a></li>
+        <li><a href="mailto:contacto@mesanomega.com">contacto@mesanomega.com</a></li>
+        <li><a href="#diagnostico">Solicitar Diagnóstico</a></li>
+        <li><a href="mailto:contacto@mesanomega.com?subject=Agendar%20Reuni%C3%B3n">Agendar Reunión</a></li>
+        <li><a href="mailto:contacto@mesanomega.com?subject=Contactar%20Asesor">Contactar Asesor</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Legal</div>
+      <ul class="footer-links">
+        <li><a href="/aviso-privacidad.html">Aviso de Privacidad</a></li>
+        <li><a href="/terminos.html">Términos y Condiciones</a></li>
+        <li><a href="/politica-datos.html">Política de Datos</a></li>
       </ul>
     </div>
   </div>
 
+  <div class="footer-disclaimer">
+    MESAN Ω proporciona análisis automatizados de riesgo empresarial basados en la información suministrada por el cliente. Los resultados constituyen una herramienta de apoyo para la toma de decisiones y no sustituyen asesoría legal, fiscal, contable o regulatoria especializada.
+  </div>
+
   <div class="footer-bottom">
-    <div class="footer-copy">© 2026 MESAN Ω — Sistema Operativo Empresarial. Todos los derechos reservados. México.</div>
+    <div class="footer-copy">© 2026 MESAN Ω — Sistema Operativo Empresarial. Todos los derechos reservados. México. &nbsp;|&nbsp; <a href="mailto:contacto@mesanomega.com" style="color:var(--text-dim);">contacto@mesanomega.com</a></div>
     <div class="footer-status">Todos los sistemas operativos</div>
   </div>
 </footer>
@@ -2691,255 +2891,6 @@ setInterval(updateClock, 1000);
 // HERO SCORE COUNTER
 // ─────────────────────────────────────────────
 function animateHeroScore() {
-  const el = document.getElementById('hero-score');
-  const target = 67;
-  let current = 0;
-  const duration = 2000;
-  const start = performance.now();
-  function step(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    current = Math.round(ease * target);
-    el.textContent = current;
-    if (progress < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-}
+  const el = document.ge
 
-// Animate risk bars in hero panel
-function animateHeroBars() {
-  document.querySelectorAll('.risk-dim-fill').forEach(el => {
-    const w = el.dataset.width;
-    setTimeout(() => { el.style.width = w + '%'; }, 600);
-  });
-}
-
-window.addEventListener('load', () => {
-  setTimeout(animateHeroScore, 800);
-  setTimeout(animateHeroBars, 1000);
-});
-
-// ─────────────────────────────────────────────
-// INTERSECTION OBSERVER — SCROLL REVEALS
-// ─────────────────────────────────────────────
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      revealObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.12 });
-
-document.querySelectorAll('.reveal, .stagger').forEach(el => revealObserver.observe(el));
-
-// ─────────────────────────────────────────────
-// COUNTER ANIMATION
-// ─────────────────────────────────────────────
-const counterObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (!entry.isIntersecting) return;
-    const el = entry.target;
-    const target = parseInt(el.dataset.target, 10);
-    const duration = 1600;
-    const start = performance.now();
-    function step(now) {
-      const progress = Math.min((now - start) / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3);
-      el.textContent = Math.round(ease * target);
-      if (progress < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-    counterObserver.unobserve(el);
-  });
-}, { threshold: 0.4 });
-
-document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
-
-// ─────────────────────────────────────────────
-// CARD BARS — SCROLL TRIGGER
-// ─────────────────────────────────────────────
-const barObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (!entry.isIntersecting) return;
-    entry.target.querySelectorAll('.card-bar-fill').forEach(bar => {
-      const w = bar.dataset.width;
-      setTimeout(() => { bar.style.width = w + '%'; }, 300);
-    });
-    barObserver.unobserve(entry.target);
-  });
-}, { threshold: 0.2 });
-
-document.querySelectorAll('.score-card').forEach(card => barObserver.observe(card));
-
-// ─────────────────────────────────────────────
-// LIVE EVENT FEED
-// ─────────────────────────────────────────────
-const feedEvents = [
-  { time: '12:47', tag: 'CRIT',  text: 'Fiscal Sentinel — Requerimiento SAT detectado. Exposición estimada $1.2M' },
-  { time: '12:43', tag: 'WARN',  text: 'Labor Shield — Contrato de outsourcing sin validación REPSE activa' },
-  { time: '12:38', tag: 'WARN',  text: 'Compliance Verify — 2 obligaciones normativas próximas a vencer en 5 días' },
-  { time: '12:31', tag: 'INFO',  text: 'Governance — Reporte Consejo Q2 generado automáticamente' },
-  { time: '12:20', tag: 'OK',    text: 'Fiscal Shield — Respuesta SAT enviada en tiempo. Expediente cerrado' },
-  { time: '12:15', tag: 'WARN',  text: 'Continuity — Plan de continuidad requiere revisión ejecutiva' },
-  { time: '12:08', tag: 'INFO',  text: 'Narrative Engine — Briefing ejecutivo disponible para descarga' },
-  { time: '11:55', tag: 'OK',    text: 'Remediation — 3 acciones de mejora cerradas en ciclo' },
-];
-
-function populateFeed() {
-  const container = document.getElementById('event-feed');
-  if (!container) return;
-  feedEvents.forEach((ev, i) => {
-    const item = document.createElement('div');
-    item.className = 'feed-item';
-    item.style.animationDelay = (i * 0.12) + 's';
-    item.innerHTML = `
-      <span class="feed-time">${ev.time}</span>
-      <span class="feed-tag ${ev.tag.toLowerCase()}">${ev.tag}</span>
-      <span class="feed-text">${ev.text}</span>
-    `;
-    container.appendChild(item);
-  });
-}
-
-const feedObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      populateFeed();
-      feedObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.1 });
-
-const feedEl = document.getElementById('event-feed');
-if (feedEl) feedObserver.observe(feedEl);
-
-// Simulate live feed additions
-let feedInterval;
-function startLiveFeed() {
-  const liveEvents = [
-    { tag: 'INFO', text: 'Sistema Ω — Ciclo de análisis completado. 9 motores activos' },
-    { tag: 'WARN', text: 'Contractual Risk — Contrato proveedor clave vence en 30 días' },
-    { tag: 'OK',   text: 'Labor Shield — Obligaciones IMSS del mes verificadas' },
-    { tag: 'INFO', text: 'Governance — Acta de Consejo procesada y archivada' },
-  ];
-  let idx = 0;
-  feedInterval = setInterval(() => {
-    const container = document.getElementById('event-feed');
-    if (!container || container.children.length === 0) return;
-    const ev = liveEvents[idx % liveEvents.length];
-    const now = new Date();
-    const t = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-    const item = document.createElement('div');
-    item.className = 'feed-item';
-    item.innerHTML = `
-      <span class="feed-time">${t}</span>
-      <span class="feed-tag ${ev.tag.toLowerCase()}">${ev.tag}</span>
-      <span class="feed-text">${ev.text}</span>
-    `;
-    container.insertBefore(item, container.firstChild);
-    if (container.children.length > 10) container.removeChild(container.lastChild);
-    idx++;
-  }, 8000);
-}
-setTimeout(startLiveFeed, 4000);
-
-// ─────────────────────────────────────────────
-// FORM SUBMIT — /api/leads
-// ─────────────────────────────────────────────
-async function submitDiagnostico() {
-  const btn = document.getElementById('submit-btn');
-  const msg = document.getElementById('form-message');
-
-  const nombre   = document.getElementById('f-nombre').value.trim();
-  const empresa  = document.getElementById('f-empresa').value.trim();
-  const correo   = document.getElementById('f-correo').value.trim();
-  const whatsapp = document.getElementById('f-whatsapp').value.trim();
-  const sector   = document.getElementById('f-sector').value;
-  const empleados = document.getElementById('f-empleados').value;
-
-  if (!nombre || !empresa || !correo || !whatsapp || !sector || !empleados) {
-    msg.className = 'error';
-    msg.textContent = '⚠ Complete todos los campos requeridos para activar la evaluación.';
-    return;
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(correo)) {
-    msg.className = 'error';
-    msg.textContent = '⚠ Ingrese un correo electrónico válido.';
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span>Procesando...</span>';
-  msg.className = '';
-  msg.textContent = '';
-
-  const payload = {
-    nombre,
-    empresa,
-    correo,
-    whatsapp,
-    sector,
-    empleados,
-    fuente: 'landing_mesan_omega',
-    timestamp: new Date().toISOString()
-  };
-
-  try {
-    const response = await fetch('https://mesan-api.onrender.com/api/leads', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) {
-      msg.className = 'success';
-      msg.textContent = '✓ Evaluación Ω activada. Recibirá respuesta en menos de 24 horas.';
-      btn.innerHTML = '<span>✓ Activación Confirmada</span>';
-      btn.style.background = 'var(--green)';
-      // Clear form
-      ['f-nombre','f-empresa','f-correo','f-whatsapp'].forEach(id => {
-        document.getElementById(id).value = '';
-      });
-      document.getElementById('f-sector').value = '';
-      document.getElementById('f-empleados').value = '';
-    } else {
-      throw new Error('Server error: ' + response.status);
-    }
-  } catch (err) {
-    msg.className = 'error';
-    msg.textContent = '⚠ Error al conectar. Intente de nuevo o contáctenos directamente.';
-    btn.disabled = false;
-    btn.innerHTML = '<span>▸ Activar Evaluación Ω</span>';
-    console.error('MESAN API error:', err);
-  }
-}
-
-// Allow Enter key on form inputs
-document.querySelectorAll('.form-input, .form-select').forEach(el => {
-  el.addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitDiagnostico();
-  });
-});
-
-// ─────────────────────────────────────────────
-// NAV SCROLL BEHAVIOR
-// ─────────────────────────────────────────────
-window.addEventListener('scroll', () => {
-  const nav = document.querySelector('nav');
-  if (window.scrollY > 60) {
-    nav.style.background = 'rgba(1,5,8,0.97)';
-    nav.style.borderBottomColor = 'rgba(0,212,255,0.12)';
-  } else {
-    nav.style.background = 'rgba(1,5,8,0.85)';
-    nav.style.borderBottomColor = 'rgba(0,212,255,0.08)';
-  }
-});
-</script>
-
-</body>
-</html>
-index (2).html
-Mostrando index (2).html
+ 
