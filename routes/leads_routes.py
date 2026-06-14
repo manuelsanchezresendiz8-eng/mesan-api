@@ -1,161 +1,126 @@
-# routes/leads_routes.py -- MESAN Omega Leads v1.3
+# routes/leads_routes.py -- MESAN Omega Leads Routes (Fase 1)
+"""
+Rutas de captacion y gestion de leads.
 
-from datetime import datetime, timezone
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from typing import Optional
+Seguridad (Fase 1):
+    POST /api/leads
+        -- PUBLICA. Sin ninguna capa de auth. Es la captura desde la
+           landing (formulario de contacto).
+
+    GET   /api/leads
+    GET   /api/leads/{lead_id}
+    PATCH /api/leads/{lead_id}
+        -- Exentas de JWT en core/auth/auth_middleware.py (no existe
+           flujo de login en Fase 1), protegidas EXCLUSIVAMENTE por
+           Depends(verify_crm_credentials) (Basic Auth).
+
+    ADVERTENCIA: si se elimina Depends(verify_crm_credentials) de
+    cualquiera de estas 3 rutas, la ruta queda PUBLICA sin que
+    auth_middleware lo detecte (esta exenta de JWT por diseno).
+    Ver core/auth/auth_middleware.py para el detalle completo.
+"""
+
 import logging
 
-router = APIRouter()
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from core.auth.basic_auth import verify_crm_credentials
+from core.lead_store import (
+    LeadNotFoundError,
+    create_lead,
+    get_lead,
+    list_leads,
+    update_lead,
+)
+from core.models.lead_models import LeadCreate, LeadOut, LeadUpdate
 
 logger = logging.getLogger("mesan.leads")
 
-# TEMPORAL
-# Migrar a PostgreSQL posteriormente
-leads_store = []
+router = APIRouter(prefix="/api/leads", tags=["leads"])
 
 
-class LeadPayload(BaseModel):
-    nombre: str = Field(..., min_length=2, max_length=120)
-    empresa: str = Field(..., min_length=2, max_length=120)
-
-    email: Optional[str] = Field(default="", max_length=120)
-    telefono: Optional[str] = Field(default="", max_length=20)
-    whatsapp: Optional[str] = Field(default="", max_length=20)
-
-    sector: Optional[str] = Field(default="", max_length=80)
-    facturacion: Optional[str] = Field(default="", max_length=50)
-
-    mensaje: Optional[str] = Field(default="", max_length=500)
-
-
-# ==========================================================
-# Repository Layer
-# ==========================================================
-
-def save_lead(lead: dict):
+# ----------------------------------------------------------------------------
+# POST /api/leads -- PUBLICA (captura desde landing)
+# ----------------------------------------------------------------------------
+@router.post("", response_model=LeadOut, status_code=status.HTTP_201_CREATED)
+async def create_lead_endpoint(payload: LeadCreate) -> LeadOut:
     """
-    Temporal:
-    Actualmente guarda en memoria.
-    Futuro:
-    PostgreSQL
+    Crea un nuevo lead a partir del formulario de la landing.
+
+    PUBLICA: sin Depends de autenticacion. Cualquier visitante de la
+    landing puede invocar este endpoint para registrarse como lead.
     """
-    leads_store.append(lead)
+    lead = create_lead(payload)
+    logger.info("[LEADS] Nuevo lead creado | lead_id=%s", lead.lead_id)
+    return lead
 
 
-# ==========================================================
-# Health
-# ==========================================================
+# ----------------------------------------------------------------------------
+# GET /api/leads -- PROTEGIDA (Basic Auth)
+# ----------------------------------------------------------------------------
+@router.get("", response_model=list[LeadOut])
+async def list_leads_endpoint(
+    _user: str = Depends(verify_crm_credentials),
+) -> list[LeadOut]:
+    """
+    Lista todos los leads registrados.
 
-@router.get("/leads/health")
-async def leads_health():
-
-    return {
-        "status": "ok",
-        "service": "MESAN Leads",
-        "version": "1.3",
-        "total_leads": len(leads_store)
-    }
-
-
-# ==========================================================
-# Estadísticas
-# ==========================================================
-
-@router.get("/leads/stats")
-async def leads_stats():
-
-    return {
-        "version": "1.3",
-        "total_leads": len(leads_store)
-    }
+    PROTEGIDA: requiere Basic Auth (CRM_BASIC_USER / CRM_BASIC_PASSWORD).
+    Exenta de JWT en auth_middleware.py -- NO eliminar
+    Depends(verify_crm_credentials) sin agregar una proteccion
+    equivalente.
+    """
+    return list_leads()
 
 
-# ==========================================================
-# Crear Lead
-# ==========================================================
+# ----------------------------------------------------------------------------
+# GET /api/leads/{lead_id} -- PROTEGIDA (Basic Auth)
+# ----------------------------------------------------------------------------
+@router.get("/{lead_id}", response_model=LeadOut)
+async def get_lead_endpoint(
+    lead_id: str,
+    _user: str = Depends(verify_crm_credentials),
+) -> LeadOut:
+    """
+    Obtiene el detalle de un lead por su ID.
 
-@router.post("/leads")
-async def crear_lead(payload: LeadPayload):
-
+    PROTEGIDA: requiere Basic Auth. Exenta de JWT en
+    auth_middleware.py -- NO eliminar Depends(verify_crm_credentials)
+    sin agregar una proteccion equivalente.
+    """
     try:
-
-        lead = {
-            "id": len(leads_store) + 1,
-
-            "nombre": payload.nombre.strip(),
-            "empresa": payload.empresa.strip(),
-
-            "email": (payload.email or "").strip(),
-
-            "telefono": (
-                payload.telefono
-                or payload.whatsapp
-                or ""
-            ).strip(),
-
-            "sector": (payload.sector or "").strip(),
-
-            "facturacion": (
-                payload.facturacion or ""
-            ).strip(),
-
-            "mensaje": (
-                payload.mensaje or ""
-            ).strip(),
-
-            "status": "nuevo",
-
-            "timestamp": datetime.now(
-                timezone.utc
-            ).isoformat(),
-
-            "created_at": datetime.now(
-                timezone.utc
-            ).strftime(
-                "%Y-%m-%d %H:%M:%S UTC"
-            )
-        }
-
-        save_lead(lead)
-
-        logger.info(
-            f"[MESAN-LEAD] "
-            f"empresa={lead['empresa']} "
-            f"sector={lead['sector']}"
-        )
-
-        return {
-            "status": "ok",
-            "lead_id": lead["id"],
-            "message": "Diagnóstico en proceso.",
-            "redirect": "/demo_enterprise.html"
-        }
-
-    except Exception as e:
-
-        logger.exception(
-            "Error guardando lead"
-        )
-
-        return JSONResponse(
-            status_code=500,
-            content={
-                "status": "error",
-                "detail": str(e)
-            }
+        return get_lead(lead_id)
+    except LeadNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Lead no encontrado: {lead_id}",
         )
 
 
-# ==========================================================
-# Obtener Leads
-# ==========================================================
+# ----------------------------------------------------------------------------
+# PATCH /api/leads/{lead_id} -- PROTEGIDA (Basic Auth)
+# ----------------------------------------------------------------------------
+@router.patch("/{lead_id}", response_model=LeadOut)
+async def update_lead_endpoint(
+    lead_id: str,
+    payload: LeadUpdate,
+    _user: str = Depends(verify_crm_credentials),
+) -> LeadOut:
+    """
+    Actualiza campos de un lead existente (ej. estatus, notas).
 
-@router.get("/leads")
-async def obtener_leads():
-
-    return {
-        "total": len(leads_store),
-        "leads": leads_store
-    }
+    PROTEGIDA: requiere Basic Auth. Exenta de JWT en
+    auth_middleware.py -- NO eliminar Depends(verify_crm_credentials)
+    sin agregar una proteccion equivalente.
+    """
+    try:
+        lead = update_lead(lead_id, payload)
+    except LeadNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Lead no encontrado: {lead_id}",
+        )
+    logger.info(
+        "[LEADS] Lead actualizado | lead_id=%s | usuario=%s", lead_id, _user
+    )
+    return lead
