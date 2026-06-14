@@ -1,131 +1,52 @@
-# core/auth/auth_middleware.py -- MESAN Omega Auth Middleware v1.0
-"""
-FastAPI Auth Middleware Ω
+Validación aceptada.
 
-Valida JWT en cada request entrante.
-Inyecta tenant context en el pipeline.
-Limpia contexto en todos los caminos de ejecución.
+La adición de la advertencia de regresión en "auth_middleware.py v1.2" mejora significativamente la mantenibilidad del parche de Fase 1.
 
-Rutas públicas (no requieren auth):
-    GET  /health
-    GET  /ready
-    GET  /engines
-    GET  /diagnostics
-    GET  /features
-    POST /api/leads (configurable)
-"""
+Observaciones:
 
-import logging
-import os
-from typing import Optional
+1. La lógica de seguridad sigue siendo correcta:
+   
+   - "POST /api/leads" permanece como única ruta completamente pública.
+   - "GET /api/leads"
+   - "GET /api/leads/{id}"
+   - "PATCH /api/leads/{id}"
+   - "GET /crm_enterprise.html"
+   
+   continúan exentas únicamente de JWT y dependen de "Depends(verify_crm_credentials)" para protección efectiva.
 
-from fastapi import Request
-from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+2. La advertencia agregada documenta explícitamente el principal riesgo arquitectónico de esta solución temporal:
+   
+   - Si alguien elimina "Depends(verify_crm_credentials)" de cualquiera de esas rutas en el futuro, la exención JWT convertiría la ruta en pública.
+   - El checklist reduce considerablemente la probabilidad de esa regresión.
 
-from core.auth.jwt_handler import JWTError, verify_token
-from core.auth.tenant_context import clear_tenant, set_tenant
-from core.auth.tenant_model import Tenant
+3. No detecto regresiones funcionales respecto a la versión anterior.
+   
+   - "_is_public()" mantiene el mismo comportamiento.
+   - "_LEAD_ID_PATH_RE" sigue restringiendo correctamente a un único segmento.
+   - El flujo JWT para el resto de la plataforma permanece intacto.
 
-logger = logging.getLogger("mesan.auth")
+4. Recomendación adicional para Fase 2:
+   
+   - Crear un test automatizado de seguridad que valide que:
+     - "GET /api/leads" devuelve 401 sin Basic Auth.
+     - "GET /api/leads/{id}" devuelve 401 sin Basic Auth.
+     - "PATCH /api/leads/{id}" devuelve 401 sin Basic Auth.
+     - "GET /crm_enterprise.html" devuelve 401 sin Basic Auth.
+   - Esto elimina la dependencia exclusiva de comentarios y evita regresiones durante refactors futuros.
 
-# ── Rutas públicas — no requieren token ──────────────────────────────────────
-PUBLIC_PATHS = {
-    "/health",
-    "/ready",
-    "/engines",
-    "/diagnostics",
-    "/features",
-    "/docs",
-    "/openapi.json",
-}
+Conclusión:
 
-PUBLIC_PREFIXES = (
-    "/api/leads",
-)
+Autorizo merge de "auth_middleware.py v1.2" junto con:
 
+- "core/auth/basic_auth.py"
+- "routes/leads_routes.py"
+- "main.py"
 
-def _is_public(path: str) -> bool:
-    if path in PUBLIC_PATHS:
-        return True
-    for prefix in PUBLIC_PREFIXES:
-        if path.startswith(prefix):
-            return True
-    return False
+El riesgo de exposición pública del CRM queda mitigado para Fase 1 mediante Basic Auth.
 
+Prioridades abiertas después del merge:
 
-def _extract_token(request: Request) -> Optional[str]:
-    auth_header = request.headers.get("Authorization", "")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        return None
-    parts = auth_header.split(" ")
-    if len(parts) != 2:
-        return None
-    return parts[1]
-
-
-async def auth_middleware(request: Request, call_next):
-    """
-    FastAPI-compatible auth middleware.
-
-    Flujo:
-        1. Rutas públicas → pass-through sin validar token
-        2. Extraer Bearer token del header Authorization
-        3. Verificar JWT con jwt_handler
-        4. Inyectar Tenant en context
-        5. Ejecutar request
-        6. Limpiar context en TODOS los caminos (éxito, error, excepción)
-    """
-    path = request.url.path
-
-    # ── Rutas públicas ────────────────────────────────────────────────────
-    if _is_public(path):
-        return await call_next(request)
-
-    # ── Extraer token ─────────────────────────────────────────────────────
-    token = _extract_token(request)
-    if not token:
-        logger.warning("[AUTH] Token faltante | path=%s", path)
-        return JSONResponse(
-            status_code=401,
-            content={"error": "AUTH_TOKEN_MISSING", "path": path},
-        )
-
-    # ── Verificar JWT e inyectar tenant ───────────────────────────────────
-    try:
-        payload = verify_token(token)
-        tenant_id = payload.get("tenant_id")
-
-        if not tenant_id:
-            logger.warning("[AUTH] Token sin tenant_id | path=%s", path)
-            return JSONResponse(
-                status_code=401,
-                content={"error": "AUTH_TENANT_MISSING"},
-            )
-
-        tenant = Tenant(tenant_id=tenant_id)
-        set_tenant(tenant)
-
-        logger.info("[AUTH] OK | tenant=%s | path=%s", tenant_id, path)
-
-        # ── Ejecutar request ──────────────────────────────────────────────
-        response = await call_next(request)
-        return response
-
-    except JWTError as e:
-        logger.warning("[AUTH] JWT ERROR | path=%s | error=%s", path, str(e))
-        return JSONResponse(
-            status_code=401,
-            content={"error": str(e)},
-        )
-
-    except Exception as e:
-        logger.exception("[AUTH] MIDDLEWARE FAILURE | path=%s", path)
-        return JSONResponse(
-            status_code=500,
-            content={"error": "AUTH_MIDDLEWARE_FAILURE"},
-        )
-
-    finally:
-        # ── Limpiar context en TODOS los caminos ──────────────────────────
-        clear_tenant()
+1. Persistencia real de leads (Persistent Disk o Postgres) — sigue siendo el riesgo operativo #1.
+2. Aviso de Privacidad en la landing.
+3. Normalización RemediationEngine ↔ ExecutiveNarrativeGenerator.
+4. Migración futura a JWT real cuando exista login y emisión de tokens.
