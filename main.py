@@ -5,14 +5,16 @@ import uuid
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from core.container          import Container
 from core.engine_factory     import build_engines
 from core.context_middleware import context_middleware
 from core.auth.auth_middleware import auth_middleware
+from core.auth.basic_auth import verify_crm_credentials
 # from core.self_healing_engine import SelfHealingEngine        # FASE 2 — pendiente
 
 from routes.execution_routes import router as execution_router
@@ -181,9 +183,26 @@ app.add_middleware(
 )
 
 
+# ── CRM Enterprise — PROTEGIDA (Basic Auth) ───────────────────────────────────
+# Debe registrarse ANTES del StaticFiles mount para que FastAPI le dé
+# prioridad sobre el archivo estático del mismo nombre.
+#
+# ADVERTENCIA: si se elimina Depends(verify_crm_credentials), la ruta
+# quedará pública sin que auth_middleware lo detecte (está exenta de JWT
+# por diseño en core/auth/auth_middleware.py).
+@app.get("/crm_enterprise.html")
+async def crm_enterprise(_user: str = Depends(verify_crm_credentials)):
+    """
+    Sirve el panel CRM enterprise.
+    PROTEGIDA: requiere Basic Auth (CRM_BASIC_USER / CRM_BASIC_PASSWORD).
+    Exenta de JWT en auth_middleware.py — NO eliminar Depends(verify_crm_credentials).
+    """
+    return FileResponse("crm_enterprise.html")
+
+
 # ── Routers ───────────────────────────────────────────────────────────────────
 app.include_router(execution_router,              tags=["Diagnóstico"])
-app.include_router(leads_router,   prefix="/api/leads",  tags=["Leads"])
+app.include_router(leads_router,   tags=["Leads"])
 app.include_router(payment_router, prefix="/pro",        tags=["Pagos"])
 app.include_router(warroom_router, prefix="/api/v1",     tags=["War Room"])   # FASE 2
 app.include_router(omega_router,   prefix="/api/v1",     tags=["Omega"])      # FASE 4
@@ -218,12 +237,10 @@ def health(request: Request):
         "features":            FEATURES,
         "self_healing":        {"enabled": FEATURE_SELF_HEALING, "running": healing is not None},  # FASE 2
         "timestamp":           time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        # P1-6: engine health breakdown desde container.diagnostics()
         **({k: v for k, v in c.diagnostics().items()
             if k in ("healthy_engines", "degraded_engines", "unhealthy_engines")}
            if c else {}),
     }
-    # Fix 2: DEGRADED=200 (no reiniciar), STARTING/UNHEALTHY=503
     http_code = 503 if status in ("STARTING", "UNHEALTHY") else 200
     return JSONResponse(status_code=http_code, content=body)
 
@@ -247,7 +264,6 @@ def ready(request: Request):
 # ── Engines ───────────────────────────────────────────────────────────────────
 @app.get("/engines", tags=["Sistema"])
 def engines_status(request: Request):
-    # P1-2: endurecer para startup incompleto — container puede no estar listo
     c = getattr(request.app.state, "container", None)
     if not c:
         return JSONResponse(status_code=503, content={
@@ -345,3 +361,10 @@ async def error_handler(request: Request, exc: Exception):
         "message":  "MESAN internal failure",
         "trace_id": trace_id,
     })
+
+
+# ── Static Files — debe ir AL FINAL, después de todas las rutas ──────────────
+# Sirve index.html, styles.css, crm.html, crm_nacional.html, etc.
+# /crm_enterprise.html está protegida arriba y FastAPI le da prioridad
+# sobre este mount por estar registrada antes.
+app.mount("/", StaticFiles(directory=".", html=True), name="static")
