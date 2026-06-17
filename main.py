@@ -316,11 +316,19 @@ from pydantic import ValidationError as PydanticValidationError
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     trace_id = getattr(request.state, "trace_id", "-")
-    return JSONResponse(status_code=exc.status_code, content={
-        "error":    "HTTP_ERROR",
-        "message":  exc.detail,
-        "trace_id": trace_id,
-    })
+    # IMPORTANTE: se preservan exc.headers. Sin esto, las respuestas 401
+    # generadas por HTTPBasic() (FastAPI) o por verify_crm_credentials()
+    # pierden el header WWW-Authenticate: Basic, y el navegador nunca
+    # muestra el prompt nativo de usuario/contraseña para Basic Auth.
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error":    "HTTP_ERROR",
+            "message":  exc.detail,
+            "trace_id": trace_id,
+        },
+        headers=exc.headers,
+    )
 
 @app.exception_handler(PydanticValidationError)
 async def validation_error_handler(request: Request, exc: PydanticValidationError):
