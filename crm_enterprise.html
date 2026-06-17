@@ -92,6 +92,11 @@ box-shadow:0 0 12px var(--green);
 animation:pulse 1.5s infinite;
 }
 
+.dot.offline{
+background:var(--red);
+box-shadow:0 0 12px var(--red);
+}
+
 @keyframes pulse{
 0%,100%{opacity:1}
 50%{opacity:.3}
@@ -99,7 +104,7 @@ animation:pulse 1.5s infinite;
 
 .layout{
 display:grid;
-grid-template-columns:280px 1fr 360px;
+grid-template-columns:280px 1fr;
 height:calc(100vh - 72px);
 }
 
@@ -161,6 +166,8 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 margin-bottom:24px;
+flex-wrap:wrap;
+gap:12px;
 }
 
 .hero-left h2{
@@ -186,6 +193,8 @@ border-radius:16px;
 font-weight:600;
 cursor:pointer;
 transition:.25s;
+font-family:inherit;
+font-size:14px;
 }
 
 .primary{
@@ -237,12 +246,6 @@ font-size:13px;
 color:var(--muted);
 }
 
-.grid{
-display:grid;
-grid-template-columns:1.2fr .8fr;
-gap:20px;
-}
-
 .pipeline{
 display:flex;
 flex-direction:column;
@@ -255,18 +258,18 @@ border:1px solid var(--border);
 border-radius:18px;
 padding:18px;
 transition:.25s;
-cursor:pointer;
 }
 
 .case:hover{
 border-color:rgba(0,212,255,.3);
-transform:translateY(-2px);
 }
 
 .case-top{
 display:flex;
 justify-content:space-between;
 margin-bottom:12px;
+flex-wrap:wrap;
+gap:8px;
 }
 
 .company{
@@ -280,22 +283,15 @@ border-radius:999px;
 font-size:10px;
 font-family:'JetBrains Mono',monospace;
 letter-spacing:1px;
+text-transform:uppercase;
+white-space:nowrap;
 }
 
-.high{
-background:rgba(255,140,0,.15);
-color:var(--orange);
-}
-
-.critical{
-background:rgba(255,59,48,.15);
-color:var(--red);
-}
-
-.medium{
-background:rgba(0,212,255,.15);
-color:var(--cyan);
-}
+.b-nuevo{ background:rgba(0,212,255,.15); color:var(--cyan); }
+.b-contactado{ background:rgba(255,140,0,.15); color:var(--orange); }
+.b-calificado{ background:rgba(0,255,157,.15); color:var(--green); }
+.b-cerrado{ background:rgba(107,122,138,.2); color:var(--muted); }
+.b-default{ background:rgba(255,59,48,.15); color:var(--red); }
 
 .case-info{
 display:grid;
@@ -308,6 +304,7 @@ margin-top:14px;
 background:rgba(255,255,255,.03);
 padding:12px;
 border-radius:12px;
+overflow:hidden;
 }
 
 .info-box span{
@@ -320,152 +317,95 @@ margin-bottom:6px;
 }
 
 .info-box strong{
-font-size:15px;
+font-size:14px;
+word-break:break-word;
 }
 
-.right-panel{
-border-left:1px solid var(--border);
-padding:24px;
-background:rgba(8,12,20,.92);
-overflow:auto;
+.case-actions{
+display:flex;
+gap:8px;
+margin-top:14px;
+flex-wrap:wrap;
 }
 
-.analysis-title{
-font-size:12px;
-letter-spacing:2px;
-font-family:'JetBrains Mono',monospace;
-color:var(--cyan);
-margin-bottom:18px;
-}
-
-.analysis-box{
-background:linear-gradient(180deg,var(--panel),var(--panel2));
+.estatus-select{
+background:var(--panel2);
 border:1px solid var(--border);
-border-radius:22px;
-padding:24px;
-margin-bottom:18px;
+color:var(--text);
+padding:8px 12px;
+border-radius:10px;
+font-family:'JetBrains Mono',monospace;
+font-size:11px;
+cursor:pointer;
 }
 
-.score{
-font-size:72px;
-font-weight:700;
-line-height:1;
-margin-bottom:8px;
+.empty-state, .error-state, .loading-state{
+text-align:center;
+padding:60px 20px;
+color:var(--muted);
+font-family:'JetBrains Mono',monospace;
+font-size:13px;
 }
 
-.score.red{
+.error-state{
 color:var(--red);
 }
 
-.score.orange{
-color:var(--orange);
+.login-overlay{
+position:fixed;
+inset:0;
+background:rgba(4,8,15,.96);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:999;
 }
 
-.score.cyan{
+.login-box{
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:20px;
+padding:32px;
+width:320px;
+}
+
+.login-box h3{
+font-family:'Bebas Neue';
+letter-spacing:2px;
 color:var(--cyan);
+margin-bottom:18px;
+font-size:22px;
 }
 
-.analysis-sub{
-color:var(--muted);
-font-size:13px;
-line-height:1.7;
-}
-
-.alert{
-margin-top:16px;
-padding:14px;
-border-radius:14px;
-background:rgba(255,59,48,.08);
-border:1px solid rgba(255,59,48,.2);
-font-size:13px;
-line-height:1.6;
-color:#FFB4AF;
-}
-
-.timeline{
-display:flex;
-flex-direction:column;
-gap:14px;
-}
-
-.step{
-display:flex;
-gap:14px;
-align-items:flex-start;
-}
-
-.step-dot{
-width:12px;
-height:12px;
-border-radius:50%;
-background:var(--cyan);
-margin-top:6px;
-}
-
-.step-content h4{
+.login-box input{
+width:100%;
+padding:12px;
+margin-bottom:12px;
+background:var(--panel2);
+border:1px solid var(--border);
+border-radius:10px;
+color:var(--text);
+font-family:inherit;
 font-size:14px;
-margin-bottom:4px;
 }
 
-.step-content p{
+.login-box .login-error{
+color:var(--red);
 font-size:12px;
-color:var(--muted);
-line-height:1.5;
-}
-
-@media(max-width:1400px){
-
-.layout{
-grid-template-columns:240px 1fr;
-}
-
-.right-panel{
+margin-bottom:12px;
 display:none;
-}
-
 }
 
 @media(max-width:980px){
-
-body{
-overflow:auto;
-}
-
-.layout{
-grid-template-columns:1fr;
-height:auto;
-}
-
-.sidebar{
-display:none;
-}
-
-.stats{
-grid-template-columns:1fr 1fr;
-}
-
-.grid{
-grid-template-columns:1fr;
-}
-
+.layout{ grid-template-columns:1fr; height:auto; }
+.sidebar{ display:none; }
+.stats{ grid-template-columns:1fr 1fr; }
+.case-info{ grid-template-columns:1fr; }
 }
 
 @media(max-width:640px){
-
-.stats{
-grid-template-columns:1fr;
-}
-
-.hero{
-flex-direction:column;
-align-items:flex-start;
-gap:18px;
-}
-
-.hero-left h2{
-font-size:28px;
-}
-
+.stats{ grid-template-columns:1fr; }
+.hero{ flex-direction:column; align-items:flex-start; }
 }
 
 </style>
@@ -474,331 +414,304 @@ font-size:28px;
 <body>
 
 <div class="topbar">
-
-<div class="logo">
-<h1>MESAN Ω</h1>
-<span>WAR ROOM CRM · ENTERPRISE</span>
-</div>
-
-<div class="status">
-<div class="dot"></div>
-<span>LIVE SYSTEM</span>
-</div>
-
+  <div class="logo">
+    <h1>MESAN Ω</h1>
+    <span>WAR ROOM CRM · ENTERPRISE</span>
+  </div>
+  <div class="status">
+    <div class="dot" id="status-dot"></div>
+    <span id="status-text">Conectando...</span>
+  </div>
 </div>
 
 <div class="layout">
 
-<aside class="sidebar">
-
-<div class="sidebar-section">
-<div class="sidebar-title">OPERACIONES</div>
-
-<div class="menu">
-<button class="active">📊 Dashboard CEO</button>
-<button>⚠ Casos críticos</button>
-<button>💰 Cobranza</button>
-<button>🛡 SAT / IMSS</button>
-<button>📄 Dictámenes</button>
-<button>📞 Leads</button>
-<button>🧠 War Room</button>
-</div>
-
-</div>
-
-<div class="sidebar-section">
-
-<div class="sidebar-title">MOTORES ACTIVOS</div>
-
-<div class="menu">
-<button>Continuity Engine</button>
-<button>Fiscal Sentinel</button>
-<button>Compliance Verify</button>
-<button>Severance Engine</button>
-<button>Governance Engine</button>
-</div>
-
-</div>
-
-</aside>
-
-<main class="main">
-
-<div class="hero">
-
-<div class="hero-left">
-<h2>Enterprise Survival Dashboard</h2>
-<p>Monitoreo operativo · Crisis detection · Riesgo empresarial LATAM</p>
-</div>
-
-<div class="hero-actions">
-<button class="action-btn secondary">Exportar PDF</button>
-<button class="action-btn primary">+ Nuevo Diagnóstico</button>
-</div>
-
-</div>
-
-<div class="stats">
-
-<div class="card">
-<div class="stat-label">CASOS ACTIVOS</div>
-<div class="stat-value">24</div>
-<div class="stat-sub">8 críticos esta semana</div>
-</div>
-
-<div class="card">
-<div class="stat-label">RIESGO PROMEDIO</div>
-<div class="stat-value" style="color:var(--orange)">68%</div>
-<div class="stat-sub">Presión operativa alta</div>
-</div>
-
-<div class="card">
-<div class="stat-label">INGRESOS MRR</div>
-<div class="stat-value">$84K</div>
-<div class="stat-sub">MXN mensuales</div>
-</div>
-
-<div class="card">
-<div class="stat-label">EMPRESAS MONITOREADAS</div>
-<div class="stat-value">113</div>
-<div class="stat-sub">Mid-market LATAM</div>
-</div>
-
-</div>
-
-<div class="grid">
-
-<div>
-
-<div class="card">
-
-<div class="sidebar-title" style="margin-bottom:18px;">
-CASOS PRIORITARIOS
-</div>
-
-<div class="pipeline">
-
-<div class="case">
-
-<div class="case-top">
-<div class="company">Grupo Maquilador Frontera</div>
-<div class="badge critical">RIESGO CRÍTICO</div>
-</div>
-
-<div style="color:var(--muted);font-size:13px;">
-REPSE suspendido · Opinión SAT negativa · Riesgo laboral elevado
-</div>
-
-<div class="case-info">
-
-<div class="info-box">
-<span>CONTINUITY</span>
-<strong style="color:var(--red)">32%</strong>
-</div>
-
-<div class="info-box">
-<span>EMPLEADOS</span>
-<strong>240</strong>
-</div>
-
-<div class="info-box">
-<span>EXPOSICIÓN</span>
-<strong>$4.2M</strong>
-</div>
-
-</div>
-
-</div>
-
-<div class="case">
-
-<div class="case-top">
-<div class="company">Grupo Logístico Norte</div>
-<div class="badge high">RIESGO ALTO</div>
-</div>
-
-<div style="color:var(--muted);font-size:13px;">
-Flujo comprometido · Cartera vencida · IMSS negativo
-</div>
-
-<div class="case-info">
-
-<div class="info-box">
-<span>CONTINUITY</span>
-<strong style="color:var(--orange)">58%</strong>
-</div>
-
-<div class="info-box">
-<span>EMPLEADOS</span>
-<strong>62</strong>
-</div>
-
-<div class="info-box">
-<span>EXPOSICIÓN</span>
-<strong>$1.1M</strong>
-</div>
-
-</div>
-
-</div>
-
-<div class="case">
-
-<div class="case-top">
-<div class="company">Manufactura Industrial MX</div>
-<div class="badge medium">PRESIÓN</div>
-</div>
-
-<div style="color:var(--muted);font-size:13px;">
-Burn rate elevado · Riesgo operativo moderado
-</div>
-
-<div class="case-info">
-
-<div class="info-box">
-<span>CONTINUITY</span>
-<strong style="color:var(--cyan)">71%</strong>
-</div>
-
-<div class="info-box">
-<span>EMPLEADOS</span>
-<strong>95</strong>
-</div>
-
-<div class="info-box">
-<span>EXPOSICIÓN</span>
-<strong>$740K</strong>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div>
-
-<div class="card">
-
-<div class="sidebar-title">
-WAR ROOM STATUS
-</div>
-
-<div class="timeline">
-
-<div class="step">
-<div class="step-dot"></div>
-<div class="step-content">
-<h4>Stripe Monetization</h4>
-<p>Unicode latin-1 issue pendiente de corrección.</p>
-</div>
-</div>
-
-<div class="step">
-<div class="step-dot"></div>
-<div class="step-content">
-<h4>CRM Enterprise</h4>
-<p>Dashboard operativo conectado al execution router.</p>
-</div>
-</div>
-
-<div class="step">
-<div class="step-dot"></div>
-<div class="step-content">
-<h4>Legal Engines</h4>
-<p>5 módulos pendientes para fase comercial.</p>
-</div>
-</div>
-
-<div class="step">
-<div class="step-dot"></div>
-<div class="step-content">
-<h4>Commercial Layer</h4>
-<p>WhatsApp enterprise + funnel CEO pendiente.</p>
-</div>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</main>
-
-<aside class="right-panel">
-
-<div class="analysis-title">
-ANÁLISIS EN TIEMPO REAL
-</div>
-
-<div class="analysis-box">
-
-<div class="score red">32%</div>
-
-<div style="
-font-size:18px;
-font-weight:600;
-margin-bottom:12px;
-">
-Grupo Maquilador Frontera
-</div>
-
-<div class="analysis-sub">
-El sistema detecta deterioro acelerado en continuidad operativa debido a exposición REPSE + presión SAT + plantilla parcialmente fuera de IMSS.
-</div>
-
-<div class="alert">
-⚠ Riesgo de interrupción operativa dentro de los próximos 90 días si no se activa protocolo financiero y laboral.
-</div>
-
-</div>
-
-<div class="analysis-box">
-
-<div class="sidebar-title">
-ACCIONES CEO
-</div>
-
-<div class="timeline">
-
-<div class="step">
-<div class="step-dot"></div>
-<div class="step-content">
-<h4>30 días</h4>
-<p>Contención de flujo y blindaje laboral.</p>
-</div>
-</div>
-
-<div class="step">
-<div class="step-dot"></div>
-<div class="step-content">
-<h4>60 días</h4>
-<p>Reestructura operativa y fiscal.</p>
-</div>
-</div>
-
-<div class="step">
-<div class="step-dot"></div>
-<div class="step-content">
-<h4>90 días</h4>
-<p>Protección de activos y continuidad.</p>
-</div>
-</div>
-
-</div>
-
-</div>
-
-</aside>
-
-</div>
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">OPERACIONES</div>
+      <div class="menu">
+        <button class="active">📞 Leads</button>
+        <button>🧠 War Room</button>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">MOTORES ACTIVOS</div>
+      <div class="menu">
+        <button>Continuity Engine</button>
+        <button>Fiscal Sentinel</button>
+        <button>Compliance Verify</button>
+        <button>Governance Engine</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="hero">
+      <div class="hero-left">
+        <h2>Pipeline Comercial</h2>
+        <p>Leads en tiempo real · Fuente: PostgreSQL</p>
+      </div>
+      <div class="hero-actions">
+        <button class="action-btn secondary" onclick="cargarLeads()">↻ Refrescar</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="card">
+        <div class="stat-label">TOTAL LEADS</div>
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-sub">Histórico completo</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">NUEVOS</div>
+        <div class="stat-value" id="stat-nuevos" style="color:var(--cyan)">—</div>
+        <div class="stat-sub">Sin contactar</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">EN SEGUIMIENTO</div>
+        <div class="stat-value" id="stat-seguimiento" style="color:var(--orange)">—</div>
+        <div class="stat-sub">Contactados / calificados</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">CERRADOS</div>
+        <div class="stat-value" id="stat-cerrados" style="color:var(--muted)">—</div>
+        <div class="stat-sub">Fuera de pipeline activo</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sidebar-title" style="margin-bottom:18px;">LEADS</div>
+      <div class="pipeline" id="pipeline">
+        <div class="loading-state">Cargando leads…</div>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<!-- Login overlay: solo se muestra si fetch('/api/leads') devuelve 401 -->
+<div class="login-overlay" id="login-overlay" style="display:none;">
+  <div class="login-box">
+    <h3>MESAN Ω · CRM</h3>
+    <div class="login-error" id="login-error">Credenciales incorrectas.</div>
+    <input type="text" id="login-user" placeholder="Usuario" autocomplete="username">
+    <input type="password" id="login-pass" placeholder="Contraseña" autocomplete="current-password">
+    <button class="action-btn primary" style="width:100%;" onclick="intentarLogin()">Entrar</button>
+  </div>
+</div>
+
+<script>
+// ── Estado de autenticación ──────────────────────────────────────────────
+// Estrategia: primero se intenta fetch('/api/leads') SIN credenciales
+// explícitas. Si el navegador ya cacheó Basic Auth al servir
+// GET /crm_enterprise.html (mismo origen, mismo realm), el browser
+// reenvía el header Authorization automáticamente y esto basta.
+//
+// Solo si el servidor responde 401 se muestra el overlay de login y,
+// a partir de ahí, todas las llamadas usan el header Authorization
+// explícito construido en memoria (nunca persistido en localStorage).
+let authHeader = null; // se llena solo si el fetch automático falla
+
+function buildHeaders(){
+  const headers = {};
+  if (authHeader) headers["Authorization"] = authHeader;
+  return headers;
+}
+
+async function apiFetch(path, options = {}) {
+  const opts = { ...options, headers: { ...buildHeaders(), ...(options.headers||{}) } };
+  const res = await fetch(path, opts);
+  if (res.status === 401) {
+    mostrarLogin();
+    throw new Error("AUTH_REQUIRED");
+  }
+  return res;
+}
+
+function mostrarLogin(msg){
+  document.getElementById("login-overlay").style.display = "flex";
+  if (msg) {
+    const err = document.getElementById("login-error");
+    err.textContent = msg;
+    err.style.display = "block";
+  }
+  setEstado(false);
+}
+
+function ocultarLogin(){
+  document.getElementById("login-overlay").style.display = "none";
+}
+
+async function intentarLogin(){
+  const user = document.getElementById("login-user").value.trim();
+  const pass = document.getElementById("login-pass").value;
+  if (!user || !pass) return;
+
+  authHeader = "Basic " + btoa(user + ":" + pass);
+
+  try {
+    const res = await fetch("/api/leads", { headers: buildHeaders() });
+    if (res.status === 401) {
+      authHeader = null;
+      mostrarLogin("Credenciales incorrectas.");
+      return;
+    }
+    ocultarLogin();
+    cargarLeads();
+  } catch (e) {
+    mostrarLogin("Error de conexión. Intenta de nuevo.");
+  }
+}
+
+function setEstado(online){
+  const dot  = document.getElementById("status-dot");
+  const text = document.getElementById("status-text");
+  if (online) {
+    dot.classList.remove("offline");
+    text.textContent = "LIVE — PostgreSQL";
+  } else {
+    dot.classList.add("offline");
+    text.textContent = "Autenticación requerida";
+  }
+}
+
+// ── Carga y render de leads ──────────────────────────────────────────────
+function badgeClass(estatus){
+  const map = {
+    "nuevo": "b-nuevo",
+    "contactado": "b-contactado",
+    "calificado": "b-calificado",
+    "cerrado": "b-cerrado",
+  };
+  return map[(estatus||"").toLowerCase()] || "b-default";
+}
+
+function formatFecha(iso){
+  if (!iso) return "—";
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" });
+  } catch(e) {
+    return iso;
+  }
+}
+
+function renderStats(leads){
+  const total = leads.length;
+  const nuevos = leads.filter(l => (l.estatus||"").toLowerCase() === "nuevo").length;
+  const seguimiento = leads.filter(l => ["contactado","calificado"].includes((l.estatus||"").toLowerCase())).length;
+  const cerrados = leads.filter(l => (l.estatus||"").toLowerCase() === "cerrado").length;
+
+  document.getElementById("stat-total").textContent = total;
+  document.getElementById("stat-nuevos").textContent = nuevos;
+  document.getElementById("stat-seguimiento").textContent = seguimiento;
+  document.getElementById("stat-cerrados").textContent = cerrados;
+}
+
+function renderPipeline(leads){
+  const pipeline = document.getElementById("pipeline");
+
+  if (!leads.length) {
+    pipeline.innerHTML = '<div class="empty-state">No hay leads registrados todavía.</div>';
+    return;
+  }
+
+  // Orden por created_at DESC (ya viene ordenado del backend, pero se
+  // refuerza aquí por si la fuente cambia).
+  const ordenados = [...leads].sort((a, b) => {
+    const da = new Date(a.created_at || 0).getTime();
+    const db = new Date(b.created_at || 0).getTime();
+    return db - da;
+  });
+
+  pipeline.innerHTML = ordenados.map(lead => {
+    const nombre = lead.nombre_contacto || lead.nombre || "Sin nombre";
+    const estatus = lead.estatus || "nuevo";
+    return `
+      <div class="case" data-id="${lead.id}">
+        <div class="case-top">
+          <div class="company">${escapeHtml(nombre)}</div>
+          <div class="badge ${badgeClass(estatus)}">${escapeHtml(estatus)}</div>
+        </div>
+        <div class="case-info">
+          <div class="info-box">
+            <span>EMAIL</span>
+            <strong>${escapeHtml(lead.email || "—")}</strong>
+          </div>
+          <div class="info-box">
+            <span>WHATSAPP</span>
+            <strong>${escapeHtml(lead.whatsapp || "—")}</strong>
+          </div>
+          <div class="info-box">
+            <span>REGISTRADO</span>
+            <strong>${formatFecha(lead.created_at)}</strong>
+          </div>
+        </div>
+        <div class="case-actions">
+          <select class="estatus-select" onchange="actualizarEstatus('${lead.id}', this.value)">
+            <option value="">Cambiar estatus...</option>
+            <option value="nuevo" ${estatus==='nuevo'?'selected':''}>Nuevo</option>
+            <option value="contactado" ${estatus==='contactado'?'selected':''}>Contactado</option>
+            <option value="calificado" ${estatus==='calificado'?'selected':''}>Calificado</option>
+            <option value="cerrado" ${estatus==='cerrado'?'selected':''}>Cerrado</option>
+          </select>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function escapeHtml(str){
+  const div = document.createElement("div");
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+async function cargarLeads(){
+  const pipeline = document.getElementById("pipeline");
+  try {
+    const res = await apiFetch("/api/leads");
+    if (!res.ok) {
+      pipeline.innerHTML = `<div class="error-state">Error al cargar leads (HTTP ${res.status}).</div>`;
+      return;
+    }
+    const leads = await res.json();
+    setEstado(true);
+    ocultarLogin();
+    renderStats(leads);
+    renderPipeline(leads);
+  } catch (e) {
+    if (e.message !== "AUTH_REQUIRED") {
+      pipeline.innerHTML = '<div class="error-state">No se pudo conectar con el servidor.</div>';
+    }
+  }
+}
+
+async function actualizarEstatus(leadId, nuevoEstatus){
+  if (!nuevoEstatus) return;
+  try {
+    const res = await apiFetch(`/api/leads/${leadId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ estatus: nuevoEstatus }),
+    });
+    if (!res.ok) {
+      alert("No se pudo actualizar el estatus (HTTP " + res.status + ").");
+      return;
+    }
+    cargarLeads();
+  } catch (e) {
+    if (e.message !== "AUTH_REQUIRED") {
+      alert("Error de conexión al actualizar.");
+    }
+  }
+}
+
+// ── Inicio ──────────────────────────────────────────────────────────────
+cargarLeads();
+</script>
 
 </body>
 </html>
