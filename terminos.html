@@ -2,214 +2,200 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="index,follow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Términos y Condiciones — MESAN Ω</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg: #02060a;
-    --panel: #0a1118;
-    --accent: #00f3ff;
-    --text: #e2e8f0;
-    --dim: #64748b;
-    --border: rgba(0,243,255,0.2);
+  --bg: #04080F;
+  --surface: #0B111B;
+  --border: rgba(255,255,255,.07);
+  --cyan: #00D4FF;
+  --text: #D8E4F0;
+  --muted: #6B7A8A;
+  --radius: 14px;
 }
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    padding: 80px 20px 60px;
-}
-
-.nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-    font-family: 'Orbitron', monospace;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    background: rgba(2,6,10,0.95);
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(10px);
-    box-sizing: border-box;
-    z-index: 100;
-}
-
-.nav a {
-    color: var(--dim);
-    text-decoration: none;
-    font-size: 10px;
-    letter-spacing: 2px;
-    transition: 0.3s;
-}
-
-.nav a:hover { color: var(--accent); }
-
-.container {
-    max-width: 650px;
-    margin: 0 auto;
-}
-
-.hero-tag {
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--dim);
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-h1 {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.6rem;
-    color: var(--accent);
-    letter-spacing: 3px;
-    margin-bottom: 8px;
-}
-
-.fecha {
-    font-size: 11px;
-    color: var(--dim);
-    margin-bottom: 35px;
-}
-
-h2 {
-    font-family: 'Orbitron', monospace;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    margin: 30px 0 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-    text-transform: uppercase;
-}
-
-p {
-    font-size: 13px;
-    color: var(--dim);
-    line-height: 1.8;
-    margin-bottom: 12px;
-    font-weight: 300;
-}
-
-ul {
-    list-style: none;
-    margin: 0 0 15px 0;
-}
-
-ul li {
-    font-size: 13px;
-    color: var(--dim);
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(0,243,255,0.06);
-    font-weight: 300;
-}
-
-ul li::before { content: "▸ "; color: var(--accent); }
-
-.footer-links {
-    margin-top: 50px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 20px;
-    font-size: 11px;
-}
-
-.footer-links a {
-    color: var(--accent);
-    text-decoration: none;
-    letter-spacing: 1px;
-    transition: 0.3s;
-    opacity: 0.7;
-}
-
-.footer-links a:hover { opacity: 1; }
-
-.footer {
-    margin-top: 20px;
-    font-family: 'Orbitron', monospace;
-    font-size: 9px;
-    color: var(--dim);
-    opacity: 0.4;
-    letter-spacing: 4px;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.8; padding: 0 0 80px; }
+header { border-bottom: 1px solid var(--border); padding: 24px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: rgba(4,8,15,.96); backdrop-filter: blur(12px); z-index: 10; }
+.logo { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 600; color: var(--cyan); letter-spacing: 2px; text-decoration: none; }
+nav a { color: var(--muted); text-decoration: none; font-size: 13px; margin-left: 28px; transition: color .2s; }
+nav a:hover { color: var(--cyan); }
+.hero { padding: 64px 40px 48px; max-width: 820px; margin: 0 auto; border-bottom: 1px solid var(--border); }
+.hero-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; color: var(--cyan); text-transform: uppercase; margin-bottom: 16px; }
+.hero h1 { font-size: 36px; font-weight: 600; line-height: 1.2; margin-bottom: 16px; }
+.hero-meta { font-size: 13px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.content { max-width: 820px; margin: 0 auto; padding: 0 40px; }
+.section { padding: 48px 0; border-bottom: 1px solid var(--border); }
+.section:last-child { border-bottom: none; }
+.section-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--cyan); margin-bottom: 10px; }
+.section h2 { font-size: 22px; font-weight: 600; margin-bottom: 20px; }
+.section h3 { font-size: 16px; font-weight: 600; margin: 24px 0 10px; color: var(--cyan); }
+.section p { margin-bottom: 14px; color: var(--text); }
+.section ul, .section ol { margin: 12px 0 16px 24px; color: var(--text); }
+.section li { margin-bottom: 8px; }
+.highlight-box { background: var(--surface); border-left: 3px solid var(--cyan); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 20px 0; }
+.highlight-box p { margin: 0; }
+.warn-box { background: rgba(255,140,0,.06); border-left: 3px solid #FF8C00; border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 20px 0; }
+.warn-box p { margin: 0; color: #FFB347; }
+footer { border-top: 1px solid var(--border); padding: 40px; max-width: 820px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px; }
+.footer-brand { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--cyan); font-weight: 600; margin-bottom: 8px; }
+.footer-copy { font-size: 12px; color: var(--muted); }
+.footer-links { display: flex; flex-direction: column; gap: 8px; }
+.footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
+.footer-links a:hover { color: var(--cyan); }
+@media (max-width: 640px) { header, .hero, .content, footer { padding-left: 20px; padding-right: 20px; } .hero h1 { font-size: 26px; } nav a { margin-left: 16px; } }
 </style>
 </head>
 <body>
 
-<div class="nav">
-    <div>MESAN Ω — TÉRMINOS</div>
-    <a href="/">← INICIO</a>
+<header>
+  <a class="logo" href="/">MESAN Ω</a>
+  <nav>
+    <a href="/privacidad.html">Privacidad</a>
+    <a href="/cookies.html">Cookies</a>
+    <a href="/">Inicio</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">Documento Legal</div>
+  <h1>Términos y Condiciones de Uso</h1>
+  <p class="hero-meta">Última actualización: Junio 2026 &nbsp;·&nbsp; Versión 1.0</p>
 </div>
 
-<div class="container">
+<div class="content">
 
-    <div class="hero-tag">// Documentación Legal</div>
-    <h1>TÉRMINOS Y CONDICIONES</h1>
-    <div class="fecha">Última actualización: 2026</div>
+  <div class="section">
+    <div class="section-num">01</div>
+    <h2>Aceptación de los Términos</h2>
+    <p>El acceso y uso de la plataforma, sitio web y servicios de <strong>MESAN Ω</strong> (en adelante "MESAN", "la Plataforma" o "los Servicios") implica la aceptación plena y sin reservas de los presentes Términos y Condiciones de Uso (en adelante "los Términos") por parte del usuario (en adelante "el Usuario" o "usted").</p>
+    <p>Si usted no está de acuerdo con alguno de los Términos aquí establecidos, deberá abstenerse de utilizar la Plataforma y los Servicios de MESAN.</p>
+    <p>MESAN se reserva el derecho de modificar estos Términos en cualquier momento. La versión vigente será siempre la publicada en <strong>https://mesanomega.com/terminos.html</strong>.</p>
+  </div>
 
-    <h2>1. Naturaleza del Servicio</h2>
-    <p>MESAN Ω es una plataforma tecnológica de análisis predictivo empresarial que utiliza modelos de riesgo, simulación financiera y parámetros de cumplimiento normativo (SAT, IMSS, STPS).</p>
-    <p>Los resultados generados son de carácter informativo, estratégico y orientativo, y no constituyen asesoría legal, fiscal o contable profesional.</p>
-
-    <h2>2. Alcance del Diagnóstico</h2>
-    <p>El diagnóstico se basa en la información ingresada por el usuario y en modelos internos de evaluación. La precisión depende directamente de la veracidad de los datos proporcionados.</p>
-
-    <h2>3. Limitación de Responsabilidad</h2>
-    <p>MESAN Ω no será responsable por:</p>
+  <div class="section">
+    <div class="section-num">02</div>
+    <h2>Descripción de los Servicios</h2>
+    <p>MESAN Ω es una plataforma tecnológica de diagnóstico empresarial que ofrece, entre otros:</p>
     <ul>
-        <li>Decisiones tomadas con base en los resultados del sistema</li>
-        <li>Pérdidas económicas, multas o sanciones derivadas del diagnóstico</li>
-        <li>Errores derivados de información incompleta o incorrecta</li>
+      <li>Análisis y diagnóstico de riesgo operativo, fiscal, laboral, contractual y de continuidad de negocio.</li>
+      <li>Evaluación organizacional mediante cuestionarios y motores de inteligencia artificial.</li>
+      <li>Generación de reportes ejecutivos y planes de remediación.</li>
+      <li>Servicios de consultoría tecnológica y empresarial.</li>
+      <li>Herramientas de seguimiento comercial y gestión de prospectos.</li>
     </ul>
-
-    <h2>4. Uso de la Plataforma</h2>
-    <p>El usuario se compromete a:</p>
-    <ul>
-        <li>Proporcionar información veraz</li>
-        <li>No utilizar el sistema con fines ilícitos</li>
-        <li>No intentar vulnerar la seguridad del sistema</li>
-    </ul>
-
-    <h2>5. Propiedad Intelectual</h2>
-    <p>El motor de análisis, algoritmos, diseño y estructura de MESAN Ω son propiedad intelectual protegida. Queda prohibida su reproducción sin autorización expresa.</p>
-
-    <h2>6. Pagos y Servicios</h2>
-    <p>Los pagos corresponden a servicios digitales de acceso inmediato.</p>
-    <ul>
-        <li>No se realizan reembolsos una vez generado el diagnóstico</li>
-        <li>El acceso al resultado se considera servicio consumido</li>
-    </ul>
-
-    <h2>7. Entrega del Servicio</h2>
-    <p>El diagnóstico puede entregarse mediante visualización en pantalla, PDF o medios electrónicos.</p>
-
-    <h2>8. Privacidad y Datos</h2>
-    <p>MESAN Ω podrá almacenar información para mejora del sistema y análisis estadístico. No se comercializan datos personales a terceros.</p>
-
-    <h2>9. Modificaciones</h2>
-    <p>MESAN Ω se reserva el derecho de modificar estos términos en cualquier momento.</p>
-
-    <h2>10. Aceptación</h2>
-    <p>El uso de la plataforma implica la aceptación total de estos términos.</p>
-
-    <div class="footer-links">
-        <a href="/privacidad.html">Aviso de Privacidad</a>
-        <a href="/">Volver al inicio</a>
+    <div class="warn-box">
+      <p><strong>Aviso importante:</strong> Los diagnósticos y análisis generados por MESAN Ω tienen carácter <strong>informativo y orientativo</strong>. No constituyen asesoría legal, fiscal, contable, laboral ni de ninguna otra especialidad profesional regulada. Para decisiones que impliquen consecuencias legales o financieras significativas, el Usuario deberá consultar a un profesional certificado en la materia correspondiente.</p>
     </div>
+  </div>
 
-    <div class="footer">MESAN Ω © 2026 — TODOS LOS DERECHOS RESERVADOS</div>
+  <div class="section">
+    <div class="section-num">03</div>
+    <h2>Registro y cuenta de usuario</h2>
+    <p>El uso de ciertas funcionalidades de MESAN puede requerir el registro del Usuario mediante la provisión de datos de contacto y empresa. El Usuario se compromete a:</p>
+    <ul>
+      <li>Proporcionar información veraz, completa y actualizada.</li>
+      <li>Mantener la confidencialidad de sus credenciales de acceso.</li>
+      <li>Notificar a MESAN de inmediato ante cualquier uso no autorizado de su cuenta.</li>
+      <li>Asumir responsabilidad por todas las actividades realizadas bajo su cuenta.</li>
+    </ul>
+    <p>MESAN se reserva el derecho de suspender o cancelar cuentas que incumplan los presentes Términos, sin responsabilidad alguna para MESAN.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">04</div>
+    <h2>Uso permitido y prohibiciones</h2>
+    <h3>Uso permitido</h3>
+    <p>El Usuario podrá utilizar la Plataforma exclusivamente para los fines legítimos y lícitos descritos en los presentes Términos, incluyendo el diagnóstico de su propia empresa o de empresas para las que tenga autorización expresa.</p>
+
+    <h3>Usos prohibidos</h3>
+    <p>Queda expresamente prohibido:</p>
+    <ul>
+      <li>Utilizar la Plataforma con fines ilícitos o que contravengan la legislación mexicana aplicable.</li>
+      <li>Intentar acceder sin autorización a sistemas, datos o cuentas de otros usuarios.</li>
+      <li>Introducir virus, malware o cualquier código dañino en la Plataforma.</li>
+      <li>Reproducir, distribuir, modificar o explotar comercialmente el contenido de MESAN sin autorización escrita.</li>
+      <li>Realizar ingeniería inversa sobre los motores de diagnóstico o algoritmos de MESAN.</li>
+      <li>Utilizar la Plataforma para generar diagnósticos de terceros sin su consentimiento.</li>
+      <li>Sobrecargar deliberadamente la infraestructura de MESAN mediante ataques automatizados.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-num">05</div>
+    <h2>Propiedad intelectual</h2>
+    <p>Todos los derechos de propiedad intelectual sobre la Plataforma, incluyendo pero no limitado a: código fuente, algoritmos, motores de diagnóstico, diseño visual, marcas, logotipos, contenidos y documentación, son propiedad exclusiva de MESAN Ω o de sus licenciantes.</p>
+    <p>El Usuario no adquiere ningún derecho de propiedad intelectual por el uso de los Servicios. El acceso a la Plataforma se otorga bajo una licencia de uso personal, intransferible, no exclusiva y revocable.</p>
+    <p>Los diagnósticos, reportes y análisis generados específicamente para el Usuario a partir de su información constituyen contenido derivado cuyo uso queda limitado al Usuario para sus propios fines internos.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">06</div>
+    <h2>Limitación de responsabilidad</h2>
+    <p>En la máxima medida permitida por la legislación mexicana aplicable, MESAN no será responsable por:</p>
+    <ul>
+      <li>Daños directos, indirectos, incidentales, especiales o consecuentes derivados del uso o imposibilidad de uso de los Servicios.</li>
+      <li>Decisiones empresariales tomadas con base en los diagnósticos generados por la Plataforma.</li>
+      <li>Interrupciones del servicio por causas de fuerza mayor, mantenimiento programado o fallas de terceros proveedores de infraestructura.</li>
+      <li>Pérdida de datos por causas ajenas al control razonable de MESAN.</li>
+      <li>Inexactitudes en los diagnósticos derivadas de información incorrecta o incompleta proporcionada por el Usuario.</li>
+    </ul>
+    <div class="highlight-box">
+      <p>La responsabilidad total de MESAN frente al Usuario, en cualquier caso, no excederá el importe pagado por el Usuario a MESAN durante los 3 meses anteriores al evento que origina la reclamación.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-num">07</div>
+    <h2>Privacidad y protección de datos</h2>
+    <p>El tratamiento de los datos personales del Usuario se rige por el <a href="/privacidad.html" style="color: var(--cyan);">Aviso de Privacidad</a> de MESAN, el cual forma parte integral de los presentes Términos y se encuentra disponible en <strong>https://mesanomega.com/privacidad.html</strong>.</p>
+    <p>Al aceptar los presentes Términos, el Usuario confirma haber leído y aceptado el Aviso de Privacidad de MESAN.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">08</div>
+    <h2>Tarifas y pagos</h2>
+    <p>Algunos Servicios de MESAN pueden estar sujetos al pago de tarifas. Las condiciones específicas de precio, modalidad de pago y facturación serán informadas al Usuario antes de la contratación del servicio correspondiente.</p>
+    <p>MESAN se reserva el derecho de modificar sus tarifas, notificando al Usuario con al menos 30 días de anticipación a través de correo electrónico o de la Plataforma.</p>
+    <p>Los pagos realizados no son reembolsables salvo disposición contraria expresamente acordada por escrito entre MESAN y el Usuario.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">09</div>
+    <h2>Vigencia y terminación</h2>
+    <p>Los presentes Términos estarán vigentes mientras el Usuario utilice la Plataforma o mantenga una relación comercial activa con MESAN.</p>
+    <p>MESAN podrá dar por terminada la relación con el Usuario, con o sin causa, mediante notificación por correo electrónico con al menos 15 días de anticipación, salvo en casos de incumplimiento grave de los presentes Términos, en cuyo caso la terminación podrá ser inmediata.</p>
+    <p>El Usuario podrá cancelar su registro en cualquier momento solicitándolo a <strong>contacto@mesanomega.com</strong>.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">10</div>
+    <h2>Legislación aplicable y jurisdicción</h2>
+    <p>Los presentes Términos se rigen e interpretan de conformidad con las leyes de los <strong>Estados Unidos Mexicanos</strong>, en particular la Ley Federal de Protección al Consumidor, el Código Civil Federal y demás disposiciones aplicables.</p>
+    <p>Para cualquier controversia derivada de los presentes Términos, las partes se someten expresamente a la jurisdicción de los tribunales competentes de la <strong>Ciudad de México, México</strong>, renunciando a cualquier otro fuero que pudiera corresponderles en razón de su domicilio presente o futuro.</p>
+
+    <div class="highlight-box">
+      <p><strong>Contacto legal:</strong> contacto@mesanomega.com<br>
+      <strong>Sitio web:</strong> https://mesanomega.com</p>
+    </div>
+  </div>
 
 </div>
+
+<footer>
+  <div>
+    <div class="footer-brand">MESAN Ω</div>
+    <div class="footer-copy">© 2026 MESAN Ω. Todos los derechos reservados.<br>Plataforma de diagnóstico empresarial — México</div>
+  </div>
+  <div class="footer-links">
+    <a href="/privacidad.html">Aviso de Privacidad</a>
+    <a href="/terminos.html">Términos y Condiciones</a>
+    <a href="/cookies.html">Política de Cookies</a>
+    <a href="/">Inicio</a>
+  </div>
+</footer>
 
 </body>
 </html>
