@@ -142,12 +142,45 @@ def _is_lead_id_path_exempt(path: str, method: str) -> bool:
     return method.upper() in ("GET", "PATCH") and bool(_LEAD_ID_PATH_RE.match(path))
 
 
+def _is_static_landing_asset(path: str, method: str) -> bool:
+    """GET sobre archivos publicos servidos por StaticFiles (la landing y
+    sus paginas legales) -- exentos de JWT por diseno, igual que
+    /crm_enterprise.html, pero estos SI son verdaderamente publicos (sin
+    Basic Auth tampoco): son la landing comercial que cualquier visitante
+    debe poder ver.
+
+    /crm_enterprise.html NO esta aqui -- tiene su propia ruta explicita
+    en main.py con Depends(verify_crm_credentials) y su propia entrada en
+    PUBLIC_METHOD_PATHS arriba.
+
+    Cualquier archivo nuevo agregado a la raiz del repo (servido por el
+    StaticFiles mount al final de main.py) cae aqui automaticamente sin
+    necesidad de tocar este archivo, siempre que sea GET y no sea
+    /crm_enterprise.html.
+    """
+    if method.upper() != "GET":
+        return False
+    if path == "/crm_enterprise.html":
+        return False
+    if path.startswith("/api/"):
+        return False
+    # Rutas de la app (FastAPI routers) ya manejadas por PUBLIC_PATHS /
+    # PUBLIC_METHOD_PATHS / auth real -- no se tratan aqui para evitar
+    # exentar accidentalmente algo que deberia llevar JWT real en el
+    # futuro (ej. /pro/*, /api/v1/*).
+    if path.startswith("/pro/") or path.startswith("/api/v1/"):
+        return False
+    return True
+
+
 def _is_public(path: str, method: str) -> bool:
     if path in PUBLIC_PATHS:
         return True
     if (path, method.upper()) in PUBLIC_METHOD_PATHS:
         return True
     if _is_lead_id_path_exempt(path, method):
+        return True
+    if _is_static_landing_asset(path, method):
         return True
     return False
 
