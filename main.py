@@ -407,7 +407,39 @@ async def error_handler(request: Request, exc: Exception):
 
 
 # ── Static Files — debe ir AL FINAL, después de todas las rutas ──────────────
-# Sirve index.html, styles.css, crm.html, crm_nacional.html, etc.
+# Sirve index.html, styles.css, páginas legales, etc.
 # /crm_enterprise.html está protegida arriba y FastAPI le da prioridad
 # sobre este mount por estar registrada antes.
-app.mount("/", StaticFiles(directory=".", html=True), name="static")
+#
+# Se usa una subclase de StaticFiles que inyecta los mismos headers de
+# seguridad que el security_headers_middleware, porque StaticFiles bypasea
+# los middlewares HTTP de FastAPI/Starlette al responder directamente.
+
+class SecureStaticFiles(StaticFiles):
+    """StaticFiles con headers de seguridad inyectados en cada respuesta."""
+
+    _SECURITY_HEADERS = {
+        "X-Frame-Options": "DENY",
+        "X-Content-Type-Options": "nosniff",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+        "Content-Security-Policy": (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "img-src 'self' data: https:; "
+            "connect-src 'self' https://mesan-api.onrender.com https://mesanomega.com; "
+            "frame-ancestors 'none';"
+        ),
+    }
+
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        for header, value in self._SECURITY_HEADERS.items():
+            response.headers[header] = value
+        return response
+
+
+app.mount("/", SecureStaticFiles(directory=".", html=True), name="static")
