@@ -137,10 +137,10 @@ app = FastAPI(
 
 
 # ── Middleware — orden de registro inverso al de ejecución ───────────────────
-# Ejecución deseada: trace → context → auth → latency
+# Ejecución deseada: trace → context → auth → security_headers → latency
 # Registro FastAPI (inverso): latency primero, trace último
 
-# 4. Latency (ejecuta último — mide tiempo total incluyendo auth)
+# 5. Latency (ejecuta último — mide tiempo total incluyendo auth)
 @app.middleware("http")
 async def latency_middleware(request: Request, call_next):
     start    = time.time()
@@ -151,6 +151,40 @@ async def latency_middleware(request: Request, call_next):
         getattr(request.state, "trace_id", "-"),
         request.method, request.url.path,
         response.status_code, latency)
+    return response
+
+# 4. Security Headers (ejecuta antes de latency, agrega headers a todas
+#    las respuestas independientemente de la ruta o el resultado)
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    response = await call_next(request)
+    # Evitar clickjacking
+    response.headers["X-Frame-Options"] = "DENY"
+    # Evitar MIME-type sniffing
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    # HSTS: forzar HTTPS durante 1 año, incluir subdominios
+    response.headers["Strict-Transport-Security"] = (
+        "max-age=31536000; includeSubDomains"
+    )
+    # Referrer: solo origen en requests cross-origin
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    # Permissions: deshabilitar APIs del navegador no necesarias
+    response.headers["Permissions-Policy"] = (
+        "camera=(), microphone=(), geolocation=(), payment=()"
+    )
+    # CSP: calibrada para la landing actual (Google Fonts, fetch a la API)
+    # NOTA: 'unsafe-inline' requerido por el CSS inline extenso de index.html.
+    # Cuando se refactorice el CSS a archivos externos, se puede eliminar.
+    # frame-ancestors 'none' reemplaza X-Frame-Options para navegadores modernos.
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: https:; "
+        "connect-src 'self' https://mesan-api.onrender.com https://mesanomega.com; "
+        "frame-ancestors 'none';"
+    )
     return response
 
 # 3. Auth (ejecuta después de context, necesita trace_id)
@@ -177,8 +211,9 @@ allow_origins = (
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PATCH"],
+    allow_headers=["Content-Type", "Authorization"],
     expose_headers=["X-Trace-Id", "X-Latency-Ms"],
 )
 
