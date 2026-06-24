@@ -137,10 +137,10 @@ app = FastAPI(
 
 
 # ── Middleware — orden de registro inverso al de ejecución ───────────────────
-# Ejecución deseada: trace → context → auth → security_headers → latency
+# Ejecución deseada: trace → context → auth → latency
 # Registro FastAPI (inverso): latency primero, trace último
 
-# 5. Latency (ejecuta último — mide tiempo total incluyendo auth)
+# 4. Latency (ejecuta último — mide tiempo total incluyendo auth)
 @app.middleware("http")
 async def latency_middleware(request: Request, call_next):
     start    = time.time()
@@ -151,40 +151,6 @@ async def latency_middleware(request: Request, call_next):
         getattr(request.state, "trace_id", "-"),
         request.method, request.url.path,
         response.status_code, latency)
-    return response
-
-# 4. Security Headers (ejecuta antes de latency, agrega headers a todas
-#    las respuestas independientemente de la ruta o el resultado)
-@app.middleware("http")
-async def security_headers_middleware(request: Request, call_next):
-    response = await call_next(request)
-    # Evitar clickjacking
-    response.headers["X-Frame-Options"] = "DENY"
-    # Evitar MIME-type sniffing
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    # HSTS: forzar HTTPS durante 1 año, incluir subdominios
-    response.headers["Strict-Transport-Security"] = (
-        "max-age=31536000; includeSubDomains"
-    )
-    # Referrer: solo origen en requests cross-origin
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    # Permissions: deshabilitar APIs del navegador no necesarias
-    response.headers["Permissions-Policy"] = (
-        "camera=(), microphone=(), geolocation=(), payment=()"
-    )
-    # CSP: calibrada para la landing actual (Google Fonts, fetch a la API)
-    # NOTA: 'unsafe-inline' requerido por el CSS inline extenso de index.html.
-    # Cuando se refactorice el CSS a archivos externos, se puede eliminar.
-    # frame-ancestors 'none' reemplaza X-Frame-Options para navegadores modernos.
-    response.headers["Content-Security-Policy"] = (
-        "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline'; "
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-        "font-src 'self' https://fonts.gstatic.com; "
-        "img-src 'self' data: https:; "
-        "connect-src 'self' https://mesan-api.onrender.com https://mesanomega.com; "
-        "frame-ancestors 'none';"
-    )
     return response
 
 # 3. Auth (ejecuta después de context, necesita trace_id)
@@ -410,36 +376,71 @@ async def error_handler(request: Request, exc: Exception):
 # Sirve index.html, styles.css, páginas legales, etc.
 # /crm_enterprise.html está protegida arriba y FastAPI le da prioridad
 # sobre este mount por estar registrada antes.
+# Los security headers los agrega SecurityHeadersMiddleware (ASGI puro) abajo,
+# que intercepta http.response.start y cubre TODAS las respuestas incluyendo
+# StaticFiles, FileResponse, StreamingResponse y errores.
+app.mount("/", StaticFiles(directory=".", html=True), name="static")
+
+
+# ── Security Headers — Middleware ASGI puro ───────────────────────────────────
+# Debe envolverse DESPUÉS de app.mount() para que cubra también StaticFiles.
+# BaseHTTPMiddleware (los @app.middleware("http")) no cubre StaticFiles porque
+# Starlette los sirve directamente sin pasar por el middleware stack HTTP.
+# Un middleware ASGI puro sí los cubre porque intercepta a nivel de protocolo
+# ASGI (http.response.start / http.response.body), antes de que la respuesta
+# salga del servidor.
 #
-# Se usa una subclase de StaticFiles que inyecta los mismos headers de
-# seguridad que el security_headers_middleware, porque StaticFiles bypasea
-# los middlewares HTTP de FastAPI/Starlette al responder directamente.
-
-class SecureStaticFiles(StaticFiles):
-    """StaticFiles con headers de seguridad inyectados en cada respuesta."""
-
-    _SECURITY_HEADERS = {
-        "X-Frame-Options": "DENY",
-        "X-Content-Type-Options": "nosniff",
-        "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-        "Referrer-Policy": "strict-origin-when-cross-origin",
-        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
-        "Content-Security-Policy": (
-            "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline'; "
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-            "font-src 'self' https://fonts.gstatic.com; "
-            "img-src 'self' data: https:; "
-            "connect-src 'self' https://mesan-api.onrender.com https://mesanomega.com; "
-            "frame-ancestors 'none';"
-        ),
-    }
-
-    async def get_response(self, path: str, scope):
-        response = await super().get_response(path, scope)
-        for header, value in self._SECURITY_HEADERS.items():
-            response.headers[header] = value
-        return response
+# Cubre: API, CRM, landing, páginas legales, assets estáticos, errores 4xx/5xx.
+_SECURITY_HEADERS = {
+    "X-Frame-Options": "DENY",
+    "X-Content-Type-Options": "nosniff",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+    "Content-Security-Policy": (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: https:; "
+        "connect-src 'self' https://mesan-api.onrender.com https://mesanomega.com; "
+        "frame-ancestors 'none';"
+    ),
+}
 
 
-app.mount("/", SecureStaticFiles(directory=".", html=True), name="static")
+class SecurityHeadersMiddleware:
+    """Middleware ASGI puro que agrega security headers a TODAS las respuestas.
+
+    A diferencia de BaseHTTPMiddleware, opera a nivel de protocolo ASGI
+    interceptando el mensaje http.response.start — por eso funciona para
+    StaticFiles, FileResponse, StreamingResponse y cualquier otra respuesta
+    que Starlette/FastAPI genere, incluyendo errores.
+    """
+
+    def __init__(self, asgi_app):
+        self.app = asgi_app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        async def send_with_headers(message):
+            if message["type"] == "http.response.start":
+                headers = list(message.get("headers", []))
+                existing = {h[0].lower() for h in headers}
+                for name, value in _SECURITY_HEADERS.items():
+                    key = name.lower().encode()
+                    if key not in existing:
+                        headers.append((key, value.encode()))
+                message = {**message, "headers": headers}
+            await send(message)
+
+        await self.app(scope, receive, send_with_headers)
+
+
+# Envolver la app completa con el middleware ASGI puro.
+# Esto debe ir AL FINAL — después de app.mount() — para que cubra
+# también las rutas montadas por StaticFiles.
+app = SecurityHeadersMiddleware(app)
