@@ -1,4 +1,4 @@
-# core/auth/auth_middleware.py -- MESAN Omega Auth Middleware v1.2
+# core/auth/auth_middleware.py -- MESAN Omega Auth Middleware v1.3
 """
 FastAPI Auth Middleware Ω
 
@@ -50,15 +50,27 @@ CHANGELOG v1.2 (Fase 1 — corrección de orden de ejecución):
       nunca se ejecutaba (falso cierre de seguridad: cerrado, llave
       equivocada). Corregido: estas 4 rutas quedan exentas de JWT aquí
       y dependen exclusivamente de Basic Auth a nivel de endpoint.
+
+CHANGELOG v1.3 (Hardening — CVE-2026-48710 "BadHost"):
+    - ALTO: se reemplaza request.url.path por request.scope["path"]
+      en auth_middleware para mitigar CVE-2026-48710 (Starlette BadHost).
+      La vulnerabilidad permite que un Host header malformado haga que
+      request.url.path difiera del path real enrutado por el ASGI server,
+      permitiendo bypass de autenticación. request.scope["path"] refleja
+      el path real del ASGI scope y no es afectado por manipulación del
+      Host header. Actualmente mitigado por Cloudflare (400 en Host
+      malformados), pero se aplica el fix en código como defensa en
+      profundidad.
+    - Ref: https://badhost.org / CVE-2026-48710
 """
 
 
 import logging
+import re
 from typing import Optional
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
 
 from core.auth.jwt_handler import JWTError, verify_token
 from core.auth.tenant_context import clear_tenant, set_tenant
@@ -78,96 +90,45 @@ PUBLIC_PATHS = {
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
-# ║ ⚠️  ADVERTENCIA DE REGRESIÓN DE SEGURIDAD — LEER ANTES DE MODIFICAR  ⚠️    ║
-# ║                                                                            ║
-# ║ Las entradas marcadas "Basic Auth" abajo NO son públicas, aunque estén    ║
-# ║ exentas de JWT en este middleware. Su única protección real es el         ║
-# ║ Depends(verify_crm_credentials) declarado en el ENDPOINT correspondiente  ║
-# ║ (routes/leads_routes.py y main.py).                                       ║
-# ║                                                                            ║
-# ║ Si se agrega aquí una nueva exención de JWT para una ruta del CRM,        ║
-# ║ es OBLIGATORIO verificar que ese mismo endpoint tenga                     ║
-# ║ Depends(verify_crm_credentials) — de lo contrario la ruta queda           ║
-# ║ públicamente abierta sin ninguna protección.                              ║
-# ║                                                                            ║
-# ║ Checklist al tocar este archivo o las rutas CRM:                          ║
-# ║   [ ] ¿Sigue Depends(verify_crm_credentials) presente en las 4 rutas      ║
-# ║       CRM (GET /api/leads, GET/PATCH /api/leads/{id},                     ║
-# ║       GET /crm_enterprise.html)?                                          ║
-# ║   [ ] ¿POST /api/leads sigue siendo la ÚNICA ruta sin ninguna capa?       ║
+# ║ ⚠️  ADVERTENCIA DE REGRESIÓN DE SEGURIDAD — LEER ANTES DE MODIFICAR  ⚠️ ║
+# ║                                                                          ║
+# ║ Las entradas marcadas "Basic Auth" abajo NO son públicas, aunque estén  ║
+# ║ exentas de JWT en este middleware. Su única protección real es el        ║
+# ║ Depends(verify_crm_credentials) declarado en el ENDPOINT correspondiente ║
+# ║ (routes/leads_routes.py y main.py).                                      ║
+# ║                                                                          ║
+# ║ Si se agrega aquí una nueva exención de JWT para una ruta del CRM,      ║
+# ║ es OBLIGATORIO verificar que ese mismo endpoint tenga                   ║
+# ║ Depends(verify_crm_credentials) — de lo contrario la ruta queda         ║
+# ║ públicamente abierta sin ninguna protección.                            ║
+# ║                                                                          ║
+# ║ Checklist al tocar este archivo o las rutas CRM:                        ║
+# ║   [ ] ¿Sigue Depends(verify_crm_credentials) presente en las 4 rutas   ║
+# ║       CRM (GET /api/leads, GET/PATCH /api/leads/{id},                   ║
+# ║       GET /crm_enterprise.html)?                                        ║
+# ║   [ ] ¿POST /api/leads sigue siendo la ÚNICA ruta sin ninguna capa?     ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
-# ── Excepción específica por método + ruta exacta ────────────────────────────
-# (path, method) -> exenta de JWT. NO usar prefijos: cada entrada es exacta.
-#
-# FASE 1 — nota de seguridad:
-#   /api/leads (POST)        -> pública de verdad (captura desde landing).
-#   /crm_enterprise.html,
-#   /api/leads (GET),
-#   /api/leads/{id} (GET/PATCH)
-#       -> exentas de JWT (no existe flujo de obtención de token en Fase 1),
-#          pero NO son públicas: quedan protegidas por Basic Auth
-#          (core/auth/basic_auth.py, Depends(verify_crm_credentials))
-#          aplicado directamente en cada endpoint.
-#
-#   auth_middleware corre ANTES que cualquier Depends() de ruta. Si estas
-#   4 rutas no estuvieran aquí, auth_middleware devolvería 401 por falta de
-#   JWT antes de que Basic Auth pudiera ejecutarse — dejando el CRM
-#   inaccesible incluso con credenciales Basic Auth correctas.
-#
-#   Fase 2: cuando exista flujo JWT real (login + emisión de tokens),
-#   estas 4 rutas deben retirarse de aquí y depender solo de JWT,
-#   eliminando Basic Auth para evitar doble autenticación.
 PUBLIC_METHOD_PATHS = {
     ("/api/leads", "POST"),
     ("/api/leads", "GET"),
     ("/crm_enterprise.html", "GET"),
 }
 
-# Rutas con parámetro variable ({lead_id}) -- no se puede usar igualdad exacta
-# de string. Se valida por patron + metodo, restringido a un solo segmento
-# tras /api/leads/ (ej. /api/leads/LEAD-ABC123, no /api/leads/x/y).
-import re
 _LEAD_ID_PATH_RE = re.compile(r"^/api/leads/[^/]+$")
 
 
 def _is_lead_id_path_exempt(path: str, method: str) -> bool:
-    """GET/PATCH /api/leads/{lead_id} -- exentas de JWT aquí.
-
-    ⚠️ NO son públicas: su protección real es Depends(verify_crm_credentials)
-    en routes/leads_routes.py. Si esa dependencia se elimina del endpoint,
-    estas rutas quedan completamente abiertas sin que este middleware lo
-    detecte. Ver advertencia de regresión arriba.
-    """
     return method.upper() in ("GET", "PATCH") and bool(_LEAD_ID_PATH_RE.match(path))
 
 
 def _is_static_landing_asset(path: str, method: str) -> bool:
-    """GET sobre archivos publicos servidos por StaticFiles (la landing y
-    sus paginas legales) -- exentos de JWT por diseno, igual que
-    /crm_enterprise.html, pero estos SI son verdaderamente publicos (sin
-    Basic Auth tampoco): son la landing comercial que cualquier visitante
-    debe poder ver.
-
-    /crm_enterprise.html NO esta aqui -- tiene su propia ruta explicita
-    en main.py con Depends(verify_crm_credentials) y su propia entrada en
-    PUBLIC_METHOD_PATHS arriba.
-
-    Cualquier archivo nuevo agregado a la raiz del repo (servido por el
-    StaticFiles mount al final de main.py) cae aqui automaticamente sin
-    necesidad de tocar este archivo, siempre que sea GET y no sea
-    /crm_enterprise.html.
-    """
     if method.upper() != "GET":
         return False
     if path == "/crm_enterprise.html":
         return False
     if path.startswith("/api/"):
         return False
-    # Rutas de la app (FastAPI routers) ya manejadas por PUBLIC_PATHS /
-    # PUBLIC_METHOD_PATHS / auth real -- no se tratan aqui para evitar
-    # exentar accidentalmente algo que deberia llevar JWT real en el
-    # futuro (ej. /pro/*, /api/v1/*).
     if path.startswith("/pro/") or path.startswith("/api/v1/"):
         return False
     return True
@@ -199,22 +160,17 @@ async def auth_middleware(request: Request, call_next):
     """
     FastAPI-compatible auth middleware.
 
-    Flujo:
-        1. Rutas/método públicos → pass-through sin validar token
-        2. Extraer Bearer token del header Authorization
-        3. Verificar JWT con jwt_handler
-        4. Inyectar Tenant en context
-        5. Ejecutar request
-        6. Limpiar context en TODOS los caminos (éxito, error, excepción)
+    v1.3: usa request.scope["path"] en lugar de request.url.path
+    para mitigar CVE-2026-48710 (BadHost — Starlette Host header bypass).
     """
-    path   = request.url.path
+    # CVE-2026-48710: scope["path"] es el path real del ASGI server,
+    # no afectado por manipulación del Host header.
+    path   = request.scope.get("path", request.url.path)
     method = request.method
 
-    # ── Rutas/método públicos ────────────────────────────────────────────
     if _is_public(path, method):
         return await call_next(request)
 
-    # ── Extraer token ─────────────────────────────────────────────────────
     token = _extract_token(request)
     if not token:
         logger.warning("[AUTH] Token faltante | path=%s method=%s", path, method)
@@ -223,7 +179,6 @@ async def auth_middleware(request: Request, call_next):
             content={"error": "AUTH_TOKEN_MISSING", "path": path},
         )
 
-    # ── Verificar JWT e inyectar tenant ───────────────────────────────────
     try:
         payload = verify_token(token)
         tenant_id = payload.get("tenant_id")
@@ -237,10 +192,8 @@ async def auth_middleware(request: Request, call_next):
 
         tenant = Tenant(tenant_id=tenant_id)
         set_tenant(tenant)
-
         logger.info("[AUTH] OK | tenant=%s | path=%s", tenant_id, path)
 
-        # ── Ejecutar request ──────────────────────────────────────────────
         response = await call_next(request)
         return response
 
@@ -259,5 +212,4 @@ async def auth_middleware(request: Request, call_next):
         )
 
     finally:
-        # ── Limpiar context en TODOS los caminos ──────────────────────────
         clear_tenant()
