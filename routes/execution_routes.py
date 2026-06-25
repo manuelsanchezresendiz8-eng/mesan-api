@@ -43,6 +43,7 @@ from core.billing.billing_engine import BillingEngine
 
 from services.executive_narrative_generator import ExecutiveNarrativeGenerator
 from services.omega_orchestrator            import omega_orchestrator
+from core.rate_limiter                      import rate_limit_check
 
 router = APIRouter()
 logger = logging.getLogger("mesan.execute")
@@ -84,6 +85,11 @@ async def execute(payload: ExecutePayload, request: Request):
     trace_id = f"exec-{int(started * 1000)}"
 
     logger.info("[EXECUTE] request received trace_id=%s", trace_id)
+
+    # Rate limiting: 3 diagnosticos/IP cada 5 minutos.
+    # Mas estricto que /api/leads (5/60s) porque cada ejecucion
+    # consume recursos significativos del Orchestrator (9 motores).
+    rate_limit_check(request, key="execute_diagnostico", max_requests=3, window_seconds=300)
 
     # ── Tenant ────────────────────────────────────────────────────────────────
     tenant = get_tenant()
