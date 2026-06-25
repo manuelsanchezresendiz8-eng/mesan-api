@@ -1,24 +1,19 @@
-# routes/execution_routes.py -- MESAN Omega Execution Routes v2.1
+# routes/execution_routes.py -- MESAN Omega Execution Routes v2.2
 """
-v2.0 — CAMBIO CRITICO:
-    /execute ahora usa OmegaOrchestrator completo (9 motores).
-
-v2.1 — TENANT:
-    Eliminado bloqueo TENANT_MISSING en produccion.
-    /execute es publico — se asigna tenant anonimo public_diagnostic.
+v2.0: OmegaOrchestrator completo (9 motores).
+v2.1: tenant public_diagnostic, sin bloqueo TENANT_MISSING.
+v2.2: fix mapeo acciones desde plan_remediacion.
 
 DIFF vs v1.8:
     - ELIMINADO: FiscalSentinelEngine() instanciado directamente
-    - ELIMINADO: ComplianceVerifyEngine() instanciado directamente
     - ELIMINADO: score=72, nivel="ALTO" hardcodeados
-    - ELIMINADO: acciones_hoy/72h/7d hardcodeadas
+    - ELIMINADO: acciones hardcodeadas
     - AGREGADO:  omega_orchestrator.ejecutar(data) -- 9 motores
-    - AGREGADO:  tenant_id="public_diagnostic" para trazabilidad
-    - AGREGADO:  engine_errors en response
-    - AGREGADO:  dias_supervivencia desde ESI real
-    - AGREGADO:  dscr=None cuando deuda==0
-    - AGREGADO:  acciones desde RemediationEngine
+    - AGREGADO:  tenant public_diagnostic
+    - AGREGADO:  acciones desde plan_remediacion del RemediationEngine
     - AGREGADO:  rate limiting 3 req/IP/300s
+    - AGREGADO:  dscr=None cuando deuda==0
+    - AGREGADO:  dias_supervivencia desde ESI real
 """
 
 import os
@@ -71,11 +66,10 @@ async def execute(payload: ExecutePayload, request: Request):
     # Rate limiting: 3 diagnosticos/IP cada 5 minutos
     rate_limit_check(request, key="execute_diagnostico", max_requests=3, window_seconds=300)
 
-    # Tenant anonimo para diagnosticos publicos
     tenant = get_tenant()
     if not tenant:
         # FASE 1: /execute es publico — landing sin login.
-        # Tenant anonimo para trazabilidad en logs.
+        # Tenant anonimo para trazabilidad.
         # FASE 2: reemplazar por JWT emitido al prospecto.
         set_tenant(Tenant(
             tenant_id="public_diagnostic",
@@ -85,7 +79,6 @@ async def execute(payload: ExecutePayload, request: Request):
         tenant = get_tenant()
 
     try:
-        # Mapeo payload → Orchestrator
         data = {
             "tenant_id":              tenant.tenant_id,
             "trace_id":               trace_id,
@@ -105,7 +98,6 @@ async def execute(payload: ExecutePayload, request: Request):
             "bloqueo_bancario":       payload.bloqueo_bancario,
             "opinion_sat":            payload.opinion_sat,
             "opinion_imss":           payload.opinion_imss,
-            # Defaults seguros — campos no disponibles en landing v1
             "caja_disponible":        0.0,
             "empleados_criticos":     0,
             "demandas_laborales":     0,
@@ -113,21 +105,18 @@ async def execute(payload: ExecutePayload, request: Request):
             "severance_estimado":     0.0,
         }
 
-        # OmegaOrchestrator — 9 motores
         logger.info("[EXECUTE] invoking OmegaOrchestrator trace_id=%s", trace_id)
         omega_response = omega_orchestrator.ejecutar(data)
 
-        # Extraer campos del OmegaResponse (dataclass)
-        omega_score = getattr(omega_response, "omega_score",                 None)
-        esi         = getattr(omega_response, "enterprise_survival_index",   None)
-        war_room    = getattr(omega_response, "war_room_required",           False)
-        exposure    = getattr(omega_response, "total_exposure_mxn",         0.0)
-        engine_data = getattr(omega_response, "engines",                     {})
-        remediation = getattr(omega_response, "remediation",                 {})
-        summary     = getattr(omega_response, "executive_summary",           "")
-        model_drift = getattr(omega_response, "model_drift",                 {})
+        omega_score = getattr(omega_response, "omega_score",               None)
+        esi         = getattr(omega_response, "enterprise_survival_index", None)
+        war_room    = getattr(omega_response, "war_room_required",         False)
+        exposure    = getattr(omega_response, "total_exposure_mxn",        0.0)
+        engine_data = getattr(omega_response, "engines",                   {})
+        remediation = getattr(omega_response, "remediation",               {})
+        summary     = getattr(omega_response, "executive_summary",         "")
+        model_drift = getattr(omega_response, "model_drift",               {})
 
-        # Detectar motores con error
         engine_errors = {
             name: res.get("error")
             for name, res in (engine_data or {}).items()
@@ -136,7 +125,6 @@ async def execute(payload: ExecutePayload, request: Request):
         if engine_errors:
             logger.error("[EXECUTE] engine_errors trace_id=%s errors=%s", trace_id, engine_errors)
 
-        # Si omega_score es None — fallo total, error explicito
         if omega_score is None:
             logger.error("[EXECUTE] omega_score is None trace_id=%s", trace_id)
             return JSONResponse(status_code=500, content={
@@ -146,14 +134,12 @@ async def execute(payload: ExecutePayload, request: Request):
                 "engine_errors": engine_errors,
             })
 
-        # Nivel desde omega_score
         if omega_score >= 80:   nivel = "BAJO"
         elif omega_score >= 65: nivel = "MEDIO"
         elif omega_score >= 50: nivel = "ALTO"
         elif omega_score >= 35: nivel = "CRITICO"
         else:                   nivel = "EXTREMO"
 
-        # Flujo operativo desde FiscalSentinel
         fiscal_data = engine_data.get("fiscal", {})
         fiscal_res  = fiscal_data.get("resultado", fiscal_data)
         flujo = fiscal_res.get(
@@ -161,16 +147,14 @@ async def execute(payload: ExecutePayload, request: Request):
             payload.ingresos - payload.gastos - payload.deuda_mensual
         )
 
-        # Dias de supervivencia desde ESI real
-        if esi is None:         dias = 30
-        elif esi >= 90:         dias = 180
-        elif esi >= 80:         dias = 120
-        elif esi >= 70:         dias = 90
-        elif esi >= 60:         dias = 60
-        elif esi >= 45:         dias = 30
-        else:                   dias = 15
+        if esi is None:     dias = 30
+        elif esi >= 90:     dias = 180
+        elif esi >= 80:     dias = 120
+        elif esi >= 70:     dias = 90
+        elif esi >= 60:     dias = 60
+        elif esi >= 45:     dias = 30
+        else:               dias = 15
 
-        # DSCR corregido
         deuda = payload.deuda_mensual
         if deuda <= 0:
             dscr = None
@@ -179,10 +163,11 @@ async def execute(payload: ExecutePayload, request: Request):
         else:
             dscr = None
 
-        # Acciones desde RemediationEngine
-        acciones_hoy = remediation.get("acciones_inmediatas") or remediation.get("acciones_hoy") or []
-        acciones_72h = remediation.get("acciones_30_dias")    or remediation.get("acciones_72h")  or []
-        acciones_7d  = remediation.get("acciones_60_dias")    or remediation.get("acciones_7d")   or []
+        # Acciones desde plan_remediacion (donde OmegaResponseBuilder las guarda)
+        plan = remediation.get("plan_remediacion", {})
+        acciones_hoy = plan.get("acciones_inmediatas") or remediation.get("acciones_inmediatas") or []
+        acciones_72h = plan.get("acciones_30_dias")    or remediation.get("acciones_30_dias")    or []
+        acciones_7d  = plan.get("acciones_60_dias")    or remediation.get("acciones_60_dias")    or []
 
         remediation_available = bool(acciones_hoy or acciones_72h or acciones_7d)
         if not remediation_available:
@@ -209,7 +194,6 @@ async def execute(payload: ExecutePayload, request: Request):
             "engine_errors":         engine_errors if engine_errors else None,
         }
 
-        # Audit
         try:
             AuditLog().log(
                 tenant_id=tenant.tenant_id,
@@ -219,7 +203,6 @@ async def execute(payload: ExecutePayload, request: Request):
         except Exception as e:
             logger.warning("[EXECUTE] audit error: %s", e)
 
-        # Billing
         try:
             invoice = BillingEngine().charge(
                 tenant_id=tenant.tenant_id,
@@ -234,7 +217,6 @@ async def execute(payload: ExecutePayload, request: Request):
                 reason   = "billing_disabled"
             invoice = DummyInvoice()
 
-        # Narrativa CEO IA
         try:
             report = ExecutiveNarrativeGenerator().generar(resultado)
             if not report:
