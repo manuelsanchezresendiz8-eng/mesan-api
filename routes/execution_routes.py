@@ -95,15 +95,15 @@ async def execute(payload: ExecutePayload, request: Request):
     tenant = get_tenant()
 
     if not tenant:
-        if ENV != "production":
-            set_tenant(Tenant(tenant_id="demo", name="DEMO_TENANT", plan="FREE"))
-            tenant = get_tenant()
-        else:
-            return JSONResponse(status_code=401, content={
-                "status":   "error",
-                "message":  "TENANT_MISSING",
-                "trace_id": trace_id,
-            })
+        # FASE 1: /execute es publico — landing sin login.
+        # Tenant anonimo para trazabilidad en logs.
+        # FASE 2: reemplazar por JWT emitido al prospecto.
+        set_tenant(Tenant(
+            tenant_id="public_diagnostic",
+            name="PUBLIC_DIAGNOSTIC",
+            plan="ANONYMOUS",
+        ))
+        tenant = get_tenant()
 
     try:
         # ── Mapeo de payload → Orchestrator ──────────────────────────────────
