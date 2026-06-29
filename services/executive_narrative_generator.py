@@ -1,6 +1,17 @@
-# services/executive_narrative_generator.py -- MESAN Omega v1.1
+# services/executive_narrative_generator.py -- MESAN Omega v1.2
+"""
+CHANGELOG v1.2 — Motor Omega #10 (Sovereign Continuity Engine):
+    - Agregado _generar_explicacion_dsi() que convierte
+      dimension_contribution en narrativa ejecutiva para CEO.
+    - generar() ahora incluye seccion de Soberania Digital si
+      digital_sovereignty esta presente en el resultado.
+    - Compatibilidad total hacia atras: si digital_sovereignty
+      no existe, el reporte es identico a v1.1.
+"""
+
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any, Dict, List
+
 
 class ExecutiveNarrativeGenerator:
 
@@ -8,6 +19,76 @@ class ExecutiveNarrativeGenerator:
 
     def _safe(self, value, default):
         return default if value is None else value
+
+    def _generar_explicacion_dsi(self, resultado: Dict[str, Any]) -> str:
+        """
+        Convierte dimension_contribution del Motor Omega #10 en
+        narrativa ejecutiva comprensible para un CEO.
+
+        Identifica los 2 principales factores negativos y los 2
+        principales factores positivos del DSI, y los explica en
+        lenguaje ejecutivo sin terminos tecnicos innecesarios.
+
+        Retorna string vacio si digital_sovereignty no esta disponible.
+        """
+        digital      = resultado.get("digital_sovereignty") or {}
+        contribution = digital.get("dimension_contribution") or {}
+        dsi_index    = digital.get("index")
+        dsi_level    = digital.get("level", "")
+        recommendation = digital.get("recommendation", "")
+
+        if not contribution or dsi_index is None:
+            return ""
+
+        # Nombres ejecutivos — sin jerga tecnica
+        dim_labels = {
+            "geopolitical_risk":   "el riesgo geopolitico del pais donde opera la infraestructura",
+            "regulatory_risk":     "la incertidumbre regulatoria del entorno normativo",
+            "availability":        "la disponibilidad operativa de la infraestructura",
+            "provider_dependency": "la dependencia de proveedores tecnologicos externos",
+            "cyber_risk":          "la exposicion al riesgo cibernetico",
+            "latency":             "la latencia de los sistemas criticos",
+        }
+
+        positivos = sorted(
+            [(k, v) for k, v in contribution.items() if v > 0],
+            key=lambda x: x[1], reverse=True,
+        )
+        negativos = sorted(
+            [(k, v) for k, v in contribution.items() if v < 0],
+            key=lambda x: x[1],
+        )
+
+        lineas = [
+            f"### Soberania Digital — DSI: {dsi_index:.1f}/100 ({dsi_level})\n"
+        ]
+
+        if negativos:
+            lineas.append("**Factores que reducen la soberania digital:**")
+            for dim, val in negativos[:2]:
+                label = dim_labels.get(dim, dim)
+                lineas.append(
+                    f"- {label.capitalize()} redujo el indice en {abs(val):.1f} puntos."
+                )
+
+        if positivos:
+            lineas.append("\n**Factores que fortalecen la soberania digital:**")
+            for dim, val in positivos[:2]:
+                label = dim_labels.get(dim, dim)
+                lineas.append(
+                    f"- {label.capitalize()} aporto +{val:.1f} puntos al indice."
+                )
+
+        if recommendation:
+            lineas.append(f"\n**Recomendacion:** {recommendation}")
+
+        warnings = digital.get("warnings", [])
+        if warnings:
+            lineas.append("\n**Alertas de soberania:**")
+            for w in warnings[:3]:
+                lineas.append(f"- {w}")
+
+        return "\n".join(lineas) + "\n"
 
     def generar(self, resultado_engine: Dict[str, Any]) -> str:
         riesgo = self._safe(resultado_engine.get("nivel"), "MEDIO")
@@ -25,7 +106,8 @@ class ExecutiveNarrativeGenerator:
             f"La organizacion presenta un escenario {riesgo} con score operativo de {score}% "
             f"y ventana de supervivencia financiera de {dias} dias.\n\n"
             f"Flujo operativo estimado: ${flujo:,.0f} MXN | DSCR: {dscr}\n\n"
-            "Prioridad absoluta: estabilizar liquidez, proteger operacion critica y bloquear escalamiento fiscal/laboral.\n"
+            "Prioridad absoluta: estabilizar liquidez, proteger operacion critica "
+            "y bloquear escalamiento fiscal/laboral.\n"
         )
 
         plan_30 = (
@@ -59,4 +141,11 @@ class ExecutiveNarrativeGenerator:
             f"MESAN OMEGA (c) {datetime.now().year}\n"
         )
 
+        # Motor Omega #10: seccion de Soberania Digital (opcional)
+        # Si digital_sovereignty no esta en el resultado, el reporte
+        # es identico a v1.1 — compatibilidad total hacia atras.
+        dsi_section = self._generar_explicacion_dsi(resultado_engine)
+
+        if dsi_section:
+            return resumen + plan_30 + pilares + dsi_section + footer
         return resumen + plan_30 + pilares + footer
