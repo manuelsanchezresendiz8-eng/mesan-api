@@ -1,18 +1,11 @@
 # services/omega_orchestrator.py -- MESAN Omega v1.7
 """
-v1.6:
-    - Instrumentación de latencia por engine (engine_latency_ms)
-    - Mide tiempo de cada fase: compliance, paralelo (FASE A), governance,
-      survival, war_room, remediation, narrative, total
-    - No modifica lógica de negocio — solo agrega medición
-
 v1.7 — Motor Omega #10 (Sovereign Continuity Engine):
     - Import del singleton sovereign_continuity_engine
     - Registro en _load_engines()
     - Ejecucion en _run_pipeline() — FASE 1 solo observacion
     - set_sovereignty() en OmegaResponseBuilder
     - NO modifica omega_score ni ESI ni ningun motor existente
-    - try/except con fallback explicito para no afectar el pipeline
 """
 
 import logging
@@ -76,8 +69,6 @@ class OmegaOrchestrator:
         self._financial    = FinancialIntelligenceEngine()
         self._financial_v2 = FinancialIntelligenceEngineV2(shadow_mode=True)
         self._Empresa      = Empresa
-
-        # Motor Omega #10 — singleton pre-inicializado en importacion
         self._sovereign    = sovereign_continuity_engine
 
         self._engines_loaded = True
@@ -110,7 +101,6 @@ class OmegaOrchestrator:
             },
         )
 
-        # ── Financial shadow drift ────────────────────────────────────────
         v1 = self._extract_financial_score(pipeline.get("financial"))
         v2 = pipeline.get("financial_v2", {}).get("financial_score_v2")
 
@@ -142,7 +132,6 @@ class OmegaOrchestrator:
         logger.info("[DRIFT] tenant=%s v1=%s v2=%s drift=%s level=%s",
                     tenant_id, v1, v2, drift, drift_level)
 
-        # ── Exposición + ESI + War Room ───────────────────────────────────
         exposure_result = pipeline.get("_exposure") \
             or self._exposure.aggregate_from_pipeline(pipeline)
         total_exposure  = self._get_exposure_total(exposure_result)
@@ -157,7 +146,7 @@ class OmegaOrchestrator:
             )
             war_result = self._war_room.evaluate(war_signals)
         except Exception as e:
-            logger.critical("[WarRoom] FAILED — escalamiento conservador: %s", e)
+            logger.critical("[WarRoom] FAILED: %s", e)
             war_result = WarRoomResult(
                 required = True,
                 score    = 50,
@@ -243,7 +232,6 @@ class OmegaOrchestrator:
         ctx     = {**data, "tenant_id": tenant_id, "trace_id": trace_id}
         results = {}
 
-        # ── FASE A: Compliance primero ────────────────────────────────────
         _t = time.perf_counter()
         try:
             results["compliance"] = self._compliance.calcular_score(
@@ -256,7 +244,6 @@ class OmegaOrchestrator:
             results["compliance"] = {"engine": "compliance", "error": str(e)}
         timings["compliance_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
-        # ── FASE A: Paralelo ──────────────────────────────────────────────
         parallel = {
             "financial":    self._financial.analizar,
             "financial_v2": self._financial_v2.analizar,
@@ -285,7 +272,6 @@ class OmegaOrchestrator:
                         results[name] = {"engine": name, "error": "timeout"}
         timings["parallel_phase_ms"] = round((time.perf_counter() - _t_parallel) * 1000, 2)
 
-        # ── FASE B: Exposure → Governance → ESI ──────────────────────────
         _t = time.perf_counter()
         results["_exposure"] = self._exposure.aggregate_from_pipeline(results)
         timings["exposure_ms"] = round((time.perf_counter() - _t) * 1000, 2)
@@ -317,12 +303,8 @@ class OmegaOrchestrator:
             results["survival"] = {"enterprise_survival_index": 0, "error": "build_empresa_failed"}
         timings["survival_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
-        # ── Motor Omega #10: Sovereign Continuity Engine ──────────────────
-        # FASE 1 — solo observacion. No modifica omega_score ni ESI.
-        # Enriquece OmegaResponse con el Digital Sovereignty Index (DSI).
-        # El motor opera sobre nodos registrados externamente; si no hay
-        # nodos registrados devuelve DSI=0 nivel=CRITICO sin afectar el
-        # resto del pipeline.
+        # Motor Omega #10 — Sovereign Continuity Engine
+        # FASE 1: solo observacion, no modifica omega_score ni ESI
         _t = time.perf_counter()
         try:
             sovereign_result       = self._sovereign.evaluate(ctx)
@@ -334,7 +316,6 @@ class OmegaOrchestrator:
                 "level":          "UNKNOWN",
                 "recommendation": "Motor de soberania no disponible.",
                 "warnings":       [str(e)],
-                "engine_errors":  str(e),
             }
         timings["sovereignty_ms"] = round((time.perf_counter() - _t) * 1000, 2)
 
