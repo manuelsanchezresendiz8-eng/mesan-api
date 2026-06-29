@@ -1,259 +1,476 @@
-# schemas/omega_response.py -- MESAN Omega v1.0
+# services/sovereign_continuity_engine.py -- MESAN Omega Motor #10
+# Sovereign Continuity Engine (SCE Ω) v1.1
 """
-Omega Response Contract Ω
+Motor Ω #10 — Sovereign Continuity Engine
 
-Contrato único de salida para todos los consumidores de MESAN Ω.
-Ningún endpoint deberá construir su propia estructura de respuesta.
+Calcula el Digital Sovereignty Index (DSI) de la infraestructura
+de una organizacion y entrega recomendaciones al OmegaOrchestrator.
 
-Todos los consumers leen este contrato:
-    - API endpoints
-    - War Room UI
-    - CRM Enterprise
-    - Panel Estratégico
-    - Landing Diagnóstico
+FASE 1 — MODO OBSERVACION:
+    - NO migra agentes.
+    - NO modifica infraestructura.
+    - NO toma decisiones automaticas.
+    - Unicamente calcula DSI y entrega recomendaciones.
+
+CHANGELOG v1.1:
+    P1 — Thread safety: RLock sobre _nodes y _policies. Todas las
+         operaciones de lectura/escritura usan snapshots bajo lock para
+         evitar RuntimeError por modificacion concurrente del dict.
+    P2 — trust_score eliminado del dataclass (era decorativo). La
+         decision se documenta abajo en la seccion "trust_score".
+    P3 — DSI modular: DimensionMetric + registro de dimensiones.
+         Agregar una dimension nueva = registrar un DimensionMetric,
+         sin tocar el algoritmo principal.
+    P4 — policy.replicas: si hay menos nodos elegibles que replicas
+         requeridas, se emite advertencia explicita en warnings.
+
+trust_score — DECISION DE DISENO:
+    Se elimina de SovereignNode porque no tenia funcion matematica
+    definida en el DSI. Mantenerlo como campo decorativo viola el
+    principio de que cada campo del modelo debe influir en el resultado.
+    En Fase 2, si se define una formula clara para incorporar la
+    confianza del proveedor (ej. certificaciones ISO 27001, SOC2),
+    se reintroducira como una DimensionMetric registrada.
+
+Correlacion geopolitical_risk + regulatory_risk — NOTA DE DISENO:
+    Ambas dimensiones tienden a correlacionar (paises inestables
+    suelen tener alta incertidumbre regulatoria). Esta correlacion
+    es intencional: la soberania digital tiene dos vectores de riesgo
+    diferenciados — el riesgo de corte por conflicto/sancion
+    (geopolitical) y el riesgo de cumplimiento normativo (regulatory).
+    Aunque correlacionan, son accionables por caminos distintos:
+    el primero se mitiga con diversificacion geografica, el segundo
+    con certificaciones y contratos regulatorios. La suma de pesos
+    (0.25 + 0.20 = 0.45) refleja que la dimension pais/regulacion es
+    el factor dominante en soberania digital — decision deliberada.
+
+Dependencias externas: ninguna.
+Efectos secundarios: ninguno.
+Compatible con pipeline existente: si.
 """
 
+import logging
+import threading
+import time
+import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+logger = logging.getLogger("mesan.sovereign")
+
+SCE_VERSION        = "1.1"
+DSI_SCHEMA_VERSION = "1.1.0"   # version del algoritmo DSI para comparacion historica
+
+# ── Tabla de pesos centralizada ───────────────────────────────────────────────
+# Todos los pesos del DSI en un solo lugar.
+# La suma debe ser exactamente 1.0.
+# Nota: trust_score fue eliminado (ver docstring del modulo).
+# NOTA DE DISENO — separacion deliberada de geopolitical_risk y regulatory_risk:
+# Aunque ambas dimensiones tienden a correlacionar (paises inestables suelen
+# tener alta incertidumbre regulatoria), representan vectores de riesgo
+# ESTRATEGICAMENTE DISTINTOS:
+#   geopolitical_risk  → riesgo de corte por conflicto, sancion o embargo.
+#                        Mitigacion: diversificacion geografica de nodos.
+#   regulatory_risk    → riesgo de incumplimiento normativo (GDPR, LFPDPPP,
+#                        NIS2, etc.). Mitigacion: certificaciones y contratos.
+# La suma de pesos (0.25 + 0.20 = 0.45) refleja que la dimension
+# pais/regulacion es el factor dominante en soberania digital. Decision
+# deliberada — no es doble contabilizacion sino reconocimiento de que ambos
+# riesgos requieren acciones distintas y son accionables por separado.
+DSI_WEIGHTS: Dict[str, float] = {
+    "geopolitical_risk":    0.25,
+    "regulatory_risk":      0.20,
+    "availability":         0.20,
+    "provider_dependency":  0.15,
+    "cyber_risk":           0.15,
+    "latency":              0.05,
+}
+
+assert abs(sum(DSI_WEIGHTS.values()) - 1.0) < 1e-9, \
+    f"DSI_WEIGHTS no suma 1.0: {sum(DSI_WEIGHTS.values())}"
+
+DSI_THRESHOLDS = {
+    "SOBERANO":  90.0,
+    "ROBUSTO":   75.0,
+    "MODERADO":  60.0,
+    "VULNERABLE":40.0,
+    "CRITICO":    0.0,
+}
+
+MAX_LATENCY_MS = 500.0
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# OMEGA RESPONSE CONTRACT
-# ══════════════════════════════════════════════════════════════════════════════
+# ── DimensionMetric — extensibilidad modular ──────────────────────────────────
 
 @dataclass
-class OmegaResponse:
+class DimensionMetric:
     """
-    Respuesta estándar del pipeline completo MESAN Ω.
+    Define una dimension del DSI de forma modular.
 
-    Campos obligatorios:
-        tenant_id                 Identificador del tenant
-        trace_id                  Trazabilidad de la ejecución
-        omega_score               Score global consolidado (0-100, mayor = más saludable)
-        enterprise_survival_index ESI-Ω oficial — solo desde EnterpriseSurvivalEngine
-        governance_score          Score de gobierno corporativo
-        war_room_required         Decisión final del WarRoomEngine
-        war_room_priority         Urgencia: INMEDIATA / 24H / 48H / 7_DIAS / MONITOREO
-        sales_priority            A+ / HOT / A / B / C desde ExposureAggregator
-        total_exposure_mxn        Exposición total consolidada
-        executive_summary         Narrativa ejecutiva para CEO/Consejo
+    name:      nombre de la dimension (debe coincidir con DSI_WEIGHTS)
+    extractor: funcion que recibe un SovereignNode y retorna float [0,1]
+               donde 1.0 = optimo (sin riesgo / maxima disponibilidad)
+               y 0.0 = peor caso.
+    weight:    peso de esta dimension en el DSI (suma global debe ser 1.0)
     """
+    name:      str
+    extractor: Callable[["SovereignNode"], float]
+    weight:    float
 
-    # ── Identidad ─────────────────────────────────────────────────────────────
-    tenant_id:   str = "DEFAULT"
-    trace_id:    str = "NO_TRACE"
 
-    # ── Score central ─────────────────────────────────────────────────────────
-    omega_score:               int   = 0    # promedio ponderado de todos los engines
-    enterprise_survival_index: int   = 0    # ESI-Ω oficial — solo EnterpriseSurvivalEngine
-    governance_score:          float = 0.0
+# ── Dataclasses ───────────────────────────────────────────────────────────────
 
-    # ── War Room ──────────────────────────────────────────────────────────────
-    war_room_required: bool         = False
-    war_room_score:    int          = 0
-    war_room_priority: str          = "MONITOREO"
-    war_room_reasons:  List[str]    = field(default_factory=list)
+@dataclass
+class SovereignNode:
+    """Representa un nodo de infraestructura (cloud, edge, on_prem)."""
+    node_id:             str
+    provider:            str
+    country:             str
+    region:              str
+    node_type:           str      # cloud | edge | on_prem
+    latency_ms:          float
+    availability:        float    # 0.0 - 1.0
+    cyber_risk:          float    # 0.0 - 1.0 (1 = riesgo maximo)
+    geopolitical_risk:   float    # 0.0 - 1.0
+    regulatory_risk:     float    # 0.0 - 1.0
+    provider_dependency: float    # 0.0 - 1.0
+    status:              str = "ACTIVE"
 
-    # ── Comercial ─────────────────────────────────────────────────────────────
-    sales_priority:      str   = "C"
-    total_exposure_mxn:  float = 0.0
+    def is_active(self) -> bool:
+        return self.status == "ACTIVE"
 
-    # ── Horizonte de continuidad ──────────────────────────────────────────────
-    continuity_horizon: Dict[str, int] = field(default_factory=lambda: {
-        "12_months": 0,
-        "24_months": 0,
-        "36_months": 0,
-    })
+    def validate(self) -> List[str]:
+        errors = []
+        for fname, val in [
+            ("availability",        self.availability),
+            ("cyber_risk",          self.cyber_risk),
+            ("geopolitical_risk",   self.geopolitical_risk),
+            ("regulatory_risk",     self.regulatory_risk),
+            ("provider_dependency", self.provider_dependency),
+        ]:
+            if not (0.0 <= val <= 1.0):
+                errors.append(f"{fname}={val} fuera de rango [0,1]")
+        if self.latency_ms < 0:
+            errors.append(f"latency_ms={self.latency_ms} no puede ser negativo")
+        return errors
 
-    # ── Resultados por engine ─────────────────────────────────────────────────
-    engines: Dict[str, Any] = field(default_factory=dict)
 
-    # ── Exposición por dominio ────────────────────────────────────────────────
-    exposure_breakdown: Dict[str, float] = field(default_factory=lambda: {
-        "fiscal":      0.0,
-        "labor":       0.0,
-        "contractual": 0.0,
-        "policy":      0.0,
-    })
+@dataclass
+class SovereignPolicy:
+    """Define las reglas de soberania que debe cumplir la infraestructura."""
+    allowed_countries:       List[str]
+    forbidden_providers:     List[str]
+    max_geopolitical_risk:   float
+    max_provider_dependency: float
+    minimum_availability:    float
+    replicas:                int = 1   # minimo de nodos elegibles requeridos
 
-    # ── Remediación ───────────────────────────────────────────────────────────
-    remediation: Dict[str, Any] = field(default_factory=dict)
 
-    # ── Narrativa ejecutiva ───────────────────────────────────────────────────
-    executive_summary: str = ""
+@dataclass
+class SovereignAssessment:
+    """Resultado de la evaluacion de soberania."""
+    digital_sovereignty_index: float
+    recommendation:            str
+    selected_node:             Optional[str]
+    warnings:                  List[str] = field(default_factory=list)
+    level:                     str = "MODERADO"
+    dimension_scores:          Dict[str, float] = field(default_factory=dict)
+    policy_violations:         List[str] = field(default_factory=list)
+    # P2: contribucion de cada dimension al DSI (positiva o negativa vs baseline 50)
+    # Permite al ExecutiveNarrativeGenerator explicar al CEO el origen del score.
+    # Ejemplo: {"geopolitical_risk": -18.5, "availability": +12.0}
+    dimension_contribution:    Dict[str, float] = field(default_factory=dict)
+    # P1: version del schema DSI para comparacion historica entre diagnosticos
+    dsi_schema:                str = DSI_SCHEMA_VERSION
 
-    # ── Model Drift (Financial v1 vs v2) ─────────────────────────────────────
-    model_drift: Dict[str, Any] = field(default_factory=dict)
-
-    # ── Performance Instrumentation (v1.6) ───────────────────────────────────
-    engine_latency_ms: Dict[str, float] = field(default_factory=dict)
-
-    # ── Trazabilidad ──────────────────────────────────────────────────────────
-    generated_at:  str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
-    pipeline_version: str = "1.0"
-    score_version:    str = "ESI-OMEGA-3.2"
-
-    # ── Serialización ─────────────────────────────────────────────────────────
-
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict[str, Any]:
         return {
-            # Identidad
-            "tenant_id":   self.tenant_id,
-            "trace_id":    self.trace_id,
-
-            # Scores principales
-            "omega_score":               self.omega_score,
-            "enterprise_survival_index": self.enterprise_survival_index,
-            "governance_score":          self.governance_score,
-
-            # War Room
-            "war_room_required": self.war_room_required,
-            "war_room_score":    self.war_room_score,
-            "war_room_priority": self.war_room_priority,
-            "war_room_reasons":  self.war_room_reasons,
-
-            # Comercial
-            "sales_priority":     self.sales_priority,
-            "total_exposure_mxn": round(self.total_exposure_mxn, 2),
-
-            # Horizonte
-            "continuity_horizon": self.continuity_horizon,
-
-            # Detalle
-            "exposure_breakdown": {
-                k: round(v, 2) for k, v in self.exposure_breakdown.items()
-            },
-            "engines":     self.engines,
-            "remediation": self.remediation,
-
-            # Narrativa
-            "executive_summary": self.executive_summary,
-
-            # Model Drift
-            "model_drift": self.model_drift,
-            "engine_latency_ms": self.engine_latency_ms,
-
-            # Trazabilidad
-            "generated_at":       self.generated_at,
-            "pipeline_version":   self.pipeline_version,
-            "score_version":      self.score_version,
+            "index":                  round(self.digital_sovereignty_index, 2),
+            "level":                  self.level,
+            "recommendation":         self.recommendation,
+            "selected_node":          self.selected_node,
+            "warnings":               list(self.warnings),
+            "dimension_scores":       {k: round(v, 2) for k, v in self.dimension_scores.items()},
+            "policy_violations":      list(self.policy_violations),
+            "dimension_contribution": {k: round(v, 2) for k, v in self.dimension_contribution.items()},
+            "dsi_schema":             self.dsi_schema,
         }
 
-    @classmethod
-    def empty(cls, tenant_id: str = "DEFAULT", trace_id: str = "NO_TRACE") -> "OmegaResponse":
-        """Respuesta vacía para errores o inicialización."""
-        return cls(tenant_id=tenant_id, trace_id=trace_id)
 
+# ── Engine ────────────────────────────────────────────────────────────────────
 
-# ══════════════════════════════════════════════════════════════════════════════
-# BUILDER — construye OmegaResponse desde componentes del pipeline
-# ══════════════════════════════════════════════════════════════════════════════
-
-class OmegaResponseBuilder:
+class SovereignContinuityEngine:
     """
-    Construye OmegaResponse desde los componentes del pipeline.
+    Motor Ω #10 — Sovereign Continuity Engine (SCE Ω) v1.1
 
-    Uso:
-        builder = OmegaResponseBuilder(tenant_id, trace_id)
-        builder.set_scores(omega_score, esi, governance)
-        builder.set_war_room(war_room_result)
-        builder.set_exposure(exposure_result)
-        builder.set_engines(pipeline_results)
-        builder.set_remediation(remediation_result)
-        builder.set_summary(narrative)
-        builder.set_model_drift(model_drift)
-        response = builder.build()
+    Cambios v1.1 vs v1.0:
+        - RLock en _nodes y _policies (thread safety)
+        - DSI modular via DimensionMetric
+        - trust_score eliminado
+        - policy.replicas validado con advertencia explicita
     """
 
-    def __init__(self, tenant_id: str = "DEFAULT", trace_id: str = "NO_TRACE"):
-        self._response = OmegaResponse(tenant_id=tenant_id, trace_id=trace_id)
+    def __init__(self):
+        self.version    = SCE_VERSION
+        self._lock      = threading.RLock()   # P1: RLock reentrante
+        self._nodes:    Dict[str, SovereignNode]   = {}
+        self._policies: Dict[str, SovereignPolicy] = {}
+        self._dimensions: List[DimensionMetric]    = self._build_default_dimensions()
+        logger.info("[SCE] SovereignContinuityEngine v%s inicializado", self.version)
 
-    def set_scores(
+    # ── Registro de dimensiones (P3 — extensibilidad) ─────────────────────────
+
+    def _build_default_dimensions(self) -> List[DimensionMetric]:
+        """
+        Dimensiones por defecto del DSI.
+        Para agregar una nueva dimension: crear un DimensionMetric y
+        llamar a register_dimension() — sin tocar este metodo ni el
+        algoritmo de calculo.
+        """
+        return [
+            DimensionMetric(
+                name="geopolitical_risk",
+                extractor=lambda n: 1.0 - n.geopolitical_risk,
+                weight=DSI_WEIGHTS["geopolitical_risk"],
+            ),
+            DimensionMetric(
+                name="regulatory_risk",
+                extractor=lambda n: 1.0 - n.regulatory_risk,
+                weight=DSI_WEIGHTS["regulatory_risk"],
+            ),
+            DimensionMetric(
+                name="availability",
+                extractor=lambda n: n.availability,
+                weight=DSI_WEIGHTS["availability"],
+            ),
+            DimensionMetric(
+                name="provider_dependency",
+                extractor=lambda n: 1.0 - n.provider_dependency,
+                weight=DSI_WEIGHTS["provider_dependency"],
+            ),
+            DimensionMetric(
+                name="cyber_risk",
+                extractor=lambda n: 1.0 - n.cyber_risk,
+                weight=DSI_WEIGHTS["cyber_risk"],
+            ),
+            DimensionMetric(
+                name="latency",
+                extractor=lambda n: self._normalize_latency(n.latency_ms) / 100.0,
+                weight=DSI_WEIGHTS["latency"],
+            ),
+        ]
+
+    def register_dimension(self, metric: DimensionMetric) -> None:
+        """
+        Registra una nueva dimension de riesgo sin modificar el algoritmo.
+
+        ADVERTENCIA: agregar una dimension sin ajustar los pesos del resto
+        puede hacer que la suma de pesos supere 1.0 y el DSI quede fuera
+        de rango. Siempre recalibrar DSI_WEIGHTS despues de agregar.
+        """
+        with self._lock:
+            self._dimensions.append(metric)
+        logger.info("[SCE] Dimension registrada: %s (weight=%.3f)", metric.name, metric.weight)
+
+    # ── API publica ───────────────────────────────────────────────────────────
+
+    def register_node(self, node: SovereignNode) -> None:
+        """Registra un nodo. Thread-safe."""
+        errors = node.validate()
+        if errors:
+            logger.warning("[SCE] Nodo %s errores de validacion: %s", node.node_id, errors)
+        with self._lock:
+            self._nodes[node.node_id] = node
+        logger.info("[SCE] Nodo registrado: %s (%s/%s)", node.node_id, node.provider, node.country)
+
+    def register_policy(self, policy_id: str, policy: SovereignPolicy) -> None:
+        """Registra una politica. Thread-safe."""
+        with self._lock:
+            self._policies[policy_id] = policy
+        logger.info("[SCE] Politica registrada: %s (replicas=%d)", policy_id, policy.replicas)
+
+    def evaluate(self, ctx: Dict[str, Any]) -> SovereignAssessment:
+        """
+        Punto de entrada principal — llamado por OmegaOrchestrator.
+        Thread-safe: toma snapshot de nodos/politicas bajo lock.
+        """
+        started  = time.perf_counter()
+        trace_id = ctx.get("trace_id", str(uuid.uuid4()))
+
+        # P1: snapshot bajo lock — evita RuntimeError por modificacion concurrente
+        with self._lock:
+            nodes_snapshot    = dict(self._nodes)
+            policies_snapshot = dict(self._policies)
+            dims_snapshot     = list(self._dimensions)
+
+        logger.info("[SCE] evaluate | tenant=%s trace=%s nodes=%d",
+                    ctx.get("tenant_id", "?"), trace_id, len(nodes_snapshot))
+
+        if not nodes_snapshot:
+            return self._no_nodes_assessment()
+
+        policy_id = ctx.get("policy_id", "default")
+        policy    = policies_snapshot.get(policy_id)
+
+        active_nodes = [n for n in nodes_snapshot.values() if n.is_active()]
+        if not active_nodes:
+            return SovereignAssessment(
+                digital_sovereignty_index=0.0,
+                recommendation="No hay nodos activos disponibles.",
+                selected_node=None,
+                warnings=["Todos los nodos registrados estan inactivos."],
+                level="CRITICO",
+                dimension_contribution={},
+                dsi_schema=DSI_SCHEMA_VERSION,
+            )
+
+        # Calcular DSI para cada nodo activo
+        scored: List[Tuple[SovereignNode, float, Dict, List, Dict]] = []
+        for node in active_nodes:
+            dsi, dims, violations, contribution = self.calculate_digital_sovereignty_index(
+                node, policy, dims_snapshot
+            )
+            scored.append((node, dsi, dims, violations, contribution))
+
+        # Ordenar por DSI desc — sort de Python es estable (desempate por orden de insercion)
+        scored.sort(key=lambda x: x[1], reverse=True)
+        best_node, best_dsi, best_dims, best_violations, best_contribution = scored[0]
+
+        # DSI global = promedio de todos los nodos activos
+        global_dsi = sum(s[1] for s in scored) / len(scored)
+
+        level    = self._classify_dsi(global_dsi)
+        warnings = self._collect_warnings(scored, policy)
+
+        # P4: validar replicas
+        if policy and policy.replicas > 1:
+            eligible = [
+                (n, dsi, dims, v, c) for n, dsi, dims, v, c in scored
+                if not v   # nodos sin violaciones de politica
+            ]
+            if len(eligible) < policy.replicas:
+                warnings.append(
+                    f"Replicas insuficientes: se requieren {policy.replicas} nodos "
+                    f"elegibles pero solo hay {len(eligible)} sin violaciones de politica."
+                )
+
+        recommendation = self.recommend(global_dsi, best_node, warnings)
+
+        latency_ms = round((time.perf_counter() - started) * 1000, 2)
+        logger.info("[SCE] DSI=%.1f best=%s level=%s ms=%s",
+                    global_dsi, best_node.node_id, level, latency_ms)
+
+        return SovereignAssessment(
+            digital_sovereignty_index=round(global_dsi, 2),
+            recommendation=recommendation,
+            selected_node=best_node.node_id,
+            warnings=warnings,
+            level=level,
+            dimension_scores=best_dims,
+            policy_violations=best_violations,
+            dimension_contribution=best_contribution,
+            dsi_schema=DSI_SCHEMA_VERSION,
+        )
+
+    def calculate_digital_sovereignty_index(
         self,
-        omega_score:               int,
-        enterprise_survival_index: int,
-        governance_score:          float,
-        continuity_horizon:        Optional[dict] = None,
-    ) -> "OmegaResponseBuilder":
-        self._response.omega_score               = omega_score
-        self._response.enterprise_survival_index = enterprise_survival_index
-        self._response.governance_score          = governance_score
-        if continuity_horizon:
-            self._response.continuity_horizon    = continuity_horizon
-        return self
+        node: SovereignNode,
+        policy: Optional[SovereignPolicy] = None,
+        dimensions: Optional[List[DimensionMetric]] = None,
+    ) -> Tuple[float, Dict[str, float], List[str], Dict[str, float]]:
+        """
+        Calcula el DSI (0-100) de un nodo usando las dimensiones registradas.
 
-    def set_war_room(self, war_room_result) -> "OmegaResponseBuilder":
-        """Acepta WarRoomResult o dict."""
-        if hasattr(war_room_result, "to_dict"):
-            d = war_room_result.to_dict()
-        else:
-            d = war_room_result
-        self._response.war_room_required = d.get("war_room_required", False)
-        self._response.war_room_score    = d.get("war_room_score",    0)
-        self._response.war_room_priority = d.get("war_room_priority", "MONITOREO")
-        self._response.war_room_reasons  = d.get("war_room_reasons",  [])
-        return self
+        El algoritmo principal es inmutable — agregar dimensiones se hace
+        registrando nuevos DimensionMetric, no editando este metodo.
 
-    def set_exposure(self, exposure_result) -> "OmegaResponseBuilder":
-        """Acepta ExposureResult o dict."""
-        if hasattr(exposure_result, "to_dict"):
-            d = exposure_result.to_dict()
-        else:
-            d = exposure_result
-        self._response.total_exposure_mxn  = d.get("total_exposure_mxn", 0.0)
-        self._response.sales_priority      = d.get("sales_priority", "C")
-        self._response.exposure_breakdown  = {
-            "fiscal":      d.get("fiscal",      0.0),
-            "labor":       d.get("labor",       0.0),
-            "contractual": d.get("contractual", 0.0),
-            "policy":      d.get("policy",      0.0),
+        Retorna: (dsi, dimension_scores, policy_violations)
+        """
+        dims = dimensions if dimensions is not None else self._dimensions
+
+        # Calcular score normalizado [0, 100] por dimension
+        dim_scores: Dict[str, float] = {}
+        for metric in dims:
+            try:
+                raw = metric.extractor(node)
+                # clamp [0, 1] antes de escalar
+                raw = max(0.0, min(1.0, raw))
+                dim_scores[metric.name] = raw * 100.0
+            except Exception as e:
+                logger.warning("[SCE] Error en dimension %s nodo %s: %s",
+                               metric.name, node.node_id, e)
+                dim_scores[metric.name] = 0.0
+
+        # DSI ponderado
+        total_weight = sum(m.weight for m in dims)
+        if total_weight == 0:
+            return 0.0, dim_scores, [], {}   # contribution vacio si total_weight==0
+
+        dsi = sum(
+            (dim_scores.get(m.name, 0.0) * m.weight)
+            for m in dims
+        ) / total_weight * 1.0   # normalizar si pesos no suman 1.0
+
+        # Re-escalar si total_weight != 1.0 (cuando se agregan dims sin recalibrar)
+        dsi = max(0.0, min(100.0, dsi))
+
+        # P2: contribucion de cada dimension = score_dimension * weight - baseline_contribution
+        # baseline = 50.0 * weight (equivale a DSI=50 en esa dimension)
+        # Positivo = la dimension mejora el DSI respecto al baseline.
+        # Negativo = la dimension penaliza el DSI respecto al baseline.
+        baseline = 50.0
+        contribution: Dict[str, float] = {
+            m.name: (dim_scores.get(m.name, 0.0) - baseline) * m.weight
+            for m in dims
         }
-        return self
 
-    def set_engines(self, pipeline_results: dict) -> "OmegaResponseBuilder":
-        """Guarda resultados de engines — solo campos clave, no todo el resultado."""
-        summary = {}
-        for key, result in pipeline_results.items():
-            if not isinstance(result, dict):
-                continue
-            summary[key] = {
-                "engine":      result.get("engine", key),
-                "score":       result.get(
-                    f"{key}_score",
-                    result.get("score",
-                    result.get("governance_score",
-                    result.get("enterprise_survival_index", 0)))
-                ),
-                "nivel":       result.get("nivel", ""),
-                "exposicion":  result.get("exposicion_estimada_mxn", 0),
-                "alertas":     len(result.get("alertas", result.get("riesgos", []))),
-            }
-        self._response.engines = summary
-        return self
+        violations = []
+        if policy:
+            violations = self._check_policy_violations(node, policy)
 
-    def set_remediation(self, remediation_result: dict) -> "OmegaResponseBuilder":
-        if not remediation_result:
-            return self
-        self._response.remediation = {
-            "urgencia":          remediation_result.get("urgencia", ""),
-            "war_room_required": remediation_result.get("war_room_required", False),
-            "plan_remediacion":  remediation_result.get("plan_remediacion", {}),
-            "total_acciones":    remediation_result.get("total_acciones", 0),
-            "executive_summary": remediation_result.get("executive_summary", ""),
+        return dsi, dim_scores, violations, contribution
+
+    def recommend(
+        self,
+        dsi: float,
+        best_node: Optional[SovereignNode],
+        warnings: List[str],
+    ) -> str:
+        level     = self._classify_dsi(dsi)
+        node_info = f" (nodo recomendado: {best_node.node_id})" if best_node else ""
+
+        messages = {
+            "SOBERANO":   (f"Soberania digital optima (DSI={dsi:.1f}){node_info}. "
+                           "Mantener politicas y monitoreo preventivo."),
+            "ROBUSTO":    (f"Soberania digital robusta (DSI={dsi:.1f}){node_info}. "
+                           "Revisar dependencias de proveedores y diversificar regiones."),
+            "MODERADO":   (f"Soberania digital moderada (DSI={dsi:.1f}){node_info}. "
+                           "Reducir concentracion en proveedores y mejorar redundancia geografica."),
+            "VULNERABLE": (f"Infraestructura vulnerable (DSI={dsi:.1f}){node_info}. "
+                           "Riesgo de corte operativo por factores externos. "
+                           "Priorizar diversificacion."),
+            "CRITICO":    (f"Soberania digital critica (DSI={dsi:.1f}). "
+                           "Alta dependencia con riesgo geopolitico elevado. "
+                           "Activar plan de contingencia."),
         }
-        return self
+        return messages.get(level, messages["CRITICO"])
 
-    def set_summary(self, summary: str) -> "OmegaResponseBuilder":
-        self._response.executive_summary = summary
-        return self
+    def health(self) -> Dict[str, Any]:
+        """Thread-safe health check."""
+        with self._lock:
+            n_nodes    = len(self._nodes)
+            n_active   = sum(1 for n in self._nodes.values() if n.is_active())
+            n_policies = len(self._policies)
+            n_dims     = len(self._dimensions)
+        return {
+            "engine":      "SOVEREIGN_CONTINUITY_ENGINE",
+            "version":     self.version,
+            "status":      "OK",
+            "nodes":       n_nodes,
+            "active_nodes":n_active,
+            "policies":    n_policies,
+            "dimensions":  n_dims,
+            "dsi_weights": DSI_WEIGHTS,
+        }
 
-    def set_model_drift(self, model_drift: dict) -> "OmegaResponseBuilder":
-        """Registra drift entre financial v1 y v2."""
-        self._response.model_drift = model_drift or {}
-        return self
-
-    def build(self) -> OmegaResponse:
-        return self._response
+    # ── Helpers privados ──────────────────────────────────────────────────────
