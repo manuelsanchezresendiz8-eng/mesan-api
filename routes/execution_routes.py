@@ -1,19 +1,13 @@
-# routes/execution_routes.py -- MESAN Omega Execution Routes v2.2
+# routes/execution_routes.py -- MESAN Omega Execution Routes v2.3
 """
 v2.0: OmegaOrchestrator completo (9 motores).
 v2.1: tenant public_diagnostic, sin bloqueo TENANT_MISSING.
 v2.2: fix mapeo acciones desde plan_remediacion.
+v2.3: agregado digital_sovereignty al resultado (Motor Omega #10).
 
-DIFF vs v1.8:
-    - ELIMINADO: FiscalSentinelEngine() instanciado directamente
-    - ELIMINADO: score=72, nivel="ALTO" hardcodeados
-    - ELIMINADO: acciones hardcodeadas
-    - AGREGADO:  omega_orchestrator.ejecutar(data) -- 9 motores
-    - AGREGADO:  tenant public_diagnostic
-    - AGREGADO:  acciones desde plan_remediacion del RemediationEngine
-    - AGREGADO:  rate limiting 3 req/IP/300s
-    - AGREGADO:  dscr=None cuando deuda==0
-    - AGREGADO:  dias_supervivencia desde ESI real
+DIFF vs v2.2:
+    - AGREGADO: digital_sovereignty extraido de omega_response
+    - AGREGADO: digital_sovereignty incluido en resultado final
 """
 
 import os
@@ -63,14 +57,10 @@ async def execute(payload: ExecutePayload, request: Request):
     trace_id = f"exec-{int(started * 1000)}"
     logger.info("[EXECUTE] request received trace_id=%s", trace_id)
 
-    # Rate limiting: 3 diagnosticos/IP cada 5 minutos
     rate_limit_check(request, key="execute_diagnostico", max_requests=3, window_seconds=300)
 
     tenant = get_tenant()
     if not tenant:
-        # FASE 1: /execute es publico — landing sin login.
-        # Tenant anonimo para trazabilidad.
-        # FASE 2: reemplazar por JWT emitido al prospecto.
         set_tenant(Tenant(
             tenant_id="public_diagnostic",
             name="PUBLIC_DIAGNOSTIC",
@@ -116,6 +106,7 @@ async def execute(payload: ExecutePayload, request: Request):
         remediation = getattr(omega_response, "remediation",               {})
         summary     = getattr(omega_response, "executive_summary",         "")
         model_drift = getattr(omega_response, "model_drift",               {})
+        digital_sovereignty = getattr(omega_response, "digital_sovereignty", None)
 
         engine_errors = {
             name: res.get("error")
@@ -163,7 +154,6 @@ async def execute(payload: ExecutePayload, request: Request):
         else:
             dscr = None
 
-        # Acciones desde plan_remediacion (donde OmegaResponseBuilder las guarda)
         plan = remediation.get("plan_remediacion", {})
         acciones_hoy = plan.get("acciones_inmediatas") or remediation.get("acciones_inmediatas") or []
         acciones_72h = plan.get("acciones_30_dias")    or remediation.get("acciones_30_dias")    or []
@@ -191,6 +181,7 @@ async def execute(payload: ExecutePayload, request: Request):
             "acciones_7d":           acciones_7d,
             "remediation_available": remediation_available,
             "model_drift":           model_drift,
+            "digital_sovereignty":   digital_sovereignty,
             "engine_errors":         engine_errors if engine_errors else None,
         }
 
@@ -253,3 +244,4 @@ async def execute(payload: ExecutePayload, request: Request):
             "message":  "EXECUTION_TEMPORARILY_UNAVAILABLE",
             "trace_id": trace_id,
         })
+      
