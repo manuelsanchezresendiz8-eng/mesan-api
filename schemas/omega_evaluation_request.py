@@ -1,188 +1,111 @@
-# schemas/omega_response.py -- MESAN Omega v1.1
+# schemas/omega_evaluation_request.py -- MESAN Omega v1.0
 """
-Omega Response Contract Ω
+OmegaEvaluationRequest -- Contrato de entrada al pipeline tecnico interno.
 
-CHANGELOG v1.1 — Motor Omega #10 (Sovereign Continuity Engine):
-    - Agregado campo opcional digital_sovereignty (Optional[Dict])
-    - Agregado set_sovereignty() en OmegaResponseBuilder
-    - Compatibilidad total hacia atras: si es None no aparece en to_dict()
+Usado por routes/omega_routes.py (POST /api/v1/omega/evaluate).
+Distinto del flujo publico simplificado de la landing (execution_routes.py).
+
+Campos documentados en omega_routes.py:
+    empresa_nombre*  str
+    sector*          str
+    empleados        int
+    ingresos         float   (mensual)
+    nomina           float   (mensual)
+    gastos           float   (mensual)
+    caja_disponible  float
+    deuda_mensual    float
+
+Campos adicionales requeridos por OmegaOrchestrator._build_empresa():
+    empleados_criticos, demandas_laborales, trabajadores_sin_imss,
+    rotacion_anual, severance_estimado, opinion_sat, opinion_imss,
+    repse_vigente, cartera_vencida, iva, isr_retenido,
+    bloqueo_bancario, trabajadores
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 
 @dataclass
-class OmegaResponse:
+class OmegaEvaluationRequest:
 
-    tenant_id:   str = "DEFAULT"
-    trace_id:    str = "NO_TRACE"
+    # Identidad
+    trace_id:   str = ""
+    tenant_id:  str = "DEFAULT"
 
-    omega_score:               int   = 0
-    enterprise_survival_index: int   = 0
-    governance_score:          float = 0.0
+    # Campos obligatorios
+    empresa_nombre: str = ""
+    sector:         str = ""
 
-    war_room_required: bool         = False
-    war_room_score:    int          = 0
-    war_room_priority: str          = "MONITOREO"
-    war_room_reasons:  List[str]    = field(default_factory=list)
+    # Financieros
+    empleados:          int   = 0
+    ingresos:           float = 0.0
+    nomina:              float = 0.0
+    gastos:              float = 0.0
+    caja_disponible:     float = 0.0
+    deuda_mensual:       float = 0.0
+    cartera_vencida:     float = 0.0
+    iva:                 float = 0.0
+    isr_retenido:        float = 0.0
 
-    sales_priority:      str   = "C"
-    total_exposure_mxn:  float = 0.0
+    # Laborales
+    empleados_criticos:    int = 0
+    demandas_laborales:    int = 0
+    trabajadores_sin_imss: int = 0
+    trabajadores:          int = 0
+    rotacion_anual:        float = 0.0
+    severance_estimado:    float = 0.0
 
-    continuity_horizon: Dict[str, int] = field(default_factory=lambda: {
-        "12_months": 0,
-        "24_months": 0,
-        "36_months": 0,
-    })
-
-    engines: Dict[str, Any] = field(default_factory=dict)
-
-    exposure_breakdown: Dict[str, float] = field(default_factory=lambda: {
-        "fiscal":      0.0,
-        "labor":       0.0,
-        "contractual": 0.0,
-        "policy":      0.0,
-    })
-
-    remediation: Dict[str, Any] = field(default_factory=dict)
-
-    executive_summary: str = ""
-
-    model_drift: Dict[str, Any] = field(default_factory=dict)
-
-    engine_latency_ms: Dict[str, float] = field(default_factory=dict)
-
-    # Motor Omega #10 — opcional, None si no se ejecuto
-    digital_sovereignty: Optional[Dict[str, Any]] = None
-
-    generated_at:  str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
-    pipeline_version: str = "1.1"
-    score_version:    str = "ESI-OMEGA-3.2"
-
-    def to_dict(self) -> dict:
-        d = {
-            "tenant_id":   self.tenant_id,
-            "trace_id":    self.trace_id,
-            "omega_score":               self.omega_score,
-            "enterprise_survival_index": self.enterprise_survival_index,
-            "governance_score":          self.governance_score,
-            "war_room_required": self.war_room_required,
-            "war_room_score":    self.war_room_score,
-            "war_room_priority": self.war_room_priority,
-            "war_room_reasons":  self.war_room_reasons,
-            "sales_priority":     self.sales_priority,
-            "total_exposure_mxn": round(self.total_exposure_mxn, 2),
-            "continuity_horizon": self.continuity_horizon,
-            "exposure_breakdown": {
-                k: round(v, 2) for k, v in self.exposure_breakdown.items()
-            },
-            "engines":     self.engines,
-            "remediation": self.remediation,
-            "executive_summary": self.executive_summary,
-            "model_drift":       self.model_drift,
-            "engine_latency_ms": self.engine_latency_ms,
-            "generated_at":     self.generated_at,
-            "pipeline_version": self.pipeline_version,
-            "score_version":    self.score_version,
-        }
-        if self.digital_sovereignty is not None:
-            d["digital_sovereignty"] = self.digital_sovereignty
-        return d
+    # Regulatorios
+    opinion_sat:       str  = "NO_LOCALIZADA"
+    opinion_imss:      str  = "NO_LOCALIZADA"
+    repse_vigente:     bool = True
+    bloqueo_bancario:  bool = False
 
     @classmethod
-    def empty(cls, tenant_id: str = "DEFAULT", trace_id: str = "NO_TRACE") -> "OmegaResponse":
-        return cls(tenant_id=tenant_id, trace_id=trace_id)
+    def from_dict(cls, data: Dict[str, Any]) -> "OmegaEvaluationRequest":
+        """Construye el request desde un dict, ignorando claves desconocidas."""
+        valid_fields = {f for f in cls.__dataclass_fields__.keys()}
+        filtered = {k: v for k, v in data.items() if k in valid_fields}
+        return cls(**filtered)
 
+    def validate(self) -> List[str]:
+        """Valida campos obligatorios. Retorna lista de errores (vacia si OK)."""
+        errors = []
+        if not self.empresa_nombre or not self.empresa_nombre.strip():
+            errors.append("empresa_nombre es obligatorio")
+        if not self.sector or not self.sector.strip():
+            errors.append("sector es obligatorio")
+        if self.empleados < 0:
+            errors.append("empleados no puede ser negativo")
+        if self.ingresos < 0:
+            errors.append("ingresos no puede ser negativo")
+        return errors
 
-class OmegaResponseBuilder:
-
-    def __init__(self, tenant_id: str = "DEFAULT", trace_id: str = "NO_TRACE"):
-        self._response = OmegaResponse(tenant_id=tenant_id, trace_id=trace_id)
-
-    def set_scores(self, omega_score, enterprise_survival_index, governance_score,
-                   continuity_horizon=None):
-        self._response.omega_score               = omega_score
-        self._response.enterprise_survival_index = enterprise_survival_index
-        self._response.governance_score          = governance_score
-        if continuity_horizon:
-            self._response.continuity_horizon    = continuity_horizon
-        return self
-
-    def set_war_room(self, war_room_result):
-        if hasattr(war_room_result, "to_dict"):
-            d = war_room_result.to_dict()
-        else:
-            d = war_room_result
-        self._response.war_room_required = d.get("war_room_required", False)
-        self._response.war_room_score    = d.get("war_room_score",    0)
-        self._response.war_room_priority = d.get("war_room_priority", "MONITOREO")
-        self._response.war_room_reasons  = d.get("war_room_reasons",  [])
-        return self
-
-    def set_exposure(self, exposure_result):
-        if hasattr(exposure_result, "to_dict"):
-            d = exposure_result.to_dict()
-        else:
-            d = exposure_result
-        self._response.total_exposure_mxn  = d.get("total_exposure_mxn", 0.0)
-        self._response.sales_priority      = d.get("sales_priority", "C")
-        self._response.exposure_breakdown  = {
-            "fiscal":      d.get("fiscal",      0.0),
-            "labor":       d.get("labor",       0.0),
-            "contractual": d.get("contractual", 0.0),
-            "policy":      d.get("policy",      0.0),
+    def to_orchestrator_data(self) -> Dict[str, Any]:
+        """Convierte al formato que espera OmegaOrchestrator.ejecutar()."""
+        return {
+            "tenant_id":              self.tenant_id,
+            "trace_id":               self.trace_id,
+            "empresa_nombre":         self.empresa_nombre,
+            "ingresos":               self.ingresos,
+            "gastos":                 self.gastos,
+            "nomina":                 self.nomina,
+            "deuda_mensual":          self.deuda_mensual,
+            "cartera_vencida":        self.cartera_vencida,
+            "iva":                    self.iva,
+            "isr_retenido":           self.isr_retenido,
+            "empleados":              self.empleados,
+            "trabajadores":           self.trabajadores or self.empleados,
+            "trabajadores_sin_imss":  self.trabajadores_sin_imss,
+            "empleados_criticos":     self.empleados_criticos,
+            "demandas_laborales":     self.demandas_laborales,
+            "rotacion_anual":         self.rotacion_anual,
+            "severance_estimado":     self.severance_estimado,
+            "caja_disponible":        self.caja_disponible,
+            "repse_vigente":          self.repse_vigente,
+            "repse_suspendido":       not self.repse_vigente,
+            "bloqueo_bancario":       self.bloqueo_bancario,
+            "opinion_sat":            self.opinion_sat,
+            "opinion_imss":           self.opinion_imss,
         }
-        return self
-
-    def set_engines(self, pipeline_results: dict):
-        summary = {}
-        for key, result in pipeline_results.items():
-            if not isinstance(result, dict):
-                continue
-            summary[key] = {
-                "engine":     result.get("engine", key),
-                "score":      result.get(
-                    f"{key}_score",
-                    result.get("score",
-                    result.get("governance_score",
-                    result.get("enterprise_survival_index", 0)))
-                ),
-                "nivel":      result.get("nivel", ""),
-                "exposicion": result.get("exposicion_estimada_mxn", 0),
-                "alertas":    len(result.get("alertas", result.get("riesgos", []))),
-            }
-        self._response.engines = summary
-        return self
-
-    def set_remediation(self, remediation_result: dict):
-        if not remediation_result:
-            return self
-        self._response.remediation = {
-            "urgencia":          remediation_result.get("urgencia", ""),
-            "war_room_required": remediation_result.get("war_room_required", False),
-            "plan_remediacion":  remediation_result.get("plan_remediacion", {}),
-            "total_acciones":    remediation_result.get("total_acciones", 0),
-            "executive_summary": remediation_result.get("executive_summary", ""),
-        }
-        return self
-
-    def set_summary(self, summary: str):
-        self._response.executive_summary = summary
-        return self
-
-    def set_model_drift(self, model_drift: dict):
-        self._response.model_drift = model_drift or {}
-        return self
-
-    def set_sovereignty(self, sovereignty_result: Optional[Dict[str, Any]]):
-        """Motor Omega #10 — None si no disponible."""
-        if sovereignty_result:
-            self._response.digital_sovereignty = sovereignty_result
-        return self
-
-    def build(self) -> OmegaResponse:
-        return self._response
