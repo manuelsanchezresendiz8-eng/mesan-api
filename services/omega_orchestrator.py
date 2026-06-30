@@ -1,4 +1,3 @@
-cat > /tmp/orch_v17.py << 'ENDOFFILE'
 # services/omega_orchestrator.py -- MESAN Omega v1.7
 """
 v1.7 - Motor Omega #10 (Sovereign Continuity Engine) integrado.
@@ -88,9 +87,11 @@ class OmegaOrchestrator:
                 drift = round(abs(float(v1)-float(v2)),2)
                 try:
                     drift_pct = round((drift/float(v1))*100,2) if v1 and float(v1)>0 else None
-                except: drift_pct=None
+                except Exception:
+                    drift_pct=None
                 drift_level = "OK" if drift<5 else "WARNING" if drift<15 else "CRITICAL"
-        except: pass
+        except Exception:
+            pass
         model_drift={"v1_score":v1,"v2_score":v2,"drift":drift,"drift_pct":drift_pct,"drift_level":drift_level}
         logger.info("[DRIFT] tenant=%s v1=%s v2=%s drift=%s level=%s",tenant_id,v1,v2,drift,drift_level)
         exposure_result = pipeline.get("_exposure") or self._exposure.aggregate_from_pipeline(pipeline)
@@ -155,7 +156,8 @@ class OmegaOrchestrator:
         try:
             if hasattr(response,"engine_latency_ms"):
                 response.engine_latency_ms = timings
-        except: pass
+        except Exception:
+            pass
         logger.info("[TIMING] tenant=%s total_ms=%s",tenant_id,timings.get("total_ms"))
         return response
 
@@ -185,11 +187,14 @@ class OmegaOrchestrator:
             try:
                 for f in as_completed(futures, timeout=15):
                     name = futures[f]
-                    try: results[name] = f.result()
-                    except Exception as e: results[name] = {"engine":name,"error":str(e)}
+                    try:
+                        results[name] = f.result()
+                    except Exception as e:
+                        results[name] = {"engine":name,"error":str(e)}
             except FuturesTimeoutError:
                 for fut, name in futures.items():
-                    if not fut.done(): results[name] = {"engine":name,"error":"timeout"}
+                    if not fut.done():
+                        results[name] = {"engine":name,"error":"timeout"}
         timings["parallel_phase_ms"]=round((time.perf_counter()-_t_parallel)*1000,2)
         _t = time.perf_counter()
         results["_exposure"] = self._exposure.aggregate_from_pipeline(results)
@@ -212,8 +217,10 @@ class OmegaOrchestrator:
         _t = time.perf_counter()
         empresa = self._build_empresa(ctx)
         if empresa:
-            try: results["survival"] = self._continuity.calcular_esi(empresa)
-            except Exception as e: results["survival"] = {"enterprise_survival_index":0,"error":str(e)}
+            try:
+                results["survival"] = self._continuity.calcular_esi(empresa)
+            except Exception as e:
+                results["survival"] = {"enterprise_survival_index":0,"error":str(e)}
         else:
             results["survival"] = {"enterprise_survival_index":0,"error":"build_empresa_failed"}
         timings["survival_ms"]=round((time.perf_counter()-_t)*1000,2)
@@ -231,22 +238,29 @@ class OmegaOrchestrator:
     @staticmethod
     def _timed_call(fn, ctx, name, timings):
         _t = time.perf_counter()
-        try: return fn(ctx)
-        finally: timings[f"{name}_ms"]=round((time.perf_counter()-_t)*1000,2)
+        try:
+            return fn(ctx)
+        finally:
+            timings[f"{name}_ms"]=round((time.perf_counter()-_t)*1000,2)
 
     def _get_exposure_total(self, exposure):
-        if hasattr(exposure,"total"): return exposure.total
-        if isinstance(exposure,dict): return exposure.get("total_exposure_mxn",0.0)
+        if hasattr(exposure,"total"):
+            return exposure.total
+        if isinstance(exposure,dict):
+            return exposure.get("total_exposure_mxn",0.0)
         return 0.0
 
     def _extract_financial_score(self, r):
-        if not r: return None
+        if not r:
+            return None
         for key in ("financial_score","score","financial_score_v1"):
-            if key in r: return r[key]
+            if key in r:
+                return r[key]
         return None
 
     def _extract_score(self, result):
-        if not result: return 100.0
+        if not result:
+            return 100.0
         ns = self._normalizer.normalize_engine_result(result)
         return float(ns.health_score)
 
@@ -260,21 +274,23 @@ class OmegaOrchestrator:
     def _generate_narrative(self, omega_score, esi, governance, war_room, exposure, sales_priority):
         clasificacion = (
             "ROBUSTA" if esi>=90 else "ESTABLE" if esi>=80 else
-            "VIGILANCIA" if esi>=70 else "RIESGO ELEVADO" if esi>=60 else "CRÍTICA"
+            "VIGILANCIA" if esi>=70 else "RIESGO ELEVADO" if esi>=60 else "CRITICA"
         )
-        urgencia = "intervención inmediata" if war_room else "monitoreo preventivo"
-        return (f"MESAN Ω detectó un Enterprise Survival Index de {esi}/100 "
+        urgencia = "intervencion inmediata" if war_room else "monitoreo preventivo"
+        return (f"MESAN Omega detecto un Enterprise Survival Index de {esi}/100 "
                 f"({clasificacion}) con un Governance Score de {governance:.0f}/100. "
-                f"La exposición financiera consolidada asciende a ${exposure:,.0f} MXN. "
+                f"La exposicion financiera consolidada asciende a ${exposure:,.0f} MXN. "
                 f"El sistema recomienda {urgencia}. Prioridad comercial: {sales_priority}.")
 
     def _collect_alerts(self, pipeline):
         alerts = []
         for result in pipeline.values():
-            if not isinstance(result,dict): continue
+            if not isinstance(result,dict):
+                continue
             for key in ("alertas","riesgos"):
                 items = result.get(key,[])
-                if isinstance(items,list): alerts.extend(items)
+                if isinstance(items,list):
+                    alerts.extend(items)
         return alerts
 
     def _build_empresa(self, data):
@@ -301,5 +317,3 @@ class OmegaOrchestrator:
 
 
 omega_orchestrator = OmegaOrchestrator()
-ENDOFFILE
-echo "Lineas: $(wc -l < /tmp/orch_v17.py)"
