@@ -1,13 +1,6 @@
-# routes/execution_routes.py -- MESAN Omega Execution Routes v2.3
+# routes/execution_routes.py -- MESAN Omega Execution Routes v2.4
 """
-v2.0: OmegaOrchestrator completo (9 motores).
-v2.1: tenant public_diagnostic, sin bloqueo TENANT_MISSING.
-v2.2: fix mapeo acciones desde plan_remediacion.
-v2.3: agregado digital_sovereignty al resultado (Motor Omega #10).
-
-DIFF vs v2.2:
-    - AGREGADO: digital_sovereignty extraido de omega_response
-    - AGREGADO: digital_sovereignty incluido en resultado final
+v2.4: invoice extendido con todos los campos del Omega Billing Engine.
 """
 
 import os
@@ -48,6 +41,37 @@ class ExecutePayload(BaseModel):
     repse_suspendido:      bool  = False
     opinion_sat:           str   = Field(default="NO_LOCALIZADA", max_length=40)
     opinion_imss:          str   = Field(default="NO_LOCALIZADA", max_length=40)
+
+
+def _invoice_to_dict(invoice) -> dict:
+    """
+    Serializa el Invoice a dict completo para la respuesta.
+    Soporta tanto Invoice (Omega Billing v3) como DummyInvoice (fallback).
+    """
+    def _val(obj):
+        return obj.value if hasattr(obj, "value") else obj
+
+    return {
+        "invoice_id":        getattr(invoice, "invoice_id",        None),
+        "tenant_id":         getattr(invoice, "tenant_id",         None),
+        "plan":              _val(getattr(invoice, "plan",          "ANONYMOUS")),
+        "billing_cycle":     _val(getattr(invoice, "billing_cycle", "MONTHLY")),
+        "customer_type":     _val(getattr(invoice, "customer_type", "ANONYMOUS")),
+        "amount":            invoice.amount,
+        "subtotal":          getattr(invoice, "subtotal",           invoice.amount),
+        "discount_pct":      getattr(invoice, "discount_pct",       0.0),
+        "discount_amount":   getattr(invoice, "discount_amount",    0.0),
+        "currency":          _val(getattr(invoice, "currency",      "MXN")),
+        "reason":            invoice.reason,
+        "payment_status":    _val(getattr(invoice, "payment_status","PENDING")),
+        "payment_url":       getattr(invoice, "payment_url",        None),
+        "affiliate_id":      getattr(invoice, "affiliate_id",       None),
+        "commission_pct":    getattr(invoice, "commission_pct",     0.0),
+        "commission_amount": getattr(invoice, "commission_amount",  0.0),
+        "ive_score":         getattr(invoice, "ive_score",          0.0),
+        "pricing_version":   getattr(invoice, "pricing_version",    ""),
+        "timestamp":         getattr(invoice, "timestamp",          None),
+    }
 
 
 @router.post("/execute")
@@ -203,9 +227,11 @@ async def execute(payload: ExecutePayload, request: Request):
         except Exception as e:
             logger.warning("[EXECUTE] billing error: %s", e)
             class DummyInvoice:
-                amount   = 0
-                currency = "MXN"
-                reason   = "billing_disabled"
+                invoice_id = None
+                tenant_id  = tenant.tenant_id
+                amount     = 0
+                currency   = "MXN"
+                reason     = "billing_disabled"
             invoice = DummyInvoice()
 
         try:
@@ -229,12 +255,8 @@ async def execute(payload: ExecutePayload, request: Request):
             "timestamp":  datetime.now(timezone.utc).isoformat(),
             "latency_ms": latency_ms,
             "result":     resultado,
-            "invoice": {
-                "amount":   invoice.amount,
-                "currency": invoice.currency,
-                "reason":   invoice.reason,
-            },
-            "report": report,
+            "invoice":    _invoice_to_dict(invoice),
+            "report":     report,
         }
 
     except Exception:
@@ -244,4 +266,3 @@ async def execute(payload: ExecutePayload, request: Request):
             "message":  "EXECUTION_TEMPORARILY_UNAVAILABLE",
             "trace_id": trace_id,
         })
-      
