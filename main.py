@@ -22,6 +22,7 @@ from routes.leads_routes     import router as leads_router
 from routes.payment_routes   import router as payment_router
 from routes.warroom_routes   import router as warroom_router    # FASE 2
 from routes.omega_routes     import router as omega_router      # FASE 4
+from routes.jarvis_routes    import router as jarvis_router     # JARVIS Omega
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -207,6 +208,7 @@ app.include_router(leads_router,   tags=["Leads"])
 app.include_router(payment_router, prefix="/pro",        tags=["Pagos"])
 app.include_router(warroom_router, prefix="/api/v1",     tags=["War Room"])   # FASE 2
 app.include_router(omega_router,   prefix="/api/v1",     tags=["Omega"])      # FASE 4
+app.include_router(jarvis_router,                         tags=["JARVIS"])
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
