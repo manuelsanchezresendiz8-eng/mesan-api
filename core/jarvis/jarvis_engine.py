@@ -226,18 +226,18 @@ class JarvisEngine:
     def _get_pipeline_metrics(self) -> Dict:
         """Conectado a PostgreSQL real."""
         try:
-            import psycopg2
-            conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+            import psycopg
+            conn = psycopg.connect(os.getenv("DATABASE_URL"))
             cur  = conn.cursor()
             cur.execute("SELECT COUNT(*) FROM leads")
             total = cur.fetchone()[0]
             cur.execute(
                 "SELECT COUNT(*) FROM leads "
-                "WHERE created_at::date = CURRENT_DATE"
+                "WHERE fecha::date = CURRENT_DATE"
             )
             today = cur.fetchone()[0]
             cur.execute(
-                "SELECT COUNT(*) FROM leads WHERE estatus = 'NUEVO'"
+                "SELECT COUNT(*) FROM leads WHERE estatus = 'nuevo'"
             )
             pending = cur.fetchone()[0]
             cur.close()
@@ -381,12 +381,12 @@ class JarvisEngine:
 
     def _get_hot_leads(self) -> List:
         try:
-            import psycopg2
-            conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+            import psycopg
+            conn = psycopg.connect(os.getenv("DATABASE_URL"))
             cur  = conn.cursor()
             cur.execute(
                 "SELECT nombre, empresa, telefono, created_at "
-                "FROM leads WHERE estatus = 'NUEVO' "
+                "FROM leads WHERE estatus = 'nuevo' "
                 "ORDER BY created_at DESC LIMIT 5"
             )
             rows = cur.fetchall()
