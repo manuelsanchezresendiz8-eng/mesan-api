@@ -86,7 +86,7 @@ class HealthMonitor:
         total, used, free = shutil.disk_usage("/")
         percent = (used / total) * 100
         score   = max(0, 100 - percent)
-        status  = "DOWN" if percent > 95 else "WARNING" if percent > 80 else "OK"
+        status  = "CRITICAL" if percent > 95 else "HIGH" if percent > 90 else "WARNING" if percent > 80 else "OK"
         return ServiceStatus(
             service="Disk", status=status, score=score,
             message=f"{percent:.1f}% used", metadata={"free": free, "total": total},
