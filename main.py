@@ -116,6 +116,8 @@ async def lifespan(app: FastAPI):
     app.state.self_healing = None  # FASE 2 pendiente
     # ─────────────────────────────────────────────────────────────────────────
 
+    from core.jarvis.guardian_setup import setup_guardian
+    setup_guardian()
     app.state.startup_complete = True  # P0-3: flag para health endpoint
     logger.info("MESAN Ω v%s READY | engines=%s", VERSION, list(engines.keys()))
     yield
