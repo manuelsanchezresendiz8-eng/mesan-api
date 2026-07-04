@@ -83,3 +83,8 @@ async def system_status(request: Request):
     except Exception as e:
         logger.exception("[JARVIS] system failed")
         return JSONResponse(status_code=500, content={"error": str(e)})
+
+@router.get('/jarvis/dashboard')
+async def jarvis_dashboard():
+    from fastapi.responses import FileResponse
+    return FileResponse('static/jarvis_warroom.html')

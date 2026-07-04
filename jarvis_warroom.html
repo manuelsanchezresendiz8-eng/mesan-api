@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS Ω — War Room</title>
+<style>
+:root{--bg:#050A0F;--surface:#0A1520;--border:#0D2035;--accent:#00D4FF;--accent2:#00FF94;--danger:#FF3B5C;--warn:#FFB020;--muted:#3A5A7A;--text:#C8E0F0;--text-dim:#5A7A9A;--font-mono:'JetBrains Mono','Fira Code',monospace;--font-ui:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-height:100vh}
+.header{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:12px}
+.logo{font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--accent);letter-spacing:2px}
+.logo span{color:var(--accent2)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.header-right{display:flex;align-items:center;gap:24px}
+.timestamp{font-family:var(--font-mono);font-size:12px;color:var(--text-dim)}
+.btn-refresh{background:none;border:1px solid var(--accent);color:var(--accent);padding:6px 16px;border-radius:4px;font-size:12px;cursor:pointer;font-family:var(--font-mono);letter-spacing:1px;transition:all .2s}
+.btn-refresh:hover{background:var(--accent);color:var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;padding:20px 24px;max-width:1600px;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:.3}
+.card.danger::before{background:var(--danger);opacity:1}
+.card.warn::before{background:var(--warn);opacity:1}
+.card.ok::before{background:var(--accent2);opacity:1}
+.card-label{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.card-value{font-family:var(--font-mono);font-size:32px;font-weight:700;color:var(--accent);line-height:1}
+.card-value.green{color:var(--accent2)}.card-value.red{color:var(--danger)}.card-value.yellow{color:var(--warn)}
+.card-sub{font-size:12px;color:var(--text-dim);margin-top:6px}
+.col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-6{grid-column:span 6}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+.section-title{grid-column:span 12;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase;padding:8px 0 4px;border-bottom:1px solid var(--border)}
+.health-banner{grid-column:span 12;display:flex;align-items:center;gap:16px;padding:16px 24px;border-radius:6px;border:1px solid var(--border);background:var(--surface)}
+.health-status{font-family:var(--font-mono);font-size:24px;font-weight:700;letter-spacing:2px}
+.health-status.ok{color:var(--accent2)}.health-status.warn{color:var(--warn)}.health-status.error{color:var(--danger)}
+.health-meta{font-size:13px;color:var(--text-dim)}
+.alert-list{display:flex;flex-direction:column;gap:8px}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.02);font-size:13px}
+.alert-badge{font-family:var(--font-mono);font-size:10px;padding:2px 6px;border-radius:3px;white-space:nowrap;font-weight:700}
+.badge-critical{background:rgba(255,59,92,.2);color:var(--danger)}.badge-high{background:rgba(255,176,32,.2);color:var(--warn)}.badge-medium{background:rgba(0,212,255,.15);color:var(--accent)}.badge-info{background:rgba(90,120,150,.2);color:var(--text-dim)}
+.decision-item{padding:14px;border:1px solid var(--warn);border-radius:6px;background:rgba(255,176,32,.05);margin-bottom:8px}
+.decision-question{font-size:14px;color:var(--text);margin-bottom:10px;line-height:1.5}
+.decision-options{display:flex;flex-wrap:wrap;gap:6px}
+.decision-opt{font-size:11px;padding:4px 10px;border:1px solid var(--muted);border-radius:3px;color:var(--text-dim);font-family:var(--font-mono)}
+.process-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(13,32,53,.8);font-size:13px}
+.process-name{flex:1;color:var(--text)}
+.process-bar-wrap{width:120px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.process-bar{height:100%;border-radius:2px;transition:width 1s ease}
+.bar-auto{background:var(--accent2)}.bar-proposed{background:var(--warn)}.bar-manual{background:var(--muted)}
+.process-pct{font-family:var(--font-mono);font-size:12px;color:var(--text-dim);width:36px;text-align:right}
+.process-status{font-family:var(--font-mono);font-size:10px;padding:2px 6px;border-radius:3px;width:90px;text-align:center}
+.status-auto{background:rgba(0,255,148,.1);color:var(--accent2)}.status-proposed{background:rgba(255,176,32,.1);color:var(--warn)}.status-manual{background:rgba(90,120,150,.1);color:var(--text-dim)}
+.loading{color:var(--text-dim);font-family:var(--font-mono);font-size:12px;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@media(max-width:900px){.col-3,.col-4{grid-column:span 6}.col-6{grid-column:span 12}.col-8{grid-column:span 12}}
+@media(max-width:600px){.col-3,.col-4,.col-6{grid-column:span 12}.header{padding:12px 16px}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="header-left">
+    <div class="status-dot" id="statusDot"></div>
+    <div class="logo">JARVIS<span>Ω</span></div>
+    <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono)">WAR ROOM</span>
+  </div>
+  <div class="header-right">
+    <span class="timestamp" id="clock">--:--:--</span>
+    <button class="btn-refresh" onclick="loadAll()">↺ REFRESH</button>
+  </div>
+</header>
+<div class="grid">
+  <div class="health-banner" id="healthBanner">
+    <div class="health-status ok" id="healthStatus">CARGANDO...</div>
+    <div><div class="health-meta" id="healthMsg">Verificando estado del sistema</div><div class="health-meta" style="margin-top:4px" id="healthEngines"></div></div>
+  </div>
+  <div class="section-title">◈ FINANZAS</div>
+  <div class="card col-3" id="cardMRR"><div class="card-label">MRR</div><div class="card-value loading">···</div><div class="card-sub">Ingreso mensual recurrente</div></div>
+  <div class="card col-3" id="cardARR"><div class="card-label">ARR</div><div class="card-value loading">···</div><div class="card-sub">Ingreso anual recurrente</div></div>
+  <div class="card col-3" id="cardSubs"><div class="card-label">SUSCRIPCIONES</div><div class="card-value loading">···</div><div class="card-sub">Clientes activos</div></div>
+  <div class="card col-3" id="cardARPU"><div class="card-label">ARPU</div><div class="card-value loading">···</div><div class="card-sub">Ingreso promedio por cliente</div></div>
+  <div class="section-title">◈ COMERCIAL</div>
+  <div class="card col-3" id="cardLeads"><div class="card-label">LEADS TOTALES</div><div class="card-value loading">···</div><div class="card-sub">En base de datos</div></div>
+  <div class="card col-3" id="cardLeadsHoy"><div class="card-label">LEADS HOY</div><div class="card-value loading">···</div><div class="card-sub">Nuevos hoy</div></div>
+  <div class="card col-3" id="cardPending"><div class="card-label">SIN ATENDER</div><div class="card-value loading">···</div><div class="card-sub">Requieren seguimiento</div></div>
+  <div class="card col-3" id="cardConv"><div class="card-label">CONVERSIÓN</div><div class="card-value loading">···</div><div class="card-sub">Lead a cliente</div></div>
+  <div class="section-title">◈ ALERTAS</div>
+  <div class="card col-6" id="cardAlerts"><div class="card-label">ALERTAS ACTIVAS</div><div class="alert-list" id="alertList"><div class="loading">Cargando alertas...</div></div></div>
+  <div class="card col-6" id="cardDecisions"><div class="card-label">DECISIONES HOY</div><div id="decisionList"><div class="loading">Calculando...</div></div></div>
+  <div class="section-title">◈ AUTONOMÍA DEL SISTEMA</div>
+  <div class="card col-12" id="cardAutonomy">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px"><div class="card-label" style="margin:0">PROCESOS AUTOMATIZADOS</div><div style="font-family:var(--font-mono);font-size:24px;color:var(--accent2)" id="autonomyPct">···</div></div>
+    <div id="processList"><div class="loading">Evaluando procesos...</div></div>
+  </div>
+  <div class="section-title">◈ INFRAESTRUCTURA</div>
+  <div class="card col-4" id="cardInfra"><div class="card-label">PLATAFORMA</div><div id="infraContent"><div class="loading">···</div></div></div>
+  <div class="card col-4" id="cardEngines"><div class="card-label">MOTORES OMEGA</div><div id="enginesContent"><div class="loading">···</div></div></div>
+  <div class="card col-4" id="cardBilling"><div class="card-label">BILLING ENGINE</div><div id="billingContent"><div class="loading">···</div></div></div>
+</div>
+<script>
+const API='https://mesan-api.onrender.com';
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('es-MX',{hour12:false})+' CDT';}
+setInterval(updateClock,1000);updateClock();
+function fmt(n,d=0){if(n===null||n===undefined)return'—';return Number(n).toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fmtMXN(n){if(!n)return'$0';if(n>=1e6)return'$'+fmt(n/1e6,1)+'M';if(n>=1e3)return'$'+fmt(n/1e3,1)+'K';return'$'+fmt(n,0);}
+function setCard(id,value,cls='',sub=null){const c=document.getElementById(id);if(!c)return;const v=c.querySelector('.card-value');if(v){v.textContent=value;v.className='card-value '+cls;}if(sub){const s=c.querySelector('.card-sub');if(s)s.textContent=sub;}}
+function badgeClass(s){return{CRITICAL:'badge-critical',HIGH:'badge-high',MEDIUM:'badge-medium',INFO:'badge-info'}[s]||'badge-info';}
+async function loadWarRoom(){try{const d=(await(await fetch(API+'/jarvis/warroom')).json()).warroom;const h=d.company_health;const hEl=document.getElementById('healthStatus');hEl.textContent=h.status==='OK'?'● OPERATIVO':'⚠ '+h.status;hEl.className='health-status '+(h.status==='OK'?'ok':'warn');document.getElementById('healthMsg').textContent=h.message||'';document.getElementById('healthEngines').textContent=h.engines?h.engines+' motores activos':'';document.getElementById('statusDot').style.background=h.status==='OK'?'var(--accent2)':'var(--warn)';}catch(e){document.getElementById('healthStatus').textContent='✕ ERROR';document.getElementById('healthStatus').className='health-status error';}}
+async function loadKPIs(){try{const d=await(await fetch(API+'/jarvis/kpis')).json();const f=d.financial,c=d.commercial;setCard('cardMRR',fmtMXN(f.mrr_mxn),f.mrr_mxn>0?'green':'');setCard('cardARR',fmtMXN(f.arr_mxn),f.arr_mxn>0?'green':'');setCard('cardSubs',fmt(f.active_subscriptions),f.active_subscriptions>0?'green':'');setCard('cardARPU',fmtMXN(f.avg_revenue_per_user));setCard('cardLeads',fmt(c.total_leads),c.total_leads>0?'green':'');setCard('cardLeadsHoy',fmt(c.leads_today),c.leads_today>0?'green':'');const p=c.leads_pending;setCard('cardPending',fmt(p),p>5?'red':p>0?'yellow':'green');document.getElementById('cardPending').className='card col-3 '+(p>5?'danger':p>0?'warn':'ok');setCard('cardConv',fmt(c.conversion_rate_pct,1)+'%');}catch(e){console.error('KPIs',e);}}
+async function loadAlerts(){try{const d=await(await fetch(API+'/jarvis/alerts')).json();const all=[...(d.critical||[]),...(d.high||[]),...(d.medium||[]),...(d.info||[])];const list=document.getElementById('alertList');if(!all.length){list.innerHTML='<div style="color:var(--accent2);font-size:13px">✓ Sin alertas activas</div>';return;}list.innerHTML=all.map(a=>`<div class="alert-item"><span class="alert-badge ${badgeClass(a.severity)}">${a.severity}</span><div><div>${a.message}</div>${a.area?'<div style="font-size:11px;color:var(--text-dim);margin-top:3px">'+a.area+'</div>':''}</div></div>`).join('');document.getElementById('cardAlerts').className='card col-6 '+(d.critical?.length?'danger':d.high?.length?'warn':'');}catch(e){console.error('Alerts',e);}}
+async function loadDecisions(){try{const d=await(await fetch(API+'/jarvis/decisions')).json();const list=document.getElementById('decisionList');if(!d.decisions?.length){list.innerHTML='<div style="color:var(--text-dim);font-size:13px">Sin decisiones urgentes hoy.</div>';return;}list.innerHTML=d.decisions.map(dec=>`<div class="decision-item"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><span style="font-family:var(--font-mono);font-size:10px;color:var(--warn)">${dec.area}</span><span style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim)">→ ${dec.deadline}</span></div><div class="decision-question">${dec.question}</div><div class="decision-options">${(dec.options||[]).map(o=>'<span class="decision-opt">'+o+'</span>').join('')}</div></div>`).join('');}catch(e){console.error('Decisions',e);}}
+async function loadAutonomy(){try{const d=await(await fetch(API+'/jarvis/autonomy')).json();document.getElementById('autonomyPct').textContent=d.overall_autonomy_pct+'%';document.getElementById('processList').innerHTML=(d.processes||[]).map(p=>{const bc=p.status==='AUTOMATED'?'bar-auto':p.status==='PROPOSED'?'bar-proposed':'bar-manual';const sc=p.status==='AUTOMATED'?'status-auto':p.status==='PROPOSED'?'status-proposed':'status-manual';return`<div class="process-row"><span class="process-name">${p.process}</span><div class="process-bar-wrap"><div class="process-bar ${bc}" style="width:${p.autonomy_pct}%"></div></div><span class="process-pct">${p.autonomy_pct}%</span><span class="process-status ${sc}">${p.status}</span><span style="font-size:11px;color:var(--text-dim);flex:1">${p.note}</span></div>`;}).join('');}catch(e){console.error('Autonomy',e);}}
+async function loadSystem(){try{const d=await(await fetch(API+'/jarvis/system')).json();const inf=d.infrastructure||{};document.getElementById('infraContent').innerHTML=`<div style="font-size:13px;line-height:2;color:var(--text)"><div><span style="color:var(--text-dim)">Plataforma:</span> ${inf.platform||'—'}</div><div><span style="color:var(--text-dim)">Region:</span> ${inf.region||'—'}</div><div><span style="color:var(--text-dim)">Entorno:</span> <span style="color:${inf.env==='production'?'var(--accent2)':'var(--warn)'}">${inf.env||'—'}</span></div><div><span style="color:var(--text-dim)">Stripe:</span> <span style="color:${inf.stripe_mode==='live'?'var(--accent2)':'var(--warn)'}">${inf.stripe_mode||'—'}</span></div></div>`;const eng=d.engines||{};document.getElementById('enginesContent').innerHTML=`<div style="font-size:13px;line-height:2;color:var(--text)"><div><span style="color:var(--text-dim)">Pipeline:</span> <span style="color:${eng.omega_pipeline==='OK'?'var(--accent2)':'var(--danger)'}">${eng.omega_pipeline||'—'}</span></div><div><span style="color:var(--text-dim)">Motores:</span> <span style="color:var(--accent)">${eng.engines_loaded||0}</span> activos</div></div>`;const bil=d.billing_module||{};document.getElementById('billingContent').innerHTML=`<div style="font-size:13px;line-height:2;color:var(--text)">${['billing_engine','pricing_engine','subscription_engine','commission_engine','renewal_engine'].map(k=>`<div><span style="color:var(--text-dim)">${k.replace('_engine','').replace('_',' ')}:</span> <span style="color:${bil[k]==='OK'?'var(--accent2)':'var(--danger)'}">${bil[k]||'—'}</span></div>`).join('')}</div>`;}catch(e){console.error('System',e);}}
+async function loadAll(){await Promise.all([loadWarRoom(),loadKPIs(),loadAlerts(),loadDecisions(),loadAutonomy(),loadSystem()]);}
+loadAll();setInterval(loadAll,60000);
+</script>
+</body>
+</html>
