@@ -140,16 +140,28 @@ class LaborShieldEngine:
                 f"Rotacion {rotacion_anual:.1f}% anual",
                 "Implementar programa de retencion de talento")
 
-        # LABOR_004 — REPSE
+        # LABOR_004 - REPSE (Acuerdo DOF 9 junio 2026)
+        # Regimen simplificado: <= 10 trabajadores
+        # Docs: Formulario STPS-086-002 + RFC. Resolucion 5 dias habiles.
+        # Regimen estandar: > 10 trabajadores
+        # Docs: STPS-086-002 + Poder Notarial + Nomina CFDI + SUA. 15 dias.
+        num_trabajadores = int(data.get("trabajadores", data.get("empleados", 0)))
+        repse_simplificado = num_trabajadores <= 10
         triggered = not repse_vigente
         self._audit(audit_trail, "LABOR_004_REPSE", triggered)
         if triggered:
-            score      -= 25
-            exposicion += 200000
-            self._agregar_riesgo(riesgos, recomendaciones, "REPSE", "CRITICA",
-                "REPSE suspendido o vencido",
-                "Renovar o reactivar REPSE de forma urgente")
-
+            if repse_simplificado:
+                score      -= 10
+                exposicion += 50000
+                self._agregar_riesgo(riesgos, recomendaciones, "REPSE", "MEDIA",
+                    "REPSE suspendido - regimen simplificado aplicable (DOF 9 jun 2026)",
+                    "Tramitar REPSE simplificado: STPS-086-002 + RFC. Resolucion 5 dias habiles")
+            else:
+                score      -= 25
+                exposicion += 200000
+                self._agregar_riesgo(riesgos, recomendaciones, "REPSE", "CRITICA",
+                    "REPSE suspendido - regimen estandar",
+                    "Renovar REPSE: STPS-086-002 + Poder Notarial + Nomina CFDI + SUA. 15 dias")
         # LABOR_005 — CONTRATOS
         triggered = not contratos_ok
         self._audit(audit_trail, "LABOR_005_CONTRATOS", triggered)
