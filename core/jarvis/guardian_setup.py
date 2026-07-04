@@ -19,15 +19,15 @@ def setup_guardian() -> None:
     guardian_engine.register_health_monitor(health_monitor)
     logger.info("[Setup] HealthMonitor registrado")
 
-    # ── IncidentEngine ────────────────────────────────────────────────────────
-    # Activar cuando llegue incident_engine.py de ChatGPT
-    # from core.jarvis.incident_engine import incident_engine
-    # guardian_engine.set_incident_engine(incident_engine)
+    # ── IncidentEngine ACTIVO ─────────────────────────────────────────────────
+    from core.jarvis.incident_engine import incident_engine
+    guardian_engine.set_incident_engine(incident_engine)
+    logger.info("[Setup] IncidentEngine registrado")
 
-    # ── SecurityMonitor ───────────────────────────────────────────────────────
-    # Activar cuando llegue security_monitor.py de ChatGPT
-    # from core.jarvis.security_monitor import security_monitor
-    # guardian_engine.register_security_monitor(security_monitor)
+    # ── SecurityMonitor ACTIVO ────────────────────────────────────────────────
+    from core.jarvis.security_monitor import security_monitor
+    guardian_engine.register_security_monitor(security_monitor)
+    logger.info("[Setup] SecurityMonitor registrado")
 
     # ── PredictiveMonitor ─────────────────────────────────────────────────────
     # Activar cuando llegue predictive_monitor.py de ChatGPT
