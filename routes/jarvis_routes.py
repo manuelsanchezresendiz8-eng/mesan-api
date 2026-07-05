@@ -88,3 +88,14 @@ async def system_status(request: Request):
 async def jarvis_dashboard():
     from fastapi.responses import FileResponse
     return FileResponse('static/jarvis_warroom.html')
+
+
+@router.post('/jarvis/ask')
+async def jarvis_ask_endpoint(request: Request):
+    from core.jarvis.jarvis_ask import jarvis_ask
+    try:
+        body = await request.json()
+        question = body.get('question', '')
+        return jarvis_ask.ask(question)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={'error': str(e)})
