@@ -66,6 +66,20 @@ PUBLIC_METHOD_PATHS = {
     # Protegido por rate limiting (3 req/IP/5min) + validacion de payload.
     # Fase 2: retirar cuando exista JWT para prospectos.
     ("/execute", "POST"),
+    ("/jarvis/ask", "POST"),
+    ("/jarvis/warroom", "GET"),
+    ("/jarvis/kpis", "GET"),
+    ("/jarvis/alerts", "GET"),
+    ("/jarvis/decisions", "GET"),
+    ("/jarvis/radar", "GET"),
+    ("/jarvis/autonomy", "GET"),
+    ("/jarvis/system", "GET"),
+    ("/jarvis/dashboard", "GET"),
+    ("/guardian/health", "GET"),
+    ("/guardian/status", "GET"),
+    ("/guardian/incidents", "GET"),
+    ("/guardian/security", "GET"),
+    ("/guardian/predictive", "GET"),
 }
 
 _LEAD_ID_PATH_RE = re.compile(r"^/api/leads/[^/]+$")
