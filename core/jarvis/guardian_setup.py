@@ -29,15 +29,15 @@ def setup_guardian() -> None:
     guardian_engine.register_security_monitor(security_monitor)
     logger.info("[Setup] SecurityMonitor registrado")
 
-    # ── PredictiveMonitor ─────────────────────────────────────────────────────
-    # Activar cuando llegue predictive_monitor.py de ChatGPT
-    # from core.jarvis.predictive_monitor import predictive_monitor
-    # guardian_engine.register_predictive_monitor(predictive_monitor)
+    # ── PredictiveMonitor ACTIVO ──────────────────────────────────────────────
+    from core.jarvis.predictive_monitor import predictive_monitor
+    guardian_engine.register_predictive_monitor(predictive_monitor)
+    logger.info("[Setup] PredictiveMonitor registrado")
 
-    # ── GuardianRules ─────────────────────────────────────────────────────────
-    # Activar cuando llegue guardian_rules.py de ChatGPT
-    # from core.jarvis.guardian_rules import guardian_rules
-    # guardian_engine.set_rules_engine(guardian_rules)
+    # ── GuardianRules ACTIVO ──────────────────────────────────────────────────
+    from core.jarvis.guardian_rules import guardian_rules
+    guardian_engine.set_rules_engine(guardian_rules)
+    logger.info("[Setup] GuardianRules registrado")
 
     registered = (
         len(guardian_engine.health_monitors) +
@@ -46,4 +46,4 @@ def setup_guardian() -> None:
         (1 if guardian_engine.incident_engine else 0) +
         (1 if guardian_engine.rules_engine else 0)
     )
-    logger.info("[Setup] Guardian Omega listo | modulos: %d/5", registered)
+    logger.info("[Setup] Guardian Omega COMPLETO | modulos: %d/5", registered)
