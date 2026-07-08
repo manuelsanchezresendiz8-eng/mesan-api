@@ -67,6 +67,7 @@ PUBLIC_METHOD_PATHS = {
     # Fase 2: retirar cuando exista JWT para prospectos.
     ("/execute", "POST"),
     ("/jarvis/ask", "POST"),
+    ("/execute/pdf", "POST"),
     ("/jarvis/warroom", "GET"),
     ("/jarvis/kpis", "GET"),
     ("/jarvis/alerts", "GET"),

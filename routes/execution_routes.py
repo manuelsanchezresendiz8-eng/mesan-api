@@ -266,3 +266,24 @@ async def execute(payload: ExecutePayload, request: Request):
             "message":  "EXECUTION_TEMPORARILY_UNAVAILABLE",
             "trace_id": trace_id,
         })
+
+@router.post('/execute/pdf')
+async def execute_pdf(payload: ExecutePayload, request: Request):
+    from utils.pdf_generator import generar_pdf_omega
+    from fastapi.responses import Response
+    started = time.time()
+    trace_id = f'pdf-{int(started * 1000)}'
+    omega_response = omega_orchestrator.ejecutar({
+        'tenant_id': 'public_diagnostic', 'trace_id': trace_id,
+        'empresa_nombre': payload.empresa, 'ingresos': payload.ingresos,
+        'gastos': payload.gastos, 'nomina': payload.nomina,
+        'deuda_mensual': payload.deuda_mensual, 'cartera_vencida': payload.cartera_vencida,
+        'iva': payload.iva, 'isr_retenido': payload.isr_retenido,
+        'empleados': payload.trabajadores, 'trabajadores': payload.trabajadores,
+        'trabajadores_sin_imss': payload.trabajadores_sin_imss,
+        'repse_vigente': not payload.repse_suspendido, 'opinion_sat': payload.opinion_sat,
+        'opinion_imss': payload.opinion_imss, 'caja_disponible': 0.0,
+        'empleados_criticos': 0, 'demandas_laborales': 0, 'rotacion_anual': 0.0, 'severance_estimado': 0.0
+    })
+    pdf_bytes = generar_pdf_omega(omega_response=omega_response, empresa=payload.empresa)
+    return Response(content=pdf_bytes, media_type='application/pdf', headers={'Content-Disposition': f'attachment; filename=diagnostico_mesan_{trace_id}.pdf'})
