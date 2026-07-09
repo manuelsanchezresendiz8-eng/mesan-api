@@ -24,6 +24,7 @@ from routes.warroom_routes   import router as warroom_router    # FASE 2
 from routes.omega_routes     import router as omega_router      # FASE 4
 from routes.jarvis_routes    import router as jarvis_router     # JARVIS Omega
 from routes.guardian_routes  import router as guardian_router   # Guardian Omega
+from routes.jarvis_sales_routes import router as jarvis_sales_router  # JARVIS Sales
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -213,6 +214,7 @@ app.include_router(warroom_router, prefix="/api/v1",     tags=["War Room"])   # 
 app.include_router(omega_router,   prefix="/api/v1",     tags=["Omega"])      # FASE 4
 app.include_router(jarvis_router,                         tags=["JARVIS"])
 app.include_router(guardian_router,                       tags=["Guardian"])
+app.include_router(jarvis_sales_router,                   tags=["JARVIS Sales"])
 
 
 # ── Health ────────────────────────────────────────────────────────────────────

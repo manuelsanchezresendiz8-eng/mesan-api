@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging, os
 from typing import Any, Dict, List
 from core.jarvis_sales.models import LeadProfile, SalesDecision, LeadTemperature, Sector
+from core.jarvis_sales.data_normalizer import normalize_lead
 from core.jarvis_sales.lead_scoring import lead_scoring
 from core.jarvis_sales.lead_classifier import lead_classifier
 from core.jarvis_sales.lead_recommendation import lead_recommendation
@@ -54,7 +55,7 @@ class LeadEngine:
             cur = conn.cursor()
             cur.execute("SELECT id,nombre,telefono,whatsapp,empleados,estatus,fecha,nombre_contacto,origen,fuente_detalle,nivel_riesgo,impacto_estimado,omega_score,created_at FROM leads WHERE estatus NOT IN ('descartado','cerrado') ORDER BY created_at DESC LIMIT 100")
             cols = [d[0] for d in cur.description]
-            rows = [dict(zip(cols,r)) for r in cur.fetchall()]
+            rows = [normalize_lead(dict(zip(cols,r))) for r in cur.fetchall()]
             conn.close()
             return rows
         except Exception as e:
