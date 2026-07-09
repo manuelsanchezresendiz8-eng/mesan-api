@@ -70,7 +70,7 @@ class LeadEngine:
             lead_id=str(data.get("id","")), nombre=data.get("nombre_contacto") or data.get("nombre",""),
             empresa=data.get("nombre") or data.get("empresa",""), telefono=data.get("telefono",""),
             whatsapp=data.get("whatsapp",""), sector=data.get("sector", Sector.OTRO.value),
-            empleados=int(data.get("empleados") or 0), estatus=data.get("estatus","nuevo"),
+            empleados=int("".join(filter(str.isdigit, str(data.get("empleados") or "0")[:3])) or "0"), estatus=data.get("estatus","nuevo"),
             omega_score=float(omega) if omega else None, nivel_riesgo=nivel,
             impacto_estimado=impacto, diagnostico_hecho=bool(omega or nivel),
             contactos_previos=int(data.get("contactos_previos") or 0),
