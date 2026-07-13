@@ -1,9 +1,12 @@
-
-    # schemas/omega_response.py -- MESAN Omega v1.1
+# schemas/omega_response.py -- MESAN Omega v1.2
 """
-Omega Response Contract Ω
+Omega Response Contract Omega
 
-Contrato unico de salida para todos los consumidores de MESAN Ω.
+Contrato unico de salida para todos los consumidores de MESAN Omega.
+
+CHANGELOG v1.2 -- Phase 1 (Predictive Defense v4.1):
+    - Agregado campo opcional predictive (Optional[Dict])
+    - Compatibilidad total hacia atras: si es None no aparece en to_dict()
 
 CHANGELOG v1.1 -- Motor Omega #10 (Sovereign Continuity Engine):
     - Agregado campo opcional digital_sovereignty (Optional[Dict])
@@ -60,6 +63,9 @@ class OmegaResponse:
     # Motor Omega #10 -- opcional, None si no se ejecuto
     digital_sovereignty: Optional[Dict[str, Any]] = None
 
+    # Phase 1 -- Predictive Defense v4.1, opcional, None si flag apagado
+    predictive: Optional[Dict[str, Any]] = None
+
     generated_at:  str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
@@ -94,6 +100,8 @@ class OmegaResponse:
         }
         if self.digital_sovereignty is not None:
             d["digital_sovereignty"] = self.digital_sovereignty
+        if self.predictive is not None:
+            d["predictive"] = self.predictive
         return d
 
     @classmethod

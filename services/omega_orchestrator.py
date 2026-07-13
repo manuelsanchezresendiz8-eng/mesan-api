@@ -1,6 +1,7 @@
 # services/omega_orchestrator.py -- MESAN Omega v1.7
 """
 v1.7 - Motor Omega #10 (Sovereign Continuity Engine) integrado.
+Phase 1 wiring - observabilidad + predictivo via phase1_bridge (aditivo, fail-open).
 """
 
 import logging
@@ -15,6 +16,7 @@ from services.exposure_aggregator import exposure_aggregator, ExposureAggregator
 from services.war_room_engine     import war_room_engine, WarRoomEngine, WarRoomResult, WarRoomSignals
 from schemas.omega_response       import OmegaResponse, OmegaResponseBuilder
 from services.sovereign_continuity_engine import sovereign_continuity_engine
+from core.integration.phase1_bridge import get_observability, get_predictive
 
 logger = logging.getLogger("mesan.orchestrator")
 ORCHESTRATOR_VERSION = "1.7"
@@ -69,6 +71,8 @@ class OmegaOrchestrator:
         self._load_engines()
         tenant_id = data.get("tenant_id", "DEFAULT")
         trace_id  = data.get("trace_id",  str(uuid.uuid4()))
+        _obs = get_observability()
+        _obs.pipeline_started(trace_id, tenant_id)
         timings: Dict[str, float] = {}
         pipeline = self._run_pipeline(data, tenant_id, trace_id, timings)
         pipeline_engines = {k: v for k, v in pipeline.items()
@@ -159,6 +163,24 @@ class OmegaOrchestrator:
         except Exception:
             pass
         logger.info("[TIMING] tenant=%s total_ms=%s",tenant_id,timings.get("total_ms"))
+        # --- Phase 1: observabilidad + predictivo (aditivo, fail-open) ---
+        try:
+            for _name, _ms in timings.items():
+                if _name.endswith("_ms") and _name != "total_ms":
+                    _engine = _name[:-3]
+                    _r = pipeline.get(_engine)
+                    _ok = not (isinstance(_r, dict) and "error" in _r)
+                    _obs.engine_timing(trace_id, tenant_id, _engine, _ms, ok=_ok)
+            _obs.pipeline_completed(trace_id, tenant_id,
+                timings.get("total_ms", round((time.perf_counter() - start) * 1000, 2)))
+            _pred = get_predictive().evaluate(data, tenant_id)
+            if _pred is not None:
+                try:
+                    response.predictive = _pred
+                except Exception:
+                    logger.info("[PHASE1] OmegaResponse sin campo 'predictive'")
+        except Exception as _exc:
+            logger.warning("[PHASE1] wiring no-op: %s", _exc)
         return response
 
     def _run_pipeline(self, data, tenant_id, trace_id, timings):
