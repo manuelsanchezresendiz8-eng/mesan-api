@@ -1,5 +1,7 @@
-# routes/execution_routes.py -- MESAN Omega Execution Routes v2.4
+# routes/execution_routes.py -- MESAN Omega Execution Routes v2.5
 """
+v2.5: Phase 1 -- bloque predictive expuesto en result (aditivo, None si flag apagado)
+      + campo opcional caja_disponible en ExecutePayload para dias de supervivencia precisos.
 v2.4: invoice extendido con todos los campos del Omega Billing Engine.
 """
 
@@ -41,6 +43,7 @@ class ExecutePayload(BaseModel):
     repse_suspendido:      bool  = False
     opinion_sat:           str   = Field(default="NO_LOCALIZADA", max_length=40)
     opinion_imss:          str   = Field(default="NO_LOCALIZADA", max_length=40)
+    caja_disponible:       float = Field(default=0, ge=0)
 
 
 def _invoice_to_dict(invoice) -> dict:
@@ -112,7 +115,7 @@ async def execute(payload: ExecutePayload, request: Request):
             "bloqueo_bancario":       payload.bloqueo_bancario,
             "opinion_sat":            payload.opinion_sat,
             "opinion_imss":           payload.opinion_imss,
-            "caja_disponible":        0.0,
+            "caja_disponible":        payload.caja_disponible,
             "empleados_criticos":     0,
             "demandas_laborales":     0,
             "rotacion_anual":         0.0,
@@ -206,6 +209,7 @@ async def execute(payload: ExecutePayload, request: Request):
             "remediation_available": remediation_available,
             "model_drift":           model_drift,
             "digital_sovereignty":   digital_sovereignty,
+            "predictive":            getattr(omega_response, "predictive", None),
             "engine_errors":         engine_errors if engine_errors else None,
         }
 
@@ -282,7 +286,7 @@ async def execute_pdf(payload: ExecutePayload, request: Request):
         'empleados': payload.trabajadores, 'trabajadores': payload.trabajadores,
         'trabajadores_sin_imss': payload.trabajadores_sin_imss,
         'repse_vigente': not payload.repse_suspendido, 'opinion_sat': payload.opinion_sat,
-        'opinion_imss': payload.opinion_imss, 'caja_disponible': 0.0,
+        'opinion_imss': payload.opinion_imss, 'caja_disponible': payload.caja_disponible,
         'empleados_criticos': 0, 'demandas_laborales': 0, 'rotacion_anual': 0.0, 'severance_estimado': 0.0
     })
     pdf_bytes = generar_pdf_omega(omega_response=omega_response, empresa=payload.empresa)
