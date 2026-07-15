@@ -1,8 +1,12 @@
-# utils/pdf_generator.py -- MESAN Omega PDF Generator v2.1
+# utils/pdf_generator.py -- MESAN Omega PDF Generator v2.2
 """
 Genera el reporte PDF del diagnostico Omega directamente desde OmegaResponse.
 Sin logica de negocio -- solo serializa lo que ya calculo el pipeline.
 
+v2.2: fix fpdf2 -- multi_cell deja el cursor X en el margen derecho; multi_cells
+      consecutivos (riesgos/cascadas/acciones) tronaban con "Not enough horizontal
+      space". Ahora _mc() resetea X al margen antes de cada parrafo.
+      + DSI tolerante a None (SCE fallback devuelve index=None).
 v2.1: Phase 1 -- seccion ANALISIS PREDICTIVO (Predictive Defense v4.1)
       + fix precedencia en acciones (el path omega_response las dejaba vacias)
 v2.0: conectado a OmegaResponse (10 motores + SCE + Billing)
@@ -150,6 +154,12 @@ def generar_pdf_omega(
         pdf.set_font("Helvetica", "", 10)
         pdf.ln(2)
 
+    def _mc(txt, h=6):
+        """multi_cell seguro: fpdf2 deja X en el margen derecho tras cada
+        multi_cell; sin este reset, el siguiente truena por falta de ancho."""
+        pdf.set_x(pdf.l_margin)
+        pdf.multi_cell(0, h, txt)
+
     # -- Resumen ejecutivo ---------------------------------------------------------
     if summary:
         seccion("RESUMEN EJECUTIVO")
@@ -158,7 +168,7 @@ def generar_pdf_omega(
         for line in clean.split("\n"):
             line = line.strip()
             if line:
-                pdf.multi_cell(0, 6, line)
+                _mc(line)
         pdf.ln(4)
 
     # -- Analisis Predictivo (Phase 1 -- Predictive Defense v4.1) -------------------
@@ -192,7 +202,7 @@ def generar_pdf_omega(
                 cat     = r.get("categoria", "")
                 impacto = r.get("impacto_estimado", 0) or 0
                 accion  = r.get("accion_critica", "")
-                pdf.multi_cell(0, 6, f"  > {nombre} [{cat}]  ~${impacto:,.0f} MXN  ->  {accion}")
+                _mc(f"  > {nombre} [{cat}]  ~${impacto:,.0f} MXN  ->  {accion}")
             pdf.ln(2)
 
         if p_cascadas:
@@ -200,12 +210,12 @@ def generar_pdf_omega(
             pdf.cell(0, 6, "  Cascadas de colapso identificadas:", ln=True)
             pdf.set_font("Helvetica", "", 10)
             for c in p_cascadas[:4]:
-                pdf.multi_cell(0, 6, f"  > {c}")
+                _mc(f"  > {c}")
             pdf.ln(2)
 
         if p_resumen:
             pdf.set_font("Helvetica", "I", 10)
-            pdf.multi_cell(0, 6, f"  {p_resumen}")
+            _mc(f"  {p_resumen}")
             pdf.set_font("Helvetica", "", 10)
         pdf.ln(3)
 
@@ -213,30 +223,31 @@ def generar_pdf_omega(
     if acciones_hoy:
         seccion("ACCIONES INMEDIATAS (HOY)")
         for a in acciones_hoy[:5]:
-            pdf.multi_cell(0, 6, f"  > {a}")
+            _mc(f"  > {a}")
         pdf.ln(3)
 
     if acciones_72h:
         seccion("PROXIMAS 72 HORAS")
         for a in acciones_72h[:5]:
-            pdf.multi_cell(0, 6, f"  > {a}")
+            _mc(f"  > {a}")
         pdf.ln(3)
 
     if acciones_7d:
         seccion("ESTRATEGIA SEMANA 1")
         for a in acciones_7d[:5]:
-            pdf.multi_cell(0, 6, f"  > {a}")
+            _mc(f"  > {a}")
         pdf.ln(3)
 
     # -- Soberania digital -------------------------------------------------------------
     if sovereignty:
         dsi   = sovereignty.get("index", 0)
-        dlevel= sovereignty.get("level", "")
-        rec   = sovereignty.get("recommendation", "")
+        dsi   = float(dsi) if isinstance(dsi, (int, float)) else 0.0
+        dlevel= sovereignty.get("level", "") or ""
+        rec   = sovereignty.get("recommendation", "") or ""
         seccion("SOBERANIA DIGITAL (Motor Omega #10)")
         pdf.cell(0, 6, f"  Indice DSI: {dsi:.1f}/100   Nivel: {dlevel}", ln=True)
         if rec:
-            pdf.multi_cell(0, 6, f"  {rec}")
+            _mc(f"  {rec}")
         pdf.ln(3)
 
     # -- Footer ---------------------------------------------------------------------------
