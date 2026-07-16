@@ -43,6 +43,54 @@ async def market_regulatory():
     except Exception as e:
         return JSONResponse(status_code=500, content={'error':str(e)})
 
+@router.get('/market/regulatory/alerts/{tenant_id}')
+async def market_regulatory_alerts(
+    tenant_id: str,
+    isr_retenido: float = 0,
+    iva: float = 0,
+    nomina: float = 0,
+    trabajadores: int = 0,
+    trabajadores_sin_imss: int = 0,
+    repse_suspendido: bool = False,
+    bloqueo_bancario: bool = False,
+    sector: str = '',
+    solo_cambios: bool = False,
+):
+    """Phase 2 -- Alertas regulatorias PERSONALIZADAS por perfil del tenant.
+
+    El perfil se pasa por query params (mismos campos que /execute); las reglas
+    de los rulesets curados (config/regulations) se cruzan con ese perfil.
+    Con MESAN_{REG}_PREVIOUS configurado, incluye alertas NUEVO/ACTUALIZADO.
+    Flag MESAN_P2_REGULATORY apagado -> respuesta vacia con enabled=false.
+    """
+    try:
+        from core.integration.phase2_bridge import get_regulatory
+        bridge = get_regulatory()
+        perfil = {
+            'tenant_id': tenant_id,
+            'isr_retenido': isr_retenido,
+            'iva': iva,
+            'nomina': nomina,
+            'trabajadores': trabajadores,
+            'trabajadores_sin_imss': trabajadores_sin_imss,
+            'repse_suspendido': repse_suspendido,
+            'bloqueo_bancario': bloqueo_bancario,
+        }
+        alerts = bridge.get_alerts(perfil, solo_cambios=solo_cambios) or []
+        summary = bridge.market_summary(perfil, sector=sector) if bridge.active else None
+        return {
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'tenant_id': tenant_id,
+            'enabled': bridge.active,
+            'total': len(alerts),
+            'cambios': sum(1 for a in alerts if a.get('tipo') in ('NUEVO', 'ACTUALIZADO')),
+            'alerts': alerts,
+            'summary': summary,
+        }
+    except Exception as e:
+        logger.exception('[MARKET] regulatory alerts failed tenant=%s', tenant_id)
+        return JSONResponse(status_code=500, content={'error': str(e)})
+
 @router.get('/market/economic')
 async def market_economic():
     try:

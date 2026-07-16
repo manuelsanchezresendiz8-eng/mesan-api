@@ -1,0 +1,24 @@
+{
+  "version": "repse_2025_11",
+  "regulator": "REPSE",
+  "valid_from": "2025-11-01",
+  "source": "PLANTILLA - validar contra fuente oficial antes de uso comercial",
+  "rules": {
+    "REPSE_REGISTRO_VIGENTE": {
+      "titulo": "Registro REPSE vigente",
+      "severidad": "CRITICA",
+      "aplica_a": [
+        "REPSE"
+      ],
+      "resumen": "Servicios especializados sin registro vigente: no deducibles y multas STPS."
+    },
+    "REPSE_RENOVACION": {
+      "titulo": "Renovacion trianual",
+      "severidad": "ALTA",
+      "aplica_a": [
+        "REPSE"
+      ],
+      "resumen": "Renovar antes del vencimiento del periodo de 3 anios."
+    }
+  }
+}

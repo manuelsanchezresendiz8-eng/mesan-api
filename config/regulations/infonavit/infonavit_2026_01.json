@@ -1,0 +1,16 @@
+{
+  "version": "infonavit_2026_01",
+  "regulator": "INFONAVIT",
+  "valid_from": "2026-01-01",
+  "source": "PLANTILLA - validar contra fuente oficial antes de uso comercial",
+  "rules": {
+    "INFONAVIT_APORTACIONES": {
+      "titulo": "Aportaciones patronales 5%",
+      "severidad": "ALTA",
+      "aplica_a": [
+        "NOMINA"
+      ],
+      "resumen": "Bimestrales; omision genera actualizacion y recargos."
+    }
+  }
+}

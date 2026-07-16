@@ -1,0 +1,24 @@
+{
+  "version": "lft_2026_02",
+  "regulator": "LABORAL",
+  "valid_from": "2026-02-01",
+  "source": "PLANTILLA - validar contra fuente oficial antes de uso comercial",
+  "rules": {
+    "LFT_VACACIONES": {
+      "titulo": "Vacaciones dignas",
+      "severidad": "MEDIA",
+      "aplica_a": [
+        "NOMINA"
+      ],
+      "resumen": "Minimo 12 dias desde el primer anio."
+    },
+    "LFT_PTU": {
+      "titulo": "Reparto de utilidades (PTU)",
+      "severidad": "ALTA",
+      "aplica_a": [
+        "NOMINA"
+      ],
+      "resumen": "Pago a mas tardar en mayo; tope 3 meses de salario o promedio de 3 anios."
+    }
+  }
+}

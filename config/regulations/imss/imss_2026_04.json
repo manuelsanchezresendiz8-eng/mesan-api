@@ -1,0 +1,24 @@
+{
+  "version": "imss_2026_04",
+  "regulator": "IMSS",
+  "valid_from": "2026-04-01",
+  "source": "PLANTILLA - validar contra fuente oficial antes de uso comercial",
+  "rules": {
+    "IMSS_ALTA_TRABAJADORES": {
+      "titulo": "Alta oportuna de trabajadores",
+      "severidad": "CRITICA",
+      "aplica_a": [
+        "SIN_IMSS"
+      ],
+      "resumen": "Trabajadores sin alta generan capitales constitutivos y multas retroactivas."
+    },
+    "IMSS_PRIMA_RIESGO": {
+      "titulo": "Declaracion anual de prima de riesgo",
+      "severidad": "MEDIA",
+      "aplica_a": [
+        "NOMINA"
+      ],
+      "resumen": "Presentacion en febrero; omision genera recargos."
+    }
+  }
+}

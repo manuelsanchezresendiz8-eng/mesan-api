@@ -1,0 +1,32 @@
+{
+  "version": "sat_2026_04",
+  "regulator": "SAT",
+  "valid_from": "2026-04-01",
+  "source": "PLANTILLA - validar contra fuente oficial antes de uso comercial",
+  "rules": {
+    "SAT_OPINION_32D": {
+      "titulo": "Opinion de cumplimiento 32-D",
+      "severidad": "ALTA",
+      "aplica_a": [
+        "GENERAL"
+      ],
+      "resumen": "Opinion positiva requerida para contratar con gobierno y grandes clientes."
+    },
+    "SAT_ISR_RETENIDO": {
+      "titulo": "Entero de ISR retenido",
+      "severidad": "CRITICA",
+      "aplica_a": [
+        "ISR_RETENIDO"
+      ],
+      "resumen": "El ISR retenido no enterado es delito fiscal calificado."
+    },
+    "SAT_CFDI_40": {
+      "titulo": "CFDI 4.0 obligatorio",
+      "severidad": "MEDIA",
+      "aplica_a": [
+        "GENERAL"
+      ],
+      "resumen": "Facturacion exclusivamente en CFDI 4.0."
+    }
+  }
+}

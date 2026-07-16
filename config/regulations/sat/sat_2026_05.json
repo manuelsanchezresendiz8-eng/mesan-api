@@ -1,0 +1,40 @@
+{
+  "version": "sat_2026_05",
+  "regulator": "SAT",
+  "valid_from": "2026-05-01",
+  "source": "PLANTILLA - validar contra fuente oficial antes de uso comercial",
+  "rules": {
+    "SAT_OPINION_32D": {
+      "titulo": "Opinion de cumplimiento 32-D",
+      "severidad": "ALTA",
+      "aplica_a": [
+        "GENERAL"
+      ],
+      "resumen": "Opinion positiva requerida para contratar con gobierno y grandes clientes."
+    },
+    "SAT_ISR_RETENIDO": {
+      "titulo": "Entero de ISR retenido",
+      "severidad": "CRITICA",
+      "aplica_a": [
+        "ISR_RETENIDO"
+      ],
+      "resumen": "El ISR retenido no enterado es delito fiscal calificado. Actualizacion: nuevos umbrales de fiscalizacion."
+    },
+    "SAT_CFDI_40": {
+      "titulo": "CFDI 4.0 obligatorio",
+      "severidad": "MEDIA",
+      "aplica_a": [
+        "GENERAL"
+      ],
+      "resumen": "Facturacion exclusivamente en CFDI 4.0."
+    },
+    "SAT_REVISION_EFOS": {
+      "titulo": "Revision de operaciones con EFOS",
+      "severidad": "ALTA",
+      "aplica_a": [
+        "GENERAL"
+      ],
+      "resumen": "Verificacion de proveedores en listas 69-B antes de deducir."
+    }
+  }
+}
