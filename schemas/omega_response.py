@@ -1,8 +1,12 @@
-# schemas/omega_response.py -- MESAN Omega v1.2
+# schemas/omega_response.py -- MESAN Omega v1.3
 """
 Omega Response Contract Omega
 
 Contrato unico de salida para todos los consumidores de MESAN Omega.
+
+CHANGELOG v1.3 -- Phase 2 (Market Intelligence regulatorio):
+    - Agregado campo opcional market_intelligence (Optional[Dict])
+    - Compatibilidad total hacia atras: si es None no aparece en to_dict()
 
 CHANGELOG v1.2 -- Phase 1 (Predictive Defense v4.1):
     - Agregado campo opcional predictive (Optional[Dict])
@@ -66,6 +70,9 @@ class OmegaResponse:
     # Phase 1 -- Predictive Defense v4.1, opcional, None si flag apagado
     predictive: Optional[Dict[str, Any]] = None
 
+    # Phase 2 -- Market Intelligence regulatorio, opcional, None si flag apagado
+    market_intelligence: Optional[Dict[str, Any]] = None
+
     generated_at:  str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
@@ -102,6 +109,8 @@ class OmegaResponse:
             d["digital_sovereignty"] = self.digital_sovereignty
         if self.predictive is not None:
             d["predictive"] = self.predictive
+        if self.market_intelligence is not None:
+            d["market_intelligence"] = self.market_intelligence
         return d
 
     @classmethod

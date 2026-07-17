@@ -2,6 +2,7 @@
 """
 v1.7 - Motor Omega #10 (Sovereign Continuity Engine) integrado.
 Phase 1 wiring - observabilidad + predictivo via phase1_bridge (aditivo, fail-open).
+Phase 2 wiring - market_intelligence regulatorio via phase2_bridge (aditivo, fail-open).
 """
 
 import logging
@@ -17,6 +18,7 @@ from services.war_room_engine     import war_room_engine, WarRoomEngine, WarRoom
 from schemas.omega_response       import OmegaResponse, OmegaResponseBuilder
 from services.sovereign_continuity_engine import sovereign_continuity_engine
 from core.integration.phase1_bridge import get_observability, get_predictive
+from core.integration.phase2_bridge import get_regulatory
 
 logger = logging.getLogger("mesan.orchestrator")
 ORCHESTRATOR_VERSION = "1.7"
@@ -179,6 +181,12 @@ class OmegaOrchestrator:
                     response.predictive = _pred
                 except Exception:
                     logger.info("[PHASE1] OmegaResponse sin campo 'predictive'")
+            _mi = get_regulatory().market_summary(data)
+            if _mi is not None:
+                try:
+                    response.market_intelligence = _mi
+                except Exception:
+                    logger.info("[PHASE2] OmegaResponse sin campo 'market_intelligence'")
         except Exception as _exc:
             logger.warning("[PHASE1] wiring no-op: %s", _exc)
         return response
