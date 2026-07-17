@@ -13,3 +13,5 @@ node_modules/
 *.tmp
 mesan.db
 .mesan_vault.json
+
+data/
