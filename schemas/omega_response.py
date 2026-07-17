@@ -1,4 +1,4 @@
-# schemas/omega_response.py -- MESAN Omega v1.3
+# schemas/omega_response.py -- MESAN Omega v1.4
 """
 Omega Response Contract Omega
 
@@ -73,6 +73,9 @@ class OmegaResponse:
     # Phase 2 -- Market Intelligence regulatorio, opcional, None si flag apagado
     market_intelligence: Optional[Dict[str, Any]] = None
 
+    # Phase 5 -- Sello de auditoria SHA-256, opcional, None si flag apagado
+    audit_seal: Optional[Dict[str, Any]] = None
+
     generated_at:  str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
@@ -111,6 +114,8 @@ class OmegaResponse:
             d["predictive"] = self.predictive
         if self.market_intelligence is not None:
             d["market_intelligence"] = self.market_intelligence
+        if self.audit_seal is not None:
+            d["audit_seal"] = self.audit_seal
         return d
 
     @classmethod

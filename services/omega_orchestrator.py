@@ -19,6 +19,7 @@ from schemas.omega_response       import OmegaResponse, OmegaResponseBuilder
 from services.sovereign_continuity_engine import sovereign_continuity_engine
 from core.integration.phase1_bridge import get_observability, get_predictive
 from core.integration.phase2_bridge import get_regulatory
+from core.integration.phase5_bridge import get_snapshot_bridge
 
 logger = logging.getLogger("mesan.orchestrator")
 ORCHESTRATOR_VERSION = "1.7"
@@ -187,6 +188,12 @@ class OmegaOrchestrator:
                     response.market_intelligence = _mi
                 except Exception:
                     logger.info("[PHASE2] OmegaResponse sin campo 'market_intelligence'")
+            _seal = get_snapshot_bridge().seal(response.to_dict(), tenant_id, trace_id)
+            if _seal is not None:
+                try:
+                    response.audit_seal = _seal
+                except Exception:
+                    logger.info("[PHASE5] OmegaResponse sin campo 'audit_seal'")
         except Exception as _exc:
             logger.warning("[PHASE1] wiring no-op: %s", _exc)
         return response

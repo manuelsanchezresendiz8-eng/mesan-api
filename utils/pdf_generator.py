@@ -61,6 +61,7 @@ def generar_pdf_omega(
         sales_prio   = getattr(omega_response, "sales_priority", "") or ""
         war_priority = getattr(omega_response, "war_room_priority", "") or ""
         market       = getattr(omega_response, "market_intelligence", None)
+        audit_seal   = getattr(omega_response, "audit_seal", None)
     elif resultado is not None:
         score        = resultado.get("omega_score", resultado.get("score", 0)) or 0
         esi          = resultado.get("esi", 0) or 0
@@ -73,6 +74,7 @@ def generar_pdf_omega(
         sales_prio   = resultado.get("sales_priority", "") or ""
         war_priority = resultado.get("war_room_priority", "") or ""
         market       = resultado.get("market_intelligence", None)
+        audit_seal   = resultado.get("audit_seal", None)
     else:
         raise ValueError("Se requiere omega_response o resultado")
 
@@ -355,6 +357,18 @@ def generar_pdf_omega(
         seccion("INFRAESTRUCTURA DIGITAL")
         _mc("  Pendiente de evaluacion.")
         _mc("  Este indicador estara disponible al activar MESAN Guardian Omega Enterprise.")
+        pdf.ln(3)
+
+    # -- Sello de auditoria (Phase 5) ----------------------------------------------------
+    if isinstance(audit_seal, dict) and audit_seal.get("state_hash"):
+        seccion("SELLO DE AUDITORIA INMUTABLE")
+        _mc(f"  Este diagnostico quedo sellado con {audit_seal.get('algorithm', 'SHA-256')} "
+            f"el {str(audit_seal.get('sealed_at', ''))[:19]} UTC.")
+        pdf.set_font("Courier", "", 8)
+        _mc(f"  {audit_seal['state_hash']}")
+        pdf.set_font("Helvetica", "", 10)
+        _mc("  Cualquier alteracion posterior del documento es detectable "
+            "verificando este hash contra el registro MESAN.")
         pdf.ln(3)
 
     # -- Footer -----------------------------------------------------------------------------

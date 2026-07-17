@@ -1,5 +1,5 @@
 # =============================================================================
-# MESAN Omega - Phase 5 Integration Bridge v1.0
+# MESAN Omega - Phase 5 Integration Bridge v1.1
 # Auditoria Empresarial Inmutable (Snapshot SHA-256)
 # =============================================================================
 # Bindings REALES verificados contra:
@@ -117,6 +117,8 @@ class SnapshotBridge:
         """
         if not self.active or not isinstance(response_dict, dict):
             return None
+        # El sello no puede incluirse a si mismo: excluir audit_seal del hash
+        response_dict = {k: v for k, v in response_dict.items() if k != "audit_seal"}
         nivel_raw = str(response_dict.get("nivel")
                         or response_dict.get("risk_level") or "MEDIO").upper()
         state = {
@@ -173,6 +175,7 @@ class SnapshotBridge:
         rec = self._trace_index.get(trace_id)
         if not rec:
             return {"verified": False, "reason": "SELLO_NO_ENCONTRADO"}
+        response_dict = {k: v for k, v in response_dict.items() if k != "audit_seal"}
         nivel_raw = str(response_dict.get("nivel")
                         or response_dict.get("risk_level") or "MEDIO").upper()
         state = {

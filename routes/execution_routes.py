@@ -210,6 +210,7 @@ async def execute(payload: ExecutePayload, request: Request):
             "model_drift":           model_drift,
             "digital_sovereignty":   digital_sovereignty,
             "predictive":            getattr(omega_response, "predictive", None),
+            "audit_seal":            getattr(omega_response, "audit_seal", None),
             "engine_errors":         engine_errors if engine_errors else None,
         }
 
@@ -270,6 +271,24 @@ async def execute(payload: ExecutePayload, request: Request):
             "message":  "EXECUTION_TEMPORARILY_UNAVAILABLE",
             "trace_id": trace_id,
         })
+
+@router.get('/execute/audit/{trace_id}')
+async def execute_audit(trace_id: str):
+    """Phase 5 -- Consulta del sello de auditoria SHA-256 por trace_id."""
+    try:
+        from core.integration.phase5_bridge import get_snapshot_bridge
+        bridge = get_snapshot_bridge()
+        seal = bridge.get_by_trace(trace_id)
+        if not seal:
+            return JSONResponse(status_code=404, content={
+                "status": "not_found", "trace_id": trace_id,
+                "enabled": bridge.active,
+                "message": "Sello no encontrado para este trace_id."})
+        return {"status": "sealed", "seal": seal}
+    except Exception as e:
+        logger.exception("[AUDIT] failed trace_id=%s", trace_id)
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
 
 @router.post('/execute/pdf')
 async def execute_pdf(payload: ExecutePayload, request: Request):
