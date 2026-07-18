@@ -46,6 +46,19 @@ class ExecutePayload(BaseModel):
     caja_disponible:       float = Field(default=0, ge=0)
 
 
+class SimulatePayload(BaseModel):
+    empresa:                    str   = Field(default="EMPRESA", max_length=120)
+    ingresos:                   float = Field(default=0, ge=0)
+    gastos:                     float = Field(default=0, ge=0)
+    nomina:                     float = Field(default=0, ge=0)
+    deuda_mensual:              float = Field(default=0, ge=0)
+    isr_retenido:               float = Field(default=0, ge=0)
+    severance_estimado:         float = Field(default=0, ge=0)
+    ingreso_cliente_principal:  float = Field(default=0, ge=0)
+    concentracion_cliente_pct:  float = Field(default=30, ge=0, le=100)
+    escenarios:                 list  = Field(default_factory=list)
+
+
 def _invoice_to_dict(invoice) -> dict:
     """
     Serializa el Invoice a dict completo para la respuesta.
@@ -271,6 +284,39 @@ async def execute(payload: ExecutePayload, request: Request):
             "message":  "EXECUTION_TEMPORARILY_UNAVAILABLE",
             "trace_id": trace_id,
         })
+
+@router.post('/execute/simulate')
+async def execute_simulate(payload: SimulatePayload, request: Request):
+    """Phase 3 -- Digital Twin: simulacion de escenarios de riesgo."""
+    started = time.time()
+    trace_id = f"sim-{int(started * 1000)}"
+    rate_limit_check(request, key="execute_simulate", max_requests=5, window_seconds=300)
+    tenant = get_tenant()
+    tenant_id = tenant.tenant_id if tenant else "public_diagnostic"
+    try:
+        from core.integration.phase3_bridge import get_twin
+        bridge = get_twin()
+        data = payload.dict() if hasattr(payload, "dict") else payload.model_dump()
+        result = bridge.simulate(data, escenarios=(payload.escenarios or None),
+                                 tenant_id=tenant_id)
+        if result is None:
+            return JSONResponse(status_code=503, content={
+                "status": "disabled", "trace_id": trace_id,
+                "message": "Simulador no habilitado (MESAN_P3_TWIN)."})
+        return {
+            "status": "success",
+            "trace_id": trace_id,
+            "tenant_id": tenant_id,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "latency_ms": round((time.time() - started) * 1000, 2),
+            "simulation": result,
+        }
+    except Exception:
+        logger.exception("[SIMULATE] failed trace_id=%s", trace_id)
+        return JSONResponse(status_code=500, content={
+            "status": "error", "message": "SIMULATION_UNAVAILABLE",
+            "trace_id": trace_id})
+
 
 @router.get('/execute/audit/{trace_id}')
 async def execute_audit(trace_id: str):
