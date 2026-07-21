@@ -105,7 +105,7 @@ async def jarvis_briefing(request: Request):
     try:
         body = await request.json()
         jarvis = get_jarvis()
-        result = jarvis.run(body, tenant_id=body.get('tenant_id','public'))
+        result = jarvis.briefing(body, tenant_id=body.get('tenant_id','public'))
         return result
     except Exception as e:
         logger.exception('[JARVIS] briefing failed')
