@@ -1,10 +1,10 @@
-﻿# core/auth/auth_middleware.py -- MESAN Omega Auth Middleware v1.4
+# core/auth/auth_middleware.py -- MESAN Omega Auth Middleware v1.4
 """
-FastAPI Auth Middleware Î©
+FastAPI Auth Middleware Ω
 
 Valida JWT en cada request entrante.
 Inyecta tenant context en el pipeline.
-Limpia contexto en todos los caminos de ejecuciÃ³n.
+Limpia contexto en todos los caminos de ejecución.
 
 Exentas de JWT (no requieren Bearer token en este middleware):
     GET  /health
@@ -23,13 +23,13 @@ Exentas de JWT (no requieren Bearer token en este middleware):
 ESTRATEGIA FASE 1:
     No existe flujo de obtencion de JWT. Exigir JWT en rutas CRM
     dejaria el CRM inaccesible. Basic Auth es la unica capa de
-    proteccion para rutas CRM â€” aplicado via Depends(verify_crm_credentials).
+    proteccion para rutas CRM — aplicado via Depends(verify_crm_credentials).
     Fase 2: cuando exista JWT real, retirar exenciones CRM de aqui.
 
-CHANGELOG v1.3: CVE-2026-48710 BadHost â€” usar scope["path"] en lugar
+CHANGELOG v1.3: CVE-2026-48710 BadHost — usar scope["path"] en lugar
     de request.url.path para evitar bypass via Host header malformado.
 CHANGELOG v1.4: agregar ("/execute", "POST") a PUBLIC_METHOD_PATHS.
-    /execute es publico â€” flujo de diagnostico desde la landing sin login.
+    /execute es publico — flujo de diagnostico desde la landing sin login.
 """
 
 import logging
@@ -55,7 +55,7 @@ PUBLIC_PATHS = {
     "/openapi.json",
 }
 
-# âš ï¸ ADVERTENCIA: entradas "Basic Auth" NO son publicas.
+# ⚠️ ADVERTENCIA: entradas "Basic Auth" NO son publicas.
 # Su unica proteccion es Depends(verify_crm_credentials) en el endpoint.
 # NO agregar rutas CRM aqui sin verificar que tienen ese Depends.
 PUBLIC_METHOD_PATHS = {
@@ -67,6 +67,7 @@ PUBLIC_METHOD_PATHS = {
     # Fase 2: retirar cuando exista JWT para prospectos.
     ("/execute", "POST"),
     ("/jarvis/ask", "POST"),
+    ("/jarvis/briefing", "POST"),
     ("/execute/pdf", "POST"),
     ("/execute/simulate", "POST"),
     ("/jarvis/warroom", "GET"),

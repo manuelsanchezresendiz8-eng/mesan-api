@@ -99,3 +99,14 @@ async def jarvis_ask_endpoint(request: Request):
         return jarvis_ask.ask(question)
     except Exception as e:
         return JSONResponse(status_code=500, content={'error': str(e)})
+@router.post('/jarvis/briefing')
+async def jarvis_briefing(request: Request):
+    from core.integration.phase4_bridge import get_jarvis
+    try:
+        body = await request.json()
+        jarvis = get_jarvis()
+        result = jarvis.run(body, tenant_id=body.get('tenant_id','public'))
+        return result
+    except Exception as e:
+        logger.exception('[JARVIS] briefing failed')
+        return JSONResponse(status_code=500, content={'error': str(e)})
