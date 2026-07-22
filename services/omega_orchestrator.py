@@ -102,6 +102,12 @@ class OmegaOrchestrator:
         model_drift={"v1_score":v1,"v2_score":v2,"drift":drift,"drift_pct":drift_pct,"drift_level":drift_level}
         logger.info("[DRIFT] tenant=%s v1=%s v2=%s drift=%s level=%s",tenant_id,v1,v2,drift,drift_level)
         exposure_result = pipeline.get("_exposure") or self._exposure.aggregate_from_pipeline(pipeline)
+        try:
+            from core.integration.shadow_mode import shadow_exposure, shadow_scoring
+            shadow_exposure(data, {"total_exposure_mxn": self._get_exposure_total(exposure_result)})
+            shadow_scoring(data, omega_score)
+        except Exception:
+            pass
         total_exposure  = self._get_exposure_total(exposure_result)
         sales_priority  = ExposureAggregator.classify_sales_priority(total_exposure)
         esi = pipeline.get("survival",{}).get("enterprise_survival_index",0)
