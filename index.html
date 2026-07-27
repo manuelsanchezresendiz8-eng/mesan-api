@@ -4,143 +4,309 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>MESAN Omega | Sistema Operativo Empresarial</title>
-<meta name="description" content="MESAN Omega detecta riesgos fiscales, laborales, financieros y operativos antes de que generen perdidas millonarias.">
+<meta name="description" content="MESAN Omega es el Sistema Operativo Empresarial que detecta riesgos fiscales, laborales, financieros y operativos antes de que generen perdidas millonarias.">
 <link rel="icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:'Inter',sans-serif;background:#08111d;color:#fff;line-height:1.6;overflow-x:hidden;}
-body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right,#143b6a 0%,transparent 45%),radial-gradient(circle at bottom left,#072544 0%,transparent 45%),linear-gradient(#08111d,#05080d);z-index:-2;}
-body::after{content:"";position:fixed;width:100%;height:100%;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:45px 45px;opacity:.30;z-index:-1;}
-header{display:flex;justify-content:space-between;align-items:center;padding:22px 80px;position:sticky;top:0;background:rgba(8,17,29,.90);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06);z-index:999;transition:.3s;}
-header.small{padding:14px 50px;}
-.logo{font-size:26px;font-weight:800;letter-spacing:1px;text-decoration:none;color:#fff;}
-.logo span{color:#00D8FF;}
-nav{display:flex;gap:32px;align-items:center;}
-nav a{text-decoration:none;color:#bcc8d8;font-size:15px;font-weight:500;transition:.3s;position:relative;}
-nav a::after{content:"";position:absolute;bottom:-4px;left:0;width:0;height:2px;background:#00D8FF;transition:.3s;}
-nav a:hover{color:#fff;}
-nav a:hover::after{width:100%;}
-.btn-nav{padding:12px 24px;background:#00D8FF;color:#08111d;font-weight:700;font-size:14px;border-radius:8px;text-decoration:none;transition:.3s;white-space:nowrap;}
-.btn-nav:hover{transform:translateY(-2px);box-shadow:0 0 25px rgba(0,216,255,.5);}
-.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px;}
-.hamburger span{display:block;width:24px;height:2px;background:#fff;transition:.3s;}
-.mobile-menu{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#08111d;z-index:9999;flex-direction:column;justify-content:center;align-items:center;gap:40px;}
+:root{--bg:#040d16;--surface:#071525;--border:#0d2035;--cyan:#00d8ff;--cyan2:#00ff94;--red:#ff3b5c;--yellow:#ffb020;--text:#c8e0f0;--dim:#3a5a7a;--mono:'JetBrains Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6;}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(0,216,255,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(0,255,148,.04) 0%,transparent 40%),linear-gradient(var(--bg),#030810);z-index:-2;}
+body::after{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,216,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,216,255,.03) 1px,transparent 1px);background-size:60px 60px;z-index:-1;}
+.scanlines{position:fixed;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);opacity:.4;}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 60px;position:sticky;top:0;z-index:999;background:rgba(4,13,22,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:.3s;}
+header.small{padding:10px 60px;}
+.logo-text{font-family:var(--mono);font-size:20px;font-weight:700;color:#fff;letter-spacing:2px;text-decoration:none;}
+.logo-text span{color:var(--cyan);}
+.logo-badge{font-family:var(--mono);font-size:10px;color:var(--cyan2);border:1px solid var(--cyan2);padding:2px 8px;border-radius:3px;letter-spacing:2px;margin-left:10px;}
+.status-bar{display:flex;align-items:center;gap:24px;}
+.status-item{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan2);box-shadow:0 0 6px var(--cyan2);animation:blink 2s infinite;}
+nav{display:flex;gap:28px;align-items:center;}
+nav a{font-size:13px;color:var(--dim);text-decoration:none;font-weight:500;transition:.2s;font-family:var(--mono);}
+nav a:hover{color:var(--cyan);}
+.btn-cta{padding:10px 22px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:2px;border-radius:4px;text-decoration:none;transition:.3s;text-transform:uppercase;}
+.btn-cta:hover{background:var(--cyan);color:var(--bg);box-shadow:0 0 20px rgba(0,216,255,.4);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--cyan);}
+.mobile-menu{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;justify-content:center;align-items:center;gap:32px;}
 .mobile-menu.open{display:flex;}
-.mobile-menu a{font-size:24px;font-weight:700;color:#fff;text-decoration:none;}
-.mobile-menu .close{position:absolute;top:30px;right:30px;font-size:32px;cursor:pointer;color:#fff;}
-.hero{min-height:100vh;display:flex;align-items:center;padding:120px 80px 80px;gap:80px;}
-.hero-left{flex:1;max-width:600px;}
-.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(0,216,255,.10);border:1px solid rgba(0,216,255,.25);padding:8px 16px;border-radius:50px;font-size:13px;color:#00D8FF;font-weight:600;letter-spacing:1px;margin-bottom:32px;}
-.hero-tag::before{content:"";width:8px;height:8px;border-radius:50%;background:#00D8FF;box-shadow:0 0 8px #00D8FF;animation:pulse 2s infinite;}
-.hero h1{font-size:clamp(32px,4vw,58px);font-weight:800;line-height:1.15;margin-bottom:24px;letter-spacing:-1px;}
-.hero h1 em{font-style:normal;color:#00D8FF;}
-.hero-sub{font-size:18px;color:#8da0b6;line-height:1.7;margin-bottom:40px;max-width:500px;}
-.hero-btns{display:flex;gap:16px;flex-wrap:wrap;}
-.btn-primary{padding:16px 32px;background:#00D8FF;color:#08111d;font-weight:700;font-size:15px;border-radius:10px;text-decoration:none;transition:.3s;border:none;cursor:pointer;}
-.btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 35px rgba(0,216,255,.45);}
-.btn-secondary{padding:16px 32px;background:transparent;color:#fff;font-weight:700;font-size:15px;border-radius:10px;text-decoration:none;transition:.3s;border:2px solid rgba(255,255,255,.20);}
-.btn-secondary:hover{border-color:#00D8FF;color:#00D8FF;}
-.hero-right{flex:1;display:flex;justify-content:center;align-items:center;}
-.command-panel{background:rgba(10,20,35,.90);border:1px solid rgba(0,216,255,.20);border-radius:20px;padding:32px;width:360px;backdrop-filter:blur(20px);box-shadow:0 0 60px rgba(0,216,255,.08);}
-.panel-header{display:flex;align-items:center;gap:10px;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06);}
-.panel-dot{width:10px;height:10px;border-radius:50%;background:#00D8FF;box-shadow:0 0 10px #00D8FF;animation:pulse 2s infinite;}
-.panel-title{font-size:12px;color:#8da0b6;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
-.panel-metric{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.04);}
-.panel-metric:last-child{border-bottom:none;}
-.metric-label{font-size:13px;color:#8da0b6;}
-.metric-value{font-size:22px;font-weight:800;color:#00D8FF;}
-.metric-value.red{color:#FF4757;}
-.metric-value.yellow{color:#FFA502;}
-.metric-value.green{color:#2ed573;}
-.score-bar{width:100%;height:6px;background:rgba(255,255,255,.06);border-radius:3px;margin-top:20px;overflow:hidden;}
-.score-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#FF4757,#FFA502,#2ed573);width:0%;transition:width 2s ease;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-section{min-height:10px;}
-@media(max-width:1000px){header{padding:18px 24px;}nav{display:none;}.hamburger{display:flex;}}
-@media(max-width:900px){.hero{flex-direction:column;padding:100px 24px 60px;gap:50px;text-align:center;}.hero-btns{justify-content:center;}.command-panel{width:100%;max-width:400px;}}
+.mobile-menu a{font-family:var(--mono);font-size:20px;color:var(--text);text-decoration:none;letter-spacing:2px;}
+.mobile-close{position:absolute;top:24px;right:24px;font-size:28px;cursor:pointer;color:var(--cyan);}
+.ticker{background:rgba(0,216,255,.04);border-bottom:1px solid var(--border);padding:8px 0;overflow:hidden;}
+.ticker-track{display:flex;gap:60px;animation:ticker 30s linear infinite;white-space:nowrap;}
+.ticker-item{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;}
+.ticker-item span{color:var(--cyan2);margin-right:8px;}
+.hero{min-height:100vh;display:flex;align-items:center;padding:80px 60px;gap:60px;}
+.hero-left{flex:1.2;max-width:680px;}
+.hero-label{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;}
+.hero h1{font-size:clamp(36px,4.5vw,64px);font-weight:900;line-height:1.1;letter-spacing:-2px;margin-bottom:20px;color:#fff;}
+.hero h1 .line2{color:var(--cyan);display:block;font-size:clamp(20px,2.5vw,36px);letter-spacing:-1px;margin-top:8px;}
+.hero-sub{font-size:17px;color:var(--dim);line-height:1.8;margin-bottom:40px;max-width:520px;}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:48px;}
+.btn-primary{padding:14px 32px;background:var(--cyan);color:var(--bg);font-weight:800;font-size:14px;border-radius:6px;text-decoration:none;transition:.3s;border:none;cursor:pointer;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,216,255,.4);}
+.btn-ghost{padding:14px 32px;background:transparent;color:var(--text);font-weight:600;font-size:14px;border-radius:6px;text-decoration:none;transition:.3s;border:1px solid var(--border);font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+.hero-stats{display:flex;gap:40px;}
+.stat{border-left:2px solid var(--cyan);padding-left:16px;}
+.stat-val{font-family:var(--mono);font-size:28px;font-weight:800;color:var(--cyan);line-height:1;}
+.stat-label{font-size:11px;color:var(--dim);margin-top:4px;letter-spacing:1px;text-transform:uppercase;}
+.hero-right{flex:1;display:flex;justify-content:center;}
+.cmd-panel{background:rgba(7,21,37,.95);border:1px solid rgba(0,216,255,.2);border-radius:12px;width:420px;overflow:hidden;box-shadow:0 0 80px rgba(0,216,255,.06);}
+.cmd-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(0,216,255,.05);border-bottom:1px solid var(--border);}
+.cmd-title{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;}
+.cmd-status{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--cyan2);}
+.cmd-body{padding:20px;}
+.cmd-metric{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.03);}
+.cmd-metric:last-of-type{border-bottom:none;}
+.cmd-label{font-family:var(--mono);font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;}
+.cmd-val{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--cyan);}
+.cmd-val.green{color:var(--cyan2);}.cmd-val.red{color:var(--red);}.cmd-val.yellow{color:var(--yellow);}
+.cmd-bar{width:100%;height:3px;background:var(--border);border-radius:2px;margin-top:16px;overflow:hidden;}
+.cmd-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--yellow),var(--cyan2));width:0%;transition:width 1.5s ease;border-radius:2px;}
+.cmd-log{margin-top:16px;border-top:1px solid var(--border);padding-top:14px;}
+.log-line{font-family:var(--mono);font-size:10px;color:var(--dim);line-height:2;}
+.log-line .ok{color:var(--cyan2);}.log-line .warn{color:var(--yellow);}
+.section{padding:100px 60px;}
+.section-label{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;}
+.section-title{font-size:clamp(28px,3vw,44px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:16px;letter-spacing:-1px;}
+.section-sub{font-size:16px;color:var(--dim);max-width:560px;line-height:1.8;margin-bottom:60px;}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;}
+.step{background:var(--surface);border:1px solid var(--border);padding:32px 24px;position:relative;transition:.3s;}
+.step:hover{border-color:rgba(0,216,255,.3);}
+.step-num{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:2px;margin-bottom:16px;}
+.step-icon{font-size:28px;margin-bottom:16px;}
+.step-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;}
+.step-desc{font-size:13px;color:var(--dim);line-height:1.7;}
+.engines-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;}
+.engine-card{background:var(--surface);border:1px solid var(--border);padding:24px 20px;position:relative;overflow:hidden;transition:.3s;}
+.engine-card::before{content:"";position:absolute;top:0;left:0;width:100%;height:2px;background:var(--cyan);transform:scaleX(0);transform-origin:left;transition:.3s;}
+.engine-card:hover::before{transform:scaleX(1);}
+.engine-id{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:2px;margin-bottom:10px;}
+.engine-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.3;}
+.engine-desc{font-size:11px;color:var(--dim);line-height:1.6;}
+.engine-status{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;color:var(--cyan2);margin-top:12px;letter-spacing:1px;}
+.engine-status::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--cyan2);}
+.sectors-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;}
+.sector-card{background:var(--surface);border:1px solid var(--border);padding:28px 20px;text-align:center;transition:.3s;}
+.sector-card:hover{border-color:rgba(0,216,255,.3);}
+.sector-icon{font-size:32px;margin-bottom:12px;}
+.sector-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;}
+.sector-risk{font-family:var(--mono);font-size:10px;letter-spacing:1px;padding:3px 10px;border-radius:3px;display:inline-block;margin-top:8px;}
+.risk-alto{background:rgba(255,59,92,.1);color:var(--red);}
+.risk-medio{background:rgba(255,176,32,.1);color:var(--yellow);}
+.risk-bajo{background:rgba(0,255,148,.1);color:var(--cyan2);}
+.diag-terminal{background:#020a12;border:1px solid var(--border);border-radius:8px;padding:28px;font-family:var(--mono);max-width:700px;margin:0 auto;}
+.term-header{display:flex;align-items:center;gap:8px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.term-dot{width:10px;height:10px;border-radius:50%;}
+.term-dot.red{background:#ff5f57;}.term-dot.yellow{background:#febc2e;}.term-dot.green{background:#28c840;}
+.term-title{font-size:11px;color:var(--dim);letter-spacing:2px;margin-left:8px;}
+.term-line{font-size:12px;color:var(--dim);line-height:2.2;display:flex;align-items:center;gap:10px;}
+.term-line .prompt{color:var(--cyan);}.term-line .ok{color:var(--cyan2);}.term-line .scanning{color:var(--yellow);}.term-line .risk{color:var(--red);}
+.diag-form{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field label{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;}
+.form-field input,.form-field select{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 16px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:.2s;}
+.form-field input:focus,.form-field select:focus{border-color:var(--cyan);}
+.form-field select option{background:var(--surface);}
+.form-full{grid-column:1/-1;}
+.btn-scan{width:100%;padding:16px;background:var(--cyan);color:var(--bg);font-family:var(--mono);font-size:14px;font-weight:800;letter-spacing:3px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:.3s;}
+.btn-scan:hover{box-shadow:0 0 30px rgba(0,216,255,.5);}
+.footer{background:var(--surface);border-top:1px solid var(--border);padding:40px 60px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;}
+.footer-brand{font-family:var(--mono);font-size:16px;font-weight:700;color:#fff;letter-spacing:2px;}
+.footer-brand span{color:var(--cyan);}
+.footer-info{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;text-align:center;}
+.footer-status{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--cyan2);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(max-width:1100px){.engines-grid{grid-template-columns:repeat(3,1fr);}.steps{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:900px){header{padding:14px 24px;}nav{display:none;}.hamburger{display:flex;}.hero{flex-direction:column;padding:80px 24px 60px;text-align:center;}.hero-stats{justify-content:center;}.cmd-panel{width:100%;}.section{padding:60px 24px;}.sectors-grid{grid-template-columns:repeat(2,1fr);}.engines-grid{grid-template-columns:repeat(2,1fr);}.diag-form{grid-template-columns:1fr;}.footer{flex-direction:column;text-align:center;padding:32px 24px;}}
 </style>
-</head>
-<body>
+</head><body>
+<div class="scanlines"></div>
 <header id="header">
-  <a class="logo" href="#">MESAN <span>Omega</span></a>
+  <div style="display:flex;align-items:center;">
+    <a class="logo-text" href="#">MESAN <span>Omega</span></a>
+    <span class="logo-badge">SISTEMA ACTIVO</span>
+  </div>
+  <div class="status-bar">
+    <div class="status-item"><div class="status-dot"></div>API ONLINE</div>
+    <div class="status-item">BUILD v3.3.0</div>
+    <div class="status-item">NODO: MEXICALI</div>
+  </div>
   <nav>
-    <a href="#inicio">Inicio</a>
-    <a href="#como-funciona">Como funciona</a>
+    <a href="#como-funciona">Sistema</a>
     <a href="#motores">Motores</a>
     <a href="#sectores">Sectores</a>
-    <a href="#war-room">War Room</a>
     <a href="#diagnostico">Diagnostico</a>
-    <a href="#contacto">Contacto</a>
-    <a class="btn-nav" href="#contacto">Solicitar Diagnostico</a>
+    <a class="btn-cta" href="#diagnostico">Iniciar Escaneo</a>
   </nav>
-  <div class="hamburger" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </div>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </header>
 <div class="mobile-menu" id="mobileMenu">
-  <span class="close" onclick="toggleMenu()">X</span>
-  <a href="#inicio" onclick="toggleMenu()">Inicio</a>
-  <a href="#como-funciona" onclick="toggleMenu()">Como funciona</a>
+  <span class="mobile-close" onclick="toggleMenu()">X</span>
+  <a href="#como-funciona" onclick="toggleMenu()">Sistema</a>
   <a href="#motores" onclick="toggleMenu()">Motores</a>
   <a href="#sectores" onclick="toggleMenu()">Sectores</a>
-  <a href="#war-room" onclick="toggleMenu()">War Room</a>
   <a href="#diagnostico" onclick="toggleMenu()">Diagnostico</a>
-  <a href="#contacto" onclick="toggleMenu()">Contacto</a>
-  <a class="btn-nav" href="#contacto" onclick="toggleMenu()">Solicitar Diagnostico</a>
+  <a class="btn-cta" href="#diagnostico" onclick="toggleMenu()">Iniciar Escaneo</a>
 </div>
-<main>
-<section id="inicio" style="padding:0;">
+<div class="ticker"><div class="ticker-track">
+  <div class="ticker-item"><span>SAT</span>MONITOREANDO</div>
+  <div class="ticker-item"><span>IMSS</span>ONLINE</div>
+  <div class="ticker-item"><span>REPSE</span>ACTIVO</div>
+  <div class="ticker-item"><span>MOTORES</span>10/10 ACTIVOS</div>
+  <div class="ticker-item"><span>GUARDIAN</span>OPERATIVO</div>
+  <div class="ticker-item"><span>JARVIS</span>EN LINEA</div>
+  <div class="ticker-item"><span>SAT</span>MONITOREANDO</div>
+  <div class="ticker-item"><span>IMSS</span>ONLINE</div>
+  <div class="ticker-item"><span>REPSE</span>ACTIVO</div>
+  <div class="ticker-item"><span>MOTORES</span>10/10 ACTIVOS</div>
+</div></div>
+<section id="inicio">
 <div class="hero">
   <div class="hero-left">
-    <div class="hero-tag">Sistema Operativo Empresarial</div>
-    <h1>La empresa que sobrevive no es la mas grande.<br><em>Es la que detecta el riesgo antes.</em></h1>
-    <p class="hero-sub">MESAN Omega analiza tu empresa en tiempo real y te entrega un plan ejecutivo antes de que el problema llegue.</p>
-    <div class="hero-btns">
-      <a class="btn-primary" href="#contacto">Solicitar Diagnostico</a>
-      <a class="btn-secondary" href="#como-funciona">Ver Simulacion</a>
+    <div class="hero-label">// Sistema de Inteligencia Empresarial v3.3</div>
+    <h1>MESAN Omega<span class="line2">La IA que detecta el riesgo antes que tu empresa.</span></h1>
+    <p class="hero-sub">Evaluacion de vulnerabilidad empresarial en tiempo real. Fiscal, laboral, financiero y operativo. Certificacion digital. Proteccion total.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#diagnostico">Iniciar Escaneo</a>
+      <a class="btn-ghost" href="#como-funciona">Ver Sistema</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-val" id="cnt">0</div><div class="stat-label">Empresas analizadas</div></div>
+      <div class="stat"><div class="stat-val">10</div><div class="stat-label">Motores activos</div></div>
+      <div class="stat"><div class="stat-val">6ms</div><div class="stat-label">Latencia promedio</div></div>
     </div>
   </div>
   <div class="hero-right">
-    <div class="command-panel">
-      <div class="panel-header">
-        <div class="panel-dot"></div>
-        <span class="panel-title">JARVIS Omega - Monitoreo en vivo</span>
+    <div class="cmd-panel">
+      <div class="cmd-header"><span class="cmd-title">JARVIS Omega - Command Center</span><div class="cmd-status"><div class="status-dot"></div>LIVE</div></div>
+      <div class="cmd-body">
+        <div class="cmd-metric"><span class="cmd-label">Indice de Riesgo General</span><span class="cmd-val" id="hScore">--</span></div>
+        <div class="cmd-metric"><span class="cmd-label">Supervivencia Empresarial</span><span class="cmd-val green" id="hEsi">--</span></div>
+        <div class="cmd-metric"><span class="cmd-label">Exposicion Estimada</span><span class="cmd-val yellow" id="hExp">--</span></div>
+        <div class="cmd-metric"><span class="cmd-label">Alertas Criticas</span><span class="cmd-val red" id="hAlerts">--</span></div>
+        <div class="cmd-bar"><div class="cmd-fill" id="hFill"></div></div>
+        <div class="cmd-log">
+          <div class="log-line"><span class="prompt">&gt;</span> Conectando SAT... <span class="ok">OK</span></div>
+          <div class="log-line"><span class="prompt">&gt;</span> Verificando IMSS... <span class="ok">OK</span></div>
+          <div class="log-line"><span class="prompt">&gt;</span> Analizando REPSE... <span class="warn">ALERTA</span></div>
+          <div class="log-line"><span class="prompt">&gt;</span> Informe ejecutivo listo</div>
+        </div>
       </div>
-      <div class="panel-metric">
-        <span class="metric-label">Indice Omega</span>
-        <span class="metric-value" id="scoreVal">--</span>
-      </div>
-      <div class="panel-metric">
-        <span class="metric-label">ESI Supervivencia</span>
-        <span class="metric-value green" id="esiVal">--</span>
-      </div>
-      <div class="panel-metric">
-        <span class="metric-label">Exposicion Estimada</span>
-        <span class="metric-value yellow" id="expVal">--</span>
-      </div>
-      <div class="panel-metric">
-        <span class="metric-label">Alertas Activas</span>
-        <span class="metric-value red" id="alertVal">--</span>
-      </div>
-      <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
     </div>
   </div>
 </div>
 </section>
-<section id="como-funciona"></section>
-<section id="motores"></section>
-<section id="sectores"></section>
-<section id="war-room"></section>
-<section id="diagnostico"></section>
-<section id="contacto"></section>
-</main>
+<section id="como-funciona" class="section">
+  <div class="section-label">Proceso</div>
+  <div class="section-title">Como funciona MESAN Omega</div>
+  <div class="section-sub">Cuatro pasos. Minutos. Resultado ejecutivo inmediato.</div>
+  <div class="steps">
+    <div class="step"><div class="step-num">// PASO 01</div><div class="step-icon">&#9889;</div><div class="step-title">Diagnostico</div><div class="step-desc">Ingresa los datos basicos de tu empresa. El sistema inicia el escaneo multidimensional.</div></div>
+    <div class="step"><div class="step-num">// PASO 02</div><div class="step-icon">&#128300;</div><div class="step-title">Evaluacion Omega</div><div class="step-desc">10 motores analizan en paralelo: fiscal, laboral, financiero, contractual, operativo.</div></div>
+    <div class="step"><div class="step-num">// PASO 03</div><div class="step-icon">&#129678;</div><div class="step-title">Simulacion</div><div class="step-desc">Digital Twin proyecta escenarios: auditoria SAT, demanda laboral, perdida de ventas.</div></div>
+    <div class="step"><div class="step-num">// PASO 04</div><div class="step-icon">&#128203;</div><div class="step-title">Plan Ejecutivo</div><div class="step-desc">JARVIS genera el reporte CEO con acciones prioritarias, responsables y plazos.</div></div>
+  </div>
+</section>
+<section id="motores" class="section" style="padding-top:0;">
+  <div class="section-label">Arquitectura</div>
+  <div class="section-title">10 Motores Omega</div>
+  <div class="section-sub">Cada motor es un modulo independiente de inteligencia especializada.</div>
+  <div class="engines-grid">
+    <div class="engine-card"><div class="engine-id">MOTOR 01</div><div class="engine-name">Fiscal Sentinel</div><div class="engine-desc">Riesgo SAT, CFDI, opinion positiva, declaraciones.</div><div class="engine-status">ONLINE</div></div>
+    <div class="engine-card"><div class="engine-id">MOTOR 02</div><div class="engine-name">Labor Shield</div><div class="engine-desc">IMSS, REPSE, STPS, contratos, subcontratacion.</div><div class="engine-status">ONLINE</div></div>
+    <div class="engine-card"><div class="engine-id">MOTOR 03</div><div class="engine-name">Financial Intelligence v2</div><div class="engine-desc">Flujo, DSCR, burn rate, dias de supervivencia.</div><div class="engine-status">ONLINE</div></div>
+    <div class="engine-card"><div class="engine-id">MOTOR 04</div><div class="engine-name">Contractual Risk</div><div class="engine-desc">Clausulas, incumplimientos, exposicion contractual.</div><div class="engine-status">ONLINE</div></div>
+    <div class="engine-card"><div class="engine-id">MOTOR 05</div><div class="engine-name">Policy Audit</div><div class="engine-desc">Cumplimiento de politicas internas y normativas.</div><div class="engine-status">ONLINE</div></div>
+    <div class="engine-card"><div class="engine-id">MOTOR 06</div><div class="engine-name">Governance</div><div class="engine-desc">Gobierno corporativo, consejo, estructura legal.</div><div class="engine-status">ONLINE</div></div>
+    <div class="engine-card"><div class="engine-id">MOTOR 07</div><div class="engine-name">Remediation</div><div class="engine-desc">Plan de accion automatico por nivel de riesgo.</div><div class="engine-status">ONLINE</div></div>
+    <div class="engine-card"><div class="engine-id">MOTOR 08</div><div class="engine-name">Continuity</div><div class="engine-desc">Plan de continuidad operativa ante crisis.</div><div class="engine-status">ONLINE</div></div>
+    <div class="engine-card"><div class="engine-id">MOTOR 09</div><div class="engine-name">Exposure Aggregator</div><div class="engine-desc">Exposicion economica total consolidada.</div><div class="engine-status">ONLINE</div></div>
+    <div class="engine-card"><div class="engine-id">MOTOR 10</div><div class="engine-name">Sovereign Continuity</div><div class="engine-desc">Soberania digital y activos estrategicos.</div><div class="engine-status">ONLINE</div></div>
+  </div>
+</section>
+<section id="sectores" class="section" style="padding-top:0;">
+  <div class="section-label">Cobertura</div>
+  <div class="section-title">Sectores empresariales</div>
+  <div class="section-sub">MESAN Omega detecta riesgos especificos por sector economico.</div>
+  <div class="sectors-grid">
+    <div class="sector-card"><div class="sector-icon">&#127981;</div><div class="sector-name">Manufactura</div><div class="sector-risk risk-alto">RIESGO ALTO</div></div>
+    <div class="sector-card"><div class="sector-icon">&#127959;</div><div class="sector-name">Construccion</div><div class="sector-risk risk-alto">RIESGO ALTO</div></div>
+    <div class="sector-card"><div class="sector-icon">&#127973;</div><div class="sector-name">Salud</div><div class="sector-risk risk-medio">RIESGO MEDIO</div></div>
+    <div class="sector-card"><div class="sector-icon">&#127979;</div><div class="sector-name">Educacion</div><div class="sector-risk risk-bajo">RIESGO BAJO</div></div>
+    <div class="sector-card"><div class="sector-icon">&#127978;</div><div class="sector-name">Comercio</div><div class="sector-risk risk-medio">RIESGO MEDIO</div></div>
+    <div class="sector-card"><div class="sector-icon">&#128665;</div><div class="sector-name">Logistica</div><div class="sector-risk risk-alto">RIESGO ALTO</div></div>
+    <div class="sector-card"><div class="sector-icon">&#128188;</div><div class="sector-name">Servicios</div><div class="sector-risk risk-bajo">RIESGO BAJO</div></div>
+    <div class="sector-card"><div class="sector-icon">&#128187;</div><div class="sector-name">Tecnologia</div><div class="sector-risk risk-bajo">RIESGO BAJO</div></div>
+  </div>
+</section>
+<section id="diagnostico" class="section" style="padding-top:0;">
+  <div class="section-label">Escaneo</div>
+  <div class="section-title">Iniciar diagnostico</div>
+  <div class="section-sub">Ingresa los datos de tu empresa. El sistema ejecuta el analisis completo en segundos.</div>
+  <div class="diag-terminal">
+    <div class="term-header">
+      <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+      <span class="term-title">MESAN-OMEGA // SISTEMA DE ESCANEO EMPRESARIAL</span>
+    </div>
+    <div id="termLog"><div class="term-line"><span class="prompt">&gt;</span> Sistema listo. Esperando datos...</div></div>
+  </div>
+  <form class="diag-form" onsubmit="ejecutarDiag(event)">
+    <div class="form-field"><label>Nombre de la empresa</label><input type="text" id="fEmpresa" placeholder="Mi Empresa S.A. de C.V." required></div>
+    <div class="form-field"><label>Sector</label><select id="fSector"><option value="MANUFACTURA">Manufactura</option><option value="CONSTRUCCION">Construccion</option><option value="COMERCIO">Comercio</option><option value="SERVICIOS">Servicios</option><option value="TRANSPORTE">Transporte</option><option value="SALUD">Salud</option><option value="EDUCACION">Educacion</option><option value="TECNOLOGIA">Tecnologia</option></select></div>
+    <div class="form-field"><label>Ingresos mensuales (MXN)</label><input type="number" id="fIngresos" placeholder="500000" required></div>
+    <div class="form-field"><label>Gastos mensuales (MXN)</label><input type="number" id="fGastos" placeholder="300000" required></div>
+    <div class="form-field"><label>Nomina mensual (MXN)</label><input type="number" id="fNomina" placeholder="80000" required></div>
+    <div class="form-field"><label>Numero de trabajadores</label><input type="number" id="fTrabajadores" placeholder="25" required></div>
+    <div class="form-field form-full"><label>Deuda mensual (MXN)</label><input type="number" id="fDeuda" placeholder="50000"></div>
+    <div class="form-full"><button class="btn-scan" type="submit">INICIAR ESCANEO COMPLETO</button></div>
+  </form>
+  <div id="resultPanel" style="display:none;margin-top:32px;"></div>
+</section>
+<footer class="footer">
+  <div class="footer-brand">MESAN <span>Omega</span></div>
+  <div class="footer-info">Sistema Operativo Empresarial v3.3.0 | Mexico | contacto@mesanomega.com</div>
+  <div class="footer-status">API ONLINE | MOTORES 10/10</div>
+</footer>
 <script>
 function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
-window.addEventListener('scroll',function(){document.getElementById('header').classList.toggle('small',window.scrollY>100);});
-(function(){var s=[72,45,88,31,67,54,91,38,76,62];var e=[80,55,92,40,71,60,95,45,83,68];var x=["$280K","$520K","$95K","$890K","$340K","$210K","$75K","$720K","$160K","$450K"];var a=[2,5,0,8,3,4,0,6,1,3];var i=Math.floor(Math.random()*s.length);setTimeout(function(){document.getElementById('scoreVal').textContent=s[i];document.getElementById('esiVal').textContent=e[i];document.getElementById('expVal').textContent=x[i];document.getElementById('alertVal').textContent=a[i];document.getElementById('scoreFill').style.width=s[i]+'%';},800);})();
+window.addEventListener('scroll',function(){document.getElementById('header').classList.toggle('small',window.scrollY>80);});
+function animCnt(el,t,d){var s=0,step=t/((d/1000)*60);var iv=setInterval(function(){s=Math.min(s+step,t);el.textContent=Math.floor(s)+(s>=t?'+':'');if(s>=t)clearInterval(iv);},1000/60);}
+setTimeout(function(){animCnt(document.getElementById('cnt'),247,2000);},500);
+var sc=[72,45,88,31,67,54,91,38,76,62],es=[80,55,92,40,71,60,95,45,83,68],ex=['$280K','$520K','$95K','$890K','$340K','$210K','$75K','$720K','$160K','$450K'],al=[2,5,0,8,3,4,0,6,1,3],ix=Math.floor(Math.random()*10);
+setTimeout(function(){document.getElementById('hScore').textContent=sc[ix];document.getElementById('hEsi').textContent=es[ix];document.getElementById('hExp').textContent=ex[ix];document.getElementById('hAlerts').textContent=al[ix];document.getElementById('hFill').style.width=sc[ix]+'%';},600);
+function log(msg,cls){var el=document.createElement('div');el.className='term-line';el.innerHTML='<span class="prompt">&gt;</span> '+msg+(cls?' <span class="'+cls+'">'+cls.toUpperCase()+'</span>':'');document.getElementById('termLog').appendChild(el);}
+function ejecutarDiag(e){
+  e.preventDefault();
+  var emp=document.getElementById('fEmpresa').value;
+  var ing=parseFloat(document.getElementById('fIngresos').value)||0;
+  var gas=parseFloat(document.getElementById('fGastos').value)||0;
+  var nom=parseFloat(document.getElementById('fNomina').value)||0;
+  var tra=parseInt(document.getElementById('fTrabajadores').value)||0;
+  var deu=parseFloat(document.getElementById('fDeuda').value)||0;
+  document.getElementById('termLog').innerHTML='';
+  log('Iniciando escaneo: '+emp);
+  var steps=[['Conectando SAT...','ok'],['Verificando IMSS...','ok'],['Analizando REPSE...','scanning'],['Evaluando riesgo financiero...','scanning'],['Ejecutando 10 motores Omega...','scanning'],['Generando reporte ejecutivo...','scanning']];
+  var delay=0;
+  steps.forEach(function(s){setTimeout(function(){log(s[0],s[1]);},delay);delay+=600;});
+  setTimeout(function(){
+    fetch('https://mesan-api.onrender.com/execute',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({empresa:emp,ingresos:ing,gastos:gas,nomina:nom,trabajadores:tra,deuda_mensual:deu,iva:0,isr_retenido:0,trabajadores_sin_imss:0,opinion_sat:'POSITIVA',opinion_imss:'POSITIVA'})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var score=d.omega_score||d.score||0;
+      var nivel=d.nivel||'EVALUADO';
+      var exp=d.exposure||d.exposicion_estimada_mxn||0;
+      log('Analisis completado','ok');
+      document.getElementById('resultPanel').style.display='block';
+      document.getElementById('resultPanel').innerHTML='<div class="cmd-panel"><div class="cmd-header"><span class="cmd-title">RESULTADO — '+emp+'</span></div><div class="cmd-body"><div class="cmd-metric"><span class="cmd-label">Indice Omega</span><span class="cmd-val">'+Math.round(score)+'</span></div><div class="cmd-metric"><span class="cmd-label">Nivel de Riesgo</span><span class="cmd-val yellow">'+nivel+'</span></div><div class="cmd-metric"><span class="cmd-label">Exposicion Estimada</span><span class="cmd-val red">$'+Number(exp).toLocaleString('es-MX')+'</span></div><div class="cmd-bar"><div class="cmd-fill" style="width:'+Math.round(score)+'%"></div></div></div></div>';
+    })
+    .catch(function(){log('Error de conexion.','risk');});
+  },delay+400);
+}
 </script>
 </body>
 </html>
