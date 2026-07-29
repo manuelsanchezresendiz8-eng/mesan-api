@@ -3153,6 +3153,31 @@ window.addEventListener('scroll', () => {
   </div>
 </section>
 
+
+<section id="war-room" class="m6-section">
+  <div class="m6-label">War Room</div>
+  <h2 class="m6-title">Cuando el riesgo supera el límite, <span>JARVIS O activa el War Room.</span></h2>
+  <p class="m6-subtitle">El War Room Ejecutivo concentra los riesgos críticos, calcula el impacto económico y propone un plan de acción priorizado para la Dirección General.</p>
+  <div class="m6-dashboard">
+    <div class="m6-left">
+      <div class="m6-alert" data-m6><div class="m6-status danger"></div><div><h3>Nivel de Riesgo</h3><p>ALTO</p></div></div>
+      <div class="m6-alert" data-m6><div class="m6-status warning"></div><div><h3>Exposición</h3><p>$520,000</p></div></div>
+      <div class="m6-alert" data-m6><div class="m6-status success"></div><div><h3>Tiempo de reacción</h3><p>72 horas</p></div></div>
+    </div>
+    <div class="m6-right" data-m6>
+      <h3>Prioridades Ejecutivas</h3>
+      <ul class="m6-list">
+        <li>Regularizar cumplimiento fiscal.</li>
+        <li>Reducir exposición laboral inmediata.</li>
+        <li>Reforzar controles operativos críticos.</li>
+        <li>Actualizar políticas internas.</li>
+        <li>Activar seguimiento semanal por JARVIS O.</li>
+      </ul>
+      <a href="#diagnostico" class="m6-btn">Activar Diagnóstico Ejecutivo ?</a>
+    </div>
+  </div>
+</section>
+
 <script id="m4-js">(function(){var cards=document.querySelectorAll("[data-m4]");if(!cards.length)return;var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry,index){if(entry.isIntersecting){setTimeout(function(){entry.target.classList.add("visible");},index*90);observer.unobserve(entry.target);}});},{threshold:.15});cards.forEach(function(card){observer.observe(card);});})();<\/script>
 <style id="m4-css">
 .m4-section{padding:110px 60px;position:relative;z-index:1;}
@@ -3208,6 +3233,31 @@ window.addEventListener('scroll', () => {
   </div>
 </section>
 
+
+<section id="war-room" class="m6-section">
+  <div class="m6-label">War Room</div>
+  <h2 class="m6-title">Cuando el riesgo supera el límite, <span>JARVIS O activa el War Room.</span></h2>
+  <p class="m6-subtitle">El War Room Ejecutivo concentra los riesgos críticos, calcula el impacto económico y propone un plan de acción priorizado para la Dirección General.</p>
+  <div class="m6-dashboard">
+    <div class="m6-left">
+      <div class="m6-alert" data-m6><div class="m6-status danger"></div><div><h3>Nivel de Riesgo</h3><p>ALTO</p></div></div>
+      <div class="m6-alert" data-m6><div class="m6-status warning"></div><div><h3>Exposición</h3><p>$520,000</p></div></div>
+      <div class="m6-alert" data-m6><div class="m6-status success"></div><div><h3>Tiempo de reacción</h3><p>72 horas</p></div></div>
+    </div>
+    <div class="m6-right" data-m6>
+      <h3>Prioridades Ejecutivas</h3>
+      <ul class="m6-list">
+        <li>Regularizar cumplimiento fiscal.</li>
+        <li>Reducir exposición laboral inmediata.</li>
+        <li>Reforzar controles operativos críticos.</li>
+        <li>Actualizar políticas internas.</li>
+        <li>Activar seguimiento semanal por JARVIS O.</li>
+      </ul>
+      <a href="#diagnostico" class="m6-btn">Activar Diagnóstico Ejecutivo ?</a>
+    </div>
+  </div>
+</section>
+
 <script id="m4-js">
 (function(){
 var cards=document.querySelectorAll("[data-m4]");
@@ -3257,6 +3307,49 @@ observer.unobserve(entry.target);
 });
 },{threshold:.15});
 cards.forEach(function(card){observer.observe(card);});
+})();
+</script>
+
+<style id="m6-style">
+.m6-section{padding:110px 60px;}
+.m6-label{font-family:var(--font-mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--accent-primary);margin-bottom:12px;}
+.m6-label::before{content:"// ";}
+.m6-title{font-family:var(--font-display);font-size:clamp(28px,3vw,42px);font-weight:800;margin-bottom:18px;}
+.m6-title span{color:var(--accent-primary);}
+.m6-subtitle{max-width:700px;line-height:1.8;color:#6f8ca8;margin-bottom:60px;}
+.m6-dashboard{display:grid;grid-template-columns:360px 1fr;gap:40px;}
+.m6-left{display:flex;flex-direction:column;gap:18px;}
+.m6-alert{background:#091826;border:1px solid rgba(0,216,255,.08);padding:22px;border-radius:10px;display:flex;align-items:center;gap:18px;opacity:0;transform:translateY(20px);transition:.35s;}
+.m6-alert.visible{opacity:1;transform:none;}
+.m6-status{width:14px;height:14px;border-radius:50%;}
+.m6-status.danger{background:#ff4d4d;box-shadow:0 0 12px #ff4d4d;}
+.m6-status.warning{background:#ffc107;box-shadow:0 0 12px #ffc107;}
+.m6-status.success{background:#28d17c;box-shadow:0 0 12px #28d17c;}
+.m6-alert h3{font-size:14px;margin-bottom:6px;}
+.m6-alert p{font-size:18px;font-weight:700;}
+.m6-right{background:#091826;border:1px solid rgba(0,216,255,.08);padding:32px;border-radius:10px;opacity:0;transform:translateY(20px);transition:.35s;}
+.m6-right.visible{opacity:1;transform:none;}
+.m6-right h3{margin-bottom:22px;font-size:22px;}
+.m6-list{padding-left:22px;line-height:2;margin-bottom:35px;color:#9cb4ca;}
+.m6-btn{display:inline-block;padding:15px 34px;border:1px solid var(--accent-primary);color:var(--accent-primary);text-decoration:none;font-family:var(--font-mono);font-weight:700;letter-spacing:1px;transition:.3s;}
+.m6-btn:hover{background:var(--accent-primary);color:#06111d;box-shadow:0 0 25px rgba(0,216,255,.35);}
+@media(max-width:900px){.m6-dashboard{grid-template-columns:1fr;}}
+@media(max-width:640px){.m6-section{padding:70px 24px;}}
+</style>
+
+<script id="m6-script">
+(function(){
+var items=document.querySelectorAll("[data-m6]");
+if(!items.length)return;
+var observer=new IntersectionObserver(function(entries){
+entries.forEach(function(entry,index){
+if(entry.isIntersecting){
+setTimeout(function(){entry.target.classList.add("visible");},index*150);
+observer.unobserve(entry.target);
+}
+});
+},{threshold:.15});
+items.forEach(function(item){observer.observe(item);});
 })();
 </script>
 </body>
