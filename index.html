@@ -3179,6 +3179,20 @@ window.addEventListener('scroll', () => {
   </div>
 </section>
 
+
+<section class="m8-section" id="war-room-omega">
+  <div class="m8-label">War Room</div>
+  <h2 class="m8-title">WAR ROOM <span>Ω</span></h2>
+  <p class="m8-subtitle">Cuando el riesgo deja de ser una alerta y se convierte en una decisión ejecutiva, MESAN activa automáticamente el protocolo War Room para proteger la continuidad del negocio.</p>
+  <div class="m8-flow">
+    <div class="m8-card" data-m8><div class="m8-number">01</div><div class="m8-icon">⚠️</div><h3>Riesgo Detectado</h3><p>Los motores Omega identifican desviaciones críticas antes de que se conviertan en pérdidas económicas.</p></div>
+    <div class="m8-card" data-m8><div class="m8-number">02</div><div class="m8-icon">🧠</div><h3>Análisis Ejecutivo</h3><p>JARVIS consolida información fiscal, financiera, laboral y operativa para priorizar decisiones.</p></div>
+    <div class="m8-card" data-m8><div class="m8-number">03</div><div class="m8-icon">📋</div><h3>Plan de Acción</h3><p>Se genera un plan ejecutivo con responsables, prioridades y tiempos estimados de ejecución.</p></div>
+    <div class="m8-card" data-m8><div class="m8-number">04</div><div class="m8-icon">📈</div><h3>Seguimiento Continuo</h3><p>El sistema monitorea el cumplimiento y recalcula el nivel de riesgo en tiempo real.</p></div>
+  </div>
+  <div class="m8-cta"><a href="#diagnostico" class="m8-btn">Activar War Room →</a></div>
+</section>
+
 <script id="m4-js">
 (function(){
 var cards=document.querySelectorAll("[data-m4]");
@@ -3251,6 +3265,46 @@ setTimeout(function(){
 msg.innerHTML="Diagnóstico listo para enviarse al servidor MESAN Ω.";
 },1200);
 });
+})();
+</script>
+
+<style id="m8-css">
+.m8-section{padding:110px 60px;position:relative;overflow:hidden;}
+.m8-section::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,rgba(0,216,255,.05),transparent 60%);pointer-events:none;}
+.m8-label{font-family:var(--font-mono);font-size:11px;letter-spacing:4px;color:var(--accent-primary);text-transform:uppercase;margin-bottom:14px;}
+.m8-label::before{content:"// ";}
+.m8-title{font-family:var(--font-display);font-size:clamp(28px,3vw,44px);font-weight:800;color:#fff;margin-bottom:14px;}
+.m8-title span{color:var(--accent-primary);}
+.m8-subtitle{max-width:760px;color:#58718c;line-height:1.9;margin-bottom:70px;}
+.m8-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;position:relative;}
+.m8-flow::before{content:"";position:absolute;left:5%;right:5%;top:72px;height:2px;background:linear-gradient(90deg,transparent,rgba(0,216,255,.35),transparent);}
+.m8-card{position:relative;background:rgba(8,20,35,.82);border:1px solid rgba(0,216,255,.12);border-radius:12px;padding:26px;backdrop-filter:blur(12px);transition:.35s;opacity:0;transform:translateY(35px);}
+.m8-card.visible{opacity:1;transform:none;}
+.m8-card:hover{border-color:rgba(0,216,255,.45);box-shadow:0 0 30px rgba(0,216,255,.10);}
+.m8-number{font-family:var(--font-mono);color:#00d8ff;font-size:12px;letter-spacing:3px;margin-bottom:18px;}
+.m8-icon{width:58px;height:58px;border-radius:10px;border:1px solid rgba(0,216,255,.18);display:flex;align-items:center;justify-content:center;margin-bottom:18px;font-size:26px;}
+.m8-card h3{font-size:16px;color:#fff;margin-bottom:14px;}
+.m8-card p{color:#6f88a5;font-size:14px;line-height:1.8;}
+.m8-cta{text-align:center;margin-top:70px;}
+.m8-btn{display:inline-flex;align-items:center;gap:12px;padding:15px 38px;border:1px solid #00d8ff;color:#00d8ff;text-decoration:none;border-radius:5px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:2px;transition:.3s;}
+.m8-btn:hover{background:#00d8ff;color:#07111d;box-shadow:0 0 28px rgba(0,216,255,.35);}
+@media(max-width:980px){.m8-flow{grid-template-columns:repeat(2,1fr);}.m8-flow::before{display:none;}}
+@media(max-width:640px){.m8-section{padding:70px 24px;}.m8-flow{grid-template-columns:1fr;}}
+</style>
+
+<script id="m8-js">
+(function(){
+var cards=document.querySelectorAll("[data-m8]");
+if(!cards.length)return;
+var observer=new IntersectionObserver(function(entries){
+entries.forEach(function(entry,index){
+if(entry.isIntersecting){
+setTimeout(function(){entry.target.classList.add("visible");},index*180);
+observer.unobserve(entry.target);
+}
+});
+},{threshold:.18});
+cards.forEach(function(card){observer.observe(card);});
 })();
 </script>
 </body>
