@@ -3207,6 +3207,21 @@ window.addEventListener('scroll', () => {
   </div>
 </section>
 
+
+<section class="m10-section" id="resultados-omega">
+  <div class="m10-header">
+    <div class="m10-label">Resultados Ejecutivos</div>
+    <h2 class="m10-title">El impacto de <span>MESAN Ω</span></h2>
+    <p class="m10-sub">La inteligencia continua permite reducir exposición, mejorar el cumplimiento y tomar decisiones con información ejecutiva antes de que aparezcan las crisis.</p>
+  </div>
+  <div class="m10-grid">
+    <div class="m10-card" data-m10><div class="m10-number">9</div><div class="m10-text">Motores inteligentes trabajando en paralelo.</div></div>
+    <div class="m10-card" data-m10><div class="m10-number">24/7</div><div class="m10-text">Monitoreo continuo mediante Guardian Ω.</div></div>
+    <div class="m10-card" data-m10><div class="m10-number">360°</div><div class="m10-text">Cobertura fiscal, laboral, financiera y operativa.</div></div>
+    <div class="m10-card" data-m10><div class="m10-number">1</div><div class="m10-text">War Room Ejecutivo para priorizar decisiones críticas.</div></div>
+  </div>
+</section>
+
 <script id="m4-js">
 (function(){
 var cards=document.querySelectorAll("[data-m4]");
@@ -3338,5 +3353,38 @@ cards.forEach(function(card){observer.observe(card);});
 .m9-card p{font-size:14px;line-height:1.8;color:#6d8aa6;}
 @media(max-width:900px){.m9-grid{grid-template-columns:1fr;}.m9-section{padding:70px 24px;}}
 </style>
+
+<style id="m10-css">
+.m10-section{padding:100px 60px;position:relative;}
+.m10-header{text-align:center;margin-bottom:60px;}
+.m10-label{font-family:var(--font-mono);font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--accent-primary);margin-bottom:12px;}
+.m10-title{font-family:var(--font-display);font-size:clamp(28px,3vw,42px);font-weight:800;color:#fff;}
+.m10-title span{color:var(--accent-primary);}
+.m10-sub{max-width:720px;margin:18px auto 0;color:#6d8aa6;line-height:1.8;}
+.m10-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:60px;}
+.m10-card{background:rgba(7,21,37,.82);border:1px solid rgba(0,216,255,.10);padding:28px;text-align:center;border-radius:10px;transition:.35s;opacity:0;transform:translateY(20px);}
+.m10-card.visible{opacity:1;transform:translateY(0);}
+.m10-card:hover{border-color:rgba(0,216,255,.35);box-shadow:0 0 24px rgba(0,216,255,.12);}
+.m10-number{font-family:var(--font-display);font-size:42px;font-weight:800;color:var(--accent-primary);margin-bottom:10px;}
+.m10-text{font-size:14px;color:#6d8aa6;line-height:1.7;}
+@media(max-width:900px){.m10-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.m10-grid{grid-template-columns:1fr;}.m10-section{padding:70px 24px;}}
+</style>
+
+<script id="m10-js">
+(function(){
+var cards=document.querySelectorAll("[data-m10]");
+if(!cards.length)return;
+var observer=new IntersectionObserver(function(entries){
+entries.forEach(function(entry,index){
+if(entry.isIntersecting){
+setTimeout(function(){entry.target.classList.add("visible");},index*180);
+observer.unobserve(entry.target);
+}
+});
+},{threshold:.20});
+cards.forEach(function(card){observer.observe(card);});
+})();
+</script>
 </body>
 </html>
