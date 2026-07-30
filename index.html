@@ -3222,6 +3222,42 @@ window.addEventListener('scroll', () => {
   </div>
 </section>
 
+
+<section class="m11-section" id="planes-omega">
+  <div class="m11-header">
+    <div class="m11-label">Planes</div>
+    <h2 class="m11-title">Planes <span>MESAN Ω</span></h2>
+    <p class="m11-sub">Elige el nivel de inteligencia empresarial que mejor se adapta a tu organización.</p>
+  </div>
+  <div class="m11-grid">
+    <div class="m11-card" data-m11>
+      <div class="m11-name">Diagnóstico Ejecutivo</div>
+      <div class="m11-price">$299 <small>USD</small></div>
+      <ul class="m11-list"><li>Índice Omega</li><li>ESI</li><li>Riesgo Fiscal</li><li>Riesgo Laboral</li><li>Plan Ejecutivo</li></ul>
+      <a href="#diagnostico" class="m11-btn secondary">Solicitar</a>
+    </div>
+    <div class="m11-card featured" data-m11>
+      <div class="m11-badge">Recomendado</div>
+      <div class="m11-name">Guardian Ω</div>
+      <div class="m11-price">$999 <small>/mes</small></div>
+      <ul class="m11-list"><li>Todo el Diagnóstico</li><li>Guardian Ω</li><li>Alertas Automáticas</li><li>Monitoreo Continuo</li><li>JARVIS Executive</li><li>Cambios Regulatorios</li></ul>
+      <a href="#contacto" class="m11-btn primary">Comenzar</a>
+    </div>
+    <div class="m11-card" data-m11>
+      <div class="m11-name">War Room Enterprise</div>
+      <div class="m11-price">Personalizado</div>
+      <ul class="m11-list"><li>Digital Twin</li><li>War Room</li><li>Auditoría SHA-256</li><li>Comité Ejecutivo</li><li>Simulación Estratégica</li><li>Consultoría</li></ul>
+      <a href="#contacto" class="m11-btn secondary">Hablar con un asesor</a>
+    </div>
+  </div>
+  <div class="m11-footer">
+    <span>Arquitectura Multi-Tenant</span>
+    <span>Información cifrada</span>
+    <span>Sin cuentas compartidas</span>
+    <span>Implementación inmediata</span>
+  </div>
+</section>
+
 <script id="m4-js">
 (function(){
 var cards=document.querySelectorAll("[data-m4]");
@@ -3374,6 +3410,51 @@ cards.forEach(function(card){observer.observe(card);});
 <script id="m10-js">
 (function(){
 var cards=document.querySelectorAll("[data-m10]");
+if(!cards.length)return;
+var observer=new IntersectionObserver(function(entries){
+entries.forEach(function(entry,index){
+if(entry.isIntersecting){
+setTimeout(function(){entry.target.classList.add("visible");},index*180);
+observer.unobserve(entry.target);
+}
+});
+},{threshold:.20});
+cards.forEach(function(card){observer.observe(card);});
+})();
+</script>
+
+<style id="m11-css">
+.m11-section{padding:100px 60px;position:relative;}
+.m11-header{text-align:center;margin-bottom:70px;}
+.m11-label{font-family:var(--font-mono);font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--accent-primary);margin-bottom:12px;}
+.m11-title{font-family:var(--font-display);font-size:clamp(28px,3vw,44px);font-weight:800;color:#fff;}
+.m11-title span{color:var(--accent-primary);}
+.m11-sub{margin:20px auto 0;max-width:720px;color:#6f89a5;line-height:1.8;}
+.m11-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:70px;}
+.m11-card{background:rgba(8,18,30,.85);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:38px;transition:.35s;position:relative;opacity:0;transform:translateY(25px);}
+.m11-card.visible{opacity:1;transform:translateY(0);}
+.m11-card:hover{transform:translateY(-8px);border-color:rgba(0,216,255,.35);box-shadow:0 0 30px rgba(0,216,255,.10);}
+.m11-card.featured{border:2px solid var(--accent-primary);box-shadow:0 0 35px rgba(0,216,255,.15);}
+.m11-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--accent-primary);color:#08111d;padding:8px 18px;font-size:11px;font-weight:700;border-radius:30px;letter-spacing:2px;text-transform:uppercase;}
+.m11-name{font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:10px;}
+.m11-price{font-size:40px;font-weight:800;color:var(--accent-primary);margin-bottom:24px;}
+.m11-price small{font-size:14px;color:#6f89a5;}
+.m11-list{list-style:none;margin-bottom:30px;}
+.m11-list li{padding:10px 0;font-size:14px;color:#8ea6bf;border-bottom:1px solid rgba(255,255,255,.05);}
+.m11-list li:last-child{border:none;}
+.m11-list li::before{content:"\2713 ";color:var(--accent-primary);font-weight:bold;}
+.m11-btn{display:block;text-align:center;padding:15px;border-radius:8px;text-decoration:none;font-family:var(--font-mono);font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;transition:.3s;}
+.m11-btn.primary{background:var(--accent-primary);color:#08111d;}
+.m11-btn.secondary{border:1px solid var(--accent-primary);color:var(--accent-primary);}
+.m11-btn:hover{transform:translateY(-2px);}
+.m11-footer{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-top:60px;color:#7089a5;font-size:13px;}
+.m11-footer span::before{content:"\2713 ";color:var(--accent-primary);font-weight:bold;}
+@media(max-width:1000px){.m11-grid{grid-template-columns:1fr;}.m11-section{padding:70px 24px;}}
+</style>
+
+<script id="m11-js">
+(function(){
+var cards=document.querySelectorAll("[data-m11]");
 if(!cards.length)return;
 var observer=new IntersectionObserver(function(entries){
 entries.forEach(function(entry,index){
