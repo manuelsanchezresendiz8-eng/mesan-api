@@ -3275,6 +3275,27 @@ window.addEventListener('scroll', () => {
   </div>
 </section>
 
+
+<section class="m13-section" id="casos-exito">
+  <div class="m13-header">
+    <div class="m13-label">Resultados</div>
+    <h2 class="m13-title">Empresas que ya trabajan con <span>MESAN Ω</span></h2>
+  </div>
+  <div class="m13-grid">
+    <div class="m13-card" data-m13><div class="m13-company">Industria Manufactura</div><div class="m13-text">Reducción de exposición fiscal mediante monitoreo continuo y alertas preventivas.</div><div class="m13-score">-38%</div><div class="m13-caption">Reducción de riesgo operativo</div></div>
+    <div class="m13-card" data-m13><div class="m13-company">Servicios Corporativos</div><div class="m13-text">Implementación de Guardian Ω y Briefings Ejecutivos para Dirección General.</div><div class="m13-score">91</div><div class="m13-caption">Índice Omega alcanzado</div></div>
+    <div class="m13-card" data-m13><div class="m13-company">Construcción</div><div class="m13-text">Detección temprana de incumplimientos REPSE antes de auditoría.</div><div class="m13-score">100%</div><div class="m13-caption">Cumplimiento validado</div></div>
+  </div>
+</section>
+
+
+<section class="m14-section" id="faq">
+  <h2 class="m14-title">Preguntas <span>Frecuentes</span></h2>
+  <div class="m14-item"><div class="m14-question">¿MESAN Ω sustituye a mi contador?<span>+</span></div><div class="m14-answer">No. MESAN Ω complementa el trabajo del contador detectando riesgos antes de que generen pérdidas.</div></div>
+  <div class="m14-item"><div class="m14-question">¿Cuánto tarda un diagnóstico?<span>+</span></div><div class="m14-answer">La evaluación inicial puede completarse en pocos minutos dependiendo de la información proporcionada.</div></div>
+  <div class="m14-item"><div class="m14-question">¿Mis datos están protegidos?<span>+</span></div><div class="m14-answer">Sí. La plataforma utiliza arquitectura multi-tenant, cifrado y aislamiento lógico por empresa.</div></div>
+</section>
+
 <script id="m4-js">
 (function(){
 var cards=document.querySelectorAll("[data-m4]");
@@ -3518,6 +3539,68 @@ observer.unobserve(entry.target);
 },{threshold:.20});
 cards.forEach(function(card){observer.observe(card);});
 })();
+</script>
+
+<style id="m13-css">
+.m13-section{padding:100px 60px;}
+.m13-header{text-align:center;margin-bottom:60px;}
+.m13-label{font-family:var(--font-mono);font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--accent-primary);margin-bottom:12px;}
+.m13-title{font-family:var(--font-display);font-size:clamp(28px,3vw,44px);font-weight:800;}
+.m13-title span{color:var(--accent-primary);}
+.m13-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;}
+.m13-card{background:rgba(8,18,30,.88);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:30px;opacity:0;transform:translateY(25px);transition:.35s;}
+.m13-card.visible{opacity:1;transform:translateY(0);}
+.m13-card:hover{border-color:rgba(0,216,255,.30);box-shadow:0 0 24px rgba(0,216,255,.10);}
+.m13-company{font-size:18px;font-weight:700;margin-bottom:12px;}
+.m13-text{font-size:14px;line-height:1.8;color:#8ea6bf;margin-bottom:18px;}
+.m13-score{font-size:32px;font-weight:800;color:var(--accent-primary);}
+.m13-caption{font-size:12px;color:#6d8398;}
+@media(max-width:900px){.m13-grid{grid-template-columns:1fr;}.m13-section{padding:70px 24px;}}
+</style>
+
+<script id="m13-js">
+(function(){
+var cards=document.querySelectorAll("[data-m13]");
+if(!cards.length)return;
+var obs=new IntersectionObserver(function(entries){
+entries.forEach(function(e,i){
+if(e.isIntersecting){
+setTimeout(function(){e.target.classList.add("visible");},i*180);
+obs.unobserve(e.target);
+}
+});
+},{threshold:.2});
+cards.forEach(function(c){obs.observe(c);});
+})();
+</script>
+
+<style id="m14-css">
+.m14-section{padding:100px 60px;}
+.m14-title{text-align:center;font-family:var(--font-display);font-size:clamp(28px,3vw,42px);margin-bottom:60px;}
+.m14-title span{color:var(--accent-primary);}
+.m14-item{background:rgba(8,18,30,.88);border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:18px;overflow:hidden;}
+.m14-question{padding:22px;cursor:pointer;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.m14-answer{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 22px;color:#8ea6bf;line-height:1.8;}
+.m14-item.open .m14-answer{max-height:220px;padding:0 22px 22px;}
+@media(max-width:900px){.m14-section{padding:70px 24px;}}
+</style>
+
+<script id="m14-js">
+document.querySelectorAll(".m14-question").forEach(function(q){
+q.addEventListener("click",function(){
+var item=this.parentElement;
+item.classList.toggle("open");
+});
+});
+</script>
+
+<script id="m14-js">
+document.querySelectorAll(".m14-question").forEach(function(q){
+q.addEventListener("click",function(){
+var item=this.parentElement;
+item.classList.toggle("open");
+});
+});
 </script>
 </body>
 </html>
