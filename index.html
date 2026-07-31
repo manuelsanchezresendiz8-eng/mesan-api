@@ -3258,6 +3258,23 @@ window.addEventListener('scroll', () => {
   </div>
 </section>
 
+
+<section class="m12-section" id="sectores-omega">
+  <div class="m12-header">
+    <div class="m12-label">Especialización</div>
+    <h2 class="m12-title">MESAN Ω protege <span>todos los sectores</span></h2>
+    <p class="m12-sub">Cada industria enfrenta riesgos diferentes. Los motores Omega adaptan automáticamente sus reglas de análisis según el sector de la empresa.</p>
+  </div>
+  <div class="m12-grid">
+    <div class="m12-card" data-m12><div class="m12-icon">🏭</div><div class="m12-name">Industria</div><div class="m12-risk"><strong>Riesgos:</strong><br>IMSS, seguridad industrial, REPSE, auditorías, continuidad operativa.</div></div>
+    <div class="m12-card" data-m12><div class="m12-icon">🏥</div><div class="m12-name">Salud</div><div class="m12-risk"><strong>Riesgos:</strong><br>Cumplimiento sanitario, protección de datos, auditorías regulatorias.</div></div>
+    <div class="m12-card" data-m12><div class="m12-icon">🏢</div><div class="m12-name">Corporativos</div><div class="m12-risk"><strong>Riesgos:</strong><br>Gobierno corporativo, fraude, control interno y exposición financiera.</div></div>
+    <div class="m12-card" data-m12><div class="m12-icon">🚚</div><div class="m12-name">Logística</div><div class="m12-risk"><strong>Riesgos:</strong><br>Cadena de suministro, contratos, operación y transporte.</div></div>
+    <div class="m12-card" data-m12><div class="m12-icon">🏗️</div><div class="m12-name">Construcción</div><div class="m12-risk"><strong>Riesgos:</strong><br>REPSE, subcontratación, obligaciones laborales y fiscales.</div></div>
+    <div class="m12-card" data-m12><div class="m12-icon">💼</div><div class="m12-name">Servicios</div><div class="m12-risk"><strong>Riesgos:</strong><br>SAT, ISR, IVA, contratos, flujo de efectivo y continuidad empresarial.</div></div>
+  </div>
+</section>
+
 <script id="m4-js">
 (function(){
 var cards=document.querySelectorAll("[data-m4]");
@@ -3460,6 +3477,41 @@ var observer=new IntersectionObserver(function(entries){
 entries.forEach(function(entry,index){
 if(entry.isIntersecting){
 setTimeout(function(){entry.target.classList.add("visible");},index*180);
+observer.unobserve(entry.target);
+}
+});
+},{threshold:.20});
+cards.forEach(function(card){observer.observe(card);});
+})();
+</script>
+
+<style id="m12-css">
+.m12-section{padding:100px 60px;position:relative;}
+.m12-header{text-align:center;margin-bottom:70px;}
+.m12-label{font-family:var(--font-mono);font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--accent-primary);margin-bottom:12px;}
+.m12-title{font-family:var(--font-display);font-size:clamp(28px,3vw,44px);font-weight:800;color:#fff;}
+.m12-title span{color:var(--accent-primary);}
+.m12-sub{margin:18px auto 0;max-width:760px;color:#6f89a5;line-height:1.8;}
+.m12-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:70px;}
+.m12-card{background:rgba(8,18,30,.85);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:30px;transition:.35s;opacity:0;transform:translateY(25px);}
+.m12-card.visible{opacity:1;transform:translateY(0);}
+.m12-card:hover{border-color:rgba(0,216,255,.35);box-shadow:0 0 28px rgba(0,216,255,.10);transform:translateY(-6px);}
+.m12-icon{font-size:34px;margin-bottom:18px;}
+.m12-name{font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:12px;}
+.m12-risk{color:#8fa8c2;font-size:14px;line-height:1.8;}
+.m12-risk strong{color:var(--accent-primary);}
+@media(max-width:1000px){.m12-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:700px){.m12-section{padding:70px 24px;}.m12-grid{grid-template-columns:1fr;}}
+</style>
+
+<script id="m12-js">
+(function(){
+var cards=document.querySelectorAll("[data-m12]");
+if(!cards.length)return;
+var observer=new IntersectionObserver(function(entries){
+entries.forEach(function(entry,index){
+if(entry.isIntersecting){
+setTimeout(function(){entry.target.classList.add("visible");},index*150);
 observer.unobserve(entry.target);
 }
 });
