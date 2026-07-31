@@ -5,14 +5,23 @@ Toda la logica vive en core/jarvis/guardian_engine.py.
 """
 
 import logging
+from pathlib import Path
 from datetime import datetime, timezone
 from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 
 from core.jarvis.guardian_engine import guardian_engine
 
+GUARDIAN_BASE = Path(__file__).resolve().parent.parent
+
 router = APIRouter()
 logger = logging.getLogger("mesan.guardian.routes")
+
+
+@router.get("/guardian/dashboard")
+async def guardian_dashboard():
+    """Dashboard visual Guardian Omega."""
+    return FileResponse(GUARDIAN_BASE / "guardian_dashboard.html")
 
 
 def _serialize(obj):
