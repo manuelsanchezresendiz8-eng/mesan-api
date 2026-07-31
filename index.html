@@ -3296,6 +3296,39 @@ window.addEventListener('scroll', () => {
   <div class="m14-item"><div class="m14-question">¿Mis datos están protegidos?<span>+</span></div><div class="m14-answer">Sí. La plataforma utiliza arquitectura multi-tenant, cifrado y aislamiento lógico por empresa.</div></div>
 </section>
 
+
+<section class="m15-section" id="diagnostico-ejecutivo">
+  <div class="m15-container">
+    <div class="m15-header">
+      <div class="m15-label">Diagnóstico</div>
+      <h2 class="m15-title">Solicita tu <span>Diagnóstico Ejecutivo</span></h2>
+      <p class="m15-sub">Nuestro sistema analizará la situación de tu empresa y generará un Executive Briefing mediante JARVIS Ω.</p>
+    </div>
+    <form id="m15-form" class="m15-form">
+      <input type="text" name="empresa" placeholder="Empresa" required>
+      <input type="text" name="nombre" placeholder="Nombre del responsable" required>
+      <input type="email" name="email" placeholder="Correo electrónico" required>
+      <input type="tel" name="telefono" placeholder="Teléfono">
+      <select name="sector"><option value="">Sector</option><option>Manufactura</option><option>Construcción</option><option>Servicios</option><option>Salud</option><option>Comercio</option><option>Otro</option></select>
+      <input type="number" name="empleados" placeholder="Número de empleados">
+      <textarea name="descripcion" placeholder="Describe brevemente la situación actual de tu empresa..."></textarea>
+      <button class="m15-submit" type="submit">Generar Diagnóstico</button>
+    </form>
+    <div id="m15-status"></div>
+  </div>
+</section>
+
+
+<footer class="m16-footer" id="contacto">
+  <div class="m16-grid">
+    <div><div class="m16-logo">MESAN <span>Ω</span></div><div class="m16-text">Sistema Operativo Empresarial para prevención de riesgos fiscales, laborales, financieros y operativos.</div></div>
+    <div><div class="m16-title">Empresa</div><ul class="m16-links"><li><a href="#inicio">Inicio</a></li><li><a href="#como-funciona">Cómo funciona</a></li><li><a href="#planes-omega">Planes</a></li></ul></div>
+    <div><div class="m16-title">Contacto</div><ul class="m16-links"><li>contacto@mesanomega.com</li><li>Mexicali, B.C.</li><li>México</li></ul></div>
+    <div><div class="m16-title">Legal</div><ul class="m16-links"><li><a href="#">Aviso de privacidad</a></li><li><a href="#">Términos</a></li><li><a href="#">Cumplimiento</a></li></ul></div>
+  </div>
+  <div class="m16-copy">© 2026 MESAN Ω · Sistema Operativo Empresarial · Todos los derechos reservados.</div>
+</footer>
+
 <script id="m4-js">
 (function(){
 var cards=document.querySelectorAll("[data-m4]");
@@ -3602,5 +3635,52 @@ item.classList.toggle("open");
 });
 });
 </script>
+
+<style id="m15-css">
+.m15-section{padding:110px 60px;background:rgba(3,8,15,.55);}
+.m15-container{max-width:950px;margin:auto;}
+.m15-header{text-align:center;margin-bottom:60px;}
+.m15-label{font-family:var(--font-mono);font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--accent-primary);margin-bottom:12px;}
+.m15-title{font-family:var(--font-display);font-size:clamp(30px,3vw,44px);font-weight:800;}
+.m15-title span{color:var(--accent-primary);}
+.m15-sub{margin-top:18px;color:#7d93aa;line-height:1.8;}
+.m15-form{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+.m15-form input,.m15-form select,.m15-form textarea{background:#08111d;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:16px;color:#fff;font-size:14px;width:100%;}
+.m15-form textarea{grid-column:1/3;min-height:150px;resize:vertical;}
+.m15-submit{grid-column:1/3;padding:18px;background:var(--accent-primary);color:#08111d;font-weight:700;font-family:var(--font-display);font-size:15px;border:none;border-radius:8px;cursor:pointer;transition:.3s;}
+.m15-submit:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(0,216,255,.35);}
+#m15-status{margin-top:18px;text-align:center;font-size:14px;color:#8ca5bf;}
+@media(max-width:900px){.m15-section{padding:70px 24px;}.m15-form{grid-template-columns:1fr;}.m15-form textarea,.m15-submit{grid-column:auto;}}
+</style>
+
+<script id="m15-js">
+document.getElementById("m15-form").addEventListener("submit",async function(e){
+e.preventDefault();
+var status=document.getElementById("m15-status");
+status.innerHTML="Enviando información...";
+var form=new FormData(this);
+var payload=Object.fromEntries(form.entries());
+try{
+var r=await fetch("/api/leads",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+if(r.ok){status.innerHTML="Diagnóstico solicitado correctamente.";this.reset();}
+else{status.innerHTML="No fue posible enviar la información.";}
+}catch(err){status.innerHTML="Error de conexión con MESAN Ω.";}
+});
+</script>
+
+<style id="m16-css">
+.m16-footer{padding:80px 60px 40px;border-top:1px solid rgba(255,255,255,.06);background:#050b12;}
+.m16-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:50px;}
+.m16-logo{font-family:var(--font-display);font-size:28px;font-weight:800;}
+.m16-logo span{color:var(--accent-primary);}
+.m16-text{margin-top:18px;color:#7c93a8;line-height:1.8;font-size:14px;}
+.m16-title{font-weight:700;margin-bottom:18px;}
+.m16-links{list-style:none;padding:0;}
+.m16-links li{margin-bottom:10px;}
+.m16-links a{text-decoration:none;color:#7c93a8;transition:.3s;}
+.m16-links a:hover{color:var(--accent-primary);}
+.m16-copy{text-align:center;border-top:1px solid rgba(255,255,255,.05);padding-top:24px;font-size:13px;color:#6d8297;}
+@media(max-width:900px){.m16-footer{padding:60px 24px;}.m16-grid{grid-template-columns:1fr;}}
+</style>
 </body>
 </html>
