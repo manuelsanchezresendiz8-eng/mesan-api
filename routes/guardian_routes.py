@@ -11,6 +11,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, FileResponse
 
 from core.jarvis.guardian_engine import guardian_engine
+from core.jarvis.telemetry_engine import telemetry_engine
 
 GUARDIAN_BASE = Path(__file__).resolve().parent.parent
 
@@ -89,6 +90,16 @@ async def guardian_security(request: Request):
         }
     except Exception as e:
         logger.exception("[GUARDIAN] security failed")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@router.get("/guardian/telemetry")
+async def guardian_telemetry(request: Request):
+    """Metricas de telemetria en tiempo real."""
+    try:
+        return telemetry_engine.build_metrics()
+    except Exception as e:
+        logger.exception("[GUARDIAN] telemetry failed")
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 
