@@ -12,6 +12,10 @@ from fastapi.responses import JSONResponse, FileResponse
 
 from core.jarvis.guardian_engine import guardian_engine
 from core.jarvis.telemetry_engine import telemetry_engine
+from core.jarvis.self_healing_engine import self_healing_engine
+from core.jarvis.autonomous_orchestrator import autonomous_orchestrator
+from core.jarvis.guardian_integration import guardian_integration
+from core.jarvis.event_bus import event_bus
 
 GUARDIAN_BASE = Path(__file__).resolve().parent.parent
 
@@ -100,6 +104,57 @@ async def guardian_telemetry(request: Request):
         return telemetry_engine.build_metrics()
     except Exception as e:
         logger.exception("[GUARDIAN] telemetry failed")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@router.get("/guardian/self-healing")
+async def guardian_self_healing(request: Request):
+    """Motor de auto-recuperacion."""
+    try:
+        self_healing_engine.analyze()
+        return self_healing_engine.generate_report()
+    except Exception as e:
+        logger.exception("[GUARDIAN] self-healing failed")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@router.get("/guardian/orchestrator")
+async def guardian_orchestrator(request: Request):
+    """Orquestador autonomo."""
+    try:
+        return autonomous_orchestrator.evaluate()
+    except Exception as e:
+        logger.exception("[GUARDIAN] orchestrator failed")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@router.get("/guardian/orchestrator/report")
+async def guardian_orchestrator_report(request: Request):
+    """Reporte ejecutivo del orquestador."""
+    try:
+        return autonomous_orchestrator.build_report()
+    except Exception as e:
+        logger.exception("[GUARDIAN] orchestrator report failed")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@router.get("/guardian/dashboard/state")
+async def guardian_dashboard_state(request: Request):
+    """Estado consolidado - una sola llamada."""
+    try:
+        return guardian_integration.get_state()
+    except Exception as e:
+        logger.exception("[GUARDIAN] dashboard state failed")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@router.get("/guardian/events")
+async def guardian_events(request: Request):
+    """Bus de eventos."""
+    try:
+        return event_bus.get_queue()
+    except Exception as e:
+        logger.exception("[GUARDIAN] events failed")
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 
