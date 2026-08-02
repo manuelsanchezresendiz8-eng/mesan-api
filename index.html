@@ -1979,7 +1979,7 @@
 <!-- ============================================================
      EXECUTIVE DASHBOARD
 ============================================================ -->
-<section id="dashboard">
+<section id="dashboard-old" style="display:none">
   <div class="dashboard-header reveal">
     <div>
       <div class="section-tag">Control Plane Ω</div>
@@ -2074,7 +2074,7 @@
 <!-- ============================================================
      INTELLIGENCE ENGINES Ω
 ============================================================ -->
-<section id="engines">
+<section id="engines-old" style="display:none">
   <div class="engines-header reveal">
     <div>
       <div class="section-tag">Intelligence Layer</div>
@@ -3324,7 +3324,7 @@ window.addEventListener('scroll', () => {
     <div><div class="m16-logo">MESAN <span>Ω</span></div><div class="m16-text">Sistema Operativo Empresarial para prevención de riesgos fiscales, laborales, financieros y operativos.</div></div>
     <div><div class="m16-title">Empresa</div><ul class="m16-links"><li><a href="#inicio">Inicio</a></li><li><a href="#como-funciona">Cómo funciona</a></li><li><a href="#planes-omega">Planes</a></li></ul></div>
     <div><div class="m16-title">Contacto</div><ul class="m16-links"><li>contacto@mesanomega.com</li><li>Mexicali, B.C.</li><li>México</li></ul></div>
-    <div><div class="m16-title">Legal</div><ul class="m16-links"><li><a href="#">Aviso de privacidad</a></li><li><a href="#">Términos</a></li><li><a href="#">Cumplimiento</a></li></ul></div>
+    <div><div class="m16-title">Legal</div><ul class="m16-links"><li><a href="/privacidad.html">Aviso de privacidad</a></li><li><a href="/terminos.html">Términos</a></li><li><a href="/cookies.html">Cookies</a></li></ul></div>
   </div>
   <div class="m16-copy">© 2026 MESAN Ω · Sistema Operativo Empresarial · Todos los derechos reservados.</div>
 </footer>
@@ -3736,5 +3736,40 @@ section,footer{overflow:hidden;}
 .m11-footer{gap:20px!important;font-size:12px!important;}
 }
 </style>
+
+<style id="cookie-hamburger-css">
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;background:#0a1520;border-top:1px solid rgba(0,216,255,.15);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;z-index:9999;font-size:13px;color:#8ca5bf;flex-wrap:wrap;}
+.cookie-banner a{color:var(--accent-primary,#00d8ff);text-decoration:underline;}
+.cookie-accept{background:var(--accent-primary,#00d8ff);color:#06111d;border:none;padding:10px 24px;border-radius:6px;font-weight:700;cursor:pointer;font-size:13px;}
+.cookie-banner.hidden{display:none;}
+.hamburger{display:none;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;padding:4px 8px;}
+@media(max-width:900px){
+.nav-links{display:none;position:absolute;top:60px;left:0;right:0;background:#0a1520;flex-direction:column;padding:20px;border-bottom:1px solid rgba(0,216,255,.15);z-index:999;}
+.nav-links.open{display:flex;}
+.hamburger{display:block;}
+}
+</style>
+
+<div class="cookie-banner" id="cookie-banner">
+  <span>Usamos cookies para mejorar tu experiencia. <a href="/cookies.html">Más información</a></span>
+  <button class="cookie-accept" onclick="document.getElementById('cookie-banner').classList.add('hidden');localStorage.setItem('cookies_ok','1')">Aceptar</button>
+</div>
+
+<script id="cookie-hamburger-js">
+if(localStorage.getItem("cookies_ok")){document.getElementById("cookie-banner").classList.add("hidden");}
+(function(){
+var nav=document.querySelector("nav");
+if(!nav)return;
+var links=nav.querySelector(".nav-links");
+if(!links)return;
+var btn=document.createElement("button");
+btn.className="hamburger";
+btn.innerHTML="&#9776;";
+btn.addEventListener("click",function(){links.classList.toggle("open");});
+var logo=nav.querySelector(".nav-logo");
+if(logo&&logo.nextSibling){nav.insertBefore(btn,logo.nextSibling);}
+else{nav.appendChild(btn);}
+})();
+</script>
 </body>
 </html>
