@@ -3,182 +3,187 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guardian Ω — Centro de Comando</title>
+<title>Guardian &#937; — Centro de Comando</title>
 <style>
 :root{--bg:#050A0F;--surface:#0a1520;--border:rgba(0,216,255,.12);--accent:#00d8ff;--danger:#ff4d4d;--warn:#ffc107;--ok:#28d17c;--text:#c8dae8;--muted:#5a7a94;--font-display:'Orbitron',monospace;--font-mono:'IBM Plex Mono',monospace;--font-body:'DM Sans',sans-serif;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;}
-.g-header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;border-bottom:1px solid var(--border);background:var(--surface);}
+.g-header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap;gap:10px;}
 .g-logo{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--accent);}
 .g-logo span{color:#fff;}
-.g-status-pill{padding:6px 16px;border-radius:20px;font-family:var(--font-mono);font-size:11px;letter-spacing:2px;}
-.g-status-pill.ok{background:rgba(40,209,124,.15);color:var(--ok);border:1px solid rgba(40,209,124,.3);}
-.g-status-pill.warn{background:rgba(255,193,7,.15);color:var(--warn);border:1px solid rgba(255,193,7,.3);}
-.g-status-pill.degraded{background:rgba(255,193,7,.15);color:var(--warn);border:1px solid rgba(255,193,7,.3);}
-.g-status-pill.critical{background:rgba(255,77,77,.15);color:var(--danger);border:1px solid rgba(255,77,77,.3);}
+.g-pill{padding:6px 16px;border-radius:20px;font-family:var(--font-mono);font-size:11px;letter-spacing:2px;}
+.g-pill.ok{background:rgba(40,209,124,.15);color:var(--ok);border:1px solid rgba(40,209,124,.3);}
+.g-pill.warn{background:rgba(255,193,7,.15);color:var(--warn);border:1px solid rgba(255,193,7,.3);}
+.g-pill.critical{background:rgba(255,77,77,.15);color:var(--danger);border:1px solid rgba(255,77,77,.3);}
 .g-time{font-family:var(--font-mono);font-size:13px;color:var(--muted);}
 .g-refresh{background:none;border:1px solid var(--border);color:var(--accent);padding:8px 18px;border-radius:6px;cursor:pointer;font-family:var(--font-mono);font-size:12px;transition:.3s;}
 .g-refresh:hover{background:var(--accent);color:var(--bg);}
-.g-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:24px 28px;}
-.g-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;transition:.3s;}
+.g-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:20px 28px;}
+.g-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:.3s;}
 .g-card:hover{border-color:rgba(0,216,255,.35);}
-.g-card-label{font-family:var(--font-mono);font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
-.g-card-value{font-family:var(--font-display);font-size:36px;font-weight:800;color:var(--accent);}
-.g-card-sub{font-size:12px;color:var(--muted);margin-top:6px;}
-.g-section-title{font-family:var(--font-mono);font-size:12px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;padding:12px 28px 0;margin-top:12px;}
-.g-services{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;padding:14px 28px;}
-.g-svc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;display:flex;align-items:center;gap:14px;}
-.g-svc-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
-.g-svc-dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok);}
-.g-svc-dot.warn{background:var(--warn);box-shadow:0 0 8px var(--warn);}
-.g-svc-dot.error{background:var(--danger);box-shadow:0 0 8px var(--danger);}
-.g-svc-name{font-weight:700;font-size:14px;}
-.g-svc-score{font-family:var(--font-mono);font-size:13px;color:var(--accent);}
-.g-svc-msg{font-size:12px;color:var(--muted);margin-top:4px;}
-.g-alerts{padding:14px 28px;}
-.g-alert{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;}
-.g-alert-badge{padding:4px 10px;border-radius:4px;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1px;}
-.g-alert-badge.critical{background:rgba(255,77,77,.2);color:var(--danger);}
-.g-alert-badge.high{background:rgba(255,193,7,.2);color:var(--warn);}
-.g-alert-badge.medium{background:rgba(0,216,255,.15);color:var(--accent);}
-.g-alert-badge.info{background:rgba(90,122,148,.2);color:var(--muted);}
-.g-alert-text{font-size:13px;}
-.g-alert-svc{font-size:11px;color:var(--muted);font-family:var(--font-mono);}
-.g-incidents{padding:14px 28px;}
-.g-incident{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px;}
-.g-incident-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.g-incident-id{font-family:var(--font-mono);font-size:12px;color:var(--accent);}
-.g-incident-status{font-family:var(--font-mono);font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(255,77,77,.15);color:var(--danger);}
-.g-incident-title{font-weight:700;font-size:14px;margin-bottom:6px;}
-.g-incident-timeline{font-size:12px;color:var(--muted);}
-.g-empty{text-align:center;padding:30px;color:var(--muted);font-style:italic;}
-.g-loading{text-align:center;padding:60px;color:var(--muted);font-family:var(--font-mono);}
+.g-card-label{font-family:var(--font-mono);font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.g-card-value{font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--accent);}
+.g-card-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+.g-section{font-family:var(--font-mono);font-size:12px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;padding:12px 28px 0;margin-top:8px;}
+.g-services{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;padding:12px 28px;}
+.g-svc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;align-items:center;gap:12px;}
+.g-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.g-dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok);}
+.g-dot.warn{background:var(--warn);box-shadow:0 0 8px var(--warn);}
+.g-dot.err{background:var(--danger);box-shadow:0 0 8px var(--danger);}
+.g-svc-name{font-weight:700;font-size:13px;}
+.g-svc-score{font-family:var(--font-mono);font-size:12px;color:var(--accent);}
+.g-svc-msg{font-size:11px;color:var(--muted);margin-top:2px;}
+.g-list{padding:12px 28px;}
+.g-alert{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;}
+.g-badge{padding:3px 8px;border-radius:4px;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1px;}
+.g-badge.critical{background:rgba(255,77,77,.2);color:var(--danger);}
+.g-badge.high{background:rgba(255,193,7,.2);color:var(--warn);}
+.g-badge.medium{background:rgba(0,216,255,.15);color:var(--accent);}
+.g-badge.info{background:rgba(90,122,148,.2);color:var(--muted);}
+.g-alert-text{font-size:12px;}
+.g-alert-svc{font-size:10px;color:var(--muted);font-family:var(--font-mono);}
+.g-incident{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;}
+.g-inc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.g-inc-id{font-family:var(--font-mono);font-size:11px;color:var(--accent);}
+.g-inc-status{font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(255,77,77,.15);color:var(--danger);}
+.g-inc-title{font-weight:700;font-size:13px;margin-bottom:4px;}
+.g-inc-time{font-size:11px;color:var(--muted);}
+.g-empty{text-align:center;padding:24px;color:var(--muted);font-style:italic;font-size:13px;}
+.g-trend{padding:12px 28px;}
+.g-trend-bar{display:flex;align-items:flex-end;gap:4px;height:60px;padding:8px 0;}
+.g-trend-col{flex:1;background:rgba(0,216,255,.2);border-radius:3px 3px 0 0;min-width:8px;transition:.3s;position:relative;}
+.g-trend-col:hover{background:rgba(0,216,255,.5);}
+.g-trend-val{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9px;font-family:var(--font-mono);color:var(--accent);}
 @media(max-width:900px){.g-grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:600px){.g-grid{grid-template-columns:1fr;padding:14px;}.g-header{flex-wrap:wrap;gap:10px;padding:14px;}.g-services{grid-template-columns:1fr;padding:14px;}.g-alerts,.g-incidents{padding:14px;}}
+@media(max-width:600px){.g-grid{grid-template-columns:1fr;padding:12px;}.g-header{padding:14px;}.g-services,.g-list,.g-trend{padding:12px;}.g-section{padding:8px 12px 0;}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=IBM+Plex+Mono:wght@400;700&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <header class="g-header">
   <div class="g-logo"><span>GUARDIAN</span> &#937;</div>
-  <div id="g-pill" class="g-status-pill warn">CARGANDO</div>
+  <div id="g-pill" class="g-pill warn">CARGANDO</div>
   <div class="g-time" id="g-time">--:--:--</div>
   <button class="g-refresh" onclick="loadAll()">&#8635; REFRESH</button>
 </header>
 
-<div class="g-grid" id="g-metrics">
-  <div class="g-card"><div class="g-card-label">Health Score</div><div class="g-card-value" id="g-score">--</div><div class="g-card-sub" id="g-score-status">Cargando...</div></div>
-  <div class="g-card"><div class="g-card-label">Servicios</div><div class="g-card-value" id="g-svc-count">--</div><div class="g-card-sub">monitoreados</div></div>
-  <div class="g-card"><div class="g-card-label">Incidentes</div><div class="g-card-value" id="g-inc-count">--</div><div class="g-card-sub">activos</div></div>
-  <div class="g-card"><div class="g-card-label">Alertas</div><div class="g-card-value" id="g-alert-count">--</div><div class="g-card-sub">detectadas</div></div>
+<div class="g-grid" id="g-top">
+  <div class="g-card"><div class="g-card-label">Health Score</div><div class="g-card-value" id="v-health">--</div><div class="g-card-sub" id="v-status">...</div></div>
+  <div class="g-card"><div class="g-card-label">Disponibilidad</div><div class="g-card-value" id="v-avail">--</div><div class="g-card-sub">acumulada</div></div>
+  <div class="g-card"><div class="g-card-label">MTTR</div><div class="g-card-value" id="v-mttr">--</div><div class="g-card-sub">ms promedio</div></div>
+  <div class="g-card"><div class="g-card-label">Uptime</div><div class="g-card-value" id="v-uptime">--</div><div class="g-card-sub">segundos</div></div>
 </div>
 
-<div class="g-section-title">Servicios del Sistema</div>
-<div class="g-services" id="g-services"><div class="g-loading">Cargando servicios...</div></div>
+<div class="g-grid">
+  <div class="g-card"><div class="g-card-label">Recovery Rate</div><div class="g-card-value" id="v-recovery">--</div><div class="g-card-sub">% exitosas</div></div>
+  <div class="g-card"><div class="g-card-label">Acciones Auto</div><div class="g-card-value" id="v-actions">--</div><div class="g-card-sub">ejecutadas</div></div>
+  <div class="g-card"><div class="g-card-label">Rollbacks</div><div class="g-card-value" id="v-rollbacks">--</div><div class="g-card-sub">ejecutados</div></div>
+  <div class="g-card"><div class="g-card-label">Escalaciones</div><div class="g-card-value" id="v-escalations">--</div><div class="g-card-sub">al War Room</div></div>
+</div>
 
-<div class="g-section-title">Alertas Activas</div>
-<div class="g-alerts" id="g-alerts"><div class="g-loading">Cargando alertas...</div></div>
+<div class="g-grid">
+  <div class="g-card"><div class="g-card-label">Alertas</div><div class="g-card-value" id="v-alerts">--</div><div class="g-card-sub">detectadas</div></div>
+  <div class="g-card"><div class="g-card-label">Incidentes</div><div class="g-card-value" id="v-incidents">--</div><div class="g-card-sub">activos</div></div>
+  <div class="g-card"><div class="g-card-label">Requests</div><div class="g-card-value" id="v-requests">--</div><div class="g-card-sub">totales</div></div>
+  <div class="g-card"><div class="g-card-label">Errores</div><div class="g-card-value" id="v-errors">--</div><div class="g-card-sub">totales</div></div>
+</div>
 
-<div class="g-section-title">Incidentes</div>
-<div class="g-incidents" id="g-incidents"><div class="g-loading">Cargando incidentes...</div></div>
+<div class="g-section">Tendencia Health Score</div>
+<div class="g-trend"><div class="g-trend-bar" id="v-trend"></div></div>
+
+<div class="g-section">Servicios Telemetria</div>
+<div class="g-services" id="v-services"><div class="g-empty">Cargando...</div></div>
+
+<div class="g-section">Servicios Guardian</div>
+<div class="g-services" id="v-guardian-svcs"><div class="g-empty">Cargando...</div></div>
+
+<div class="g-section">Alertas Activas</div>
+<div class="g-list" id="v-alert-list"><div class="g-empty">Cargando...</div></div>
+
+<div class="g-section">Incidentes</div>
+<div class="g-list" id="v-inc-list"><div class="g-empty">Cargando...</div></div>
+
+<div class="g-section">Self-Healing</div>
+<div class="g-grid">
+  <div class="g-card"><div class="g-card-label">Estado</div><div class="g-card-value" id="v-sh-status">--</div><div class="g-card-sub" id="v-sh-action">...</div></div>
+  <div class="g-card"><div class="g-card-label">Ejecutadas</div><div class="g-card-value" id="v-sh-exec">--</div><div class="g-card-sub">acciones</div></div>
+  <div class="g-card"><div class="g-card-label">Fallidas</div><div class="g-card-value" id="v-sh-fail">--</div><div class="g-card-sub">acciones</div></div>
+  <div class="g-card"><div class="g-card-label">API Uptime</div><div class="g-card-value" id="v-api-up">--</div><div class="g-card-sub">%</div></div>
+</div>
 
 <script>
-var API=window.location.origin+"/guardian";
+var API=window.location.origin+"/guardian/dashboard/state";
 var refreshTimer=null;
 
 function updateTime(){
-  var d=new Date();
-  document.getElementById("g-time").textContent=d.toLocaleTimeString("es-MX",{hour12:false})+" CDT";
+  document.getElementById("g-time").textContent=new Date().toLocaleTimeString("es-MX",{hour12:false})+" CDT";
 }
 
-function setPill(status){
+function setPill(s){
   var el=document.getElementById("g-pill");
-  el.textContent=status;
-  el.className="g-status-pill";
-  if(status==="OPERATIONAL")el.classList.add("ok");
-  else if(status==="WARNING"||status==="DEGRADED")el.classList.add("warn");
-  else if(status==="CRITICAL")el.classList.add("critical");
+  el.textContent=s;el.className="g-pill";
+  if(s==="OPERATIONAL")el.classList.add("ok");
+  else if(s==="WARNING"||s==="DEGRADED")el.classList.add("warn");
+  else if(s==="CRITICAL")el.classList.add("critical");
   else el.classList.add("warn");
 }
 
-function dotClass(status){
-  if(status==="OK")return "ok";
-  if(status==="WARNING")return "warn";
-  return "error";
-}
+function dc(s){return s==="OK"?"ok":s==="WARNING"?"warn":"err";}
 
-async function loadStatus(){
+async function loadAll(){
+  updateTime();
   try{
-    var r=await fetch(API+"/status");
-    var d=await r.json();
-    document.getElementById("g-score").textContent=Math.round(d.overall_score);
-    document.getElementById("g-score-status").textContent=d.status;
-    setPill(d.status);
-    document.getElementById("g-svc-count").textContent=d.services?d.services.length:0;
-    document.getElementById("g-alert-count").textContent=d.alerts?d.alerts.length:0;
-    var svcHtml="";
-    if(d.services&&d.services.length){
-      d.services.forEach(function(s){
-        svcHtml+='<div class="g-svc"><div class="g-svc-dot '+dotClass(s.status)+'"></div><div><div class="g-svc-name">'+s.service+'</div><div class="g-svc-score">Score: '+Math.round(s.score)+'</div><div class="g-svc-msg">'+s.message+'</div></div></div>';
-      });
-    }else{svcHtml='<div class="g-empty">Sin servicios registrados</div>';}
-    document.getElementById("g-services").innerHTML=svcHtml;
-    var alertHtml="";
-    if(d.alerts&&d.alerts.length){
-      d.alerts.forEach(function(a){
-        var sev=(a.severity||"INFO").toLowerCase();
-        alertHtml+='<div class="g-alert"><div class="g-alert-badge '+sev+'">'+(a.severity||"INFO")+'</div><div><div class="g-alert-text">'+a.message+'</div><div class="g-alert-svc">'+(a.service||"")+'</div></div></div>';
-      });
-    }else{alertHtml='<div class="g-empty">Sin alertas activas</div>';}
-    document.getElementById("g-alerts").innerHTML=alertHtml;
+    var r=await fetch(API);var d=await r.json();
+    document.getElementById("v-health").textContent=Math.round(d.health_score||0);
+    document.getElementById("v-status").textContent=d.health_status||"--";
+    setPill(d.health_status||"UNKNOWN");
+    document.getElementById("v-avail").textContent=(d.availability_pct||100)+"%";
+    document.getElementById("v-mttr").textContent=Math.round(d.mttr_ms||0);
+    document.getElementById("v-uptime").textContent=Math.round(d.uptime_seconds||0);
+    document.getElementById("v-recovery").textContent=(d.recovery_success_rate||100)+"%";
+    document.getElementById("v-actions").textContent=d.automatic_actions||0;
+    document.getElementById("v-rollbacks").textContent=d.rollbacks_executed||0;
+    document.getElementById("v-escalations").textContent=d.escalations_to_warroom||0;
+    document.getElementById("v-alerts").textContent=d.alerts_count||0;
+    document.getElementById("v-incidents").textContent=d.incidents_count||0;
+    document.getElementById("v-requests").textContent=d.total_requests||0;
+    document.getElementById("v-errors").textContent=d.total_errors||0;
+    var sh=d.self_healing||{};
+    document.getElementById("v-sh-status").textContent=sh.status||"--";
+    document.getElementById("v-sh-action").textContent=sh.last_action||"None";
+    document.getElementById("v-sh-exec").textContent=sh.executed||0;
+    document.getElementById("v-sh-fail").textContent=sh.failed||0;
+    var m=d.metrics||{};
+    document.getElementById("v-api-up").textContent=(m.api_uptime||100)+"%";
+    var svcs=d.services||[];var sh1="";
+    if(svcs.length){svcs.forEach(function(s){sh1+='<div class="g-svc"><div class="g-dot '+dc(s.status)+'"></div><div><div class="g-svc-name">'+s.service+'</div><div class="g-svc-score">Score: '+(s.score||0)+'</div></div></div>';});}
+    else{sh1='<div class="g-empty">Sin servicios</div>';}
+    document.getElementById("v-services").innerHTML=sh1;
+    var gsvcs=d.services_guardian||[];var sh2="";
+    if(gsvcs.length){gsvcs.forEach(function(s){sh2+='<div class="g-svc"><div class="g-dot '+dc(s.status)+'"></div><div><div class="g-svc-name">'+s.service+'</div><div class="g-svc-score">Score: '+Math.round(s.score||0)+'</div><div class="g-svc-msg">'+(s.message||"")+'</div></div></div>';});}
+    else{sh2='<div class="g-empty">Sin servicios</div>';}
+    document.getElementById("v-guardian-svcs").innerHTML=sh2;
+    var alerts=d.alerts||[];var ah="";
+    if(alerts.length){alerts.forEach(function(a){var sv=(a.severity||"INFO").toLowerCase();ah+='<div class="g-alert"><div class="g-badge '+sv+'">'+(a.severity||"INFO")+'</div><div><div class="g-alert-text">'+(a.message||"")+'</div><div class="g-alert-svc">'+(a.service||"")+'</div></div></div>';});}
+    else{ah='<div class="g-empty">Sin alertas</div>';}
+    document.getElementById("v-alert-list").innerHTML=ah;
+    var incs=d.incidents||[];var ih="";
+    if(incs.length){incs.forEach(function(i){ih+='<div class="g-incident"><div class="g-inc-header"><div class="g-inc-id">'+(i.id||"INC")+'</div><div class="g-inc-status">'+(i.status||"OPEN")+'</div></div><div class="g-inc-title">'+(i.title||i.description||"Incidente")+'</div><div class="g-inc-time">'+(i.created_at||"")+'</div></div>';});}
+    else{ih='<div class="g-empty">Sin incidentes</div>';}
+    document.getElementById("v-inc-list").innerHTML=ih;
+    var trend=d.health_trend||[];var tb="";
+    if(trend.length){var maxH=Math.max.apply(null,trend.map(function(t){return t.health||0;}));trend.forEach(function(t){var h=t.health||0;var pct=maxH>0?Math.round(h/maxH*100):0;tb+='<div class="g-trend-col" style="height:'+pct+'%"><div class="g-trend-val">'+h+'</div></div>';});}
+    document.getElementById("v-trend").innerHTML=tb;
   }catch(e){
-    document.getElementById("g-score").textContent="ERR";
+    document.getElementById("v-health").textContent="ERR";
     setPill("CRITICAL");
   }
 }
 
-async function loadIncidents(){
-  try{
-    var r=await fetch(API+"/incidents");
-    var d=await r.json();
-    document.getElementById("g-inc-count").textContent=d.total||0;
-    var html="";
-    if(d.incidents&&d.incidents.length){
-      d.incidents.forEach(function(inc){
-        html+='<div class="g-incident"><div class="g-incident-header"><div class="g-incident-id">'+(inc.id||"INC")+'</div><div class="g-incident-status">'+(inc.status||"OPEN")+'</div></div><div class="g-incident-title">'+(inc.title||inc.description||"Incidente detectado")+'</div><div class="g-incident-timeline">'+(inc.created_at||inc.timestamp||"")+'</div></div>';
-      });
-    }else{html='<div class="g-empty">Sin incidentes activos</div>';}
-    document.getElementById("g-incidents").innerHTML=html;
-  }catch(e){
-    document.getElementById("g-incidents").innerHTML='<div class="g-empty">Error al cargar incidentes</div>';
-  }
-}
-
-function loadAll(){
-  updateTime();
-  loadStatus();
-  loadIncidents();
-}
-
-function startRefresh(){
-  if(refreshTimer)clearInterval(refreshTimer);
-  refreshTimer=setInterval(loadAll,30000);
-}
-
-document.addEventListener("visibilitychange",function(){
-  if(document.hidden){
-    clearInterval(refreshTimer);
-    refreshTimer=null;
-  }else{
-    loadAll();
-    startRefresh();
-  }
-});
-
-loadAll();
-setInterval(updateTime,1000);
-startRefresh();
+function startRefresh(){if(refreshTimer)clearInterval(refreshTimer);refreshTimer=setInterval(loadAll,30000);}
+document.addEventListener("visibilitychange",function(){if(document.hidden){clearInterval(refreshTimer);refreshTimer=null;}else{loadAll();startRefresh();}});
+loadAll();setInterval(updateTime,1000);startRefresh();
 </script>
 </body>
 </html>
