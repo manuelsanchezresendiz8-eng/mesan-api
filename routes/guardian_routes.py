@@ -201,6 +201,27 @@ async def guardian_control_plane(request: Request):
     except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
 
 
+@router.post("/guardian/scheduler/start")
+async def guardian_scheduler_start(request: Request):
+    try: return guardian_scheduler.start()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@router.post("/guardian/scheduler/stop")
+async def guardian_scheduler_stop(request: Request):
+    try: return guardian_scheduler.stop()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@router.post("/guardian/advisor")
+async def guardian_advisor_post(request: Request):
+    try:
+        body = await request.json()
+        q = body.get("question", "estado general")
+        return guardian_advisor.ask(q)
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+
+
 @router.get("/guardian/predictive")
 async def guardian_predictive(request: Request):
     """Senales predictivas."""

@@ -6,6 +6,8 @@ from core.jarvis.guardian_engine import guardian_engine
 from core.jarvis.autonomous_orchestrator import autonomous_orchestrator
 from core.jarvis.rollback_manager import rollback_manager
 from core.jarvis.self_healing_engine import self_healing_engine
+from core.jarvis.predictive_analytics import predictive_engine
+from core.jarvis.notification_center import notification_center
 logger = logging.getLogger("mesan.guardian.integration")
 class GuardianIntegrationLayer:
     def __init__(self):
@@ -35,6 +37,25 @@ class GuardianIntegrationLayer:
         except: hs = {"status":"ERROR"}
         elapsed = round((time.perf_counter()-started)*1000,2)
         self._last_cycle = {"timestamp":datetime.now(timezone.utc).isoformat(),"version":self.version,"cycle":self._cycle_count,"elapsed_ms":elapsed,"health_score":tel.get("health",0),"health_status":gr.get("status","UNKNOWN") if isinstance(gr,dict) else "UNKNOWN","services":tel.get("services",[]),"services_guardian":gr.get("services",[]) if isinstance(gr,dict) else [],"alerts":gr.get("alerts",[]) if isinstance(gr,dict) else [],"alerts_count":gr.get("alerts_count",0) if isinstance(gr,dict) else 0,"incidents":gr.get("incidents",[]) if isinstance(gr,dict) else [],"incidents_count":gr.get("incidents_count",0) if isinstance(gr,dict) else 0,"automatic_actions":dd.get("automatic_actions",0),"recovery_success_rate":dd.get("recovery_success_rate",100),"mttr_ms":dd.get("mttr_ms",0),"rollbacks_executed":dd.get("rollbacks_executed",0),"escalations_to_warroom":dd.get("escalations_to_warroom",0),"availability_pct":dd.get("availability_pct",100),"health_trend":dd.get("health_trend",[]),"self_healing":hs,"metrics":tel.get("metrics",{}),"uptime_seconds":tel.get("uptime_seconds",0),"total_requests":tel.get("total_requests",0),"total_errors":tel.get("total_errors",0)}
+        try:
+            predictive_engine.record(tel.get("health", 0), tel.get("services", []))
+        except Exception as e:
+            logger.error("[Integration] Predictive record failed: %s", e)
+
+        alerts = self._last_cycle.get("alerts", []) if self._last_cycle else []
+        for alert in alerts:
+            sev = alert.get("severity", "INFO")
+            if sev in ("CRITICAL", "HIGH"):
+                try:
+                    notification_center.notify(
+                        "CRITICAL_ALERT" if sev == "CRITICAL" else "SERVICE_DOWN",
+                        sev,
+                        alert.get("message", "Alerta detectada"),
+                        {"service": alert.get("service", "unknown")},
+                    )
+                except Exception:
+                    pass
+
         telemetry_engine.log_guardian("Integration cycle #{} ({}ms)".format(self._cycle_count, elapsed))
         return self._last_cycle
     def get_state(self):

@@ -47,3 +47,11 @@ def setup_guardian() -> None:
         (1 if guardian_engine.rules_engine else 0)
     )
     logger.info("[Setup] Guardian Omega COMPLETO | modulos: %d/5", registered)
+
+    # -- Scheduler auto-start --
+    try:
+        from core.jarvis.guardian_scheduler import guardian_scheduler
+        guardian_scheduler.start()
+        logger.info("[Setup] GuardianScheduler iniciado")
+    except Exception as e:
+        logger.error("[Setup] GuardianScheduler fallo: %s", e)
