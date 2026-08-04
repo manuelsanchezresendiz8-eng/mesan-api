@@ -26,6 +26,7 @@ from routes.jarvis_routes    import router as jarvis_router     # JARVIS Omega
 from routes.guardian_routes  import router as guardian_router   # Guardian Omega
 from routes.jarvis_sales_routes import router as jarvis_sales_router  # JARVIS Sales
 from routes.market_routes import router as market_router  # Market Intelligence
+from routes.commercial_routes import router as commercial_router  # JARVIS Commercial
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -217,6 +218,7 @@ app.include_router(jarvis_router,                         tags=["JARVIS"])
 app.include_router(guardian_router,                       tags=["Guardian"])
 app.include_router(jarvis_sales_router,                   tags=["JARVIS Sales"])
 app.include_router(market_router,                         tags=["Market Intelligence"])
+app.include_router(commercial_router,                     tags=["Commercial"])
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
