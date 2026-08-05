@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>JARVIS Comercial — Dashboard</title>
+<style>
+:root{--bg:#050A0F;--surface:#0a1520;--border:rgba(0,216,255,.12);--accent:#00d8ff;--danger:#ff4d4d;--warn:#ffc107;--ok:#28d17c;--text:#c8dae8;--muted:#5a7a94;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+.c-header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap;gap:10px;}
+.c-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:800;color:var(--accent);}
+.c-logo span{color:#fff;}
+.c-pill{padding:6px 16px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;background:rgba(40,209,124,.15);color:var(--ok);border:1px solid rgba(40,209,124,.3);}
+.c-refresh{background:none;border:1px solid var(--border);color:var(--accent);padding:8px 18px;border-radius:6px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+.c-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:20px 28px;}
+.c-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;}
+.c-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.c-value{font-family:'Orbitron',monospace;font-size:32px;font-weight:800;color:var(--accent);}
+.c-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+.c-section{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;padding:12px 28px 0;margin-top:8px;}
+.c-list{padding:12px 28px;}
+.c-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.c-item-name{font-weight:700;font-size:13px;}
+.c-item-score{font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:14px;font-weight:700;}
+.c-badge{padding:3px 8px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;}
+.c-badge.hot{background:rgba(255,77,77,.2);color:var(--danger);}
+.c-badge.warm{background:rgba(255,193,7,.2);color:var(--warn);}
+.c-badge.cold{background:rgba(90,122,148,.2);color:var(--muted);}
+.c-empty{text-align:center;padding:24px;color:var(--muted);font-style:italic;font-size:13px;}
+@media(max-width:900px){.c-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.c-grid{grid-template-columns:1fr;padding:12px;}.c-header{padding:14px;}.c-list{padding:12px;}}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=IBM+Plex+Mono:wght@400;700&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="c-header">
+<div class="c-logo"><span>JARVIS</span> COMERCIAL</div>
+<div class="c-pill" id="c-pill">CARGANDO</div>
+<button class="c-refresh" onclick="loadAll()">&#8635; REFRESH</button>
+</header>
+<div class="c-grid">
+<div class="c-card"><div class="c-label">Leads Totales</div><div class="c-value" id="v-leads">--</div><div class="c-sub">en pipeline</div></div>
+<div class="c-card"><div class="c-label">Leads Nuevos</div><div class="c-value" id="v-nuevos">--</div><div class="c-sub">sin contactar</div></div>
+<div class="c-card"><div class="c-label">MRR</div><div class="c-value" id="v-mrr">--</div><div class="c-sub">MXN/mes</div></div>
+<div class="c-card"><div class="c-label">Conversion</div><div class="c-value" id="v-conv">--</div><div class="c-sub">%</div></div>
+</div>
+<div class="c-grid">
+<div class="c-card"><div class="c-label">ARR</div><div class="c-value" id="v-arr">--</div><div class="c-sub">MXN/anual</div></div>
+<div class="c-card"><div class="c-label">Propuestas</div><div class="c-value" id="v-props">--</div><div class="c-sub">generadas</div></div>
+<div class="c-card"><div class="c-label">Follow-ups</div><div class="c-value" id="v-follow">--</div><div class="c-sub">programados</div></div>
+<div class="c-card"><div class="c-label">Marketing</div><div class="c-value" id="v-mkt">--</div><div class="c-sub">contenidos</div></div>
+</div>
+<div class="c-grid">
+<div class="c-card"><div class="c-label">Scheduler</div><div class="c-value" id="v-sched">--</div><div class="c-sub">ciclos</div></div>
+<div class="c-card"><div class="c-label">Procesados Auto</div><div class="c-value" id="v-auto">--</div><div class="c-sub">leads</div></div>
+<div class="c-card"><div class="c-label">HOT Detectados</div><div class="c-value" id="v-hot">--</div><div class="c-sub">hoy</div></div>
+<div class="c-card"><div class="c-label">Forecast 30d</div><div class="c-value" id="v-forecast">--</div><div class="c-sub">MXN</div></div>
+</div>
+<div class="c-section">Leads Recientes</div>
+<div class="c-list" id="v-lead-list"><div class="c-empty">Cargando...</div></div>
+<div class="c-section">Estrategia del Dia</div>
+<div class="c-list" id="v-strategy"><div class="c-empty">Cargando...</div></div>
+<script>
+var API=window.location.origin+"/commercial";
+async function loadAll(){
+try{
+var r=await fetch(API+"/dashboard/data");var d=await r.json();
+var m=d.metrics||{};var p=d.pipeline||{};var f=d.followups||{};
+document.getElementById("v-leads").textContent=m.leads?m.leads.total:0;
+document.getElementById("v-nuevos").textContent=m.leads?m.leads.nuevos:0;
+document.getElementById("v-mrr").textContent="$"+(m.mrr||0).toLocaleString();
+document.getElementById("v-conv").textContent=(m.conversion_rate||0)+"%";
+document.getElementById("v-arr").textContent="$"+(m.arr||0).toLocaleString();
+document.getElementById("v-props").textContent=(d.recent_proposals||[]).length;
+document.getElementById("v-follow").textContent=f.total_scheduled||0;
+document.getElementById("v-mkt").textContent=0;
+document.getElementById("v-auto").textContent=d.leads_processed||0;
+document.getElementById("v-forecast").textContent="$"+(m.forecast_30d||0).toLocaleString();
+document.getElementById("c-pill").textContent="ACTIVO";
+var r2=await fetch(API+"/auto/status");var auto=await r2.json();
+document.getElementById("v-hot").textContent=auto.hot||0;
+var r3=await fetch(API+"/scheduler");var sched=await r3.json();
+document.getElementById("v-sched").textContent=sched.cycle||0;
+var r4=await fetch(API+"/leads");var leads=(await r4.json()).leads||[];
+var lh="";
+if(leads.length){leads.slice(0,10).forEach(function(l){lh+='<div class="c-item"><div><div class="c-item-name">'+(l.nombre||"--")+'</div><div style="font-size:11px;color:#5a7a94">'+(l.empresa||"")+" | "+(l.sector||"")+'</div></div><div class="c-item-score">'+(l.correo||"")+'</div></div>';});}
+else{lh='<div class="c-empty">Sin leads</div>';}
+document.getElementById("v-lead-list").innerHTML=lh;
+var r5=await fetch(API+"/strategy");var strat=await r5.json();
+var sh="";
+var recs=strat.recommendations||[];
+if(recs.length){recs.forEach(function(r){sh+='<div class="c-item"><div class="c-item-name">'+r.action+'</div><div class="c-badge '+(r.priority==="P1"?"hot":r.priority==="P2"?"warm":"cold")+'">'+r.priority+'</div></div>';});}
+else{sh='<div class="c-empty">Sin recomendaciones</div>';}
+document.getElementById("v-strategy").innerHTML=sh;
+}catch(e){document.getElementById("c-pill").textContent="ERROR";}
+}
+loadAll();setInterval(loadAll,30000);
+</script>
+</body>
+</html>

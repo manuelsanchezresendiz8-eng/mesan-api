@@ -53,5 +53,13 @@ def setup_guardian() -> None:
         from core.jarvis.guardian_scheduler import guardian_scheduler
         guardian_scheduler.start()
         logger.info("[Setup] GuardianScheduler iniciado")
+
+    # -- Commercial Scheduler auto-start --
+    try:
+        from core.jarvis.commercial.commercial_scheduler import commercial_scheduler
+        commercial_scheduler.start()
+        logger.info("[Setup] CommercialScheduler iniciado")
+    except Exception as e:
+        logger.error("[Setup] CommercialScheduler fallo: %s", e)
     except Exception as e:
         logger.error("[Setup] GuardianScheduler fallo: %s", e)
