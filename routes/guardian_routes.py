@@ -54,12 +54,18 @@ def setup_guardian() -> None:
 
     # -- Scheduler auto-start --
     try:
+        pass
+    except:
+        pass
         from core.jarvis.guardian_scheduler import guardian_scheduler
         guardian_scheduler.start()
         logger.info("[Setup] GuardianScheduler iniciado")
 
     # -- Commercial Scheduler auto-start --
     try:
+        pass
+    except:
+        pass
         from core.jarvis.commercial.commercial_scheduler import commercial_scheduler
         commercial_scheduler.start()
         logger.info("[Setup] CommercialScheduler iniciado")
