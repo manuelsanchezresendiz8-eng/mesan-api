@@ -1,0 +1,1 @@
+{"status":"OK","version":"3.3.0","env":"production","uptime_seconds":2218.05,"engines_loaded":9,"engines_degraded":0,"features":{"war_room":true,"benchmarking":true,"predictive_ai":false,"self_healing":false},"self_healing":{"enabled":false,"running":false},"timestamp":"2026-07-08T03:19:18Z","healthy_engines":9,"degraded_engines":0,"unhealthy_engines":0}
