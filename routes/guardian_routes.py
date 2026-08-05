@@ -55,7 +55,7 @@ def setup_guardian() -> None:
     # -- Scheduler auto-start --
     try:
         pass
-    except:
+    except Exception:
         pass
         from core.jarvis.guardian_scheduler import guardian_scheduler
         guardian_scheduler.start()
@@ -64,7 +64,7 @@ def setup_guardian() -> None:
     # -- Commercial Scheduler auto-start --
     try:
         pass
-    except:
+    except Exception:
         pass
         from core.jarvis.commercial.commercial_scheduler import commercial_scheduler
         commercial_scheduler.start()
