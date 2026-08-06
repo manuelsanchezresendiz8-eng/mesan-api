@@ -1,76 +1,126 @@
-﻿from fastapi import APIRouter, Depends
-
-router = APIRouter()
-# core/jarvis/guardian_setup.py -- MESAN Omega Guardian Setup
-"""
-Punto de registro de los modulos de Guardian Omega.
-Este es el unico lugar donde se importan e inicializan los monitores.
-guardian_engine.py NO se modifica.
-"""
-
+# routes/guardian_routes.py -- MESAN Omega Guardian Routes v2.0
 import logging
-from core.auth.basic_auth import verify_crm_credentials
+from pathlib import Path
+from datetime import datetime, timezone
+from fastapi import APIRouter, Request, Depends
+from fastapi.responses import JSONResponse, FileResponse
 from core.auth.basic_auth import verify_crm_credentials
 from core.jarvis.guardian_engine import guardian_engine
-
-logger = logging.getLogger("mesan.guardian.setup")
-
-
-def setup_guardian() -> None:
-    """Registra todos los monitores disponibles en GuardianEngine."""
-
-    # â”€â”€ HealthMonitor ACTIVO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    from core.jarvis.health_monitor import health_monitor
-    guardian_engine.register_health_monitor(health_monitor)
-    logger.info("[Setup] HealthMonitor registrado")
-
-    # â”€â”€ IncidentEngine ACTIVO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    from core.jarvis.incident_engine import incident_engine
-    guardian_engine.set_incident_engine(incident_engine)
-    logger.info("[Setup] IncidentEngine registrado")
-
-    # â”€â”€ SecurityMonitor ACTIVO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    from core.jarvis.security_monitor import security_monitor
-    guardian_engine.register_security_monitor(security_monitor)
-    logger.info("[Setup] SecurityMonitor registrado")
-
-    # â”€â”€ PredictiveMonitor ACTIVO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    from core.jarvis.predictive_monitor import predictive_monitor
-    guardian_engine.register_predictive_monitor(predictive_monitor)
-    logger.info("[Setup] PredictiveMonitor registrado")
-
-    # â”€â”€ GuardianRules ACTIVO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    from core.jarvis.guardian_rules import guardian_rules
-    guardian_engine.set_rules_engine(guardian_rules)
-    logger.info("[Setup] GuardianRules registrado")
-
-    registered = (
-        len(guardian_engine.health_monitors) +
-        len(guardian_engine.security_monitors) +
-        len(guardian_engine.predictive_monitors) +
-        (1 if guardian_engine.incident_engine else 0) +
-        (1 if guardian_engine.rules_engine else 0)
-    )
-    logger.info("[Setup] Guardian Omega COMPLETO | modulos: %d/5", registered)
-
-    # -- Scheduler auto-start --
+from core.jarvis.telemetry_engine import telemetry_engine
+from core.jarvis.self_healing_engine import self_healing_engine
+from core.jarvis.autonomous_orchestrator import autonomous_orchestrator
+from core.jarvis.guardian_integration import guardian_integration
+from core.jarvis.guardian_scheduler import guardian_scheduler
+from core.jarvis.predictive_analytics import predictive_engine
+from core.jarvis.executive_reporting import executive_reporter
+from core.jarvis.notification_center import notification_center
+from core.jarvis.guardian_ai_advisor import guardian_advisor
+from core.jarvis.control_plane import control_plane
+from core.jarvis.event_bus import event_bus
+GUARDIAN_BASE = Path(__file__).resolve().parent.parent
+router = APIRouter()
+logger = logging.getLogger("mesan.guardian.routes")
+def _serialize(obj):
+    if hasattr(obj, "__dataclass_fields__"):
+        return {k: _serialize(v) for k, v in obj.__dict__.items()}
+    if isinstance(obj, list):
+        return [_serialize(i) for i in obj]
+    if isinstance(obj, dict):
+        return {k: _serialize(v) for k, v in obj.items()}
+    return obj
+@router.get("/guardian/dashboard")
+async def guardian_dashboard(_u: str = Depends(verify_crm_credentials)):
+    return FileResponse(GUARDIAN_BASE / "guardian_dashboard.html")
+@router.get("/guardian/status")
+async def guardian_status(request: Request):
+    try: return _serialize(guardian_engine.execute())
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/health")
+async def guardian_health(request: Request):
     try:
-        pass
-    except Exception:
-        pass
-        from core.jarvis.guardian_scheduler import guardian_scheduler
-        guardian_scheduler.start()
-        logger.info("[Setup] GuardianScheduler iniciado")
-
-    # -- Commercial Scheduler auto-start --
+        r = guardian_engine.execute()
+        return {"timestamp": datetime.now(timezone.utc).isoformat(), "overall_score": r.overall_score, "status": r.status, "services": [_serialize(s) for s in r.services]}
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/incidents")
+async def guardian_incidents(request: Request):
     try:
-        pass
-    except Exception:
-        pass
-        from core.jarvis.commercial.commercial_scheduler import commercial_scheduler
-        commercial_scheduler.start()
-        logger.info("[Setup] CommercialScheduler iniciado")
-    except Exception as e:
-        logger.error("[Setup] CommercialScheduler fallo: %s", e)
-    except Exception as e:
-        logger.error("[Setup] GuardianScheduler fallo: %s", e)
+        r = guardian_engine.execute()
+        return {"timestamp": datetime.now(timezone.utc).isoformat(), "total": len(r.incidents), "incidents": r.incidents, "alerts": r.alerts}
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/security")
+async def guardian_security(request: Request):
+    try:
+        r = guardian_engine.execute()
+        return {"timestamp": datetime.now(timezone.utc).isoformat(), "services": [_serialize(s) for s in r.services if "security" in s.service.lower() or "env" in s.service.lower()], "alerts": [a for a in r.alerts if a.get("severity") in ("CRITICAL","HIGH")]}
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/telemetry")
+async def guardian_telemetry(request: Request):
+    try: return telemetry_engine.build_metrics()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/self-healing")
+async def guardian_self_healing(request: Request):
+    try:
+        self_healing_engine.analyze()
+        return self_healing_engine.generate_report()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/orchestrator")
+async def guardian_orchestrator(request: Request):
+    try: return autonomous_orchestrator.evaluate()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/orchestrator/report")
+async def guardian_orchestrator_report(request: Request):
+    try: return autonomous_orchestrator.build_report()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/dashboard/state")
+async def guardian_dashboard_state(request: Request, _u: str = Depends(verify_crm_credentials)):
+    try: return guardian_integration.get_state()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/events")
+async def guardian_events(request: Request):
+    try: return event_bus.get_queue()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/scheduler")
+async def guardian_scheduler_status(request: Request):
+    try: return guardian_scheduler.health_check()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/predictive-analytics")
+async def guardian_predictive_analytics(request: Request):
+    try: return predictive_engine.analyze()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/executive-report")
+async def guardian_executive_report(request: Request, _u: str = Depends(verify_crm_credentials)):
+    try: return executive_reporter.generate()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/notifications")
+async def guardian_notifications(request: Request):
+    try: return notification_center.get_status()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/advisor")
+async def guardian_advisor_endpoint(request: Request, _u: str = Depends(verify_crm_credentials)):
+    q = request.query_params.get("q", "estado general")
+    try: return guardian_advisor.ask(q)
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/control-plane")
+async def guardian_control_plane(request: Request, _u: str = Depends(verify_crm_credentials)):
+    try: return control_plane.get_state()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.post("/guardian/scheduler/start")
+async def guardian_scheduler_start(request: Request):
+    try: return guardian_scheduler.start()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.post("/guardian/scheduler/stop")
+async def guardian_scheduler_stop(request: Request):
+    try: return guardian_scheduler.stop()
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.post("/guardian/advisor")
+async def guardian_advisor_post(request: Request):
+    try:
+        body = await request.json()
+        return guardian_advisor.ask(body.get("question", "estado general"))
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
+@router.get("/guardian/predictive")
+async def guardian_predictive(request: Request):
+    try:
+        r = guardian_engine.execute()
+        return {"timestamp": datetime.now(timezone.utc).isoformat(), "overall_score": r.overall_score, "status": r.status, "signals": r.alerts}
+    except Exception as e: return JSONResponse(status_code=500, content={"error": str(e)})
