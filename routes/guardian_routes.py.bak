@@ -6,6 +6,10 @@ guardian_engine.py NO se modifica.
 """
 
 import logging
+from fastapi import Depends
+from core.auth.basic_auth import verify_crm_credentials
+from fastapi import Depends
+from core.auth.basic_auth import verify_crm_credentials
 from core.jarvis.guardian_engine import guardian_engine
 
 logger = logging.getLogger("mesan.guardian.setup")
@@ -14,51 +18,58 @@ logger = logging.getLogger("mesan.guardian.setup")
 def setup_guardian() -> None:
     """Registra todos los monitores disponibles en GuardianEngine."""
 
+    # ── HealthMonitor ACTIVO ──────────────────────────────────────────────────
     from core.jarvis.health_monitor import health_monitor
     guardian_engine.register_health_monitor(health_monitor)
     logger.info("[Setup] HealthMonitor registrado")
 
+    # ── IncidentEngine ACTIVO ─────────────────────────────────────────────────
     from core.jarvis.incident_engine import incident_engine
     guardian_engine.set_incident_engine(incident_engine)
     logger.info("[Setup] IncidentEngine registrado")
 
+    # ── SecurityMonitor ACTIVO ────────────────────────────────────────────────
     from core.jarvis.security_monitor import security_monitor
     guardian_engine.register_security_monitor(security_monitor)
     logger.info("[Setup] SecurityMonitor registrado")
 
+    # ── PredictiveMonitor ACTIVO ──────────────────────────────────────────────
     from core.jarvis.predictive_monitor import predictive_monitor
     guardian_engine.register_predictive_monitor(predictive_monitor)
     logger.info("[Setup] PredictiveMonitor registrado")
 
+    # ── GuardianRules ACTIVO ──────────────────────────────────────────────────
     from core.jarvis.guardian_rules import guardian_rules
     guardian_engine.set_rules_engine(guardian_rules)
     logger.info("[Setup] GuardianRules registrado")
 
     registered = (
-        len(guardian_engine.health_monitors)
-        + len(guardian_engine.security_monitors)
-        + len(guardian_engine.predictive_monitors)
-        + (1 if guardian_engine.incident_engine else 0)
-        + (1 if guardian_engine.rules_engine else 0)
+        len(guardian_engine.health_monitors) +
+        len(guardian_engine.security_monitors) +
+        len(guardian_engine.predictive_monitors) +
+        (1 if guardian_engine.incident_engine else 0) +
+        (1 if guardian_engine.rules_engine else 0)
     )
+    logger.info("[Setup] Guardian Omega COMPLETO | modulos: %d/5", registered)
 
-    logger.info(
-        "[Setup] Guardian Omega COMPLETO | modulos: %d/5",
-        registered,
-    )
-
-    # Scheduler auto-start
+    # -- Scheduler auto-start --
     try:
+        pass
+    except Exception:
+        pass
         from core.jarvis.guardian_scheduler import guardian_scheduler
         guardian_scheduler.start()
         logger.info("[Setup] GuardianScheduler iniciado")
-    except Exception as e:
-        logger.error("[Setup] GuardianScheduler fallo: %s", e)
 
-    # Commercial Scheduler auto-start
+    # -- Commercial Scheduler auto-start --
     try:
+        pass
+    except Exception:
+        pass
         from core.jarvis.commercial.commercial_scheduler import commercial_scheduler
         commercial_scheduler.start()
         logger.info("[Setup] CommercialScheduler iniciado")
     except Exception as e:
         logger.error("[Setup] CommercialScheduler fallo: %s", e)
+    except Exception as e:
+        logger.error("[Setup] GuardianScheduler fallo: %s", e)
