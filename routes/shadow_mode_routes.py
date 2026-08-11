@@ -32,7 +32,7 @@ class ShadowModeCommercial:
             import psycopg
             conn = psycopg.connect(os.getenv("DATABASE_URL"), connect_timeout=5)
             cur = conn.cursor()
-            cur.execute("SELECT id,nombre,empresa,correo,sector,empleados FROM leads WHERE estatus IS NULL OR estatus='nuevo' ORDER BY created_at DESC LIMIT 20")
+            cur.execute("SELECT id,nombre,empresa,correo,sector,empleados FROM leads ORDER BY created_at DESC LIMIT 20")
             rows = cur.fetchall()
             cur.close(); conn.close()
             return [{"id":str(r[0]),"nombre":r[1],"empresa":r[2],"correo":r[3],"sector":r[4],"empleados":r[5]} for r in rows]
