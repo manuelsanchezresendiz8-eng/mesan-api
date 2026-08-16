@@ -31,9 +31,6 @@ from routes.rc1_routes import router as rc1_router  # RC1
 from routes.mission_control_routes import router as mission_router  # Mission Control
 from routes.shadow_mode_routes import router as shadow_router  # Shadow Mode
 from routes.smtp_routes import router as smtp_router  # SMTP
-from routes.mission_control_routes import router as mission_router  # Mission Control
-from routes.shadow_mode_routes import router as shadow_router  # Shadow Mode
-from routes.smtp_routes import router as smtp_router  # SMTP
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -227,9 +224,6 @@ app.include_router(jarvis_sales_router,                   tags=["JARVIS Sales"])
 app.include_router(market_router,                         tags=["Market Intelligence"])
 app.include_router(commercial_router,                     tags=["Commercial"])
 app.include_router(rc1_router,                            tags=["RC1"])
-app.include_router(mission_router,                        tags=["Mission Control"])
-app.include_router(shadow_router,                         tags=["Shadow Mode"])
-app.include_router(smtp_router,                           tags=["SMTP"])
 app.include_router(mission_router,                        tags=["Mission Control"])
 app.include_router(shadow_router,                         tags=["Shadow Mode"])
 app.include_router(smtp_router,                           tags=["SMTP"])
