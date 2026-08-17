@@ -27,9 +27,9 @@ def _get_leads():
         cur = conn.cursor()
         cur.execute("SELECT COUNT(*) FROM leads")
         total = cur.fetchone()[0]
-        cur.execute("SELECT COUNT(*) FROM leads WHERE estatus IS NULL OR estatus='nuevo'")
+        cur.execute("SELECT COUNT(*) FROM leads WHERE estatus IS NULL OR estatus = 'nuevo'")
         nuevos = cur.fetchone()[0]
-        cur.execute("SELECT COUNT(*) FROM leads WHERE fecha::date = CURRENT_DATE")
+        cur.execute("SELECT COUNT(*) FROM leads WHERE created_at::date = CURRENT_DATE")
         hoy = cur.fetchone()[0]
         cur.close(); conn.close()
         return {"total":total,"nuevos":nuevos,"hoy":hoy,"hot":0,"warm":0,"cold":nuevos}

@@ -464,8 +464,3 @@ class SecurityHeadersMiddleware:
 # Esto debe ir AL FINAL — después de app.mount() — para que cubra
 # también las rutas montadas por StaticFiles.
 app = SecurityHeadersMiddleware(app)
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
