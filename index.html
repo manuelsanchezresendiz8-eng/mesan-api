@@ -3781,93 +3781,7 @@ else{nav.appendChild(btn);}
 })();
 </script>
 
-<style id="bot-css">
-.bot-toggle{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:var(--accent-primary,#00d8ff);border:none;cursor:pointer;z-index:10000;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 20px rgba(0,216,255,.3);transition:.3s;}
-.bot-toggle:hover{transform:scale(1.1);box-shadow:0 4px 30px rgba(0,216,255,.5);}
-.bot-panel{position:fixed;bottom:90px;right:24px;width:340px;max-height:480px;background:#0a1520;border:1px solid rgba(0,216,255,.2);border-radius:14px;z-index:10000;display:none;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.6);}
-.bot-panel.open{display:flex;}
-.bot-header{padding:14px 18px;background:#0d1a28;border-bottom:1px solid rgba(0,216,255,.15);display:flex;justify-content:space-between;align-items:center;}
-.bot-title{font-family:var(--font-display,Orbitron);font-size:13px;color:#00d8ff;font-weight:700;}
-.bot-close{background:none;border:none;color:#5a7a94;font-size:20px;cursor:pointer;}
-.bot-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;max-height:320px;}
-.bot-msg{padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6;max-width:85%;}
-.bot-msg.bot{background:rgba(0,216,255,.08);color:#c8dae8;align-self:flex-start;border:1px solid rgba(0,216,255,.1);}
-.bot-msg.user{background:rgba(0,216,255,.15);color:#fff;align-self:flex-end;}
-.bot-input-wrap{display:flex;padding:10px;border-top:1px solid rgba(0,216,255,.15);gap:8px;}
-.bot-input{flex:1;background:#07131f;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;outline:none;}
-.bot-send{background:var(--accent-primary,#00d8ff);border:none;border-radius:8px;padding:10px 16px;color:#06111d;font-weight:700;cursor:pointer;font-size:13px;}
-@media(max-width:500px){.bot-panel{width:calc(100% - 32px);right:16px;bottom:80px;}}
-</style>
 
-<button class="bot-toggle" id="bot-toggle" onclick="toggleBot()">&#937;</button>
-<div class="bot-panel" id="bot-panel">
-  <div class="bot-header">
-    <div class="bot-title">JARVIS Advisor</div>
-    <button class="bot-close" onclick="toggleBot()">&#10005;</button>
-  </div>
-  <div class="bot-messages" id="bot-messages">
-    <div class="bot-msg bot">Hola, soy JARVIS. Puedo ayudarte con informaciÃ³n sobre MESAN Î©, planes, diagnÃ³sticos y riesgos empresariales. Â¿En quÃ© puedo ayudarte?</div>
-  </div>
-  <div class="bot-input-wrap">
-    <input class="bot-input" id="bot-input" placeholder="Escribe tu pregunta..." onkeydown="if(event.key==='Enter')sendBot()">
-    <button class="bot-send" onclick="sendBot()">Enviar</button>
-  </div>
-</div>
-
-<script id="bot-js">
-var botResponses={
-"precio":{"r":"Tenemos 3 planes: DiagnÃ³stico Ejecutivo ($299 MXN), Guardian Î© ($999 MXN/mes) y War Room Enterprise (personalizado). Â¿CuÃ¡l te interesa?"},
-"plan":{"r":"Tenemos 3 planes: DiagnÃ³stico Ejecutivo ($299 MXN), Guardian Î© ($999 MXN/mes) y War Room Enterprise (personalizado). Â¿CuÃ¡l te interesa?"},
-"diagnostico":{"r":"El DiagnÃ³stico Ejecutivo analiza 10 dimensiones de riesgo en menos de 5 minutos. Incluye Omega Score, ESI, plan de acciÃ³n CEO y sello SHA-256. Puede solicitarlo ahora mismo desde el formulario."},
-"riesgo":{"r":"MESAN Î© evalÃºa riesgos fiscales (SAT, IVA, ISR), laborales (IMSS, REPSE, STPS), operativos, financieros y de continuidad. Todo en un solo diagnÃ³stico."},
-"guardian":{"r":"Guardian Î© es monitoreo continuo 24/7. Detecta cambios regulatorios, alertas fiscales y riesgos laborales automÃ¡ticamente. $999 MXN/mes."},
-"war room":{"r":"El War Room Enterprise incluye Digital Twin, simulaciÃ³n estratÃ©gica, comitÃ© ejecutivo y consultorÃ­a dedicada. Precio personalizado segÃºn la empresa."},
-"contacto":{"r":"Puede escribirnos a contacto@mesanomega.com o llenar el formulario de diagnÃ³stico. Nuestro equipo lo contactarÃ¡ en menos de 24 horas."},
-"sector":{"r":"Atendemos Manufactura, ConstrucciÃ³n, LogÃ­stica, Salud, Servicios, TecnologÃ­a, Financiero y mÃ¡s. Los motores Omega se adaptan automÃ¡ticamente al sector."},
-"sat":{"r":"MESAN Î© monitorea opiniones de cumplimiento SAT, declaraciones de IVA e ISR, y detecta contingencias fiscales antes de que generen multas."},
-"imss":{"r":"Evaluamos cuotas obrero-patronales, INFONAVIT, opiniÃ³n de cumplimiento IMSS y riesgos por trabajadores no afiliados."},
-"repse":{"r":"Verificamos vigencia REPSE, validaciÃ³n de subcontrataciÃ³n especializada y responsabilidad solidaria."},
-"seguro":{"r":"Toda la informaciÃ³n estÃ¡ protegida con arquitectura multi-tenant, cifrado y aislamiento lÃ³gico por empresa. Sello de auditorÃ­a SHA-256."},
-"jarvis":{"r":"JARVIS Î© es el Director Operativo autÃ³nomo de MESAN. Analiza KPIs, detecta riesgos, prioriza decisiones y genera Executive Briefings automÃ¡ticamente."},
-"hola":{"r":"Â¡Hola! Soy JARVIS, el asistente de MESAN Î©. Puedo ayudarte con planes, precios, diagnÃ³sticos y riesgos. Â¿QuÃ© necesitas?"},
-"gracias":{"r":"Â¡Con gusto! Si necesitas algo mÃ¡s, aquÃ­ estoy. TambiÃ©n puedes solicitar tu diagnÃ³stico desde el formulario."},
-};
-var botDefault="Puedo ayudarte con informaciÃ³n sobre planes, precios, diagnÃ³sticos, riesgos fiscales, laborales y mÃ¡s. TambiÃ©n puedes solicitar tu diagnÃ³stico ejecutivo desde el formulario de abajo.";
-
-function toggleBot(){document.getElementById("bot-panel").classList.toggle("open");}
-
-function sendBot(){
-var input=document.getElementById("bot-input");
-var msg=input.value.trim();
-if(!msg)return;
-addMsg(msg,"user");
-input.value="";
-var response=findResponse(msg);
-setTimeout(function(){addMsg(response,"bot");},600);
-}
-
-function addMsg(text,type){
-var div=document.createElement("div");
-div.className="bot-msg "+type;
-div.textContent=text;
-var container=document.getElementById("bot-messages");
-container.appendChild(div);
-container.scrollTop=container.scrollHeight;
-}
-
-function findResponse(msg){
-var q=msg.toLowerCase();
-for(var key in botResponses){
-if(q.indexOf(key)!==-1)return botResponses[key].r;
-}
-if(q.indexOf("costo")!==-1||q.indexOf("cuanto")!==-1||q.indexOf("vale")!==-1)return botResponses["precio"].r;
-if(q.indexOf("funciona")!==-1||q.indexOf("como")!==-1)return botResponses["diagnostico"].r;
-if(q.indexOf("fiscal")!==-1||q.indexOf("impuesto")!==-1)return botResponses["sat"].r;
-if(q.indexOf("laboral")!==-1||q.indexOf("empleado")!==-1)return botResponses["imss"].r;
-if(q.indexOf("privacidad")!==-1||q.indexOf("datos")!==-1)return botResponses["seguro"].r;
-return botDefault;
-}
-</script>
 <!-- JARVIS Chat -->
 <link rel="stylesheet" href="css/chat/jarvis-chat.css">
 <div id="jarvis-chat-container">
@@ -3898,4 +3812,5 @@ return botDefault;
 <script src="js/chat/jarvis-chat.js"></script>
 </body>
 </html>
+
 
