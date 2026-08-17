@@ -1,0 +1,297 @@
+/* JARVIS Chat Styles — MESAN Ω */
+
+/* Container — always visible so the button shows */
+#jarvis-chat-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Chat Button */
+.jarvis-chat-button {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00E5A0 0%, #00C98D 100%);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 229, 160, 0.4);
+  transition: all 0.3s ease;
+}
+
+.jarvis-chat-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(0, 229, 160, 0.5);
+}
+
+.jarvis-avatar {
+  font-size: 28px;
+  font-weight: 800;
+  color: #060B18;
+}
+
+.jarvis-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(0, 229, 160, 0.4);
+  animation: jarvis-pulse 2s infinite;
+  pointer-events: none;
+}
+
+@keyframes jarvis-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0; }
+}
+
+/* Chat Window — hidden by default */
+.jarvis-chat-window {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 380px;
+  height: 600px;
+  background: #0D1425;
+  border: 1px solid #1E3055;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: jarvis-slideUp 0.3s ease;
+}
+
+.jarvis-chat-window.open {
+  display: flex;
+}
+
+@keyframes jarvis-slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.jarvis-chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #111B33;
+  border-bottom: 1px solid #1E3055;
+}
+
+.jarvis-chat-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.jarvis-avatar-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00E5A0 0%, #00C98D 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: #060B18;
+}
+
+.jarvis-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.jarvis-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748B;
+}
+
+.jarvis-status .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00E5A0;
+}
+
+.jarvis-close-btn {
+  background: none;
+  border: none;
+  color: #64748B;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.jarvis-close-btn:hover {
+  color: #FFFFFF;
+}
+
+/* Messages */
+.jarvis-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.jarvis-message {
+  max-width: 85%;
+  padding: 14px 18px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-line;
+  animation: jarvis-msgIn 0.3s ease;
+}
+
+@keyframes jarvis-msgIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.jarvis-message.bot {
+  background: #111B33;
+  color: #E2E8F0;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.jarvis-message.user {
+  background: linear-gradient(135deg, #00E5A0 0%, #00C98D 100%);
+  color: #060B18;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+  font-weight: 500;
+}
+
+.jarvis-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.jarvis-option-btn {
+  background: #111B33;
+  border: 1px solid #1E3055;
+  color: #E2E8F0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.jarvis-option-btn:hover {
+  background: #1E3055;
+  border-color: #00E5A0;
+}
+
+/* Input */
+.jarvis-input-container {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #111B33;
+  border-top: 1px solid #1E3055;
+}
+
+.jarvis-input {
+  flex: 1;
+  background: #0D1425;
+  border: 1px solid #1E3055;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.jarvis-input:focus {
+  border-color: #00E5A0;
+}
+
+.jarvis-input::placeholder {
+  color: #64748B;
+}
+
+.jarvis-send-btn {
+  background: linear-gradient(135deg, #00E5A0 0%, #00C98D 100%);
+  border: none;
+  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.jarvis-send-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 229, 160, 0.4);
+}
+
+.jarvis-send-btn svg {
+  stroke: #060B18;
+}
+
+/* Typing */
+.jarvis-typing {
+  display: flex;
+  gap: 4px;
+  padding: 14px 18px;
+  background: #111B33;
+  border-radius: 16px;
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+  animation: jarvis-msgIn 0.3s ease;
+}
+
+.jarvis-typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #64748B;
+  animation: jarvis-typing 1.4s infinite;
+}
+
+.jarvis-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.jarvis-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes jarvis-typing {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .jarvis-chat-window {
+    width: calc(100vw - 48px);
+    height: 70vh;
+    bottom: 80px;
+    right: 0;
+  }
+}
