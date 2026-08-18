@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESAN Ω — Mission Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#060B18;--bg2:#0D1425;--bg3:#111B33;--border:#1E3055;--accent:#00E5A0;--accent2:#00C98D;--text:#E2E8F0;--muted:#64748B;--red:#EF4444;--orange:#F59E0B;--blue:#3B82F6;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.sidebar-logo{padding:20px;font-size:18px;font-weight:900;color:var(--accent);border-bottom:1px solid var(--border);letter-spacing:1px;}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .2s;border-left:3px solid transparent;}
+.nav-item:hover{background:var(--bg3);color:var(--text);}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(0,229,160,.05);}
+.nav-item .icon{font-size:16px;width:20px;text-align:center;}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border);background:var(--bg2);}
+.topbar-title{font-size:16px;font-weight:700;}
+.topbar-right{display:flex;align-items:center;gap:16px;}
+.topbar-status{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--accent);}
+.topbar-status .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);}
+.topbar-time{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);}
+.content{flex:1;overflow-y:auto;padding:24px;}
+.module{display:none;}
+.module.active{display:block;}
+.module-title{font-size:20px;font-weight:800;margin-bottom:20px;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color .2s;}
+.card:hover{border-color:var(--accent);}
+.card-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.card-value{font-size:28px;font-weight:900;font-family:'JetBrains Mono',monospace;}
+.card-value.green{color:var(--accent);}
+.card-value.red{color:var(--red);}
+.card-value.orange{color:var(--orange);}
+.card-value.blue{color:var(--blue);}
+.card-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);font-weight:700;font-size:14px;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:10px 20px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);}
+td{padding:12px 20px;font-size:13px;border-bottom:1px solid rgba(30,48,85,.3);}
+tr:hover{background:rgba(0,229,160,.02);}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+.badge.green{background:rgba(0,229,160,.15);color:var(--accent);}
+.badge.red{background:rgba(239,68,68,.15);color:var(--red);}
+.badge.orange{background:rgba(245,158,11,.15);color:var(--orange);}
+.badge.blue{background:rgba(59,130,246,.15);color:var(--blue);}
+.badge.gray{background:rgba(100,116,139,.15);color:var(--muted);}
+.section-title{font-size:15px;font-weight:700;margin:20px 0 12px;color:var(--text);}
+.status-row{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid rgba(30,48,85,.3);}
+.status-row:last-child{border:none;}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.status-dot.ok{background:var(--accent);}
+.status-dot.warn{background:var(--orange);}
+.status-dot.error{background:var(--red);}
+.status-dot.off{background:var(--muted);}
+.status-name{flex:1;font-size:13px;font-weight:500;}
+.status-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);}
+.refresh-btn{background:none;border:1px solid var(--border);color:var(--accent);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;transition:all .2s;}
+.refresh-btn:hover{background:var(--accent);color:var(--bg);}
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+@media(max-width:768px){.sidebar{width:60px;}.sidebar-logo{padding:16px;font-size:14px;text-align:center;}.nav-item span:not(.icon){display:none;}.nav-item{justify-content:center;padding:12px;}.sidebar-footer{display:none;}.content{padding:16px;}.cards{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-logo">MESAN Ω</div>
+  <div class="sidebar-nav">
+    <div class="nav-item active" onclick="showModule('overview')"><span class="icon">⚡</span><span>Overview</span></div>
+    <div class="nav-item" onclick="showModule('crm')"><span class="icon">👥</span><span>CRM / Leads</span></div>
+    <div class="nav-item" onclick="showModule('pipeline')"><span class="icon">📊</span><span>Pipeline</span></div>
+    <div class="nav-item" onclick="showModule('jarvis')"><span class="icon">🤖</span><span>JARVIS</span></div>
+    <div class="nav-item" onclick="showModule('shadow')"><span class="icon">👻</span><span>Shadow Mode</span></div>
+    <div class="nav-item" onclick="showModule('proposals')"><span class="icon">📄</span><span>Propuestas</span></div>
+    <div class="nav-item" onclick="showModule('followups')"><span class="icon">📩</span><span>Follow-ups</span></div>
+    <div class="nav-item" onclick="showModule('marketing')"><span class="icon">📈</span><span>Marketing</span></div>
+    <div class="nav-item" onclick="showModule('billing')"><span class="icon">💳</span><span>Billing</span></div>
+    <div class="nav-item" onclick="showModule('smtp')"><span class="icon">📧</span><span>SMTP</span></div>
+    <div class="nav-item" onclick="showModule('guardian')"><span class="icon">🛡️</span><span>Guardian</span></div>
+  </div>
+  <div class="sidebar-footer">MESAN-OS v2.6<br>Mission Control v1.0</div>
+</div>
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Mission Control</div>
+    <div class="topbar-right">
+      <button class="refresh-btn" onclick="loadAll()">↻ Actualizar</button>
+      <div class="topbar-status"><div class="dot"></div>SISTEMAS ACTIVOS</div>
+      <div class="topbar-time" id="clock"></div>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div class="module active" id="mod-overview">
+      <div class="module-title">Vista General</div>
+      <div class="cards" id="overview-cards"><div class="loading">Cargando...</div></div>
+      <div class="table-wrap">
+        <div class="table-header">Estado de Servicios</div>
+        <div id="overview-services"><div class="loading">Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- CRM -->
+    <div class="module" id="mod-crm">
+      <div class="module-title">CRM / Leads</div>
+      <div class="cards" id="crm-cards"><div class="loading">Cargando...</div></div>
+      <div class="table-wrap">
+        <div class="table-header">Leads Recientes</div>
+        <div id="crm-table"><div class="loading">Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="module" id="mod-pipeline">
+      <div class="module-title">Pipeline Comercial</div>
+      <div class="cards" id="pipeline-cards"><div class="loading">Cargando...</div></div>
+    </div>
+
+    <!-- JARVIS -->
+    <div class="module" id="mod-jarvis">
+      <div class="module-title">JARVIS Comercial</div>
+      <div class="cards" id="jarvis-cards"><div class="loading">Cargando...</div></div>
+      <div class="table-wrap">
+        <div class="table-header">Leads JARVIS Chat</div>
+        <div id="jarvis-table"><div class="loading">Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- SHADOW -->
+    <div class="module" id="mod-shadow">
+      <div class="module-title">Shadow Mode</div>
+      <div class="cards" id="shadow-cards"><div class="loading">Cargando...</div></div>
+    </div>
+
+    <!-- PROPOSALS -->
+    <div class="module" id="mod-proposals">
+      <div class="module-title">Propuestas</div>
+      <div id="proposals-content"><div class="loading">Cargando...</div></div>
+    </div>
+
+    <!-- FOLLOWUPS -->
+    <div class="module" id="mod-followups">
+      <div class="module-title">Follow-ups</div>
+      <div id="followups-content"><div class="loading">Cargando...</div></div>
+    </div>
+
+    <!-- MARKETING -->
+    <div class="module" id="mod-marketing">
+      <div class="module-title">Marketing</div>
+      <div class="cards" id="marketing-cards"><div class="loading">Cargando...</div></div>
+    </div>
+
+    <!-- BILLING -->
+    <div class="module" id="mod-billing">
+      <div class="module-title">Billing / Stripe</div>
+      <div class="cards" id="billing-cards"><div class="loading">Cargando...</div></div>
+    </div>
+
+    <!-- SMTP -->
+    <div class="module" id="mod-smtp">
+      <div class="module-title">Email / SMTP</div>
+      <div class="cards" id="smtp-cards"><div class="loading">Cargando...</div></div>
+    </div>
+
+    <!-- GUARDIAN -->
+    <div class="module" id="mod-guardian">
+      <div class="module-title">Guardian Ω</div>
+      <div class="cards" id="guardian-cards"><div class="loading">Cargando...</div></div>
+      <div class="table-wrap">
+        <div class="table-header">Incidentes</div>
+        <div id="guardian-incidents"><div class="loading">Cargando...</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Clock
+function updateClock(){
+  var d=new Date();
+  document.getElementById('clock').textContent=d.toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' | '+d.toLocaleDateString('es-MX');
+}
+setInterval(updateClock,1000);updateClock();
+
+// Navigation
+function showModule(id){
+  document.querySelectorAll('.module').forEach(function(m){m.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  document.getElementById('mod-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// Fetch helper
+function api(url){
+  return fetch(url).then(function(r){return r.json();}).catch(function(){return {error:'No disponible'};});
+}
+
+function makeCards(containerId,items){
+  var html='';
+  items.forEach(function(item){
+    html+='<div class="card"><div class="card-label">'+item.label+'</div><div class="card-value '+(item.color||'')+'">'+item.value+'</div>'+(item.sub?'<div class="card-sub">'+item.sub+'</div>':'')+'</div>';
+  });
+  document.getElementById(containerId).innerHTML=html;
+}
+
+function makeBadge(text,color){return '<span class="badge '+color+'">'+text+'</span>';}
+
+// LOAD ALL
+function loadAll(){
+  loadOverview();
+  loadCRM();
+  loadPipeline();
+  loadJarvis();
+  loadShadow();
+  loadProposals();
+  loadFollowups();
+  loadMarketing();
+  loadBilling();
+  loadSMTP();
+  loadGuardian();
+}
+
+// OVERVIEW
+function loadOverview(){
+  api('/commercial/mission-control').then(function(d){
+    var leads=d.leads||{};
+    var guardian=d.guardian||{};
+    var system=d.system||{};
+    var billing=d.billing||{};
+    makeCards('overview-cards',[
+      {label:'Leads Total',value:leads.total||0,color:'blue'},
+      {label:'Leads Hoy',value:leads.hoy||0,color:'green'},
+      {label:'Leads Nuevos',value:leads.nuevos||0,color:'orange'},
+      {label:'Health Score',value:Math.round(guardian.health||system.health||0),color:((guardian.health||system.health||0)>70?'green':'red')},
+      {label:'MRR',value:'$'+(billing.mrr||0),color:'green',sub:'MXN'},
+      {label:'SMTP',value:system.smtp||'--',color:system.smtp==='CONFIGURED'?'green':'red'},
+      {label:'Stripe',value:system.stripe||'--',color:system.stripe==='OK'?'green':'red'},
+      {label:'Uptime',value:Math.round((system.uptime||0)/60)+'m',color:'blue'}
+    ]);
+    var svcs='';
+    var svcList=[
+      {name:'PostgreSQL',status:system.db||'UNKNOWN'},
+      {name:'SMTP',status:system.smtp||'UNKNOWN'},
+      {name:'Stripe',status:system.stripe||'UNKNOWN'},
+      {name:'Guardian',status:guardian.status||'UNKNOWN'},
+    ];
+    svcList.forEach(function(s){
+      var dot=s.status==='OK'||s.status==='CONFIGURED'||s.status==='RUNNING'?'ok':(s.status==='MISSING'||s.status==='OFFLINE'?'error':'warn');
+      svcs+='<div class="status-row"><div class="status-dot '+dot+'"></div><div class="status-name">'+s.name+'</div><div class="status-val">'+s.status+'</div></div>';
+    });
+    document.getElementById('overview-services').innerHTML=svcs;
+  });
+}
+
+// CRM
+function loadCRM(){
+  api('/commercial/leads').then(function(d){
+    var leads=d.leads||d.data||[];
+    if(Array.isArray(leads)&&leads.length>0){
+      makeCards('crm-cards',[
+        {label:'Total Leads',value:leads.length,color:'blue'},
+        {label:'Hot',value:leads.filter(function(l){return l.score>=80;}).length,color:'red'},
+        {label:'Warm',value:leads.filter(function(l){return l.score>=50&&l.score<80;}).length,color:'orange'},
+        {label:'Cold',value:leads.filter(function(l){return l.score<50;}).length,color:'blue'}
+      ]);
+      var rows='<table><tr><th>Nombre</th><th>Empresa</th><th>Score</th><th>Status</th></tr>';
+      leads.slice(0,15).forEach(function(l){
+        var sc=l.score||0;var color=sc>=80?'red':(sc>=50?'orange':'blue');
+        rows+='<tr><td>'+(l.nombre||l.name||'--')+'</td><td>'+(l.empresa||l.company||'--')+'</td><td>'+makeBadge(sc,color)+'</td><td>'+(l.estatus||l.status||'nuevo')+'</td></tr>';
+      });
+      rows+='</table>';
+      document.getElementById('crm-table').innerHTML=rows;
+    } else {
+      makeCards('crm-cards',[{label:'Leads',value:'0',color:'blue'}]);
+      document.getElementById('crm-table').innerHTML='<div class="loading">Sin leads registrados</div>';
+    }
+  });
+}
+
+// PIPELINE
+function loadPipeline(){
+  api('/commercial/pipeline').then(function(d){
+    var p=d.pipeline||d;
+    makeCards('pipeline-cards',[
+      {label:'Oportunidades',value:p.total||p.opportunities||0,color:'blue'},
+      {label:'En Negociación',value:p.negotiation||p.in_progress||0,color:'orange'},
+      {label:'Cerradas',value:p.closed||p.won||0,color:'green'},
+      {label:'Valor Pipeline',value:'$'+(p.value||p.total_value||0),color:'green',sub:'MXN'}
+    ]);
+  });
+}
+
+// JARVIS
+function loadJarvis(){
+  api('/jarvis/kpis').then(function(d){
+    makeCards('jarvis-cards',[
+      {label:'Conversaciones',value:d.conversations||d.total||0,color:'blue'},
+      {label:'Leads Capturados',value:d.leads_captured||d.leads||0,color:'green'},
+      {label:'Conversión',value:(d.conversion_rate||0)+'%',color:'green'},
+      {label:'Status',value:d.status||'ACTIVE',color:'green'}
+    ]);
+  });
+  api('/commercial/leads').then(function(d){
+    var leads=d.leads||d.data||[];
+    var jarvisLeads=leads.filter?leads.filter(function(l){return (l.fuente||l.source||'').indexOf('jarvis')!==-1;}):[];
+    if(jarvisLeads.length>0){
+      var rows='<table><tr><th>Nombre</th><th>Empresa</th><th>Producto</th><th>Email</th></tr>';
+      jarvisLeads.slice(0,10).forEach(function(l){
+        rows+='<tr><td>'+(l.nombre||'--')+'</td><td>'+(l.empresa||'--')+'</td><td>'+makeBadge(l.producto_interes||'diagnostico','blue')+'</td><td>'+(l.email||'--')+'</td></tr>';
+      });
+      rows+='</table>';
+      document.getElementById('jarvis-table').innerHTML=rows;
+    } else {
+      document.getElementById('jarvis-table').innerHTML='<div class="loading">Sin leads JARVIS a\u00fan</div>';
+    }
+  });
+}
+
+// SHADOW
+function loadShadow(){
+  api('/commercial/auto/status').then(function(d){
+    makeCards('shadow-cards',[
+      {label:'Shadow Mode',value:d.active?'ACTIVO':'INACTIVO',color:d.active?'green':'orange'},
+      {label:'Ciclos',value:d.cycles||0,color:'blue'},
+      {label:'Procesados',value:d.total_processed||0,color:'green'},
+      {label:'Conversiones',value:d.conversions||0,color:'green'}
+    ]);
+  });
+}
+
+// PROPOSALS
+function loadProposals(){
+  api('/commercial/proposals').then(function(d){
+    var props=d.proposals||d.data||[];
+    if(Array.isArray(props)&&props.length>0){
+      var html='<div class="table-wrap"><div class="table-header">Propuestas Activas</div><table><tr><th>Empresa</th><th>Monto</th><th>Status</th><th>Fecha</th></tr>';
+      props.slice(0,10).forEach(function(p){
+        html+='<tr><td>'+(p.empresa||p.company||'--')+'</td><td>$'+(p.monto||p.amount||0)+'</td><td>'+makeBadge(p.status||'pendiente','orange')+'</td><td>'+(p.fecha||p.date||'--')+'</td></tr>';
+      });
+      html+='</table></div>';
+      document.getElementById('proposals-content').innerHTML=html;
+    } else {
+      document.getElementById('proposals-content').innerHTML='<div class="loading">Sin propuestas</div>';
+    }
+  });
+}
+
+// FOLLOWUPS
+function loadFollowups(){
+  api('/commercial/followups').then(function(d){
+    var fups=d.followups||d.data||[];
+    if(Array.isArray(fups)&&fups.length>0){
+      var html='<div class="table-wrap"><div class="table-header">Follow-ups Pendientes</div><table><tr><th>Lead</th><th>Tipo</th><th>Fecha</th><th>Status</th></tr>';
+      fups.slice(0,10).forEach(function(f){
+        html+='<tr><td>'+(f.lead||f.nombre||'--')+'</td><td>'+(f.tipo||f.type||'--')+'</td><td>'+(f.fecha||f.date||'--')+'</td><td>'+makeBadge(f.status||'pendiente','orange')+'</td></tr>';
+      });
+      html+='</table></div>';
+      document.getElementById('followups-content').innerHTML=html;
+    } else {
+      document.getElementById('followups-content').innerHTML='<div class="loading">Sin follow-ups pendientes</div>';
+    }
+  });
+}
+
+// MARKETING
+function loadMarketing(){
+  api('/commercial/marketing').then(function(d){
+    makeCards('marketing-cards',[
+      {label:'Campa\u00f1as',value:d.campaigns||d.total||0,color:'blue'},
+      {label:'Emails Enviados',value:d.emails_sent||0,color:'green'},
+      {label:'Apertura',value:(d.open_rate||0)+'%',color:'green'},
+      {label:'Queue',value:d.queue||d.pending||0,color:'orange'}
+    ]);
+  });
+}
+
+// BILLING
+function loadBilling(){
+  api('/commercial/mission-control').then(function(d){
+    var b=d.billing||{};
+    makeCards('billing-cards',[
+      {label:'Status',value:b.status||'--',color:b.status==='OK'?'green':'red'},
+      {label:'MRR',value:'$'+(b.mrr||0),color:'green',sub:'MXN'},
+      {label:'Suscripciones',value:b.active||0,color:'blue'},
+      {label:'Stripe',value:(d.system||{}).stripe||'--',color:(d.system||{}).stripe==='OK'?'green':'red'}
+    ]);
+  });
+}
+
+// SMTP
+function loadSMTP(){
+  api('/smtp/status').then(function(d){
+    makeCards('smtp-cards',[
+      {label:'Status',value:d.status||'--',color:d.status==='CONFIGURED'?'green':'red'},
+      {label:'Host',value:'SMTP',color:'blue'},
+      {label:'Puerto',value:'587',color:'blue'},
+      {label:'TLS',value:'Activo',color:'green'}
+    ]);
+  });
+}
+
+// GUARDIAN
+function loadGuardian(){
+  api('/guardian/status').then(function(d){
+    var health=d.health_score||d.health||d.overall_score||0;
+    makeCards('guardian-cards',[
+      {label:'Health Score',value:Math.round(health),color:health>70?'green':(health>40?'orange':'red')},
+      {label:'Status',value:d.status||d.health_status||'--',color:'green'},
+      {label:'Alertas',value:d.alerts_count||d.alerts||0,color:'orange'},
+      {label:'Incidentes',value:d.incidents_count||d.incidents||0,color:'red'}
+    ]);
+  });
+  api('/guardian/incidents').then(function(d){
+    var incs=d.incidents||d.data||[];
+    if(Array.isArray(incs)&&incs.length>0){
+      var html='<table><tr><th>ID</th><th>Descripci\u00f3n</th><th>Severidad</th><th>Status</th></tr>';
+      incs.slice(0,10).forEach(function(i){
+        var sev=i.severity||'INFO';var color=sev==='CRITICAL'?'red':(sev==='HIGH'?'orange':'blue');
+        html+='<tr><td>'+(i.id||'--')+'</td><td>'+(i.description||i.message||'--')+'</td><td>'+makeBadge(sev,color)+'</td><td>'+(i.status||'open')+'</td></tr>';
+      });
+      html+='</table>';
+      document.getElementById('guardian-incidents').innerHTML=html;
+    } else {
+      document.getElementById('guardian-incidents').innerHTML='<div class="loading">Sin incidentes activos</div>';
+    }
+  });
+}
+
+// Auto refresh every 30s
+loadAll();
+setInterval(loadAll,30000);
+</script>
+</body>
+</html>
