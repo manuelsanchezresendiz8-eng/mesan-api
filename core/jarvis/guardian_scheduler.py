@@ -16,13 +16,14 @@ class GuardianScheduler:
         self._thread = None
         self._jobs = {}
         self._cycle_count = 0
+        self._running_job = False
         self._last_health = None
         self._default_jobs()
         logger.info("[Scheduler] v%s iniciado", self.version)
 
     def _default_jobs(self):
         self._jobs = {
-            "telemetry": {"interval": 10, "last_run": 0, "fn": "_run_telemetry", "enabled": True},
+            "telemetry": {"interval": 30, "last_run": 0, "fn": "_run_telemetry", "enabled": True},
             "guardian": {"interval": 30, "last_run": 0, "fn": "_run_guardian", "enabled": True},
             "watchdog": {"interval": 60, "last_run": 0, "fn": "_run_watchdog", "enabled": True},
             "predictive": {"interval": 300, "last_run": 0, "fn": "_run_predictive", "enabled": True},
@@ -63,12 +64,17 @@ class GuardianScheduler:
                 continue
             if now - job["last_run"] >= job["interval"]:
                 try:
+                    if self._running_job:
+                        continue
+                    self._running_job = True
                     fn_name = job.get("fn")
                     if fn_name and hasattr(self, fn_name):
                         getattr(self, fn_name)()
+                    self._running_job = False
                     job["last_run"] = now
                     executed.append(name)
                 except Exception as e:
+                    self._running_job = False
                     logger.error("[Scheduler] Job %s failed: %s", name, e)
         return {"cycle": self._cycle_count, "executed": executed, "timestamp": datetime.now(timezone.utc).isoformat()}
 
