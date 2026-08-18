@@ -1,22 +1,27 @@
-// JARVIS Chat Logic — MESAN Ω (corregido)
+// JARVIS Chat Logic — MESAN Omega — Embudo Comercial v2.0
+// Flujo: Conocer > Diagnosticar > Demostrar valor > Membresía > Escalar
 
-let jarvisFlow = {
+var jarvisFlow = {
   step: 0,
   dudaMode: false,
   userData: {
     nombre: '',
     empresa: '',
+    sector: '',
+    tamano: '',
     email: '',
     telefono: '',
     dias: '',
     horario: '',
-    respuestas: []
+    preocupacion: '',
+    respuestas: [],
+    producto_interes: 'diagnostico_entrada',
+    fuente: 'jarvis_chat'
   }
 };
 
-// Toggle chat window (button always visible)
 function toggleJarvisChat() {
-  const win = document.getElementById('jarvis-chat-window');
+  var win = document.getElementById('jarvis-chat-window');
   if (win.classList.contains('open')) {
     win.classList.remove('open');
   } else {
@@ -28,42 +33,37 @@ function toggleJarvisChat() {
   }
 }
 
-// Initialize
 function initJarvisChat() {
-  addJarvisMessage("Hola, soy JARVIS Advisor, tu asistente de riesgo empresarial de MESAN \u03A9. \uD83E\uDD16\n\nAntes de empezar, \u00BFme puedes decir tu nombre y el nombre de tu empresa?\n(Ej: Juan, Empresa ABC)");
+  addJarvisMessage("Hola, soy JARVIS, asistente de riesgo empresarial de MESAN \u03A9.\n\n\u00BFCu\u00E1l es tu nombre y el de tu empresa?\n(Ej: Juan, Empresa ABC)");
 }
 
-// Keypress
 function handleJarvisKeypress(event) {
   if (event.key === 'Enter') sendJarvisMessage();
 }
 
-// Send
 function sendJarvisMessage() {
-  const input = document.getElementById('jarvis-input');
-  const message = input.value.trim();
+  var input = document.getElementById('jarvis-input');
+  var message = input.value.trim();
   if (!message) return;
   addJarvisMessage(message, 'user');
   input.value = '';
-  setTimeout(() => processJarvisResponse(message), 500);
+  setTimeout(function() { processJarvisResponse(message); }, 500);
 }
 
-// Add message
 function addJarvisMessage(text, sender) {
   sender = sender || 'bot';
-  const container = document.getElementById('jarvis-messages');
-  const div = document.createElement('div');
+  var container = document.getElementById('jarvis-messages');
+  var div = document.createElement('div');
   div.className = 'jarvis-message ' + sender;
   div.textContent = text;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
 }
 
-// Typing
 function showJarvisTyping() {
-  const container = document.getElementById('jarvis-messages');
+  var container = document.getElementById('jarvis-messages');
   if (document.getElementById('jarvis-typing')) return;
-  const div = document.createElement('div');
+  var div = document.createElement('div');
   div.className = 'jarvis-typing';
   div.id = 'jarvis-typing';
   div.innerHTML = '<div class="jarvis-typing-dot"></div><div class="jarvis-typing-dot"></div><div class="jarvis-typing-dot"></div>';
@@ -72,17 +72,14 @@ function showJarvisTyping() {
 }
 
 function hideJarvisTyping() {
-  const el = document.getElementById('jarvis-typing');
+  var el = document.getElementById('jarvis-typing');
   if (el) el.remove();
 }
 
-// Options
 function addJarvisOptions(options) {
-  const container = document.getElementById('jarvis-messages');
-  // Remove previous options
+  var container = document.getElementById('jarvis-messages');
   var old = container.querySelector('.jarvis-options');
   if (old) old.remove();
-
   var div = document.createElement('div');
   div.className = 'jarvis-options';
   options.forEach(function(opt) {
@@ -100,20 +97,20 @@ function addJarvisOptions(options) {
   container.scrollTop = container.scrollHeight;
 }
 
-// Process response
+// ============================================================
+// FLUJO PRINCIPAL
+// ============================================================
 function processJarvisResponse(message) {
   showJarvisTyping();
-
   setTimeout(function() {
     hideJarvisTyping();
 
-    // Si estamos en modo duda, responder y volver al flujo
     if (jarvisFlow.dudaMode) {
       jarvisFlow.dudaMode = false;
-      addJarvisMessage("Gracias por tu pregunta. Nuestro equipo te puede dar m\u00E1s detalle en la sesi\u00F3n ejecutiva.\n\n\u00BFContinuamos con el diagn\u00F3stico?");
+      addJarvisMessage("Buena pregunta. Nuestro equipo puede darte m\u00E1s detalle, pero primero identifiquemos tus riesgos principales.\n\n\u00BFContinuamos?");
       addJarvisOptions([
-        { text: 'S\u00ED, continuamos', callback: function() { jarvisFlow.step = 1; showJarvisPregunta1(); } },
-        { text: 'No, gracias', callback: function() { addJarvisMessage("Entiendo. Si cambias de opini\u00F3n, aqu\u00ED estar\u00E9."); } }
+        { text: 'S\u00ED, continuamos', callback: function() { showSector(); } },
+        { text: 'No por ahora', callback: function() { addJarvisMessage("Entendido. Cuando quieras retomar, aqu\u00ED estoy."); } }
       ]);
       return;
     }
@@ -123,49 +120,28 @@ function processJarvisResponse(message) {
         var parts = message.split(',');
         jarvisFlow.userData.nombre = (parts[0] || message).trim();
         jarvisFlow.userData.empresa = (parts[1] || '').trim();
-
-        addJarvisMessage("Gracias, " + jarvisFlow.userData.nombre + ". Un gusto conocerte.\n\nVoy a hacerte unas preguntas r\u00E1pidas para entender mejor tu situaci\u00F3n.\n\n\u00BFComenzamos?");
+        addJarvisMessage("Mucho gusto, " + jarvisFlow.userData.nombre + ".\n\nAntes de cualquier cosa, quiero entender tu situaci\u00F3n. Voy a hacerte unas preguntas r\u00E1pidas para identificar d\u00F3nde podr\u00EDa estar expuesta tu empresa.\n\n\u00BFComenzamos?");
         addJarvisOptions([
-          { text: 'S\u00ED, comenzamos', callback: function() { jarvisFlow.step = 1; showJarvisPregunta1(); } },
-          { text: 'Tengo una duda', callback: showJarvisDuda }
+          { text: 'S\u00ED, comenzamos', callback: function() { showSector(); } },
+          { text: 'Tengo una duda primero', callback: showJarvisDuda }
         ]);
-        break;
-
-      case 1: jarvisFlow.userData.respuestas.push(message); showJarvisPregunta1(); break;
-      case 2: jarvisFlow.userData.respuestas.push(message); showJarvisPregunta2(); break;
-      case 3: jarvisFlow.userData.respuestas.push(message); showJarvisPregunta3(); break;
-      case 4: jarvisFlow.userData.respuestas.push(message); showJarvisPregunta4(); break;
-      case 5: jarvisFlow.userData.respuestas.push(message); showJarvisAnalisis(); break;
-
-      case 6:
-        if (message.toLowerCase().indexOf('s\u00ED') !== -1 || message.toLowerCase().indexOf('si') !== -1) {
-          showJarvisWarRoom();
-        }
-        break;
-
-      case 7: showJarvisPrecio(); break;
-
-      case 8:
-        if (message.toLowerCase().indexOf('s\u00ED') !== -1 || message.toLowerCase().indexOf('si') !== -1 || message.toLowerCase().indexOf('agenda') !== -1) {
-          showJarvisAgendamiento();
-        }
         break;
 
       case 9:
         jarvisFlow.userData.email = message;
-        addJarvisMessage("\u00BFY tu tel\u00E9fono?");
+        addJarvisMessage("\u00BFY tu tel\u00E9fono? (para enviarte el resultado)");
         jarvisFlow.step = 10;
         break;
 
       case 10:
         jarvisFlow.userData.telefono = message;
-        addJarvisMessage("\u00BFQu\u00E9 d\u00EDas tienes disponibles?");
+        addJarvisMessage("\u00BFQu\u00E9 d\u00EDas tienes disponibles para revisar los resultados?");
         jarvisFlow.step = 11;
         break;
 
       case 11:
         jarvisFlow.userData.dias = message;
-        addJarvisMessage("\u00BFY en qu\u00E9 horario?");
+        addJarvisMessage("\u00BFEn qu\u00E9 horario te queda mejor?");
         jarvisFlow.step = 12;
         break;
 
@@ -173,89 +149,164 @@ function processJarvisResponse(message) {
         jarvisFlow.userData.horario = message;
         sendJarvisDataToBackend();
         break;
+
+      default:
+        addJarvisMessage("Dame un momento...");
+        break;
     }
   }, 1000);
 }
 
-// Preguntas
-function showJarvisPregunta1() {
-  addJarvisMessage("Pregunta 1 de 5:\n\n\u00BFCu\u00E1ntos empleados tiene tu empresa?");
+// ============================================================
+// ETAPA 1: CONOCER
+// ============================================================
+function showSector() {
+  jarvisFlow.step = 1;
+  addJarvisMessage("\u00BFEn qu\u00E9 sector opera tu empresa?");
   addJarvisOptions([
-    { text: 'Menos de 50', callback: function() { jarvisFlow.step = 2; jarvisFlow.userData.respuestas.push('a'); showJarvisPregunta2(); } },
-    { text: '50-150', callback: function() { jarvisFlow.step = 2; jarvisFlow.userData.respuestas.push('b'); showJarvisPregunta2(); } },
-    { text: '150-300', callback: function() { jarvisFlow.step = 2; jarvisFlow.userData.respuestas.push('c'); showJarvisPregunta2(); } },
-    { text: 'M\u00E1s de 300', callback: function() { jarvisFlow.step = 2; jarvisFlow.userData.respuestas.push('d'); showJarvisPregunta2(); } }
+    { text: 'Manufactura', callback: function() { jarvisFlow.userData.sector = 'Manufactura'; showTamano(); } },
+    { text: 'Servicios / Consultor\u00EDa', callback: function() { jarvisFlow.userData.sector = 'Servicios'; showTamano(); } },
+    { text: 'Comercio / Retail', callback: function() { jarvisFlow.userData.sector = 'Comercio'; showTamano(); } },
+    { text: 'Otro sector', callback: function() { jarvisFlow.userData.sector = 'Otro'; showTamano(); } }
   ]);
 }
 
-function showJarvisPregunta2() {
-  addJarvisMessage("Pregunta 2 de 5:\n\n\u00BFTu empresa ha tenido auditor\u00EDas del SAT o IMSS en los \u00FAltimos 2 a\u00F1os?");
+function showTamano() {
+  jarvisFlow.step = 2;
+  addJarvisMessage("\u00BFCu\u00E1ntos empleados tiene " + (jarvisFlow.userData.empresa || 'tu empresa') + "?");
   addJarvisOptions([
-    { text: 'S\u00ED, del SAT', callback: function() { jarvisFlow.step = 3; jarvisFlow.userData.respuestas.push('a'); showJarvisPregunta3(); } },
-    { text: 'S\u00ED, del IMSS', callback: function() { jarvisFlow.step = 3; jarvisFlow.userData.respuestas.push('b'); showJarvisPregunta3(); } },
-    { text: 'S\u00ED, de ambos', callback: function() { jarvisFlow.step = 3; jarvisFlow.userData.respuestas.push('c'); showJarvisPregunta3(); } },
-    { text: 'No, ninguna', callback: function() { jarvisFlow.step = 3; jarvisFlow.userData.respuestas.push('d'); showJarvisPregunta3(); } }
+    { text: 'Menos de 50', callback: function() { jarvisFlow.userData.tamano = '<50'; jarvisFlow.userData.respuestas.push('a'); showPreocupacion(); } },
+    { text: '50 a 150', callback: function() { jarvisFlow.userData.tamano = '50-150'; jarvisFlow.userData.respuestas.push('b'); showPreocupacion(); } },
+    { text: '150 a 300', callback: function() { jarvisFlow.userData.tamano = '150-300'; jarvisFlow.userData.respuestas.push('c'); showPreocupacion(); } },
+    { text: 'M\u00E1s de 300', callback: function() { jarvisFlow.userData.tamano = '300+'; jarvisFlow.userData.respuestas.push('d'); showPreocupacion(); } }
   ]);
 }
 
-function showJarvisPregunta3() {
-  addJarvisMessage("Pregunta 3 de 5:\n\n\u00BFTienes un dashboard o sistema para ver el riesgo fiscal y laboral en tiempo real?");
+function showPreocupacion() {
+  jarvisFlow.step = 3;
+  addJarvisMessage("\u00BFCu\u00E1l es tu principal preocupaci\u00F3n hoy?");
   addJarvisOptions([
-    { text: 'S\u00ED, tenemos un sistema', callback: function() { jarvisFlow.step = 4; jarvisFlow.userData.respuestas.push('a'); showJarvisPregunta4(); } },
-    { text: 'Reportes en Excel', callback: function() { jarvisFlow.step = 4; jarvisFlow.userData.respuestas.push('b'); showJarvisPregunta4(); } },
-    { text: 'Solo cuando hay problema', callback: function() { jarvisFlow.step = 4; jarvisFlow.userData.respuestas.push('c'); showJarvisPregunta4(); } },
-    { text: 'No s\u00E9', callback: function() { jarvisFlow.step = 4; jarvisFlow.userData.respuestas.push('d'); showJarvisPregunta4(); } }
+    { text: 'Riesgo fiscal (SAT, IVA, ISR)', callback: function() { jarvisFlow.userData.preocupacion = 'fiscal'; jarvisFlow.userData.respuestas.push('fiscal'); showAuditoria(); } },
+    { text: 'Riesgo laboral (IMSS, REPSE)', callback: function() { jarvisFlow.userData.preocupacion = 'laboral'; jarvisFlow.userData.respuestas.push('laboral'); showAuditoria(); } },
+    { text: 'No tengo visibilidad de riesgos', callback: function() { jarvisFlow.userData.preocupacion = 'visibilidad'; jarvisFlow.userData.respuestas.push('visibilidad'); showAuditoria(); } },
+    { text: 'Quiero prevenir problemas', callback: function() { jarvisFlow.userData.preocupacion = 'prevencion'; jarvisFlow.userData.respuestas.push('prevencion'); showAuditoria(); } }
   ]);
 }
 
-function showJarvisPregunta4() {
-  addJarvisMessage("Pregunta 4 de 5:\n\n\u00BFTu Consejo o due\u00F1os reciben informaci\u00F3n de riesgo de forma regular?");
+function showAuditoria() {
+  jarvisFlow.step = 4;
+  addJarvisMessage("\u00BFHan tenido auditor\u00EDas del SAT o IMSS en los \u00FAltimos 2 a\u00F1os?");
   addJarvisOptions([
-    { text: 'S\u00ED, mensualmente', callback: function() { jarvisFlow.step = 5; jarvisFlow.userData.respuestas.push('a'); showJarvisAnalisis(); } },
-    { text: 'Trimestralmente', callback: function() { jarvisFlow.step = 5; jarvisFlow.userData.respuestas.push('b'); showJarvisAnalisis(); } },
-    { text: 'Solo cuando hay problema', callback: function() { jarvisFlow.step = 5; jarvisFlow.userData.respuestas.push('c'); showJarvisAnalisis(); } },
-    { text: 'No reciben informaci\u00F3n', callback: function() { jarvisFlow.step = 5; jarvisFlow.userData.respuestas.push('d'); showJarvisAnalisis(); } }
+    { text: 'S\u00ED', callback: function() { jarvisFlow.userData.respuestas.push('si_auditoria'); showMonitoreo(); } },
+    { text: 'No', callback: function() { jarvisFlow.userData.respuestas.push('no_auditoria'); showMonitoreo(); } },
+    { text: 'No estoy seguro', callback: function() { jarvisFlow.userData.respuestas.push('no_seguro_auditoria'); showMonitoreo(); } }
   ]);
 }
 
-// An\u00E1lisis
-function showJarvisAnalisis() {
+function showMonitoreo() {
+  jarvisFlow.step = 5;
+  addJarvisMessage("\u00BFActualmente tienen alg\u00FAn sistema para monitorear riesgos?");
+  addJarvisOptions([
+    { text: 'S\u00ED, tenemos un sistema', callback: function() { jarvisFlow.userData.respuestas.push('tiene_sistema'); showResultadoInicial(); } },
+    { text: 'Solo reportes en Excel', callback: function() { jarvisFlow.userData.respuestas.push('excel'); showResultadoInicial(); } },
+    { text: 'Lo revisamos cuando hay problema', callback: function() { jarvisFlow.userData.respuestas.push('reactivo'); showResultadoInicial(); } },
+    { text: 'No tenemos nada', callback: function() { jarvisFlow.userData.respuestas.push('nada'); showResultadoInicial(); } }
+  ]);
+}
+
+// ============================================================
+// ETAPA 2: DIAGNOSTICAR
+// ============================================================
+function showResultadoInicial() {
+  jarvisFlow.step = 6;
   var nombre = jarvisFlow.userData.nombre || 'amigo';
-  addJarvisMessage("Gracias por tus respuestas, " + nombre + ".\n\nHe identificado 3 riesgos cr\u00EDticos:\n\n\u26A0\uFE0F Riesgo 1: Exposici\u00F3n Fiscal (SAT)\nImpacto estimado: $500K - $5M\n\n\u26A0\uFE0F Riesgo 2: Exposici\u00F3n Laboral (IMSS/REPSE)\nImpacto estimado: $300K - $3M\n\n\u26A0\uFE0F Riesgo 3: Riesgo Operativo Invisible\nImpacto estimado: 10-30% de ingresos\n\n\u00BFTe explico c\u00F3mo MESAN \u03A9 puede ayudarte?");
+  var preocupacion = jarvisFlow.userData.preocupacion;
+  var riesgo1 = '', riesgo2 = '', riesgo3 = '';
+
+  if (preocupacion === 'fiscal') {
+    riesgo1 = '\u26A0\uFE0F Exposici\u00F3n Fiscal (SAT): posibles diferencias en IVA/ISR que podr\u00EDan generar multas del 55% + recargos.';
+    riesgo2 = '\u26A0\uFE0F Riesgo Laboral (IMSS): cuotas o registros que podr\u00EDan no estar al d\u00EDa.';
+    riesgo3 = '\u26A0\uFE0F Visibilidad limitada: sin monitoreo continuo, los riesgos se acumulan.';
+  } else if (preocupacion === 'laboral') {
+    riesgo1 = '\u26A0\uFE0F Exposici\u00F3n Laboral (IMSS/REPSE): irregularidades que podr\u00EDan generar multas y embargos.';
+    riesgo2 = '\u26A0\uFE0F Riesgo Fiscal asociado: la exposici\u00F3n laboral suele acompa\u00F1arse de contingencias fiscales.';
+    riesgo3 = '\u26A0\uFE0F Sin sistema de alerta: los problemas se detectan cuando ya son multas.';
+  } else {
+    riesgo1 = '\u26A0\uFE0F Riesgo Fiscal: sin visibilidad clara de tu situaci\u00F3n ante el SAT.';
+    riesgo2 = '\u26A0\uFE0F Riesgo Laboral: posible exposici\u00F3n ante IMSS/REPSE sin detecci\u00F3n.';
+    riesgo3 = '\u26A0\uFE0F Riesgo Operativo: sin monitoreo, los problemas se vuelven crisis.';
+  }
+
+  addJarvisMessage("Gracias, " + nombre + ". Con base en lo que me compartes, detecto indicadores de riesgo en 3 \u00E1reas:\n\n" + riesgo1 + "\n\n" + riesgo2 + "\n\n" + riesgo3 + "\n\nLa buena noticia: podemos empezar de forma sencilla.");
+
+  setTimeout(function() { showOfertaDiagnostico(); }, 1500);
+}
+
+// ============================================================
+// ETAPA 3: OFERTA ACCESIBLE
+// ============================================================
+function showOfertaDiagnostico() {
+  addJarvisMessage("Primero realizamos un Diagn\u00F3stico MESAN \u03A9 para identificar tus principales riesgos y darte claridad sobre d\u00F3nde est\u00E1s expuesto.\n\nEs r\u00E1pido, sin compromiso de membres\u00EDa, y te da un mapa claro de tu situaci\u00F3n.\n\n\u00BFTe interesa?");
   addJarvisOptions([
-    { text: 'S\u00ED, expl\u00EDcame', callback: function() { jarvisFlow.step = 7; showJarvisWarRoom(); } },
-    { text: 'No, gracias', callback: function() { addJarvisMessage("Entiendo. Si cambias de opini\u00F3n, aqu\u00ED estar\u00E9."); } }
+    { text: 'S\u00ED, quiero el diagn\u00F3stico', callback: function() { jarvisFlow.userData.producto_interes = 'diagnostico_entrada'; showCapturaContacto(); } },
+    { text: '\u00BFQu\u00E9 incluye?', callback: showDetalleDiagnostico },
+    { text: 'Necesito algo m\u00E1s profundo', callback: showOpcionPremium },
+    { text: 'No por ahora', callback: function() { addJarvisMessage("Entendido, " + (jarvisFlow.userData.nombre || '') + ". Cuando quieras retomar, aqu\u00ED estoy. Tambi\u00E9n puedes solicitar info desde el formulario de la p\u00E1gina."); } }
   ]);
 }
 
-// War Room
-function showJarvisWarRoom() {
-  addJarvisMessage("MESAN \u03A9 activa 9 motores para analizar tu empresa en tiempo real.\n\nGuardian 24/7 monitorea y te alerta antes de que el riesgo escale.\n\nSi detectamos algo cr\u00EDtico, activamos el War Room Ejecutivo con comit\u00E9 de crisis, simulaci\u00F3n de escenarios y recomendaciones en horas.\n\nEjemplo real: Una empresa de 250 empleados detect\u00F3 un incumplimiento REPSE 72 horas antes de una auditor\u00EDa y evit\u00F3 una multa de $3.8M.\n\n\u00BFTe gustar\u00EDa agendar un Diagn\u00F3stico Ejecutivo \u03A9?");
+function showDetalleDiagnostico() {
+  addJarvisMessage("El Diagn\u00F3stico MESAN \u03A9 incluye:\n\n\u2022 Evaluaci\u00F3n de riesgo fiscal y laboral\n\u2022 Omega Score (tu \u00EDndice de exposici\u00F3n)\n\u2022 Mapa de riesgos prioritarios\n\u2022 Recomendaciones iniciales\n\nDespu\u00E9s del diagn\u00F3stico, si quieres mantener tus riesgos monitoreados, podemos activar MESAN \u03A9 Monitor con una membres\u00EDa mensual.\n\n\u00BFAgendamos tu diagn\u00F3stico?");
   addJarvisOptions([
-    { text: 'S\u00ED, quiero agendar', callback: function() { jarvisFlow.step = 8; showJarvisPrecio(); } },
-    { text: '\u00BFCu\u00E1nto cuesta?', callback: function() { jarvisFlow.step = 8; showJarvisPrecio(); } },
-    { text: 'No, gracias', callback: function() { addJarvisMessage("Entiendo. Si cambias de opini\u00F3n, aqu\u00ED estar\u00E9."); } }
+    { text: 'S\u00ED, agendar', callback: function() { jarvisFlow.userData.producto_interes = 'diagnostico_entrada'; showCapturaContacto(); } },
+    { text: 'Cu\u00E9ntame de la membres\u00EDa', callback: showMembresia },
+    { text: 'No por ahora', callback: function() { addJarvisMessage("Sin problema. Aqu\u00ED estoy cuando lo necesites."); } }
   ]);
 }
 
-// Precio
-function showJarvisPrecio() {
-  addJarvisMessage("El Diagn\u00F3stico Ejecutivo \u03A9 tiene un costo de $15,000 MXN + IVA.\n\nIncluye:\n\u2022 Evaluaci\u00F3n de riesgo fiscal, laboral y operativo\n\u2022 Enterprise Survival Index a 12-24 meses\n\u2022 Recomendaciones prioritarias\n\u2022 Sesi\u00F3n ejecutiva (1 hora)\n\nGarant\u00EDa: Si no encontramos al menos 1 riesgo cr\u00EDtico, te devolvemos el 100%.\n\n\u00BFAgendamos para esta semana?");
+// ============================================================
+// ETAPA 4: MEMBRES\u00CDA
+// ============================================================
+function showMembresia() {
+  addJarvisMessage("MESAN \u03A9 Monitor es membres\u00EDa mensual:\n\n\u2022 Monitoreo continuo de riesgos fiscales y laborales\n\u2022 Alertas autom\u00E1ticas antes de que escalen\n\u2022 Dashboard con tu Omega Score en tiempo real\n\u2022 Guardian 24/7 vigilando tu empresa\n\nPrimero hacemos el diagn\u00F3stico para saber exactamente qu\u00E9 monitorear. \u00BFEmpezamos por ah\u00ED?");
   addJarvisOptions([
-    { text: 'S\u00ED, agenda mi diagn\u00F3stico', callback: function() { jarvisFlow.step = 9; showJarvisAgendamiento(); } },
-    { text: 'Necesito pensarlo', callback: function() { addJarvisMessage("Claro, t\u00F3mate tu tiempo. El diagn\u00F3stico tiene garant\u00EDa 100%. Cuando est\u00E9s listo, aqu\u00ED estoy."); } },
-    { text: 'No, gracias', callback: function() { addJarvisMessage("Entiendo. Si cambias de opini\u00F3n, aqu\u00ED estar\u00E9."); } }
+    { text: 'S\u00ED, empecemos con el diagn\u00F3stico', callback: function() { jarvisFlow.userData.producto_interes = 'diagnostico_entrada'; showCapturaContacto(); } },
+    { text: 'Quiero la membres\u00EDa directa', callback: function() { jarvisFlow.userData.producto_interes = 'membresia'; showCapturaContacto(); } },
+    { text: 'No por ahora', callback: function() { addJarvisMessage("Entendido. Cuando est\u00E9s listo, aqu\u00ED estoy."); } }
   ]);
 }
 
-// Agendamiento
-function showJarvisAgendamiento() {
-  addJarvisMessage("Excelente decisi\u00F3n, " + (jarvisFlow.userData.nombre || 'amigo') + ".\n\nPara agendar necesito unos datos.\n\nPrimero, \u00BFcu\u00E1l es tu correo electr\u00F3nico?");
+// ============================================================
+// ETAPA 5: PREMIUM
+// ============================================================
+function showOpcionPremium() {
+  jarvisFlow.step = 7;
+  addJarvisMessage("Para empresas que necesitan una revisi\u00F3n profunda, tenemos el Diagn\u00F3stico Ejecutivo \u03A9:\n\n\u2022 Revisi\u00F3n exhaustiva de 10 dimensiones de riesgo\n\u2022 Enterprise Survival Index a 12-24 meses\n\u2022 Sesi\u00F3n ejecutiva de 1 hora con especialistas\n\u2022 Plan de acci\u00F3n CEO personalizado\n\nInversi\u00F3n: $15,000 MXN + IVA\nGarant\u00EDa: si no encontramos al menos 1 riesgo cr\u00EDtico, devoluci\u00F3n del 100%.\n\n\u00BFQu\u00E9 prefieres?");
+  addJarvisOptions([
+    { text: 'Quiero el Diagn\u00F3stico Ejecutivo', callback: function() { jarvisFlow.userData.producto_interes = 'diagnostico_ejecutivo'; showCapturaContacto(); } },
+    { text: 'Mejor empiezo con el b\u00E1sico', callback: function() { jarvisFlow.userData.producto_interes = 'diagnostico_entrada'; showCapturaContacto(); } },
+    { text: 'Necesito pensarlo', callback: function() { addJarvisMessage("Claro. El diagn\u00F3stico b\u00E1sico siempre est\u00E1 disponible para empezar sin compromiso. Aqu\u00ED estoy."); } }
+  ]);
 }
 
-// Send to backend
+// ============================================================
+// CAPTURA DE CONTACTO
+// ============================================================
+function showCapturaContacto() {
+  jarvisFlow.step = 9;
+  var nombre = jarvisFlow.userData.nombre || 'amigo';
+  var producto = jarvisFlow.userData.producto_interes;
+  var desc = 'diagn\u00F3stico';
+  if (producto === 'membresia') desc = 'membres\u00EDa';
+  if (producto === 'diagnostico_ejecutivo') desc = 'Diagn\u00F3stico Ejecutivo';
+  addJarvisMessage("Perfecto, " + nombre + ". Para agendar tu " + desc + " necesito unos datos.\n\n\u00BFCu\u00E1l es tu correo electr\u00F3nico?");
+}
+
+// ============================================================
+// ENVIAR AL BACKEND
+// ============================================================
 function sendJarvisDataToBackend() {
-  addJarvisMessage("Procesando tu solicitud...");
+  showJarvisTyping();
 
   fetch('/api/chat/jarvis/lead', {
     method: 'POST',
@@ -264,18 +315,47 @@ function sendJarvisDataToBackend() {
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
+    hideJarvisTyping();
+    var nombre = jarvisFlow.userData.nombre || '';
+    var producto = jarvisFlow.userData.producto_interes;
+
     if (data.status === 'success') {
-      addJarvisMessage("Perfecto, " + (jarvisFlow.userData.nombre || '') + ". En los pr\u00F3ximos minutos recibir\u00E1s:\n\n1. Correo con la liga de pago ($15,000 MXN + IVA)\n2. Invitaci\u00F3n a tu sesi\u00F3n\n3. Cuestionario previo (5 min)\n\n\u00BFTienes alguna otra pregunta?");
+      var msgConfirm = '';
+      if (producto === 'diagnostico_ejecutivo') {
+        msgConfirm = "Tu solicitud de Diagn\u00F3stico Ejecutivo \u03A9 ha sido registrada.\n\nNuestro equipo te contactar\u00E1 en las pr\u00F3ximas horas para confirmar fecha y enviarte la liga de pago.\n\n";
+      } else if (producto === 'membresia') {
+        msgConfirm = "Tu inter\u00E9s en MESAN \u03A9 Monitor ha sido registrado.\n\nTe contactaremos para activar tu membres\u00EDa y programar el diagn\u00F3stico inicial.\n\n";
+      } else {
+        msgConfirm = "Tu diagn\u00F3stico MESAN \u03A9 ha sido agendado.\n\nTe enviaremos confirmaci\u00F3n por correo con los siguientes pasos.\n\n";
+      }
+
+      if (data.smtp_status === 'SENT') {
+        msgConfirm += "Ya te enviamos un correo de confirmaci\u00F3n a " + (jarvisFlow.userData.email || 'tu correo') + ".";
+      } else {
+        msgConfirm += "La confirmaci\u00F3n por correo est\u00E1 pendiente. No te preocupes, tu solicitud ya qued\u00F3 registrada y nuestro equipo te contactar\u00E1.";
+      }
+
+      addJarvisMessage(msgConfirm + "\n\nGracias por confiar en MESAN \u03A9, " + nombre + ".");
     } else {
-      addJarvisMessage("Tu solicitud fue registrada. Nuestro equipo te contactar\u00E1 pronto.\n\n\u00BFTienes alguna otra pregunta?");
+      addJarvisMessage("Tu solicitud fue registrada, " + nombre + ". Nuestro equipo te contactar\u00E1 pronto para confirmar.\n\n\u00BFTienes alguna otra pregunta?");
     }
   })
   .catch(function() {
-    addJarvisMessage("Hubo un error de conexi\u00F3n. Por favor cont\u00E1ctanos directamente en contacto@mesan-omega.com o al tel\u00E9fono que aparece en nuestra p\u00E1gina.");
+    hideJarvisTyping();
+    var fallbackUrl = '/api/chat/jarvis/lead-fallback?nombre=' + encodeURIComponent(jarvisFlow.userData.nombre) +
+      '&empresa=' + encodeURIComponent(jarvisFlow.userData.empresa) +
+      '&email=' + encodeURIComponent(jarvisFlow.userData.email) +
+      '&telefono=' + encodeURIComponent(jarvisFlow.userData.telefono) +
+      '&producto=' + encodeURIComponent(jarvisFlow.userData.producto_interes);
+
+    fetch(fallbackUrl).then(function() {
+      addJarvisMessage("Tu solicitud fue registrada, " + (jarvisFlow.userData.nombre || '') + ". La confirmaci\u00F3n por correo est\u00E1 pendiente, pero tu solicitud ya qued\u00F3 guardada.\n\nNuestro equipo te contactar\u00E1 pronto.");
+    }).catch(function() {
+      addJarvisMessage("Tuvimos un problema t\u00E9cnico, pero no te preocupes. Env\u00EDanos un correo a contacto@mesanomega.com con tu nombre y empresa, y te contactamos de inmediato.\n\nDisculpa la molestia, " + (jarvisFlow.userData.nombre || '') + ".");
+    });
   });
 }
 
-// Duda — ahora s\u00ED maneja la respuesta libre
 function showJarvisDuda() {
   jarvisFlow.dudaMode = true;
   addJarvisMessage("Claro, dime tu duda y con gusto te ayudo.");
