@@ -308,7 +308,7 @@ function showCapturaContacto() {
 function sendJarvisDataToBackend() {
   showJarvisTyping();
 
-  fetch('/api/chat/jarvis/lead', {
+  fetch('https://mesan-api.onrender.com/api/chat/jarvis/lead', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(jarvisFlow.userData)
@@ -342,7 +342,7 @@ function sendJarvisDataToBackend() {
   })
   .catch(function() {
     hideJarvisTyping();
-    var fallbackUrl = '/api/chat/jarvis/lead-fallback?nombre=' + encodeURIComponent(jarvisFlow.userData.nombre) +
+    var fallbackUrl = 'https://mesan-api.onrender.com/api/chat/jarvis/lead-fallback?nombre=' + encodeURIComponent(jarvisFlow.userData.nombre) +
       '&empresa=' + encodeURIComponent(jarvisFlow.userData.empresa) +
       '&email=' + encodeURIComponent(jarvisFlow.userData.email) +
       '&telefono=' + encodeURIComponent(jarvisFlow.userData.telefono) +
