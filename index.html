@@ -3665,9 +3665,9 @@ var p=Object.fromEntries(form.entries());
 var leadPayload={nombre:p.nombre||"",empresa:p.empresa||"",correo:p.email||"",whatsapp:p.telefono||"",sector:p.sector||"",empleados:p.empleados||"",fuente:"landing_mesan_omega",website:""};
 var execPayload={empresa:p.empresa||"EMPRESA",ingresos:0,gastos:0,nomina:0,deuda_mensual:0,cartera_vencida:0,iva:0,isr_retenido:0,trabajadores:parseInt(p.empleados)||0,trabajadores_sin_imss:0,bloqueo_bancario:false,repse_suspendido:false,opinion_sat:"NO_LOCALIZADA",opinion_imss:"NO_LOCALIZADA",caja_disponible:0};
 try{
-fetch("/api/leads",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(leadPayload)});
+fetch("https://mesan-api.onrender.com/api/leads",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(leadPayload)});
 status.innerHTML="Ejecutando diagnóstico Omega...";
-var r=await fetch("/execute",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(execPayload)});
+var r=await fetch("https://mesan-api.onrender.com/execute",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(execPayload)});
 if(r.ok){
 var d=await r.json();
 var res=d.result||{};
