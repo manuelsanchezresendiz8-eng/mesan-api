@@ -31,6 +31,7 @@ from routes.rc1_routes import router as rc1_router  # RC1
 from routes.mission_control_routes import router as mission_router  # Mission Control
 from routes.shadow_mode_routes import router as shadow_router  # Shadow Mode
 from routes.smtp_routes import router as smtp_router
+from routes.billing_routes import router as billing_router  # Billing
 from routes.jarvis_chat_routes import router as jarvis_chat_router  # SMTP
 
 # â”€â”€ Logging â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
