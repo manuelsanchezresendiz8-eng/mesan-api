@@ -21,8 +21,8 @@ async def create_checkout(request:Request):
             payment_method_types=["card"],
             line_items=[{"price_data":{"currency":"mxn","product_data":{"name":"Diagnostico Ejecutivo MESAN Omega","description":"Evaluacion completa de riesgo empresarial con PDF CEO"},"unit_amount":29900},"quantity":1}],
             mode="payment",
-            success_url=os.getenv("DOMINIO","https://mesanomega.com")+"/diagnostico-exitoso?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url=os.getenv("DOMINIO","https://mesanomega.com")+"/#diagnostico",
+            success_url="https://mesan-api.onrender.com/diagnostico-exitoso?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url="https://mesan-api.onrender.com/#diagnostico",
             customer_email=correo,
             metadata={"empresa":empresa,"score":str(score),"nivel":nivel}
         )
