@@ -3783,5 +3783,13 @@ else{nav.appendChild(btn);}
 
 
 <link rel="stylesheet" href="css/chat/jarvis-chat.css"><div id="jarvis-chat-container"><button id="jarvis-chat-btn" class="jarvis-chat-button" onclick="toggleJarvisChat()"><div class="jarvis-avatar">Ω</div><span class="jarvis-pulse"></span></button><div id="jarvis-chat-window" class="jarvis-chat-window"><div class="jarvis-chat-header"><div class="jarvis-chat-title"><div class="jarvis-avatar-small">Ω</div><div><div class="jarvis-name">JARVIS Advisor</div><div class="jarvis-status"><span class="status-dot"></span><span>En línea</span></div></div></div><button class="jarvis-close-btn" onclick="toggleJarvisChat()">✕</button></div><div id="jarvis-messages" class="jarvis-messages"></div><div class="jarvis-input-container"><input type="text" id="jarvis-input" class="jarvis-input" placeholder="Escribe tu respuesta..." onkeypress="handleJarvisKeypress(event)"><button id="jarvis-send-btn" class="jarvis-send-btn" onclick="sendJarvisMessage()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2"/></svg></button></div></div></div><script src="js/chat/jarvis-chat.js"></script>
+<script>
+async function iniciarCheckout(s,n){
+var c=document.getElementById('f-correo')?document.getElementById('f-correo').value:'';
+var e=document.getElementById('f-empresa')?document.getElementById('f-empresa').value:'';
+try{var r=await fetch('/billing/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({empresa:e,correo:c,score:s,nivel:n})});
+var d=await r.json();if(d.url){window.location.href=d.url;}else{alert('Error: '+(d.error||'intenta de nuevo'));}}catch(x){alert('Error de conexion.');}
+}
+</script>
 </body>
 </html>

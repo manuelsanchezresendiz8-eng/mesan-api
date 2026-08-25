@@ -1,4 +1,4 @@
-﻿# main.py -- MESAN Omega v3.3.0 Enterprise SaaS Platform
+# main.py -- MESAN Omega v3.3.0 Enterprise SaaS Platform
 import os
 import time
 import uuid
@@ -228,6 +228,7 @@ app.include_router(rc1_router,                            tags=["RC1"])
 app.include_router(mission_router,                        tags=["Mission Control"])
 app.include_router(shadow_router,                         tags=["Shadow Mode"])
 app.include_router(smtp_router,                           tags=["SMTP"])
+app.include_router(billing_router,                        tags=["Billing"])
 app.include_router(jarvis_chat_router,                      tags=["JARVIS Chat"])
 
 
