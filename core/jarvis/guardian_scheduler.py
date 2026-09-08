@@ -56,14 +56,6 @@ class GuardianScheduler:
         return {"status": "NOT_FOUND", "job": name}
 
     def run_cycle(self):
-
-    global _SCHEDULER_LOCK
-    try:
-        if _SCHEDULER_LOCK:
-            return
-    except NameError:
-        _SCHEDULER_LOCK = False
-    _SCHEDULER_LOCK = True
         self._cycle_count += 1
         now = time.time()
         executed = []
@@ -150,5 +142,3 @@ class GuardianScheduler:
         }
 
 guardian_scheduler = GuardianScheduler()
-    finally:
-        _SCHEDULER_LOCK = False
