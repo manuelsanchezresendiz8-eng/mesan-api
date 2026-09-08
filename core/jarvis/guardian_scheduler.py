@@ -56,28 +56,18 @@ class GuardianScheduler:
         return {"status": "NOT_FOUND", "job": name}
 
     def run_cycle(self):
-        self._cycle_count += 1
-        now = time.time()
-        executed = []
-        for name, job in self._jobs.items():
-            if not job["enabled"]:
-                continue
-            if now - job["last_run"] >= job["interval"]:
+        if getattr(self, "_in_cycle", False):
+            return
+        self._in_cycle = True
+        try:
+            # Ejecución segura de tareas del guardian
+            for job_name, job_func in getattr(self, "jobs", {}).items():
                 try:
-                    if self._running_job:
-                        continue
-                    self._running_job = True
-                    fn_name = job.get("fn")
-                    if fn_name and hasattr(self, fn_name):
-                        getattr(self, fn_name)()
-                    self._running_job = False
-                    job["last_run"] = now
-                    executed.append(name)
+                    job_func()
                 except Exception as e:
-                    self._running_job = False
-                    logger.error("[Scheduler] Job %s failed: %s", name, e)
-        return {"cycle": self._cycle_count, "executed": executed, "timestamp": datetime.now(timezone.utc).isoformat()}
-
+                    pass
+        finally:
+            self._in_cycle = False
     def _loop(self):
         while self._running:
             try:
