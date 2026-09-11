@@ -1,1 +1,1 @@
-FROM python:3.11-slim`nWORKDIR /app`nRUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*`nCOPY requirements.txt .`nRUN pip install --no-cache-dir -r requirements.txt`nCOPY . .`nCMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
+FROM python:3.11-slim`nWORKDIR /app`nRUN apt-get update && apt-get install -y build-essential python3-dev curl && rm -rf /var/lib/apt/lists/*`nCOPY requirements.txt .`nRUN pip install --no-cache-dir -r requirements.txt`nCOPY . .`nCMD sh -c "uvicorn main:app --host 0.0.0.0 --port `${PORT:-8000}
