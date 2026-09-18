@@ -467,7 +467,7 @@ class SecurityHeadersMiddleware:
 # Envolver la app completa con el middleware ASGI puro.
 # Esto debe ir AL FINAL â€” despuÃ©s de app.mount() â€” para que cubra
 # tambiÃ©n las rutas montadas por StaticFiles.
-app = SecurityHeadersMiddleware(app)
+app.add_middleware(SecurityHeadersMiddleware)
 
 
 if __name__ == "__main__":
