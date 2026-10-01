@@ -11,6 +11,7 @@ class CommercialScheduler:
         self._running=True;self._thread=threading.Thread(target=self._loop,daemon=True);self._thread.start();return{"status":"STARTED"}
     def stop(self):self._running=False;return{"status":"STOPPED"}
     def _loop(self):
+        time.sleep(1)
         while self._running:
             try:self.run_cycle()
             except Exception as e:logger.error("[CommScheduler] %s",e)
