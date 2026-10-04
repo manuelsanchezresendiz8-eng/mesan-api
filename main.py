@@ -1,8 +1,26 @@
 # main.py -- MESAN Omega v3.3.0 Enterprise SaaS Platform
 import os
+from dotenv import load_dotenv
 import time
 import uuid
 import logging
+load_dotenv(override=True)
+
+from urllib.parse import urlsplit
+
+# DIAGN?STICO TEMPORAL RAILWAY ? NO EXPONE CONTRASE?A
+try:
+    _db_debug = urlsplit(os.getenv("DATABASE_URL", ""))
+    print(
+        f"[DB DEBUG] host={_db_debug.hostname} "
+        f"port={_db_debug.port} "
+        f"user={_db_debug.username} "
+        f"db={_db_debug.path.lstrip('/')}"
+    )
+except Exception as _db_debug_error:
+    print(f"[DB DEBUG] error={_db_debug_error}")
+
+
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, Request
