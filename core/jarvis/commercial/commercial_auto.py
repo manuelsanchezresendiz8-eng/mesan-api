@@ -1,4 +1,5 @@
 # core/jarvis/commercial/commercial_auto.py v1.0
+from utils.database_url import get_direct_database_url
 import os,logging
 from datetime import datetime,timezone
 logger=logging.getLogger("mesan.commercial.auto")
@@ -43,7 +44,7 @@ class CommercialAuto:
     def _fetch_new(self):
         try:
             import psycopg
-            conn=psycopg.connect(os.getenv("DATABASE_URL"),connect_timeout=5);cur=conn.cursor()
+            conn=psycopg.connect(get_direct_database_url(),connect_timeout=5);cur=conn.cursor()
             cur.execute("SELECT id,nombre,empresa,correo,telefono,sector,empleados FROM leads WHERE estatus IS NULL OR estatus='nuevo' ORDER BY created_at DESC LIMIT 50")
             rows=cur.fetchall();cur.close();conn.close()
             return[{"id":str(r[0]),"nombre":r[1],"empresa":r[2],"correo":r[3],"telefono":r[4],"sector":r[5],"empleados":r[6]} for r in rows]
@@ -51,7 +52,7 @@ class CommercialAuto:
     def _fetch_all(self):
         try:
             import psycopg
-            conn=psycopg.connect(os.getenv("DATABASE_URL"),connect_timeout=5);cur=conn.cursor()
+            conn=psycopg.connect(get_direct_database_url(),connect_timeout=5);cur=conn.cursor()
             cur.execute("SELECT id,nombre,empresa,correo,telefono,sector,empleados FROM leads ORDER BY created_at DESC LIMIT 100")
             rows=cur.fetchall();cur.close();conn.close()
             return[{"id":str(r[0]),"nombre":r[1],"empresa":r[2],"correo":r[3],"telefono":r[4],"sector":r[5],"empleados":r[6]} for r in rows]

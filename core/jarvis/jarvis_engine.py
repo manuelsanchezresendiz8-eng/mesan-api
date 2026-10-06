@@ -1,4 +1,5 @@
 # core/jarvis/jarvis_engine.py -- MESAN Omega JARVIS v1.0
+from utils.database_url import get_direct_database_url
 """
 JARVIS Omega -- Director General Autonomo del ecosistema MESAN Omega.
 
@@ -227,7 +228,7 @@ class JarvisEngine:
         """Conectado a PostgreSQL real."""
         try:
             import psycopg
-            conn = psycopg.connect(os.getenv("DATABASE_URL"))
+            conn = psycopg.connect(get_direct_database_url())
             cur  = conn.cursor()
             cur.execute("SELECT COUNT(*) FROM leads")
             total = cur.fetchone()[0]
@@ -382,7 +383,7 @@ class JarvisEngine:
     def _get_hot_leads(self) -> List:
         try:
             import psycopg
-            conn = psycopg.connect(os.getenv("DATABASE_URL"))
+            conn = psycopg.connect(get_direct_database_url())
             cur  = conn.cursor()
             cur.execute(
                 "SELECT nombre, empresa, telefono, created_at "

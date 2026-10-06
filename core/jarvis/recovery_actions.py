@@ -1,4 +1,5 @@
 # core/jarvis/recovery_actions.py -- MESAN Omega Recovery Actions v1.0
+from utils.database_url import get_direct_database_url
 import os, time, logging
 from datetime import datetime, timezone
 logger = logging.getLogger("mesan.selfhealing.recovery")
@@ -20,7 +21,7 @@ class RecoveryActions:
     def reconnect_database(self):
         try:
             import psycopg
-            db_url = os.getenv("DATABASE_URL")
+            db_url = get_direct_database_url()
             if not db_url:
                 self._log("reconnect_db","DATABASE_URL","FAILED",0)
                 return {"status":"FAILED","reason":"No DATABASE_URL"}

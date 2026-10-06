@@ -1,4 +1,5 @@
 # core/jarvis/commercial/commercial_metrics.py -- MESAN Omega Commercial Metrics v1.0
+from utils.database_url import get_direct_database_url
 import os, logging
 from datetime import datetime, timezone
 logger = logging.getLogger("mesan.commercial.metrics")
@@ -30,13 +31,13 @@ class CommercialMetrics:
     def _get_lead_stats(self):
         try:
             import psycopg
-            conn = psycopg.connect(os.getenv("DATABASE_URL"), connect_timeout=5)
+            conn = psycopg.connect(get_direct_database_url().replace("postgresql+psycopg://", "postgresql://"), connect_timeout=5)
             cur = conn.cursor()
-            cur.execute("SELECT COUNT(*) FROM leads")
+            cur.execute("SELECT COUNT(*) FROM public.leads")
             total = cur.fetchone()[0]
-            cur.execute("SELECT COUNT(*) FROM leads WHERE estatus='nuevo'")
+            cur.execute("SELECT COUNT(*) FROM public.leads WHERE estatus='nuevo'")
             nuevo = cur.fetchone()[0]
-            cur.execute("SELECT COUNT(*) FROM leads WHERE fecha::date = CURRENT_DATE")
+            cur.execute("SELECT COUNT(*) FROM public.leads WHERE fecha::date = CURRENT_DATE")
             today = cur.fetchone()[0]
             cur.close(); conn.close()
             return {"total": total, "nuevos": nuevo, "hoy": today, "cerrado_ganado": 0}

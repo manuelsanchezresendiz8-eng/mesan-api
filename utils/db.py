@@ -1,3 +1,4 @@
+from utils.database_url import get_direct_database_url
 import psycopg2
 import os
 import logging
@@ -5,7 +6,7 @@ import logging
 
 def get_conn():
     try:
-        return psycopg2.connect(os.getenv("DATABASE_URL"))
+        return psycopg2.connect(get_direct_database_url())
     except Exception as e:
         logging.error(f"DB connection error: {e}")
         raise

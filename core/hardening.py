@@ -2,6 +2,7 @@
 import os,gc
 from datetime import datetime,timezone
 from pathlib import Path
+from utils.database_url import get_direct_database_url
 REQUIRED=["DATABASE_URL","STRIPE_SECRET_KEY"]
 class Hardening:
     def __init__(self):self.version="1.0.0"
@@ -18,7 +19,7 @@ class Hardening:
     def full_check(self):
         deps={}
         try:
-            import psycopg;conn=psycopg.connect(os.getenv("DATABASE_URL",""),connect_timeout=5);conn.close();deps["postgresql"]="OK"
+            import psycopg;conn=psycopg.connect(get_direct_database_url(),connect_timeout=5);conn.close();deps["postgresql"]="OK"
         except:deps["postgresql"]="OFFLINE"
         deps["stripe"]="OK" if os.getenv("STRIPE_SECRET_KEY") else "MISSING"
         return{"timestamp":datetime.now(timezone.utc).isoformat(),"version":self.version,"env":self.validate_env(),"deps":deps}

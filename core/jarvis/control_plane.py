@@ -1,4 +1,5 @@
 # core/jarvis/control_plane.py -- MESAN Omega Control Plane v1.0
+from utils.database_url import get_direct_database_url
 """
 Panel de control unificado que centraliza todos los sistemas de MESAN Omega.
 Guardian, Telemetry, Watchdog, Self-Healing, Rollback, Billing, CRM, JARVIS, War Room.
@@ -96,7 +97,7 @@ class ControlPlane:
     def _get_crm(self):
         try:
             import psycopg, os
-            conn = psycopg.connect(os.getenv("DATABASE_URL"), connect_timeout=5)
+            conn = psycopg.connect(get_direct_database_url(), connect_timeout=5)
             cur = conn.cursor()
             cur.execute("SELECT COUNT(*) FROM leads")
             total = cur.fetchone()[0]

@@ -15,7 +15,7 @@ class LeadScoringEngine:
         s = 0
         s += SECTOR_WEIGHT.get(lead.get("sector",""), 5)
         s += SIZE_WEIGHT.get(lead.get("empleados",""), 5)
-        if lead.get("correo","").endswith((".com",".mx",".com.mx")): s += 5
+        if (lead.get("correo") or "").endswith((".com",".mx",".com.mx")): s += 5
         if lead.get("whatsapp",""): s += 5
         if omega_result:
             omega_score = omega_result.get("omega_score", omega_result.get("score", 50))

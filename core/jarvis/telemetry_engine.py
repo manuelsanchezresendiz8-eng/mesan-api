@@ -1,4 +1,5 @@
 # core/jarvis/telemetry_engine.py -- MESAN Omega Guardian Telemetry Engine v1.0
+from utils.database_url import get_direct_database_url
 """
 Motor de telemetria que registra eventos reales del ecosistema MESAN
 y alimenta a Guardian con metricas calculadas, no simuladas.
@@ -222,7 +223,7 @@ class GuardianTelemetryEngine:
     def _check_db(self):
         try:
             import psycopg
-            db_url = os.getenv("DATABASE_URL")
+            db_url = get_direct_database_url()
             if not db_url:
                 return {"service": "PostgreSQL", "status": "OFFLINE", "score": 0}
             start = time.perf_counter()

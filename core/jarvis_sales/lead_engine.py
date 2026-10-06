@@ -1,5 +1,6 @@
 # core/jarvis_sales/lead_engine.py -- MESAN Omega JARVIS Sales v1.0
 from __future__ import annotations
+from utils.database_url import get_direct_database_url
 import logging, os
 from typing import Any, Dict, List
 from core.jarvis_sales.models import LeadProfile, SalesDecision, LeadTemperature, Sector
@@ -51,7 +52,7 @@ class LeadEngine:
     def _load_from_db(self) -> List[Dict[str, Any]]:
         try:
             import psycopg
-            conn = psycopg.connect(os.getenv("DATABASE_URL",""))
+            conn = psycopg.connect(get_direct_database_url())
             cur = conn.cursor()
             cur.execute("SELECT id,nombre,telefono,whatsapp,empleados,estatus,fecha,nombre_contacto,origen,fuente_detalle,nivel_riesgo,impacto_estimado,omega_score,created_at FROM leads WHERE estatus NOT IN ('descartado','cerrado') ORDER BY created_at DESC LIMIT 100")
             cols = [d[0] for d in cur.description]

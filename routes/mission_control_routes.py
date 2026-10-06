@@ -1,4 +1,5 @@
 # routes/mission_control_routes.py -- MESAN Omega Mission Control v2.0
+from utils.database_url import get_direct_database_url
 import os
 import logging
 from datetime import datetime, timezone
@@ -47,7 +48,7 @@ async def mission_control_data(request: Request):
 def _get_leads():
     try:
         import psycopg
-        conn = psycopg.connect(os.getenv("DATABASE_URL"), connect_timeout=5)
+        conn = psycopg.connect(get_direct_database_url(), connect_timeout=5)
         cur = conn.cursor()
         cur.execute("SELECT COUNT(*) FROM leads")
         total = cur.fetchone()[0]

@@ -1,5 +1,6 @@
 # routes/jarvis_chat_routes.py -- MESAN Omega JARVIS Chat v2.0
 # Lead capture + SMTP confirmation + fallback endpoint
+from utils.database_url import get_direct_database_url
 import os
 import logging
 import smtplib
@@ -20,7 +21,7 @@ logger = logging.getLogger("mesan.jarvis_chat")
 
 
 def _get_conn():
-    url = os.getenv("DATABASE_URL", "")
+    url = get_direct_database_url()
     if not url or not psycopg:
         return None
     try:

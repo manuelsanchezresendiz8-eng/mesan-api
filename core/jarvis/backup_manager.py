@@ -1,4 +1,5 @@
 # core/jarvis/backup_manager.py v1.0
+from utils.database_url import get_direct_database_url
 import os,logging,time
 from datetime import datetime,timezone
 from collections import deque
@@ -14,7 +15,7 @@ class BackupManager:
     def _backup_db(self):
         try:
             import psycopg
-            conn=psycopg.connect(os.getenv("DATABASE_URL",""),connect_timeout=5);cur=conn.cursor();cur.execute("SELECT COUNT(*) FROM leads");count=cur.fetchone()[0];cur.close();conn.close()
+            conn=psycopg.connect(get_direct_database_url(),connect_timeout=5);cur=conn.cursor();cur.execute("SELECT COUNT(*) FROM leads");count=cur.fetchone()[0];cur.close();conn.close()
             return{"status":"OK","records":count}
         except Exception as e:return{"status":"ERROR","error":str(e)}
     def get_latest(self):return self._last or{"status":"NO_BACKUPS"}

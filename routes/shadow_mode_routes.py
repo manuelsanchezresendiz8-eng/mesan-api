@@ -1,4 +1,5 @@
 # routes/shadow_mode_routes.py -- MESAN Omega Shadow Mode Comercial v1.0
+from utils.database_url import get_direct_database_url
 import os,logging,time
 from datetime import datetime,timezone
 from collections import deque
@@ -30,7 +31,7 @@ class ShadowModeCommercial:
     def _fetch_new_leads(self):
         try:
             import psycopg
-            conn = psycopg.connect(os.getenv("DATABASE_URL"), connect_timeout=5)
+            conn = psycopg.connect(get_direct_database_url(), connect_timeout=5)
             cur = conn.cursor()
             cur.execute("SELECT id,nombre_contacto,email,whatsapp,empleados,estatus FROM leads ORDER BY created_at DESC LIMIT 20")
             rows = cur.fetchall()
