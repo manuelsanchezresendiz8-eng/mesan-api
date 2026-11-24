@@ -40,8 +40,10 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from core.auth.jwt_handler import JWTError, verify_token
-from core.auth.tenant_context import clear_tenant, set_tenant
+from core.auth.tenant_context import reset_tenant, set_tenant
 from core.auth.tenant_model import Tenant
+from database import SessionLocal
+from core.auth.tenant_db_models import TenantMembership, TenantRecord, UserRecord
 
 logger = logging.getLogger("mesan.auth")
 
@@ -167,21 +169,42 @@ async def auth_middleware(request: Request, call_next):
 
     try:
         payload   = verify_token(token)
+        user_id = payload.get("sub")
         tenant_id = payload.get("tenant_id")
 
-        if not tenant_id:
-            logger.warning("[AUTH] Token sin tenant_id | path=%s", path)
-            return JSONResponse(
-                status_code=401,
-                content={"error": "AUTH_TENANT_MISSING"},
+        if not user_id or not tenant_id:
+            return JSONResponse(status_code=401, content={"error": "AUTH_IDENTITY_OR_TENANT_MISSING"})
+
+        # tenant_id selecciona el espacio solicitado; la membresía activa en
+        # PostgreSQL, no el claim ni X-Tenant-ID, concede el acceso.
+        db = SessionLocal()
+        try:
+            membership = (
+                db.query(TenantMembership)
+                .join(UserRecord, UserRecord.id == TenantMembership.user_id)
+                .join(TenantRecord, TenantRecord.id == TenantMembership.tenant_id)
+                .filter(
+                    TenantMembership.user_id == user_id,
+                    TenantMembership.tenant_id == tenant_id,
+                    TenantMembership.status == "active",
+                    UserRecord.status == "active",
+                    TenantRecord.status == "active",
+                )
+                .first()
             )
+        finally:
+            db.close()
 
-        tenant = Tenant(tenant_id=tenant_id)
-        set_tenant(tenant)
-        logger.info("[AUTH] OK | tenant=%s | path=%s", tenant_id, path)
+        if membership is None:
+            logger.warning("[AUTH] Membresía no válida | user=%s tenant=%s", user_id, tenant_id)
+            return JSONResponse(status_code=403, content={"error": "TENANT_MEMBERSHIP_REQUIRED"})
 
-        response = await call_next(request)
-        return response
+        context_token = set_tenant(Tenant(tenant_id=tenant_id))
+        logger.info("[AUTH] OK | user=%s tenant=%s | path=%s", user_id, tenant_id, path)
+        try:
+            return await call_next(request)
+        finally:
+            reset_tenant(context_token)
 
     except JWTError as e:
         logger.warning("[AUTH] JWT ERROR | path=%s | error=%s", path, str(e))
@@ -197,5 +220,3 @@ async def auth_middleware(request: Request, call_next):
             content={"error": "AUTH_MIDDLEWARE_FAILURE"},
         )
 
-    finally:
-        clear_tenant()
