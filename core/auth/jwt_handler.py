@@ -55,7 +55,7 @@ def create_platform_token(operator_id: str, expires_minutes: int = 30) -> str:
     }, PLATFORM_SECRET_KEY, "MESAN_PLATFORM_SECRET_KEY_NOT_SET")
 
 
-def _decode(token: str, audience: str, required: list[str], secret_key: str, missing_error: str) -> Dict:
+def _decode(token: str, audience: str, required: list[str], secret_key: str | None, missing_error: str) -> Dict:
     if not secret_key:
         raise JWTError(missing_error)
     if not isinstance(token, str) or not token or len(token) > 8192:
