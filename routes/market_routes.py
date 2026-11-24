@@ -1,6 +1,7 @@
 ﻿import logging
 from datetime import datetime, timezone
 from fastapi import APIRouter
+from core.auth.tenant_context import get_tenant
 from fastapi.responses import JSONResponse
 from services.market_intelligence_engine import market_engine
 
@@ -56,6 +57,12 @@ async def market_regulatory_alerts(
     sector: str = '',
     solo_cambios: bool = False,
 ):
+    active_tenant = get_tenant()
+    if active_tenant is None:
+        return JSONResponse(status_code=401, content={'error': 'TENANT_CONTEXT_MISSING'})
+    if tenant_id != active_tenant.tenant_id:
+        return JSONResponse(status_code=403, content={'error': 'TENANT_SCOPE_MISMATCH'})
+
     """Phase 2 -- Alertas regulatorias PERSONALIZADAS por perfil del tenant.
 
     El perfil se pasa por query params (mismos campos que /execute); las reglas
