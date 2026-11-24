@@ -26,9 +26,11 @@ async def context_middleware(request: Request, call_next) -> Response:
         or str(uuid.uuid4())
     )
 
-    tenant_id = request.headers.get("X-Tenant-ID", "public")
-    user_id   = request.headers.get("X-User-ID")
-    role      = request.headers.get("X-Role")
+     # Los headers de identidad/tenant son datos no confiables; auth_middleware
+    # reemplaza este contexto base solo tras validar JWT y membresía en DB.
+    tenant_id = "public"
+    user_id   = None
+    role      = None
 
     ctx = RequestContext(
         tenant_id=tenant_id,
