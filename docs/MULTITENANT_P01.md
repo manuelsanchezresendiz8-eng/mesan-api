@@ -74,13 +74,13 @@ Tenant JWTs represent a user acting inside one active tenant membership. They mu
 2. Tenant tokens use `typ=tenant` and `aud=mesan-tenant-api`; platform tokens use `typ=platform` and `aud=mesan-platform-api`. The middleware rejects token-type/audience crossover.
 3. Platform route permissions are checked against PostgreSQL on every request: `platform:read` for GET/HEAD and `platform:operate` for mutations; `platform:admin` is an explicit override.
 4. Tenant-specific scope is derived from authenticated tenant context. The JARVIS briefing and Market regulatory alert endpoints are explicit tenant-scoped exceptions.
-5. Existing CRM Basic Auth dependencies remain intact. Routes already protected by those dependencies are excluded from the platform-token gate, not made public.
+5. Existing CRM Basic Auth dependencies remain intact. Where present on global platform routes, Basic Auth is an additional check after platform-token authorization; it is not removed or treated as a substitute for platform identity.
 6. Token separation and route classification tests have been added but have not been executed. End-to-end tests for revoked operators, missing permissions, tenant-owner denial, and DB behavior remain required.
 7. Deploy only after a staging migration, operator provisioning/revocation rehearsal, PostgreSQL integration tests, and process-restart validation.
 
-### Additional finding: JARVIS briefing tenant spoofing
+### Resolved finding: JARVIS briefing tenant spoofing
 
-The current `POST /jarvis/briefing` handler passes `body.get('tenant_id', 'public')` to the JARVIS bridge. This is request-controlled tenant selection. Before the route is exposed to tenant users, it must use the trusted tenant context and reject missing context; a platform-only version must use an explicit platform permission and must not impersonate a tenant from arbitrary request data.
+`POST /jarvis/briefing` now requires a tenant JWT and derives its tenant identifier from the authenticated context. It no longer trusts `tenant_id` supplied in the request body and rejects a missing tenant context.
 
 ### P0.1 decision
 
