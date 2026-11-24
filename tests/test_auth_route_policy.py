@@ -4,7 +4,7 @@ import os
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 
 from core.auth.authorization import role_is_allowed
-from core.auth.auth_middleware import _is_public
+from core.auth.auth_middleware import _is_public, _requires_platform_operator
 
 
 def test_tenant_lead_endpoints_are_not_public():
@@ -81,3 +81,16 @@ def test_role_policy_is_explicit_and_fail_closed():
     assert role_is_allowed("member", {"member", "admin", "owner"})
     assert not role_is_allowed(None, {"owner", "admin"})
     assert not role_is_allowed("superuser", {"owner", "admin", "superuser"})
+
+
+
+def test_platform_only_routes_are_separated_from_tenant_routes():
+    for path in ("/jarvis/kpis", "/jarvis-sales/leads", "/guardian/incidents", "/system/mode", "/smtp/send", "/market/events", "/commercial/shadow/activate", "/commercial/mission-control/data"):
+        assert _requires_platform_operator(path), path
+    for path in ("/jarvis/briefing", "/market/regulatory/alerts/tenant-123", "/guardian/backups", "/system/cleanup", "/customer"):
+        assert not _requires_platform_operator(path), path
+
+
+def test_platform_login_is_an_explicit_public_flow():
+    assert _is_public("/auth/platform/login", "POST")
+    assert not _is_public("/auth/platform/login", "GET")
