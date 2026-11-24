@@ -52,6 +52,10 @@ def test_internal_get_routes_are_not_mistaken_for_static_assets():
         "/commercial/dashboard",
         "/commercial/mission-control",
         "/billing/status",
+        "/jarvis-sales/leads",
+        "/jarvis-sales/dashboard",
+        "/market/events",
+        "/market/regulatory/alerts/tenant-123",
     ]
     for path in protected:
         assert not _is_public(path, "GET"), path
