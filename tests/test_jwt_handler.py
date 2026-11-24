@@ -43,6 +43,8 @@ def test_rejects_invalid_tenant_claim_and_oversized_token():
     token = _token({
         "sub": "user-1",
         "tenant_id": "t" * 37,
+        "typ": "tenant",
+        "aud": jwt_handler.TENANT_AUDIENCE,
         "iat": now,
         "exp": now + timedelta(minutes=5),
     })
@@ -50,3 +52,27 @@ def test_rejects_invalid_tenant_claim_and_oversized_token():
         jwt_handler.verify_token(token)
     with pytest.raises(jwt_handler.JWTError, match="TOKEN_INVALID"):
         jwt_handler.verify_token("x" * 8193)
+
+
+
+def test_tenant_and_platform_tokens_are_not_interchangeable():
+    tenant_token = jwt_handler.create_token("user-1", "tenant-1")
+    platform_token = jwt_handler.create_platform_token("operator-1")
+    tenant_payload = jwt_handler.verify_token(tenant_token)
+    platform_payload = jwt_handler.verify_platform_token(platform_token)
+    assert tenant_payload["typ"] == "tenant"
+    assert tenant_payload["aud"] == jwt_handler.TENANT_AUDIENCE
+    assert platform_payload["typ"] == "platform"
+    assert platform_payload["aud"] == jwt_handler.PLATFORM_AUDIENCE
+    assert "tenant_id" not in platform_payload
+    with pytest.raises(jwt_handler.JWTError):
+        jwt_handler.verify_platform_token(tenant_token)
+    with pytest.raises(jwt_handler.JWTError):
+        jwt_handler.verify_token(platform_token)
+
+
+def test_platform_token_rejects_tenant_claim():
+    now = datetime.now(timezone.utc)
+    token = _token({"sub": "operator-1", "typ": "platform", "aud": jwt_handler.PLATFORM_AUDIENCE, "tenant_id": "tenant-1", "iat": now, "exp": now + timedelta(minutes=5)})
+    with pytest.raises(jwt_handler.JWTError, match="PLATFORM_TOKEN_MUST_NOT_CONTAIN_TENANT"):
+        jwt_handler.verify_platform_token(token)
