@@ -10,9 +10,9 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
 from database import SessionLocal
-from core.auth.jwt_handler import create_token
+from core.auth.jwt_handler import create_platform_token, create_token
 from core.auth.passwords import hash_password, verify_password
-from core.auth.tenant_db_models import TenantMembership, TenantRecord, UserRecord
+from core.auth.tenant_db_models import PlatformOperator, TenantMembership, TenantRecord, UserRecord
 from core.rate_limiter import rate_limit_check
 
 logger = logging.getLogger("mesan.auth.routes")
@@ -29,6 +29,11 @@ class LoginPayload(BaseModel):
     email: str = Field(min_length=5, max_length=320)
     password: str = Field(min_length=1, max_length=128)
     tenant_id: str = Field(min_length=1, max_length=36)
+
+
+class PlatformLoginPayload(BaseModel):
+    email: str = Field(min_length=5, max_length=320)
+    password: str = Field(min_length=1, max_length=128)
 
 
 @router.post("/bootstrap", status_code=201)
@@ -118,6 +123,37 @@ def login(payload: LoginPayload, request: Request):
             "expires_in": 3600,
             "tenant_id": membership.tenant_id,
             "role": membership.role,
+        }
+    finally:
+        db.close()
+
+
+@router.post("/platform/login")
+def platform_login(payload: PlatformLoginPayload, request: Request):
+    """Autentica una identidad global independiente de usuarios y tenants."""
+    rate_limit_check(request, key="auth_platform_login", max_requests=5, window_seconds=300)
+    db = SessionLocal()
+    try:
+        operator = db.query(PlatformOperator).filter(
+            PlatformOperator.email == payload.email.strip().lower(),
+            PlatformOperator.status == "active",
+        ).first()
+        if operator is None or not verify_password(payload.password, operator.password_hash):
+            raise HTTPException(status_code=401, detail="INVALID_PLATFORM_CREDENTIALS")
+
+        permissions = operator.permissions or []
+        if not isinstance(permissions, list) or not all(
+            isinstance(permission, str) for permission in permissions
+        ):
+            raise HTTPException(status_code=403, detail="PLATFORM_PERMISSIONS_INVALID")
+
+        token = create_platform_token(operator_id=operator.id)
+        return {
+            "access_token": token,
+            "token_type": "bearer",
+            "expires_in": 1800,
+            "operator_id": operator.id,
+            "permissions": permissions,
         }
     finally:
         db.close()
