@@ -62,6 +62,8 @@ def test_intended_public_flows_remain_public():
     assert _is_public("/auth/bootstrap", "POST")
     assert _is_public("/auth/login", "POST")
     assert _is_public("/api/leads", "POST")
+    assert _is_public("/api/chat/jarvis/lead", "POST")
+    assert _is_public("/api/chat/jarvis/lead-fallback", "GET")
     assert _is_public("/execute", "POST")
     assert _is_public("/billing/checkout", "POST")
     assert _is_public("/diagnostico-exitoso", "GET")
