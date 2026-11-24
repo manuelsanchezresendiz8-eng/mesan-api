@@ -22,6 +22,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from core.auth.jwt_handler import JWTError, verify_platform_token, verify_token
+from core.auth.authorization import platform_permission_is_allowed
 from core.auth.tenant_context import reset_tenant, set_tenant
 from core.auth.tenant_model import Tenant
 from database import SessionLocal
@@ -151,10 +152,7 @@ async def auth_middleware(request: Request, call_next):
                 if operator is None:
                     return JSONResponse(status_code=403, content={"error": "ACTIVE_PLATFORM_OPERATOR_REQUIRED"})
                 permissions = operator.permissions or []
-                required_permission = "platform:read" if method.upper() in ("GET", "HEAD") else "platform:operate"
-                if not isinstance(permissions, list) or (
-                    required_permission not in permissions and "platform:admin" not in permissions
-                ):
+                if not platform_permission_is_allowed(permissions, method):
                     return JSONResponse(status_code=403, content={"error": "PLATFORM_PERMISSION_DENIED"})
                 request.state.platform_operator = {
                     "id": operator.id,
