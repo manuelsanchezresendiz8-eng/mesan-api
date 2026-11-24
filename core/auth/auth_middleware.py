@@ -54,6 +54,9 @@ PUBLIC_METHOD_PATHS = {
     # Checkout y confirmación del flujo público de diagnóstico.
     ("/billing/checkout", "POST"),
     ("/diagnostico-exitoso", "GET"),
+    # Captura pública del formulario conversacional JARVIS.
+    ("/api/chat/jarvis/lead", "POST"),
+    ("/api/chat/jarvis/lead-fallback", "GET"),
     # Vistas de demostración con datos de demo, no de clientes.
     ("/demo", "GET"),
     ("/demo/diagnostico", "GET"),
