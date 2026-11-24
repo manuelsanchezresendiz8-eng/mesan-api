@@ -1,11 +1,13 @@
 # core/rate_limiter.py -- MESAN Omega Rate Limiter (Fase 1)
 """
-Rate limiter en memoria por IP de conexión.
+Rate limiter en memoria por IP para el despliegue en Render.
 
-No se confía en X-Forwarded-For: cualquier cliente puede falsificarlo si
-la aplicación no valida primero que request.client.host pertenezca a un
-proxy explícitamente confiable. En ausencia de una lista de proxies
-configurada y verificada, se usa exclusivamente la IP del peer TCP.
+Render enruta el tráfico de sus web services por Cloudflare. Se usa
+CF-Connecting-IP (inyectado por Cloudflare en el salto edge -> origin),
+no X-Forwarded-For: este último puede conservar valores enviados por
+el cliente y por tanto no es una fuente segura si se toma su primer item.
+Si CF-Connecting-IP falta o no es una IP válida, se usa el peer TCP como
+fallback conservador.
 """
 import ipaddress
 import logging
@@ -21,14 +23,21 @@ _request_log: dict[str, list[float]] = defaultdict(list)
 _lock = Lock()
 
 
+def _valid_ip(value: str) -> str | None:
+    try:
+        return ipaddress.ip_address(value.strip()).compressed
+    except (AttributeError, ValueError):
+        return None
+
+
 def _get_client_ip(request: Request) -> str:
-    """Usa solo el peer de conexión; ignora encabezados reenviados no confiables."""
+    """Prioriza el IP de Cloudflare; nunca interpreta X-Forwarded-For."""
+    cloudflare_ip = _valid_ip(request.headers.get("CF-Connecting-IP", ""))
+    if cloudflare_ip:
+        return cloudflare_ip
     if not request.client or not request.client.host:
         return "unknown"
-    try:
-        return ipaddress.ip_address(request.client.host).compressed
-    except ValueError:
-        return "unknown"
+    return _valid_ip(request.client.host) or "unknown"
 
 
 def rate_limit_check(
@@ -38,8 +47,8 @@ def rate_limit_check(
     window_seconds: int,
 ) -> None:
     """
-    Verifica el límite por IP de conexión y endpoint.
-    X-Forwarded-For se ignora hasta configurar y verificar proxies confiables.
+    Verifica el límite por IP de cliente y endpoint.
+    En Render, CF-Connecting-IP identifica al visitante en el origen.
     """
     ip = _get_client_ip(request)
     bucket_key = f"{key}:{ip}"
