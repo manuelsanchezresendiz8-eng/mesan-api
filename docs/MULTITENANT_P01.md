@@ -21,6 +21,14 @@ Do not reuse the legacy `JWT_SECRET` value from `pro/auth.py`.
 
 Bootstrap is disabled unless the environment secret is configured, and it refuses to run after any user exists. Login requires an active user, active tenant, and active membership.
 
+## Private tenant API
+After login, send the bearer token to:
+- `GET /api/v1/tenant/leads` — list only leads assigned to the authenticated tenant.
+- `GET /api/v1/tenant/leads/{lead_id}` — read only a lead owned by that tenant; cross-tenant and public/unassigned records return 404.
+- `PATCH /api/v1/tenant/leads/{lead_id}` — update allowlisted fields only, with the same tenant ownership check.
+
+These routes are separate from the legacy CRM endpoints. The one-time bootstrap uses a PostgreSQL advisory transaction lock to serialize concurrent first-owner attempts.
+
 ## Data handling
 Existing and public landing leads remain `tenant_id IS NULL`. They are not assigned to the first tenant. Legacy CRM access remains governed by its existing Basic Auth dependencies; do not expose its unscoped lead-store methods as customer endpoints.
 
