@@ -82,9 +82,11 @@ Tenant JWTs represent a user acting inside one active tenant membership. They mu
 
 `POST /jarvis/briefing` now requires a tenant JWT and derives its tenant identifier from the authenticated context. It no longer trusts `tenant_id` supplied in the request body and rejects a missing tenant context.
 
-### P0.1 decision
+### P0.1 implementation closeout
 
-The independent operator identity and token separation are now implemented on this branch, but P0.1 remains open pending staging migration and end-to-end validation. Do not grant global access to tenant `owner`, `admin`, or `member`. No production activation, main-branch merge, or production database migration is authorized by this document.
+The bounded code implementation for tenant isolation, tenant-scoped lead access, PostgreSQL-backed audit seals, and independent platform-operator authentication is complete on `mesan-omega/p0.1-tenant-isolation`. The implementation is frozen pending release-gate validation. Do not grant global access to tenant `owner`, `admin`, or `member`.
+
+**Release gate still open:** tests have been added but not executed; PostgreSQL staging migration, tenant/operator provisioning, active/revoked operator checks, read-vs-mutation permission checks, cross-tenant negative tests, legacy client compatibility, and process-restart persistence checks remain unverified. Therefore this is a code-scope closeout, not authorization to deploy or merge. No production activation, `main` merge, or production database migration is authorized.
 
 
 ## Independent platform operator authentication
@@ -126,7 +128,7 @@ VALUES
 - Operators must be active in `mesan_platform_operators`; revoking status blocks their next request. Token permissions are not trusted: permissions are loaded from PostgreSQL on every request.
 - Tenant JWTs are rejected on platform-only routes. Platform JWTs are rejected on tenant routes.
 - `/jarvis/briefing` and `/market/regulatory/alerts/{tenant_id}` remain tenant-scoped and must use the authenticated tenant context.
-- Existing routes with explicit CRM Basic Auth remain outside the new operator-only gate; their existing dependencies are not removed.
+- Existing CRM Basic Auth dependencies are preserved. On global `/commercial/*` routes, they are an additional check after platform-operator authorization; Basic Auth alone no longer grants access on this branch.
 
 ### Platform route gate currently applied
 
