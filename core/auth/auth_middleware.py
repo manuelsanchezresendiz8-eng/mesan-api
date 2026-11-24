@@ -44,6 +44,7 @@ from core.auth.tenant_context import reset_tenant, set_tenant
 from core.auth.tenant_model import Tenant
 from database import SessionLocal
 from core.auth.tenant_db_models import TenantMembership, TenantRecord, UserRecord
+from core.context import RequestContext
 
 logger = logging.getLogger("mesan.auth")
 
@@ -200,6 +201,15 @@ async def auth_middleware(request: Request, call_next):
             return JSONResponse(status_code=403, content={"error": "TENANT_MEMBERSHIP_REQUIRED"})
 
         context_token = set_tenant(Tenant(tenant_id=tenant_id))
+        previous_ctx = getattr(request.state, "ctx", None)
+        if previous_ctx is not None:
+            request.state.ctx = RequestContext(
+                tenant_id=tenant_id,
+                request_id=previous_ctx.request_id,
+                user_id=user_id,
+                role=membership.role,
+                correlation_id=previous_ctx.correlation_id,
+            )
         logger.info("[AUTH] OK | user=%s tenant=%s | path=%s", user_id, tenant_id, path)
         try:
             return await call_next(request)
