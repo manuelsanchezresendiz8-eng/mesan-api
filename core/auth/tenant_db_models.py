@@ -5,7 +5,7 @@ interfaces existentes. Todas las tablas comparten database.Base.
 """
 import uuid
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Column, DateTime, ForeignKey, JSON, String, UniqueConstraint
 from sqlalchemy.sql import func
 
 from database import Base
@@ -47,4 +47,16 @@ class TenantMembership(Base):
     )
     role = Column(String(30), nullable=False, default="member")
     status = Column(String(20), nullable=False, default="active")
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+
+class PlatformOperator(Base):
+    """Identidad global independiente de cualquier membresía de tenant."""
+    __tablename__ = "mesan_platform_operators"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    email = Column(String(320), nullable=False, unique=True, index=True)
+    password_hash = Column(String(255), nullable=False)
+    status = Column(String(20), nullable=False, default="active")
+    permissions = Column(JSON, nullable=False, default=list)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
