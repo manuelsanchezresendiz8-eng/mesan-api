@@ -111,7 +111,7 @@ INSERT INTO mesan_platform_operators
     (id, email, password_hash, status, permissions)
 VALUES
     ('<NEW-UUID>', '<OPERATOR-EMAIL>', '<PBKDF2-HASH>', 'active',
-     '["platform:read","platform:operate"]'::jsonb);
+     '["platform:read","platform:operate"]'::json);
 ```
 
 6. Configure `MESAN_PLATFORM_SECRET_KEY` with a separately generated high-entropy secret (do not reuse `MESAN_SECRET_KEY`). Generate one with `python -c "import secrets; print(secrets.token_urlsafe(48))"` in a trusted shell and store it only in the staging secret manager. The platform login fails closed if this variable is absent.
