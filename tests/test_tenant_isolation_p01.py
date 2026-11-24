@@ -17,7 +17,7 @@ from core.auth.tenant_db_models import TenantRecord
 
 
 @pytest.fixture
-def audit_db(monkeypatch):
+def audit_db():
     engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
@@ -25,7 +25,6 @@ def audit_db(monkeypatch):
     )
     Base.metadata.create_all(bind=engine)
     Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    monkeypatch.setattr("core.integration.phase5_bridge.SnapshotBridge", SnapshotBridge)
     yield Session
     Base.metadata.drop_all(bind=engine)
     engine.dispose()
