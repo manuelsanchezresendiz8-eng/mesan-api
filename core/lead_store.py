@@ -140,3 +140,70 @@ def update_lead(lead_id: str, fields: dict) -> Lead:
         raise
     finally:
         db.close()
+
+
+# ── OPERACIONES PRIVADAS MULTIEMPRESA (P0.1) ─────────────────────────────────
+# Separadas del API legacy usado por el CRM Comercial con Basic Auth.
+# Estas funciones nunca aceptan tenant_id vacío ni incluyen leads NULL.
+
+def list_tenant_leads(tenant_id: str) -> list:
+    if not tenant_id:
+        raise ValueError("TENANT_ID_REQUIRED")
+    db = _get_db()
+    try:
+        return (
+            db.query(Lead)
+            .filter(Lead.tenant_id == tenant_id)
+            .order_by(Lead.created_at.desc())
+            .all()
+        )
+    finally:
+        db.close()
+
+
+def get_tenant_lead(lead_id: str, tenant_id: str) -> Lead:
+    if not tenant_id:
+        raise ValueError("TENANT_ID_REQUIRED")
+    db = _get_db()
+    try:
+        lead = (
+            db.query(Lead)
+            .filter(Lead.id == lead_id, Lead.tenant_id == tenant_id)
+            .first()
+        )
+        if not lead:
+            raise LeadNotFoundError(f"Lead no encontrado: {lead_id}")
+        return lead
+    finally:
+        db.close()
+
+
+def update_tenant_lead(lead_id: str, tenant_id: str, fields: dict) -> Lead:
+    if not tenant_id:
+        raise ValueError("TENANT_ID_REQUIRED")
+    db = _get_db()
+    try:
+        lead = (
+            db.query(Lead)
+            .filter(Lead.id == lead_id, Lead.tenant_id == tenant_id)
+            .first()
+        )
+        if not lead:
+            raise LeadNotFoundError(f"Lead no encontrado: {lead_id}")
+        allowed = {
+            "estatus", "nivel_riesgo", "impacto_estimado", "omega_score",
+            "nombre_contacto", "whatsapp", "empleados", "origen", "fuente_detalle",
+        }
+        for key, value in fields.items():
+            if key in allowed and value is not None:
+                setattr(lead, key, value)
+        db.commit()
+        db.refresh(lead)
+        return lead
+    except LeadNotFoundError:
+        raise
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
