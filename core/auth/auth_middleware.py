@@ -51,9 +51,13 @@ PUBLIC_METHOD_PATHS = {
     ("/crm_enterprise.html", "GET"),
     # Diagnóstico público desde landing; limitado por IP y validación de payload.
     ("/execute", "POST"),
-    # Captura pública de prospectos desde el chat.
-    ("/api/chat/jarvis/lead", "POST"),
-    ("/api/chat/jarvis/lead-fallback", "GET"),
+    # Checkout y confirmación del flujo público de diagnóstico.
+    ("/billing/checkout", "POST"),
+    ("/diagnostico-exitoso", "GET"),
+    # Vistas de demostración con datos de demo, no de clientes.
+    ("/demo", "GET"),
+    ("/demo/diagnostico", "GET"),
+    ("/demo/guardian", "GET"),
 }
 
 _LEAD_ID_PATH_RE = re.compile(r"^/api/leads/[^/]+$")
