@@ -1,4 +1,8 @@
 """Política de rutas: API privada requiere JWT; excepciones legacy son explícitas."""
+import os
+
+os.environ.setdefault("DATABASE_URL", "sqlite://")
+
 from core.auth.auth_middleware import _is_public
 
 
