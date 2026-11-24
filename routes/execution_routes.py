@@ -324,7 +324,10 @@ async def execute_audit(trace_id: str):
     try:
         from core.integration.phase5_bridge import get_snapshot_bridge
         bridge = get_snapshot_bridge()
-        seal = bridge.get_by_trace(trace_id)
+        tenant = get_tenant()
+        if tenant is None:
+            return JSONResponse(status_code=401, content={"error": "TENANT_CONTEXT_MISSING"})
+        seal = bridge.get_by_trace(trace_id, tenant.tenant_id)
         if not seal:
             return JSONResponse(status_code=404, content={
                 "status": "not_found", "trace_id": trace_id,
