@@ -6,6 +6,7 @@ from typing import Dict
 
 logger = logging.getLogger("mesan.auth")
 SECRET_KEY = os.getenv("MESAN_SECRET_KEY")
+PLATFORM_SECRET_KEY = os.getenv("MESAN_PLATFORM_SECRET_KEY")
 ALGORITHM = "HS256"
 TENANT_AUDIENCE = "mesan-tenant-api"
 PLATFORM_AUDIENCE = "mesan-platform-api"
@@ -18,11 +19,11 @@ class JWTError(Exception):
     pass
 
 
-def _encode(payload: dict) -> str:
-    if not SECRET_KEY:
-        raise JWTError("MESAN_SECRET_KEY_NOT_SET")
+def _encode(payload: dict, secret_key: str | None, missing_error: str) -> str:
+    if not secret_key:
+        raise JWTError(missing_error)
     import jwt
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(payload, secret_key, algorithm=ALGORITHM)
 
 
 def create_token(user_id: str, tenant_id: str, expires_minutes: int = 60) -> str:
@@ -37,7 +38,7 @@ def create_token(user_id: str, tenant_id: str, expires_minutes: int = 60) -> str
         "aud": TENANT_AUDIENCE,
         "iat": now,
         "exp": now + timedelta(minutes=expires_minutes),
-    })
+    }, SECRET_KEY, "MESAN_SECRET_KEY_NOT_SET")
 
 
 def create_platform_token(operator_id: str, expires_minutes: int = 30) -> str:
@@ -51,19 +52,19 @@ def create_platform_token(operator_id: str, expires_minutes: int = 30) -> str:
         "aud": PLATFORM_AUDIENCE,
         "iat": now,
         "exp": now + timedelta(minutes=expires_minutes),
-    })
+    }, PLATFORM_SECRET_KEY, "MESAN_PLATFORM_SECRET_KEY_NOT_SET")
 
 
-def _decode(token: str, audience: str, required: list[str]) -> Dict:
-    if not SECRET_KEY:
-        raise JWTError("MESAN_SECRET_KEY_NOT_SET")
+def _decode(token: str, audience: str, required: list[str], secret_key: str, missing_error: str) -> Dict:
+    if not secret_key:
+        raise JWTError(missing_error)
     if not isinstance(token, str) or not token or len(token) > 8192:
         raise JWTError("TOKEN_INVALID")
     import jwt
     try:
         return jwt.decode(
             token,
-            SECRET_KEY,
+            secret_key,
             algorithms=[ALGORITHM],
             audience=audience,
             options={"require": required},
@@ -79,6 +80,8 @@ def verify_token(token: str) -> Dict:
         token,
         TENANT_AUDIENCE,
         ["sub", "tenant_id", "typ", "aud", "iat", "exp"],
+        SECRET_KEY,
+        "MESAN_SECRET_KEY_NOT_SET",
     )
     user_id = payload.get("sub")
     tenant_id = payload.get("tenant_id")
@@ -96,6 +99,8 @@ def verify_platform_token(token: str) -> Dict:
         token,
         PLATFORM_AUDIENCE,
         ["sub", "typ", "aud", "iat", "exp"],
+        PLATFORM_SECRET_KEY,
+        "MESAN_PLATFORM_SECRET_KEY_NOT_SET",
     )
     operator_id = payload.get("sub")
     if payload.get("typ") != "platform":
