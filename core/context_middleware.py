@@ -26,7 +26,7 @@ async def context_middleware(request: Request, call_next) -> Response:
         or str(uuid.uuid4())
     )
 
-     # Los headers de identidad/tenant son datos no confiables; auth_middleware
+    # Los headers de identidad/tenant son datos no confiables; auth_middleware
     # reemplaza este contexto base solo tras validar JWT y membresía en DB.
     tenant_id = "public"
     user_id   = None
