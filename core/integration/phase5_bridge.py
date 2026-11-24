@@ -147,11 +147,14 @@ class SnapshotBridge:
         return record
 
     @_safe(default=None)
-    def get_by_trace(self, trace_id: str) -> Optional[dict]:
-        """Sello por trace_id (para GET /execute/audit/{trace_id})."""
-        if not self.active:
+    def get_by_trace(self, trace_id: str, tenant_id: str) -> Optional[dict]:
+        """Devuelve un sello solo si pertenece al tenant autenticado."""
+        if not self.active or not tenant_id:
             return None
-        return self._trace_index.get(trace_id)
+        record = self._trace_index.get(trace_id)
+        if not record or record.get("tenant_id") != tenant_id:
+            return None
+        return record
 
     @_safe(default=[])
     def history(self, tenant_id: str, limit: int = 50) -> list:
