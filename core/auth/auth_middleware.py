@@ -6,32 +6,14 @@ Valida JWT en cada request entrante.
 Inyecta tenant context en el pipeline.
 Limpia contexto en todos los caminos de ejecución.
 
-Exentas de JWT (no requieren Bearer token en este middleware):
-    GET  /health
-    GET  /ready
-    GET  /engines
-    GET  /diagnostics
-    GET  /features
-    GET  /docs
-    GET  /openapi.json
-    POST /api/leads                  -- publica (captura desde landing)
-    GET  /api/leads                  -- protegida por Basic Auth
-    GET  /crm_enterprise.html        -- protegida por Basic Auth
-    GET/PATCH /api/leads/{lead_id}   -- protegida por Basic Auth
-    POST /execute                    -- publica (diagnostico desde landing)
+Exentas de JWT: health/metadata públicos, captura pública de leads,
+diagnóstico público y las rutas legacy del CRM protegidas por Basic Auth.
+Las operaciones administrativas y los endpoints internos requieren JWT.
 
-ESTRATEGIA FASE 1:
-    No existe flujo de obtencion de JWT. Exigir JWT en rutas CRM
-    dejaria el CRM inaccesible. Basic Auth es la unica capa de
-    proteccion para rutas CRM — aplicado via Depends(verify_crm_credentials).
-    Fase 2: cuando exista JWT real, retirar exenciones CRM de aqui.
-
-CHANGELOG v1.3: CVE-2026-48710 BadHost — usar scope["path"] en lugar
-    de request.url.path para evitar bypass via Host header malformado.
-CHANGELOG v1.4: agregar ("/execute", "POST") a PUBLIC_METHOD_PATHS.
-    /execute es publico — flujo de diagnostico desde la landing sin login.
+ESTRATEGIA:
+    Las rutas CRM legacy conservan Basic Auth mediante
+    Depends(verify_crm_credentials). No eliminar esa protección.
 """
-
 import logging
 import re
 from typing import Optional
@@ -58,59 +40,20 @@ PUBLIC_PATHS = {
     "/openapi.json",
 }
 
-# ⚠️ ADVERTENCIA: entradas "Basic Auth" NO son publicas.
-# Su unica proteccion es Depends(verify_crm_credentials) en el endpoint.
-# NO agregar rutas CRM aqui sin verificar que tienen ese Depends.
+# Las rutas CRM legacy están exentas de JWT, pero NO son públicas:
+# su única protección es Depends(verify_crm_credentials) en el endpoint.
+# Mantener aquí solo flujos realmente públicos.
 PUBLIC_METHOD_PATHS = {
     ("/auth/bootstrap", "POST"),
     ("/auth/login", "POST"),
     ("/api/leads", "POST"),
     ("/api/leads", "GET"),
     ("/crm_enterprise.html", "GET"),
-    # /execute: diagnostico publico desde landing. Sin JWT en Fase 1.
-    # Protegido por rate limiting (3 req/IP/5min) + validacion de payload.
-    # Fase 2: retirar cuando exista JWT para prospectos.
+    # Diagnóstico público desde landing; limitado por IP y validación de payload.
     ("/execute", "POST"),
-    ("/jarvis/ask", "POST"),
-    ("/jarvis/briefing", "POST"),
-    ("/execute/pdf", "POST"),
-    ("/commercial/shadow/activate", "POST"),
-    ("/commercial/shadow/deactivate", "POST"),
-    ("/commercial/shadow/run", "POST"),
-    ("/commercial/shadow/status", "GET"),
-    ("/commercial/mission-control", "GET"),
-    ("/demo", "GET"),
-    ("/demo/diagnostico", "GET"),
-    ("/demo/guardian", "GET"),
-    ("/system/mode", "GET"),
-    ("/smtp/status", "GET"),
-    ("/smtp/send", "POST"),
-    ("/smtp/welcome", "POST"),
-    ("/smtp/proposal", "POST"),
-    ("/billing/checkout", "POST"),
-    ("/billing/status", "GET"),
-    ("/diagnostico-exitoso", "GET"),
-    ("/smtp/status", "GET"),
-    ("/smtp/send", "POST"),
-    ("/smtp/welcome", "POST"),
-    ("/smtp/proposal", "POST"),
-    ("/billing/checkout", "POST"),
-    ("/billing/status", "GET"),
-    ("/diagnostico-exitoso", "GET"),
-    ("/execute/simulate", "POST"),
-    ("/jarvis/warroom", "GET"),
-    ("/jarvis/kpis", "GET"),
-    ("/jarvis/alerts", "GET"),
-    ("/jarvis/decisions", "GET"),
-    ("/jarvis/radar", "GET"),
-    ("/jarvis/autonomy", "GET"),
-    ("/jarvis/system", "GET"),
-    ("/jarvis/dashboard", "GET"),
-    ("/guardian/health", "GET"),
-    ("/guardian/status", "GET"),
-    ("/guardian/incidents", "GET"),
-    ("/guardian/security", "GET"),
-    ("/guardian/predictive", "GET"),
+    # Captura pública de prospectos desde el chat.
+    ("/api/chat/jarvis/lead", "POST"),
+    ("/api/chat/jarvis/lead-fallback", "GET"),
 }
 
 _LEAD_ID_PATH_RE = re.compile(r"^/api/leads/[^/]+$")
@@ -156,7 +99,7 @@ def _extract_token(request: Request) -> Optional[str]:
 
 async def auth_middleware(request: Request, call_next):
     # CVE-2026-48710: scope["path"] es inmune a manipulacion via Host header
-    path   = request.scope.get("path", request.url.path)
+    path = request.scope.get("path", request.url.path)
     method = request.method
 
     if _is_public(path, method):
@@ -171,7 +114,7 @@ async def auth_middleware(request: Request, call_next):
         )
 
     try:
-        payload   = verify_token(token)
+        payload = verify_token(token)
         user_id = payload.get("sub")
         tenant_id = payload.get("tenant_id")
 
@@ -231,4 +174,3 @@ async def auth_middleware(request: Request, call_next):
             status_code=500,
             content={"error": "AUTH_MIDDLEWARE_FAILURE"},
         )
-
