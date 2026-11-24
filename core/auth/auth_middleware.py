@@ -74,7 +74,12 @@ def _is_static_landing_asset(path: str, method: str) -> bool:
         return False
     # Rutas de ejecución son API aunque no usen el prefijo /api.
     # En particular, /execute/audit/{trace_id} debe exigir JWT y membresía.
-    if path.startswith(("/api/", "/pro/", "/api/v1/", "/execute/")):
+    if path.startswith((
+        "/api/", "/pro/", "/api/v1/", "/execute/",
+        "/auth/", "/commercial/", "/jarvis/", "/guardian/",
+        "/system/", "/smtp/", "/billing/", "/tenant/",
+        "/omega/", "/customer",
+    )):
         return False
     return True
 
