@@ -33,6 +33,19 @@ CREATE INDEX IF NOT EXISTS ix_mesan_memberships_user_id ON mesan_memberships(use
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(36) NULL;
 CREATE INDEX IF NOT EXISTS ix_leads_tenant_id ON leads(tenant_id);
 
+DO $
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'fk_leads_mesan_tenant'
+    ) THEN
+        ALTER TABLE leads
+        ADD CONSTRAINT fk_leads_mesan_tenant
+        FOREIGN KEY (tenant_id) REFERENCES mesan_tenants(id)
+        ON DELETE RESTRICT;
+    END IF;
+END $;
+
 -- Los registros existentes quedan NULL (legacy/unassigned).
 -- No asignar leads históricos ni leads públicos a un tenant por defecto.
 
