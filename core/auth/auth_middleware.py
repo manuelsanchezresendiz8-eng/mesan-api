@@ -100,29 +100,15 @@ def _is_public(path: str, method: str) -> bool:
     return False
 
 
-PLATFORM_BASIC_AUTH_EXEMPTIONS = {
-    "/guardian/backups",
-    "/guardian/backups/create",
-    "/guardian/audit",
-    "/guardian/iot/devices",
-    "/guardian/iot/events",
-    "/system/hardening",
-    "/system/cleanup",
-    "/customer",
-}
-
 def _requires_platform_operator(path: str) -> bool:
-    """Rutas globales; excepciones tenant-scoped o ya protegidas por Basic Auth."""
-    if path in PLATFORM_BASIC_AUTH_EXEMPTIONS:
-        return False
+    """Rutas globales; solo se exceptúan endpoints expresamente tenant-scoped."""
     if path == "/jarvis/briefing":
         return False
     if path == "/market/regulatory/alerts" or path.startswith("/market/regulatory/alerts/"):
         return False
     return path.startswith((
-        "/jarvis/", "/jarvis-sales/", "/guardian/", "/system/",
-        "/smtp/", "/market/", "/commercial/shadow/",
-        "/commercial/mission-control",
+        "/commercial/", "/jarvis/", "/jarvis-sales/", "/guardian/",
+        "/system/", "/smtp/", "/market/",
     ))
 
 
