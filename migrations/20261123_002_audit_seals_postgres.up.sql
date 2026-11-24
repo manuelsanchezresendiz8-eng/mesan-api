@@ -36,4 +36,9 @@ CREATE TRIGGER trg_mesan_audit_seals_immutable
 BEFORE UPDATE OR DELETE ON mesan_audit_seals
 FOR EACH ROW EXECUTE FUNCTION mesan_prevent_audit_seal_mutation();
 
+DROP TRIGGER IF EXISTS trg_mesan_audit_seals_no_truncate ON mesan_audit_seals;
+CREATE TRIGGER trg_mesan_audit_seals_no_truncate
+BEFORE TRUNCATE ON mesan_audit_seals
+FOR EACH STATEMENT EXECUTE FUNCTION mesan_prevent_audit_seal_mutation();
+
 COMMIT;
