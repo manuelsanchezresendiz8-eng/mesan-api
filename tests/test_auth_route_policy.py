@@ -1,8 +1,9 @@
-"""Política de rutas: API privada requiere JWT; excepciones legacy son explícitas."""
+"""Pruebas de política de roles y rutas de autenticación P0.1."""
 import os
 
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 
+from core.auth.authorization import role_is_allowed
 from core.auth.auth_middleware import _is_public
 
 
@@ -44,11 +45,6 @@ def test_admin_and_internal_operations_require_jwt():
         assert not _is_public(path, method), (path, method)
 
 
-def test_intended_public_flows_remain_public():
-    assert _is_public("/auth/bootstrap", "POST")
-    assert _is_public("/auth/login", "POST")
-    assert _is_public("/api/leads", "POST")
-    assert _is_public("/execute", "POST")
 def test_internal_get_routes_are_not_mistaken_for_static_assets():
     protected = [
         "/jarvis/dashboard",
@@ -60,3 +56,22 @@ def test_internal_get_routes_are_not_mistaken_for_static_assets():
     for path in protected:
         assert not _is_public(path, "GET"), path
     assert _is_public("/mantenimiento", "GET")
+
+
+def test_intended_public_flows_remain_public():
+    assert _is_public("/auth/bootstrap", "POST")
+    assert _is_public("/auth/login", "POST")
+    assert _is_public("/api/leads", "POST")
+    assert _is_public("/execute", "POST")
+    assert _is_public("/billing/checkout", "POST")
+    assert _is_public("/diagnostico-exitoso", "GET")
+    assert _is_public("/demo", "GET")
+
+
+def test_role_policy_is_explicit_and_fail_closed():
+    assert role_is_allowed("owner", {"owner", "admin"})
+    assert role_is_allowed("admin", {"owner", "admin"})
+    assert not role_is_allowed("member", {"owner", "admin"})
+    assert role_is_allowed("member", {"member", "admin", "owner"})
+    assert not role_is_allowed(None, {"owner", "admin"})
+    assert not role_is_allowed("superuser", {"owner", "admin", "superuser"})
