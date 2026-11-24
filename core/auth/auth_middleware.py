@@ -62,6 +62,8 @@ PUBLIC_PATHS = {
 # Su unica proteccion es Depends(verify_crm_credentials) en el endpoint.
 # NO agregar rutas CRM aqui sin verificar que tienen ese Depends.
 PUBLIC_METHOD_PATHS = {
+    ("/auth/bootstrap", "POST"),
+    ("/auth/login", "POST"),
     ("/api/leads", "POST"),
     ("/api/leads", "GET"),
     ("/crm_enterprise.html", "GET"),
