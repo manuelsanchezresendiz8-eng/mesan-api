@@ -90,6 +90,10 @@ class Lead(Base):
     impacto_estimado = Column(Numeric(15, 2))
     omega_score      = Column(Numeric(5, 2))
 
+    # ── Aislamiento multiempresa (P0.1) ───────────────────────────────────
+    # NULL conserva leads públicos/históricos sin asignación automática.
+    tenant_id = Column(String(36), nullable=True, index=True)
+
     # ── Timestamps ────────────────────────────────────────────────────────
     created_at = Column(
         DateTime(timezone=True),
