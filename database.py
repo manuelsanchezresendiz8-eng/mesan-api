@@ -19,6 +19,7 @@ Base = declarative_base()
 
 def init_db():
     from models import Lead
+    from core.auth import tenant_db_models  # registra tablas multiempresa en Base.metadata
     Base.metadata.create_all(bind=engine)
 
 def conectar():
