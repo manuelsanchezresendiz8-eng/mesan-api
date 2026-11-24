@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS mesan_platform_operators (
     email VARCHAR(320) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'active',
-    permissions JSONB NOT NULL DEFAULT '[]'::jsonb,
+    permissions JSON NOT NULL DEFAULT '[]'::json,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS ix_mesan_platform_operators_email
