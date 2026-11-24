@@ -1,4 +1,8 @@
 """Pruebas de integración SQLite para aislamiento de leads entre empresas."""
+import os
+
+os.environ.setdefault("DATABASE_URL", "sqlite://")
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
