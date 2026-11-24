@@ -4,7 +4,7 @@ import logging
 import os
 import uuid
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
@@ -13,6 +13,7 @@ from database import SessionLocal
 from core.auth.jwt_handler import create_token
 from core.auth.passwords import hash_password, verify_password
 from core.auth.tenant_db_models import TenantMembership, TenantRecord, UserRecord
+from core.rate_limiter import rate_limit_check
 
 logger = logging.getLogger("mesan.auth.routes")
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
@@ -33,9 +34,11 @@ class LoginPayload(BaseModel):
 @router.post("/bootstrap", status_code=201)
 def bootstrap(
     payload: BootstrapPayload,
+    request: Request,
     x_bootstrap_token: str | None = Header(default=None, alias="X-Bootstrap-Token"),
 ):
     """Crea la primera empresa/admin solo con secreto de bootstrap del entorno."""
+    rate_limit_check(request, key="auth_bootstrap", max_requests=3, window_seconds=300)
     expected = os.getenv("MESAN_BOOTSTRAP_TOKEN", "")
     if not expected or not x_bootstrap_token or not hmac.compare_digest(expected, x_bootstrap_token):
         raise HTTPException(status_code=403, detail="BOOTSTRAP_NOT_AUTHORIZED")
@@ -81,8 +84,9 @@ def bootstrap(
 
 
 @router.post("/login")
-def login(payload: LoginPayload):
+def login(payload: LoginPayload, request: Request):
     """Autentica usuario y emite JWT solo para una membresía activa."""
+    rate_limit_check(request, key="auth_login", max_requests=5, window_seconds=300)
     db = SessionLocal()
     try:
         email = payload.email.strip().lower()
