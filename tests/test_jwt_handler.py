@@ -81,3 +81,12 @@ def test_platform_token_rejects_tenant_claim():
     token = _platform_token({"sub": "operator-1", "typ": "platform", "aud": jwt_handler.PLATFORM_AUDIENCE, "tenant_id": "tenant-1", "iat": now, "exp": now + timedelta(minutes=5)})
     with pytest.raises(jwt_handler.JWTError, match="PLATFORM_TOKEN_MUST_NOT_CONTAIN_TENANT"):
         jwt_handler.verify_platform_token(token)
+
+
+
+def test_platform_token_fails_closed_without_independent_secret(monkeypatch):
+    monkeypatch.setattr(jwt_handler, "PLATFORM_SECRET_KEY", None)
+    with pytest.raises(jwt_handler.JWTError, match="MESAN_PLATFORM_SECRET_KEY_NOT_SET"):
+        jwt_handler.create_platform_token("operator-1")
+    with pytest.raises(jwt_handler.JWTError, match="MESAN_PLATFORM_SECRET_KEY_NOT_SET"):
+        jwt_handler.verify_platform_token("any-token")
