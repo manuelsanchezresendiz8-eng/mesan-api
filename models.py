@@ -10,7 +10,7 @@
 
 import uuid
 
-from sqlalchemy import Column, Integer, String, Boolean, Text, DateTime, Numeric
+from sqlalchemy import Column, Integer, String, Boolean, Text, DateTime, Numeric, ForeignKey
 from sqlalchemy.sql import func
 from database import Base
 
@@ -92,7 +92,7 @@ class Lead(Base):
 
     # ── Aislamiento multiempresa (P0.1) ───────────────────────────────────
     # NULL conserva leads públicos/históricos sin asignación automática.
-    tenant_id = Column(String(36), nullable=True, index=True)
+    tenant_id = Column(String(36), ForeignKey("mesan_tenants.id", ondelete="RESTRICT"), nullable=True, index=True)
 
     # ── Timestamps ────────────────────────────────────────────────────────
     created_at = Column(
