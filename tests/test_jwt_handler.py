@@ -9,11 +9,16 @@ from core.auth import jwt_handler
 
 @pytest.fixture(autouse=True)
 def secret_key(monkeypatch):
-    monkeypatch.setattr(jwt_handler, "SECRET_KEY", "test-secret-key-not-for-production")
+    monkeypatch.setattr(jwt_handler, "SECRET_KEY", "test-tenant-secret-not-for-production")
+    monkeypatch.setattr(jwt_handler, "PLATFORM_SECRET_KEY", "test-platform-secret-not-for-production")
 
 
 def _token(payload):
     return jwt.encode(payload, jwt_handler.SECRET_KEY, algorithm="HS256")
+
+
+def _platform_token(payload):
+    return jwt.encode(payload, jwt_handler.PLATFORM_SECRET_KEY, algorithm="HS256")
 
 
 def test_create_and_verify_tenant_bound_token():
@@ -73,6 +78,6 @@ def test_tenant_and_platform_tokens_are_not_interchangeable():
 
 def test_platform_token_rejects_tenant_claim():
     now = datetime.now(timezone.utc)
-    token = _token({"sub": "operator-1", "typ": "platform", "aud": jwt_handler.PLATFORM_AUDIENCE, "tenant_id": "tenant-1", "iat": now, "exp": now + timedelta(minutes=5)})
+    token = _platform_token({"sub": "operator-1", "typ": "platform", "aud": jwt_handler.PLATFORM_AUDIENCE, "tenant_id": "tenant-1", "iat": now, "exp": now + timedelta(minutes=5)})
     with pytest.raises(jwt_handler.JWTError, match="PLATFORM_TOKEN_MUST_NOT_CONTAIN_TENANT"):
         jwt_handler.verify_platform_token(token)
