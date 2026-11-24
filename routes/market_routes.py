@@ -57,12 +57,6 @@ async def market_regulatory_alerts(
     sector: str = '',
     solo_cambios: bool = False,
 ):
-    active_tenant = get_tenant()
-    if active_tenant is None:
-        return JSONResponse(status_code=401, content={'error': 'TENANT_CONTEXT_MISSING'})
-    if tenant_id != active_tenant.tenant_id:
-        return JSONResponse(status_code=403, content={'error': 'TENANT_SCOPE_MISMATCH'})
-
     """Phase 2 -- Alertas regulatorias PERSONALIZADAS por perfil del tenant.
 
     El perfil se pasa por query params (mismos campos que /execute); las reglas
@@ -70,6 +64,11 @@ async def market_regulatory_alerts(
     Con MESAN_{REG}_PREVIOUS configurado, incluye alertas NUEVO/ACTUALIZADO.
     Flag MESAN_P2_REGULATORY apagado -> respuesta vacia con enabled=false.
     """
+    active_tenant = get_tenant()
+    if active_tenant is None:
+        return JSONResponse(status_code=401, content={'error': 'TENANT_CONTEXT_MISSING'})
+    if tenant_id != active_tenant.tenant_id:
+        return JSONResponse(status_code=403, content={'error': 'TENANT_SCOPE_MISMATCH'})
     try:
         from core.integration.phase2_bridge import get_regulatory
         bridge = get_regulatory()
