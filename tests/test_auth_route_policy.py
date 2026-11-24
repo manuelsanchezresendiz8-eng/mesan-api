@@ -85,9 +85,9 @@ def test_role_policy_is_explicit_and_fail_closed():
 
 
 def test_platform_only_routes_are_separated_from_tenant_routes():
-    for path in ("/jarvis/kpis", "/jarvis-sales/leads", "/guardian/incidents", "/system/mode", "/smtp/send", "/market/events", "/commercial/shadow/activate", "/commercial/mission-control/data"):
+    for path in ("/jarvis/kpis", "/jarvis-sales/leads", "/guardian/incidents", "/system/mode", "/smtp/send", "/market/events", "/commercial/shadow/activate", "/commercial/mission-control/data", "/commercial/dashboard", "/guardian/backups", "/system/cleanup"):
         assert _requires_platform_operator(path), path
-    for path in ("/jarvis/briefing", "/market/regulatory/alerts/tenant-123", "/guardian/backups", "/system/cleanup", "/customer"):
+    for path in ("/jarvis/briefing", "/market/regulatory/alerts/tenant-123", "/customer"):
         assert not _requires_platform_operator(path), path
 
 
