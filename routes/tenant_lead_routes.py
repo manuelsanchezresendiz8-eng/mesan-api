@@ -3,9 +3,10 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
 
+from core.auth.authorization import require_roles
 from core.auth.tenant_context import get_tenant
 from core.lead_store import (
     LeadNotFoundError,
@@ -57,11 +58,13 @@ def _serialize(lead):
 
 @router.get("")
 def list_private_leads():
+    """Cualquier miembro activo puede consultar los leads de su tenant."""
     return [_serialize(lead) for lead in list_tenant_leads(_tenant_id())]
 
 
 @router.get("/{lead_id}")
 def get_private_lead(lead_id: str):
+    """La consulta individual queda limitada al tenant autenticado."""
     try:
         return _serialize(get_tenant_lead(lead_id, _tenant_id()))
     except LeadNotFoundError:
@@ -69,7 +72,9 @@ def get_private_lead(lead_id: str):
 
 
 @router.patch("/{lead_id}")
-def patch_private_lead(lead_id: str, payload: TenantLeadPatch):
+def patch_private_lead(lead_id: str, payload: TenantLeadPatch, request: Request):
+    """Solo owner/admin pueden modificar leads; member queda en lectura."""
+    require_roles(request, "owner", "admin")
     fields = payload.model_dump(exclude_unset=True, exclude_none=True)
     if not fields:
         raise HTTPException(status_code=422, detail="NO_FIELDS_TO_UPDATE")
