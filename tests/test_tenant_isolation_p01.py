@@ -78,3 +78,11 @@ def test_audit_seal_survives_bridge_recreation_and_is_tenant_scoped(audit_db):
         "verified": False,
         "reason": "SELLO_NO_ENCONTRADO",
     }
+
+    tampered_response = {**response, "omega_score": 99.9}
+    assert restarted_bridge.verify("trace-a", tampered_response, "tenant-a")["verified"] is False
+
+    # Un trace duplicado no reemplaza ni altera el sello original.
+    assert restarted_bridge.seal(tampered_response, "tenant-a", "trace-a") is None
+    persisted = restarted_bridge.get_by_trace("trace-a", "tenant-a")
+    assert persisted["state_hash"] == seal["state_hash"]
