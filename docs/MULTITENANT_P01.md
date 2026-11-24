@@ -114,8 +114,9 @@ VALUES
      '["platform:read","platform:operate"]'::jsonb);
 ```
 
-6. Authenticate at `POST /auth/platform/login` with email and password. The response is a 30-minute bearer token with `typ=platform` and `aud=mesan-platform-api`.
-7. Tenant login tokens use `typ=tenant` and `aud=mesan-tenant-api`. Middleware verifies token type and audience before database authorization; neither token type is accepted by the other route class.
+6. Configure `MESAN_PLATFORM_SECRET_KEY` with a separately generated high-entropy secret (do not reuse `MESAN_SECRET_KEY`). Generate one with `python -c "import secrets; print(secrets.token_urlsafe(48))"` in a trusted shell and store it only in the staging secret manager. The platform login fails closed if this variable is absent.
+7. Authenticate at `POST /auth/platform/login` with email and password. The response is a 30-minute bearer token with `typ=platform` and `aud=mesan-platform-api`, signed with the independent platform secret.
+8. Tenant login tokens use `typ=tenant` and `aud=mesan-tenant-api`, signed with `MESAN_SECRET_KEY`. Middleware verifies signing key, token type, and audience before database authorization; neither token type is accepted by the other route class.
 
 ### Permission policy
 
