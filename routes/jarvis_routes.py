@@ -8,6 +8,7 @@ Este archivo solo enruta y serializa.
 import logging
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
+from core.auth.tenant_context import get_tenant
 
 from core.jarvis.jarvis_engine import jarvis_engine
 
@@ -102,10 +103,13 @@ async def jarvis_ask_endpoint(request: Request):
 @router.post('/jarvis/briefing')
 async def jarvis_briefing(request: Request):
     from core.integration.phase4_bridge import get_jarvis
+    tenant = get_tenant()
+    if tenant is None:
+        return JSONResponse(status_code=401, content={'error': 'TENANT_CONTEXT_MISSING'})
     try:
         body = await request.json()
         jarvis = get_jarvis()
-        result = jarvis.briefing(body, tenant_id=body.get('tenant_id','public'))
+        result = jarvis.briefing(body, tenant_id=tenant.tenant_id)
         return result
     except Exception as e:
         logger.exception('[JARVIS] briefing failed')
