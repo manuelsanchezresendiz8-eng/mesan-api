@@ -85,3 +85,56 @@ The current `POST /jarvis/briefing` handler passes `body.get('tenant_id', 'publi
 ### P0.1 decision
 
 Until the independent operator identity and token separation exist, global platform routes remain restricted to the current authenticated boundary and P0.1 remains open. Do not grant global access to tenant `owner`, `admin`, or `member`. No production activation, main-branch merge, or production database migration is authorized by this document.
+
+
+## Independent platform operator authentication
+
+The platform operator identity is separate from `mesan_users` and `mesan_memberships`.
+
+### Migration and first operator provisioning
+
+1. Back up the staging database.
+2. Apply `migrations/20261123_003_platform_operators.up.sql` after migrations 001 and 002.
+3. Provision the first operator manually through a controlled database session. There is deliberately no public operator-bootstrap endpoint.
+4. Generate a password hash in a trusted administrative shell (never put the plaintext password in SQL, source control, logs, or chat):
+
+```python
+from getpass import getpass
+from core.auth.passwords import hash_password
+print(hash_password(getpass("New platform operator password (12+ chars): ")))
+```
+
+5. Insert the operator with a newly generated UUID, normalized email, returned hash, active status, and only the permissions required. Example SQL (replace placeholders; never use these placeholder values):
+
+```sql
+INSERT INTO mesan_platform_operators
+    (id, email, password_hash, status, permissions)
+VALUES
+    ('<NEW-UUID>', '<OPERATOR-EMAIL>', '<PBKDF2-HASH>', 'active',
+     '["platform:read","platform:operate"]'::jsonb);
+```
+
+6. Authenticate at `POST /auth/platform/login` with email and password. The response is a 30-minute bearer token with `typ=platform` and `aud=mesan-platform-api`.
+7. Tenant login tokens use `typ=tenant` and `aud=mesan-tenant-api`. Middleware verifies token type and audience before database authorization; neither token type is accepted by the other route class.
+
+### Permission policy
+
+- `platform:read`: read-only platform routes (GET/HEAD).
+- `platform:operate`: mutating platform routes (POST/PATCH/PUT/DELETE).
+- `platform:admin`: explicit override for both permission classes; grant only to a tightly controlled operator.
+- Operators must be active in `mesan_platform_operators`; revoking status blocks their next request. Token permissions are not trusted: permissions are loaded from PostgreSQL on every request.
+- Tenant JWTs are rejected on platform-only routes. Platform JWTs are rejected on tenant routes.
+- `/jarvis/briefing` and `/market/regulatory/alerts/{tenant_id}` remain tenant-scoped and must use the authenticated tenant context.
+- Existing routes with explicit CRM Basic Auth remain outside the new operator-only gate; their existing dependencies are not removed.
+
+### Platform route gate currently applied
+
+The middleware requires a platform operator token and database permission for JARVIS global routes (except tenant briefing), JARVIS Sales, Guardian control routes (except existing Basic Auth endpoints), System control routes (except existing Basic Auth endpoints), SMTP, Market global routes (except tenant regulatory alerts), Shadow Mode, and Mission Control.
+
+The platform login is intentionally public only at its exact POST path. No operator account is created by migration or by the login endpoint.
+
+### Compatibility and rollout warning
+
+Tenant JWTs issued before the token-type/audience change are intentionally invalid under this branch's stricter verifier. Before any deployment, coordinate session expiration/re-login and test existing clients in staging. Do not deploy this branch or apply its migrations to production as part of this task.
+
+Rollback file: `migrations/20261123_003_platform_operators.down.sql`. It drops operator identities; use only after confirming intentional revocation and backup.
