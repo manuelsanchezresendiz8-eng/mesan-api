@@ -36,6 +36,7 @@ from core.auth.basic_auth import verify_crm_credentials
 # from core.self_healing_engine import SelfHealingEngine        # FASE 2 â€” pendiente
 
 from routes.auth_routes import router as auth_router
+from routes.tenant_lead_routes import router as tenant_leads_router
 from routes.execution_routes import router as execution_router
 from routes.leads_routes     import router as leads_router
 from routes.payment_routes   import router as payment_router
@@ -235,6 +236,7 @@ async def crm_enterprise(_user: str = Depends(verify_crm_credentials)):
 
 # â”€â”€ Routers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.include_router(auth_router, tags=["Autenticación"])
+app.include_router(tenant_leads_router, prefix="/api/v1", tags=["Leads por empresa"])
 app.include_router(execution_router,              tags=["DiagnÃ³stico"])
 app.include_router(leads_router,   tags=["Leads"])
 app.include_router(payment_router, prefix="/pro",        tags=["Pagos"])
