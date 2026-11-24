@@ -49,3 +49,14 @@ def test_intended_public_flows_remain_public():
     assert _is_public("/auth/login", "POST")
     assert _is_public("/api/leads", "POST")
     assert _is_public("/execute", "POST")
+def test_internal_get_routes_are_not_mistaken_for_static_assets():
+    protected = [
+        "/jarvis/dashboard",
+        "/guardian/dashboard",
+        "/commercial/dashboard",
+        "/commercial/mission-control",
+        "/billing/status",
+    ]
+    for path in protected:
+        assert not _is_public(path, "GET"), path
+    assert _is_public("/mantenimiento", "GET")
