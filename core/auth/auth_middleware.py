@@ -21,11 +21,11 @@ from typing import Optional
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from core.auth.jwt_handler import JWTError, verify_token
+from core.auth.jwt_handler import JWTError, verify_platform_token, verify_token
 from core.auth.tenant_context import reset_tenant, set_tenant
 from core.auth.tenant_model import Tenant
 from database import SessionLocal
-from core.auth.tenant_db_models import TenantMembership, TenantRecord, UserRecord
+from core.auth.tenant_db_models import PlatformOperator, TenantMembership, TenantRecord, UserRecord
 from core.context import RequestContext
 
 logger = logging.getLogger("mesan.auth")
@@ -46,6 +46,7 @@ PUBLIC_PATHS = {
 PUBLIC_METHOD_PATHS = {
     ("/auth/bootstrap", "POST"),
     ("/auth/login", "POST"),
+    ("/auth/platform/login", "POST"),
     ("/api/leads", "POST"),
     ("/api/leads", "GET"),
     ("/crm_enterprise.html", "GET"),
@@ -99,6 +100,32 @@ def _is_public(path: str, method: str) -> bool:
     return False
 
 
+PLATFORM_BASIC_AUTH_EXEMPTIONS = {
+    "/guardian/backups",
+    "/guardian/backups/create",
+    "/guardian/audit",
+    "/guardian/iot/devices",
+    "/guardian/iot/events",
+    "/system/hardening",
+    "/system/cleanup",
+    "/customer",
+}
+
+def _requires_platform_operator(path: str) -> bool:
+    """Rutas globales; excepciones tenant-scoped o ya protegidas por Basic Auth."""
+    if path in PLATFORM_BASIC_AUTH_EXEMPTIONS:
+        return False
+    if path == "/jarvis/briefing":
+        return False
+    if path == "/market/regulatory/alerts" or path.startswith("/market/regulatory/alerts/"):
+        return False
+    return path.startswith((
+        "/jarvis/", "/jarvis-sales/", "/guardian/", "/system/",
+        "/smtp/", "/market/", "/commercial/shadow/",
+        "/commercial/mission-control",
+    ))
+
+
 def _extract_token(request: Request) -> Optional[str]:
     auth_header = request.headers.get("Authorization", "")
     if not auth_header or not auth_header.startswith("Bearer "):
@@ -126,6 +153,33 @@ async def auth_middleware(request: Request, call_next):
         )
 
     try:
+        if _requires_platform_operator(path):
+            platform_payload = verify_platform_token(token)
+            operator_id = platform_payload.get("sub")
+            db = SessionLocal()
+            try:
+                operator = db.query(PlatformOperator).filter(
+                    PlatformOperator.id == operator_id,
+                    PlatformOperator.status == "active",
+                ).first()
+                if operator is None:
+                    return JSONResponse(status_code=403, content={"error": "ACTIVE_PLATFORM_OPERATOR_REQUIRED"})
+                permissions = operator.permissions or []
+                required_permission = "platform:read" if method.upper() in ("GET", "HEAD") else "platform:operate"
+                if not isinstance(permissions, list) or (
+                    required_permission not in permissions and "platform:admin" not in permissions
+                ):
+                    return JSONResponse(status_code=403, content={"error": "PLATFORM_PERMISSION_DENIED"})
+                request.state.platform_operator = {
+                    "id": operator.id,
+                    "email": operator.email,
+                    "permissions": permissions,
+                }
+            finally:
+                db.close()
+            logger.info("[AUTH] PLATFORM OK | operator=%s | path=%s", operator_id, path)
+            return await call_next(request)
+
         payload = verify_token(token)
         user_id = payload.get("sub")
         tenant_id = payload.get("tenant_id")
