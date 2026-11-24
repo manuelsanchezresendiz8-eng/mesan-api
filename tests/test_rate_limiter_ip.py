@@ -23,20 +23,28 @@ def make_request(peer_ip, headers=None):
     return Request(scope)
 
 
-def test_forwarded_for_cannot_override_connection_ip():
+def test_cloudflare_client_ip_is_used_instead_of_proxy_peer():
     request = make_request(
-        "203.0.113.10",
-        {"X-Forwarded-For": "198.51.100.77"},
+        "172.16.0.10",
+        {"CF-Connecting-IP": "203.0.113.10"},
     )
     assert _get_client_ip(request) == "203.0.113.10"
 
 
-def test_forwarded_for_chain_is_ignored():
+def test_untrusted_forwarded_for_is_ignored():
     request = make_request(
-        "2001:db8::1",
-        {"X-Forwarded-For": "198.51.100.77, 192.0.2.10"},
+        "172.16.0.10",
+        {"X-Forwarded-For": "198.51.100.77"},
     )
-    assert _get_client_ip(request) == "2001:db8::1"
+    assert _get_client_ip(request) == "172.16.0.10"
+
+
+def test_invalid_cloudflare_ip_falls_back_to_connection_peer():
+    request = make_request(
+        "172.16.0.10",
+        {"CF-Connecting-IP": "not-an-ip"},
+    )
+    assert _get_client_ip(request) == "172.16.0.10"
 
 
 def test_missing_or_invalid_peer_falls_back_to_unknown():
