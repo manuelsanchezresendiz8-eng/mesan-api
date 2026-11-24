@@ -60,7 +60,7 @@ Tenant JWTs represent a user acting inside one active tenant membership. They mu
 | `/api/v1/tenant/leads` | Tenant-owned lead records | Tenant JWT; member may read, admin/owner may update |
 | `/execute/audit/{trace_id}` | Tenant audit seal | Tenant JWT; tenant-filtered lookup |
 | `/market/regulatory/alerts/{tenant_id}` | Tenant-specific regulatory profile | Tenant JWT; path tenant must equal authenticated tenant |
-| `/commercial/*` | Global commercial pipeline, lead data, marketing and scheduler | Existing route-level CRM Basic Auth remains; Shadow Mode and Mission Control additionally require platform-operator tokens. Do not grant these privileges to tenant owners |
+| `/commercial/*` | Global commercial pipeline, lead data, marketing and scheduler | Platform-operator token on every route; existing route-level CRM Basic Auth remains as an additional check where configured |
 | `/jarvis/*`, `/jarvis-sales/*` | Global JARVIS dashboards, leads, KPIs and operational intelligence | Platform operator only unless a route is redesigned as tenant-scoped |
 | `/guardian/*`, `/system/*` | Infrastructure, incidents, control plane, scheduler and system operations | Platform operator only |
 | `/commercial/shadow/*` | Global lead processing and activation/deactivation | Platform operator only; keep `MESAN_P5_SNAPSHOT` disabled until staging validation |
@@ -129,7 +129,7 @@ VALUES
 
 ### Platform route gate currently applied
 
-The middleware requires a platform operator token and database permission for JARVIS global routes (except tenant briefing), JARVIS Sales, Guardian control routes (except existing Basic Auth endpoints), System control routes (except existing Basic Auth endpoints), SMTP, Market global routes (except tenant regulatory alerts), Shadow Mode, and Mission Control.
+The middleware requires a platform operator token and database permission for all `/commercial/*`, JARVIS global routes (except tenant briefing), JARVIS Sales, Guardian, System, SMTP, and Market global routes (except tenant regulatory alerts). Existing Basic Auth dependencies remain active on routes where they were already configured, so those endpoints require both checks.
 
 The platform login is intentionally public only at its exact POST path. No operator account is created by migration or by the login endpoint.
 
