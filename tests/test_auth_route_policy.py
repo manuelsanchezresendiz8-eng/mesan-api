@@ -19,3 +19,33 @@ def test_audit_trace_endpoint_is_not_public():
 def test_legacy_crm_routes_keep_their_explicit_basic_auth_exemption():
     assert _is_public("/api/leads", "GET")
     assert _is_public("/api/leads/lead-123", "PATCH")
+
+
+def test_admin_and_internal_operations_require_jwt():
+    protected = [
+        ("/commercial/shadow/activate", "POST"),
+        ("/commercial/shadow/deactivate", "POST"),
+        ("/commercial/shadow/run", "POST"),
+        ("/commercial/shadow/status", "GET"),
+        ("/smtp/send", "POST"),
+        ("/smtp/welcome", "POST"),
+        ("/smtp/proposal", "POST"),
+        ("/smtp/status", "GET"),
+        ("/jarvis/warroom", "GET"),
+        ("/jarvis/kpis", "GET"),
+        ("/jarvis/briefing", "POST"),
+        ("/commercial/mission-control", "GET"),
+        ("/guardian/incidents", "GET"),
+        ("/guardian/security", "GET"),
+        ("/guardian/predictive", "GET"),
+        ("/system/mode", "GET"),
+    ]
+    for path, method in protected:
+        assert not _is_public(path, method), (path, method)
+
+
+def test_intended_public_flows_remain_public():
+    assert _is_public("/auth/bootstrap", "POST")
+    assert _is_public("/auth/login", "POST")
+    assert _is_public("/api/leads", "POST")
+    assert _is_public("/execute", "POST")
