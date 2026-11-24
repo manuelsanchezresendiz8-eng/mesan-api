@@ -6,6 +6,7 @@ import uuid
 
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
+from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
 from database import SessionLocal
@@ -41,6 +42,8 @@ def bootstrap(
 
     db = SessionLocal()
     try:
+        # Serializa intentos simultáneos: solo una transacción puede completar el bootstrap.
+        db.execute(text("SELECT pg_advisory_xact_lock(73190423011)"))
         if db.query(UserRecord.id).first() is not None:
             raise HTTPException(status_code=409, detail="BOOTSTRAP_ALREADY_USED")
 
