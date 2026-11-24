@@ -51,7 +51,7 @@ Review the impact first. Export and verify audit seals before considering `20261
 
 ## Platform operator identity boundary (P0.1 security review)
 
-Tenant JWTs represent a user acting inside one active tenant membership. They must not grant global platform control. The current schema has tenant users and memberships only; it has no independent platform-operator identity, credential lifecycle, or operator role assignment. Do not treat tenant roles (including `owner`) as platform roles.
+Tenant JWTs represent a user acting inside one active tenant membership. They must not grant global platform control. The branch now defines a separate persistent platform-operator identity and distinct token audience/type. Do not treat tenant roles (including `owner`) as platform roles.
 
 ### Route classification from the P0.1 branch audit
 
@@ -60,7 +60,7 @@ Tenant JWTs represent a user acting inside one active tenant membership. They mu
 | `/api/v1/tenant/leads` | Tenant-owned lead records | Tenant JWT; member may read, admin/owner may update |
 | `/execute/audit/{trace_id}` | Tenant audit seal | Tenant JWT; tenant-filtered lookup |
 | `/market/regulatory/alerts/{tenant_id}` | Tenant-specific regulatory profile | Tenant JWT; path tenant must equal authenticated tenant |
-| `/commercial/*` | Global commercial pipeline, lead data, marketing and scheduler | Existing CRM Basic Auth dependency plus a future platform-operator boundary; do not grant to tenant owners |
+| `/commercial/*` | Global commercial pipeline, lead data, marketing and scheduler | Existing route-level CRM Basic Auth remains; Shadow Mode and Mission Control additionally require platform-operator tokens. Do not grant these privileges to tenant owners |
 | `/jarvis/*`, `/jarvis-sales/*` | Global JARVIS dashboards, leads, KPIs and operational intelligence | Platform operator only unless a route is redesigned as tenant-scoped |
 | `/guardian/*`, `/system/*` | Infrastructure, incidents, control plane, scheduler and system operations | Platform operator only |
 | `/commercial/shadow/*` | Global lead processing and activation/deactivation | Platform operator only; keep `MESAN_P5_SNAPSHOT` disabled until staging validation |
@@ -68,15 +68,15 @@ Tenant JWTs represent a user acting inside one active tenant membership. They mu
 | `/commercial/mission-control*` | Global leads, billing, Guardian and system metrics | Platform operator only |
 | Public intake / demo / checkout | Anonymous prospect capture, public diagnostics and demo data | Explicit allowlist only; never return customer records |
 
-### Required operator architecture before enabling platform routes
+### Operator architecture implemented on this branch; staging validation still required
 
-1. Add a separate persistent platform-operator identity model, not a tenant membership role. It must support active/revoked status, unique normalized identity, password hash, and explicit platform permissions.
-2. Use a distinct platform login and a distinct signed token type/audience. Tenant tokens must be rejected by platform routes even if their tenant role is `owner`; platform tokens must not be accepted by tenant data routes.
-3. Keep platform permissions explicit and least-privilege (for example read-only operations vs. operational control). Activation, scheduler control, SMTP send, cleanup, and other mutations require a stronger permission than dashboard reads.
-4. Derive tenant scope from the authenticated tenant context. Never trust a request body, query parameter, or path value as proof of tenant identity. Where a tenant identifier remains in a URL for compatibility, compare it to the authenticated context and deny mismatches.
-5. Keep current CRM Basic Auth dependencies intact while designing a deliberate migration. Do not silently remove Basic Auth or assume it is equivalent to platform identity.
-6. Add negative tests for token-type confusion, tenant-owner access to platform routes, revoked operators, missing permissions, and cross-tenant path/body tampering.
-7. Deploy only after a staging migration, bootstrap/revocation rehearsal, Postgres integration tests, and process-restart validation. Do not enable platform routes by default before this sequence.
+1. The `PlatformOperator` table and separate platform login are implemented; operator creation remains a controlled manual database action (no public bootstrap).
+2. Tenant tokens use `typ=tenant` and `aud=mesan-tenant-api`; platform tokens use `typ=platform` and `aud=mesan-platform-api`. The middleware rejects token-type/audience crossover.
+3. Platform route permissions are checked against PostgreSQL on every request: `platform:read` for GET/HEAD and `platform:operate` for mutations; `platform:admin` is an explicit override.
+4. Tenant-specific scope is derived from authenticated tenant context. The JARVIS briefing and Market regulatory alert endpoints are explicit tenant-scoped exceptions.
+5. Existing CRM Basic Auth dependencies remain intact. Routes already protected by those dependencies are excluded from the platform-token gate, not made public.
+6. Token separation and route classification tests have been added but have not been executed. End-to-end tests for revoked operators, missing permissions, tenant-owner denial, and DB behavior remain required.
+7. Deploy only after a staging migration, operator provisioning/revocation rehearsal, PostgreSQL integration tests, and process-restart validation.
 
 ### Additional finding: JARVIS briefing tenant spoofing
 
@@ -84,7 +84,7 @@ The current `POST /jarvis/briefing` handler passes `body.get('tenant_id', 'publi
 
 ### P0.1 decision
 
-Until the independent operator identity and token separation exist, global platform routes remain restricted to the current authenticated boundary and P0.1 remains open. Do not grant global access to tenant `owner`, `admin`, or `member`. No production activation, main-branch merge, or production database migration is authorized by this document.
+The independent operator identity and token separation are now implemented on this branch, but P0.1 remains open pending staging migration and end-to-end validation. Do not grant global access to tenant `owner`, `admin`, or `member`. No production activation, main-branch merge, or production database migration is authorized by this document.
 
 
 ## Independent platform operator authentication
