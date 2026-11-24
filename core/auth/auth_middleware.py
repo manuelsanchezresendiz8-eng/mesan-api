@@ -123,9 +123,9 @@ def _is_static_landing_asset(path: str, method: str) -> bool:
         return False
     if path == "/crm_enterprise.html":
         return False
-    if path.startswith("/api/"):
-        return False
-    if path.startswith("/pro/") or path.startswith("/api/v1/"):
+    # Rutas de ejecución son API aunque no usen el prefijo /api.
+    # En particular, /execute/audit/{trace_id} debe exigir JWT y membresía.
+    if path.startswith(("/api/", "/pro/", "/api/v1/", "/execute/")):
         return False
     return True
 
