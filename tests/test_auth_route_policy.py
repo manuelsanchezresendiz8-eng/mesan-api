@@ -3,7 +3,7 @@ import os
 
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 
-from core.auth.authorization import role_is_allowed
+from core.auth.authorization import platform_permission_is_allowed, role_is_allowed
 from core.auth.auth_middleware import _is_public, _requires_platform_operator
 
 
@@ -94,3 +94,16 @@ def test_platform_only_routes_are_separated_from_tenant_routes():
 def test_platform_login_is_an_explicit_public_flow():
     assert _is_public("/auth/platform/login", "POST")
     assert not _is_public("/auth/platform/login", "GET")
+
+
+
+def test_platform_permissions_separate_reads_from_mutations():
+    assert platform_permission_is_allowed(["platform:read"], "GET")
+    assert platform_permission_is_allowed(["platform:read"], "HEAD")
+    assert not platform_permission_is_allowed(["platform:read"], "POST")
+    assert platform_permission_is_allowed(["platform:operate"], "POST")
+    assert not platform_permission_is_allowed(["platform:operate"], "GET")
+    assert platform_permission_is_allowed(["platform:admin"], "DELETE")
+    assert not platform_permission_is_allowed(None, "GET")
+    assert not platform_permission_is_allowed(["platform:unknown"], "GET")
+    assert not platform_permission_is_allowed("platform:admin", "POST")
