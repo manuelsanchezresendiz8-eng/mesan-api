@@ -81,7 +81,7 @@ def _is_static_landing_asset(path: str, method: str) -> bool:
         "/api/", "/pro/", "/api/v1/", "/execute/",
         "/auth/", "/commercial/", "/jarvis/", "/guardian/",
         "/system/", "/smtp/", "/billing/", "/tenant/",
-        "/omega/", "/customer",
+        "/omega/", "/customer", "/market/", "/jarvis-sales/",
     )):
         return False
     return True
